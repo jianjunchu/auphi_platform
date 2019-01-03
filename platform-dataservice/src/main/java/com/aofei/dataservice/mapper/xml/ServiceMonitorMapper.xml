@@ -2,28 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aofei.dataservice.mapper.ServiceMonitorMapper">
 
-    <!-- 开启二级缓存 -->
-    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.aofei.dataservice.entity.ServiceMonitor">
-        <id column="MONITOR_ID" property="monitorId" />
-        <result column="SERVICE_ID" property="serviceId" />
-        <result column="START_TIME" property="startTime" />
-        <result column="END_TIME" property="endTime" />
-        <result column="STATUS" property="status" />
-        <result column="userName" property="userName" />
-        <result column="systemName" property="systemName" />
-        <result column="CREATE_USER" property="createUser" />
-        <result column="UPDATE_USER" property="updateUser" />
-        <result column="CREATE_TIME" property="createTime" />
-        <result column="UPDATE_TIME" property="updateTime" />
-        <result column="DEL_FLAG" property="delFlag" />
-    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        MONITOR_ID AS monitorId, SERVICE_ID AS serviceId, START_TIME AS startTime, END_TIME AS endTime, STATUS AS status, userName, systemName, CREATE_USER AS createUser, UPDATE_USER AS updateUser, CREATE_TIME AS createTime, UPDATE_TIME AS updateTime, DEL_FLAG AS delFlag
+          a.MONITOR_ID AS monitorId
+        , a.SERVICE_ID AS serviceId
+        , a.START_TIME AS startTime
+        , a.END_TIME AS endTime
+        , a.STATUS AS status
+        , a.USERNAME AS userName
+        , a.SYSTEM_NAME AS systemName
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+        , dsi.SERVICE_NAME AS serviceName
     </sql>
+
+    <sql id="Base_Joins">
+        LEFT JOIN DATASERVICE_INTERFACE dsi ON dsi.SERVICE_ID = a.SERVICE_ID
+    </sql>
+
+    <select id="findList"  resultType="com.aofei.dataservice.entity.ServiceAuth">
+        select
+        <include refid="Base_Column_List"/>
+        from DATASERVICE_MONITOR a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0
+        </where>
+    </select>
 
 </mapper>

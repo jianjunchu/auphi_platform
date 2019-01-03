@@ -16,7 +16,7 @@ public class DatabaseUtils {
 
 
     public static Database getDatabase(String repositoryName, String databaseName) throws KettleException {
-        Repository repository = App.getInstance().getRepository(repositoryName);
+        Repository repository = App.getInstance().getRepository();
         ObjectId objectId =  repository.getDatabaseID(databaseName);
         DatabaseMeta databaseMeta = repository.loadDatabaseMeta(objectId,null);
         Database database = new Database(databaseMeta);

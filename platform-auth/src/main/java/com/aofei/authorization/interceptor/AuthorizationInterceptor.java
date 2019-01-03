@@ -27,8 +27,11 @@ import com.alibaba.fastjson.JSON;
 import com.aofei.authorization.manager.TokenManager;
 import com.aofei.authorization.manager.TokenValidator;
 import com.aofei.base.annotation.Authorization;
+import com.aofei.base.common.Const;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.response.Response;
+import com.aofei.kettle.App;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -98,6 +101,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
         response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+
+        App.getInstance().getRepository();
+
         // 跨域时会首先发送一个option请求，这里我们给option请求直接返回正常状态
         if (request.getMethod().equals(RequestMethod.OPTIONS.name())) {
             response.setStatus(HttpStatus.OK.value());
@@ -138,5 +144,18 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         //为了防止以恶意操作直接在REQUEST_CURRENT_KEY写入key，将其设为null
         request.setAttribute(REQUEST_CURRENT_KEY, null);
         return true;
+    }
+
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)throws Exception {
+        KettleDatabaseRepository repository = (KettleDatabaseRepository) request.getSession().getAttribute(Const.REPOSITORY);
+        try {
+            if(repository !=null){
+                repository.disconnect();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+
     }
 }

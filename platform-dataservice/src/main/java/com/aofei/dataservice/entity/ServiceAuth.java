@@ -29,10 +29,19 @@ public class ServiceAuth extends DataEntity<ServiceAuth> {
 
     @TableId(value = "AUTH_ID", type = IdType.ID_WORKER)
     private Long authId;
+
     @TableField("USER_ID")
     private Long userId;
+
+    @TableField(exist = false)
+    private String username;
+
     @TableField("SERVICE_ID")
     private Long serviceId;
+
+    @TableField(exist = false)
+    private String serviceName;
+
     @TableField("AUTH_IP")
     private String authIp;
     @TableField("USE_DESC")

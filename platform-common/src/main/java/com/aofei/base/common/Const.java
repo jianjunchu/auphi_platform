@@ -32,6 +32,8 @@ public class Const {
 
     public final static String REPOSITORY_USERNAME = "admin";
 
+    public final static String REPOSITORY = "repository";
+
     public final static String REPOSITORY_PASSWORD = "admin";
 
 

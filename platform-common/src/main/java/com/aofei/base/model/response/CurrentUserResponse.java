@@ -41,4 +41,6 @@ public class CurrentUserResponse {
      * 组织ID
      */
     private String organizerName;
+
+
 }

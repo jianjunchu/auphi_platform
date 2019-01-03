@@ -13,11 +13,7 @@
     <packaging>pom</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
     </dependencies>
 
     <build>

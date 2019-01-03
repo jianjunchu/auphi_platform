@@ -19,6 +19,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-kettle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- redis begin -->
         <dependency>
             <groupId>redis.clients</groupId>

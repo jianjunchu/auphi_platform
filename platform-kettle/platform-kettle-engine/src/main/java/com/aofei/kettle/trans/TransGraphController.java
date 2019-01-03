@@ -44,10 +44,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Element;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +54,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(value="/trans")
 @Api(tags = "Transformation转换接口api")
 public class TransGraphController {

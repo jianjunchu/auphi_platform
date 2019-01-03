@@ -32,13 +32,22 @@ public class ServiceMonitor extends DataEntity<ServiceMonitor> {
     private Long monitorId;
     @TableField("SERVICE_ID")
     private Long serviceId;
+
+    @TableField(exist = false)
+    private String serviceName;
+
     @TableField("START_TIME")
     private Date startTime;
     @TableField("END_TIME")
     private Date endTime;
+
     @TableField("STATUS")
     private String status;
+
+    @TableField("USERNAME")
     private String userName;
+
+    @TableField("SYSTEM_NAME")
     private String systemName;
 
 

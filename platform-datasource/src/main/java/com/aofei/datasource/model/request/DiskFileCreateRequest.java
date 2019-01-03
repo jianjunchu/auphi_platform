@@ -25,7 +25,7 @@ public class DiskFileCreateRequest  {
     @ApiModelProperty(hidden = true)
     private String organizerName;
 
-    @ApiModelProperty(value = "文件名称")
+    @ApiModelProperty(value = "文件路径('/'开头")
     private String name;
 
     @ApiModelProperty(value = "路径")

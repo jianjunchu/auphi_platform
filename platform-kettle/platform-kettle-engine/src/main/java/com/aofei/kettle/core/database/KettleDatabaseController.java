@@ -47,6 +47,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,11 +63,12 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "/database", produces = {"application/json;charset=UTF-8"})
 public class KettleDatabaseController extends BaseController {
-	
+
 	@ApiOperation(value = "该方法返回所有全局的数据库连接名称，只返回连接名称", httpMethod = "POST")
 	@ResponseBody
 	@RequestMapping("/listNames")
-	protected void listNames() throws KettleException, IOException {
+	protected void listNames(@ApiIgnore  @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
+
 		RepositoriesMeta input = new RepositoriesMeta();
 		JSONArray jsonArray = new JSONArray();
 		if (input.readData()) {

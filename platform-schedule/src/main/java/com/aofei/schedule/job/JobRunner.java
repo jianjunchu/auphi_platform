@@ -7,9 +7,7 @@ import com.aofei.joblog.entity.LogJob;
 import com.aofei.joblog.task.JobLogTimerTask;
 import com.aofei.kettle.App;
 import com.aofei.kettle.JobExecutor;
-
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
-import com.aofei.translog.entity.LogTrans;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -90,7 +88,7 @@ public class JobRunner extends QuartzJobBean {
 			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
 			Timer logTimer = new Timer();
 			logTimer.schedule(jobLogTimerTask, 0,1000);
-
+			repository.disconnect();
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
 		}

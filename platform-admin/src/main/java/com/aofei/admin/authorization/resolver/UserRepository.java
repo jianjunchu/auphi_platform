@@ -22,6 +22,10 @@ public class UserRepository implements UserModelRepository {
     @Override
     public Object getCurrentUser(String username) {
         UserResponse response = userService.get(username);
-        return  response !=null? BeanCopier.copy(response, CurrentUserResponse.class) : null;
+        CurrentUserResponse currentUser = null;
+        if(response !=null){
+            currentUser = BeanCopier.copy(response, CurrentUserResponse.class);
+        }
+        return  currentUser;
     }
 }

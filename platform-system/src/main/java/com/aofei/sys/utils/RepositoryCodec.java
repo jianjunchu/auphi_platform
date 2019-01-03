@@ -1,6 +1,8 @@
 package com.aofei.sys.utils;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.aofei.base.common.Const;
+import com.aofei.kettle.App;
 import com.aofei.sys.model.response.RepositoryDatabaseResponse;
 import com.aofei.sys.model.response.RepositoryResponse;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -35,7 +37,7 @@ public class RepositoryCodec extends com.aofei.kettle.repository.RepositoryCodec
 		return databaseRepository;
 	}
 
-	public static KettleDatabaseRepository decodeDefault(DruidDataSource dataSource) throws KettlePluginException {
+	public static KettleDatabaseRepositoryMeta getDatabaseRepositoryMeta(DruidDataSource dataSource) throws KettlePluginException {
 		GenericDatabaseMeta nativeMeta = new GenericDatabaseMeta();
 		nativeMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_NATIVE);
 		nativeMeta.setUsername(dataSource.getUsername());
@@ -54,11 +56,28 @@ public class RepositoryCodec extends com.aofei.kettle.repository.RepositoryCodec
 		repositoryMeta.setName("Default");
 		repositoryMeta.setDescription("Default");
 		repositoryMeta.setDefault(Boolean.TRUE);
-
 		repositoryMeta.setConnection(databaseMeta);
-		KettleDatabaseRepository databaseRepository = new KettleDatabaseRepository();
-		databaseRepository.init(repositoryMeta);
 
+		return repositoryMeta;
+	}
+
+	public static KettleDatabaseRepository decodeDefault(DruidDataSource dataSource) throws KettlePluginException {
+
+		KettleDatabaseRepository databaseRepository = new KettleDatabaseRepository();
+		databaseRepository.init(getDatabaseRepositoryMeta(dataSource));
+
+		return databaseRepository;
+
+	}
+
+	public static KettleDatabaseRepository setUserRepository(Long userId,DruidDataSource dataSource) throws KettleException {
+
+		KettleDatabaseRepository databaseRepository = new KettleDatabaseRepository();
+		databaseRepository.init(getDatabaseRepositoryMeta(dataSource));
+
+		databaseRepository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
+		databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+		App.getInstance().setCurrentRepository(userId,databaseRepository);
 		return databaseRepository;
 
 	}

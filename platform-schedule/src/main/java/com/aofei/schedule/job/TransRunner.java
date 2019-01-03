@@ -90,6 +90,7 @@ public class TransRunner extends QuartzJobBean {
 
 			Thread tr = new Thread(transExecutor, "TransExecutor_" + transExecutor.getExecutionId());
 		    tr.start();
+
 			LogTrans logTrans  = new LogTrans();
 			logTrans.setStartdate(new Date());
 			logTrans.setStatus("start");
@@ -101,6 +102,8 @@ public class TransRunner extends QuartzJobBean {
 
             TransLogTimerTask transTimerTask = new TransLogTimerTask(transExecutor,logTrans);
 			logTimer.schedule(transTimerTask, 0,10000);
+
+			repository.disconnect();
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
 		}

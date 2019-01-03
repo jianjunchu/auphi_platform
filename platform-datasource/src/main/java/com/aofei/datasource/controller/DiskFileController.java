@@ -118,6 +118,7 @@ public class DiskFileController extends BaseController {
             @ApiResponse(code = 300001, message = "Insufficient disk space"),
             @ApiResponse(code = 200, message = "success")})
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "文件路径('/'开头）", paramType = "form",  dataType = "string"),
             @ApiImplicitParam(name = "file", value = "文件", paramType = "form", required = true, dataType = "__file")
     })
     @PostMapping(value = "/upload",consumes = "multipart/*",headers = "content-type=multipart/form-data")
@@ -130,8 +131,14 @@ public class DiskFileController extends BaseController {
 
         String path = ServletRequestUtils.getStringParameter(request,"path", userPath);
         if(StringUtils.isEmpty(path) || "/".equalsIgnoreCase(path)){
-            path = Const.getUserDir(user.getOrganizerId());
+            path = userPath;
+        }else{
+            if(!path.startsWith(userPath)){
+                path = userPath + path;
+            }
         }
+
+
         //将当前上下文初始化给  CommonsMutipartResolver （多部分解析器）
         CommonsMultipartResolver multipartResolver=new CommonsMultipartResolver(request.getSession().getServletContext());
         if(multipartResolver.isMultipart(request)) {
@@ -171,15 +178,21 @@ public class DiskFileController extends BaseController {
                 @RequestBody DiskFileDeleteRequest request,
                 @ApiIgnore @CurrentUser CurrentUserResponse user) throws IOException {
 
-        File file = new File(request.getPath());
+        String userPath = Const.getUserDir(user.getOrganizerId());
+        String path = request.getPath();
+        if(!path.startsWith(userPath)){
+            path = userPath+path;
+        }
+
+        File file = new File(path);
         if (!file.exists()) {
             new ApplicationException();
         } else {
             if (file.isFile()){
-                boolean delete =  diskFileService.deleteFile(request.getPath());
+                boolean delete =  diskFileService.deleteFile(path);
                 return Response.ok(1);
             }else{
-                return Response.ok(diskFileService.deleteDirectory(request.getPath()));
+                return Response.ok(diskFileService.deleteDirectory(path));
             }
 
         }
