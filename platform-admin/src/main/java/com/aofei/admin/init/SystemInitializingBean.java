@@ -89,7 +89,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         //repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
         //App.getInstance().setRepository(repository);
         //CheckRepositoryTimerTask checkRepositoryTimerTask = new CheckRepositoryTimerTask();
-       // repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
+        //repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
 
         App.getInstance().setKettleDatabaseRepositoryMeta(RepositoryCodec.getDatabaseRepositoryMeta(dataSource));
         long timeSec = (System.currentTimeMillis() - start) / 1000;
@@ -130,7 +130,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
             Database database = repository.getDatabase();
             try {
                 logger.info("==============check repository connect=================");
-                database.openQuery("select 1");
+                database.openQuery("SELECT 'x'");
             } catch (KettleDatabaseException e) {
                 try {
                     repository.disconnect();

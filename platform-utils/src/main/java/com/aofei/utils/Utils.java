@@ -1,9 +1,7 @@
 package com.aofei.utils;
 
 
-import org.apache.commons.validator.routines.TimeValidator;
-
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,17 +58,14 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-        long l1 = System.currentTimeMillis();
-        TimeValidator validator = TimeValidator.getInstance();// Get the Date validator
+        List<String> list = new ArrayList<>();
+        for(int i = 0 ;i<100;i++){
+            if(list.size()>10){
+                list.remove(0);
 
-        Calendar fooDate = validator.validate("12:00:00", "HH:mm:ss");// Validate/Convert the date
-
-        System.out.println(fooDate);
-        long l2 = System.currentTimeMillis();
-        System.out.println(l2 - l1);
-
-
-
-
+            }
+            list.add("11");
+        }
+        System.out.print(list);
     }
 }

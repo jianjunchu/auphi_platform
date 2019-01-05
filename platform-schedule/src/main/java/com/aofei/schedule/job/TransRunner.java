@@ -31,6 +31,7 @@ public class TransRunner extends QuartzJobBean {
 	private final Timer logTimer = new Timer();
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
+		Repository repository = App.getInstance().getRepository();
 		try {
             String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
@@ -40,7 +41,6 @@ public class TransRunner extends QuartzJobBean {
 			String dir = request.getFilePath();
 			String name = request.getFile();
 
-			Repository repository = App.getInstance().getRepository();
 
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 			if(directory == null)
@@ -48,6 +48,7 @@ public class TransRunner extends QuartzJobBean {
 
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 
+			repository.disconnect();
 			TransExecutionConfiguration executionConfiguration = App.getInstance().getTransExecutionConfiguration();
 
 			if (transMeta.findFirstUsedClusterSchema() != null) {
@@ -103,9 +104,10 @@ public class TransRunner extends QuartzJobBean {
             TransLogTimerTask transTimerTask = new TransLogTimerTask(transExecutor,logTrans);
 			logTimer.schedule(transTimerTask, 0,10000);
 
-			repository.disconnect();
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
+		}finally {
+			repository.disconnect();
 		}
 
 	}

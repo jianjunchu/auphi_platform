@@ -42,7 +42,12 @@
         </dependency>
         <!-- servlet/jsp/jstl/taglibs for web end-->
 
-
+        <!-- fastjson begin-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <!-- fastjson end-->
 
 
     </dependencies>

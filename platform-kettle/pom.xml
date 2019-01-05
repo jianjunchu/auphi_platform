@@ -30,6 +30,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-common</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>

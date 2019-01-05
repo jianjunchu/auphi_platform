@@ -13,14 +13,8 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class App {
 
@@ -28,7 +22,6 @@ public class App {
 	private static App app;
 	private LogChannelInterface log;
 
-	private Map<String,Repository> repositorys;
 
 	private KettleDatabaseRepositoryMeta kettleDatabaseRepositoryMeta;
 
@@ -75,18 +68,25 @@ public class App {
 
 	private Repository repository;
 
+	private List<Repository> connects = new ArrayList<>();
+
+
 	public Repository getRepository()  {
 
 		KettleDatabaseRepository databaseRepository = new KettleDatabaseRepository();
 		databaseRepository.init(kettleDatabaseRepositoryMeta);
 		databaseRepository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
+
 		try {
+
 			databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
 
-			if(RequestContextHolder.getRequestAttributes() != null ){
-				HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-				request.getSession().setAttribute(Const.REPOSITORY,databaseRepository);
+			if(connects.size() > 10){
+				Repository first = connects.get(0);
+				first.disconnect();
+				connects.remove(0);
 			}
+			connects.add(databaseRepository);
 
 		} catch (KettleException e) {
 			e.printStackTrace();
@@ -103,9 +103,6 @@ public class App {
 
 	private Map<String, Repository> repositories = Collections.synchronizedMap(new HashMap<String, Repository>());
 	private Map<Long, Repository> currentRepository = Collections.synchronizedMap(new HashMap<Long, Repository>());
-
-
-
 
 
 	public void selectRepository(Repository repo) {
@@ -166,7 +163,7 @@ public class App {
 	}
 
 	public Repository getRepository(String repositoryName) throws KettleException {
-		KettleDatabaseRepository repository = (KettleDatabaseRepository) repositorys.get(repositoryName);
+		KettleDatabaseRepository repository = (KettleDatabaseRepository) repositories.get(repositoryName);
 		if(repository!=null && !repository.isConnected()){
 			repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
 		}

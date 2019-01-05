@@ -27,6 +27,7 @@ public class JobRunner extends QuartzJobBean {
 
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
+		Repository repository = App.getInstance().getRepository();
 		try {
 			String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
@@ -35,13 +36,13 @@ public class JobRunner extends QuartzJobBean {
 			String dir = request.getFilePath();
 			String name = request.getFile();
 
-			Repository repository = App.getInstance().getRepository();
+
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 			if(directory == null)
 				directory = repository.getUserHomeDirectory();
 
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
-
+			repository.disconnect();
 			JobExecutionConfiguration executionConfiguration = App.getInstance().getJobExecutionConfiguration();
 
 			// Remember the variables set previously
@@ -88,9 +89,11 @@ public class JobRunner extends QuartzJobBean {
 			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
 			Timer logTimer = new Timer();
 			logTimer.schedule(jobLogTimerTask, 0,1000);
-			repository.disconnect();
+
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
+		}finally {
+			repository.disconnect();
 		}
 	}
 
