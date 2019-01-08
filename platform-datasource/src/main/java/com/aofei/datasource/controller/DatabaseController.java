@@ -68,10 +68,10 @@ public class DatabaseController extends BaseController {
      */
     @ApiOperation(value = "数据库名称列表(只返回name)", notes = "数据库名称列表", httpMethod = "GET")
     @RequestMapping(value = "/listNames", method = RequestMethod.GET)
-    public Response<List<DatabaseNameResponse>> listNames(
+    public List<DatabaseNameResponse> listNames(
             @ApiIgnore DatabaseRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
         request.setOrganizerId(user.getOrganizerId());
         List<DatabaseResponse> list = databaseService.getDatabases(request);
-        return Response.ok(BeanCopier.copy(list,DatabaseNameResponse.class)) ;
+        return BeanCopier.copy(list,DatabaseNameResponse.class) ;
     }
 }

@@ -7,7 +7,6 @@ import com.aofei.datasource.model.request.DiskFileCreateRequest;
 import com.aofei.datasource.model.request.DiskFileRequest;
 import com.aofei.datasource.model.response.DiskFileResponse;
 import com.aofei.datasource.service.IDiskFileService;
-
 import com.aofei.utils.DiskFileUtil;
 import com.aofei.utils.StringUtils;
 import org.apache.commons.vfs2.*;
@@ -33,7 +32,7 @@ public class DiskFileService implements IDiskFileService {
     private String rootDir  ; //磁盘根目录
 
     @Override
-    public List<DiskFileResponse> getFileExplorer(DiskFileRequest request) {
+    public List<DiskFileResponse> getFileExplorer(DiskFileRequest request)  {
         List<DiskFileResponse> list = new LinkedList<>();
         String path = request.getPath();
         if(StringUtils.isEmpty(path)){
@@ -41,37 +40,45 @@ public class DiskFileService implements IDiskFileService {
         }
         logger.info("path==>"+path);
         File[] files = new File(path).listFiles();
-        for(File file : files) {
-            DiskFileResponse response = null;
-            if(file.isHidden())
-                continue;
-            if(file.isDirectory()) {
-                response = new DiskFileResponse();
-                response.setFilename(file.getName());
-                response.setIsdir(Const.YES);
-                response.setPath(file.getPath());
-                response.setLastModified(file.lastModified());
+        if(files !=null && files.length>0){
+            for(File file : files) {
+                DiskFileResponse response = null;
+                if(file.isHidden())
+                    continue;
+                if(file.isDirectory()) {
+                    response = new DiskFileResponse();
+                    response.setFilename(file.getName());
+                    response.setIsdir(Const.YES);
+                    response.setPath(Const.getUserFilePath(request.getOrganizerId(),file.getAbsolutePath()));
+                    response.setLastModified(file.lastModified());
 
-            } else if(file.isFile() ){
-                response = new DiskFileResponse();
-                response.setFilename(file.getName());
-                response.setIsdir(Const.NO);
-                response.setPath(file.getPath());
-                response.setSize(DiskFileUtil.getPrintSize(file.length()));
-                response.setLastModified(file.lastModified());
+                } else if(file.isFile() ){
+                    response = new DiskFileResponse();
+                    response.setFilename(file.getName());
+                    response.setIsdir(Const.NO);
+                    response.setPath(Const.getUserFilePath(request.getOrganizerId(),file.getAbsolutePath()));
+                    response.setSize(DiskFileUtil.getPrintSize(file.length()));
+                    response.setLastModified(file.lastModified());
+                }
+
+                list.add(response);
             }
-
-            list.add(response);
         }
+
 
         return list;
     }
 
     @Override
     public boolean mkdir(DiskFileCreateRequest request) {
+        String userPath = Const.getUserDir(request.getOrganizerId());
         String path = request.getPath();
         if(StringUtils.isEmpty(path)){
-            path = Const.getUserDir(request.getOrganizerId());
+            path = userPath;
+        }
+
+        if(!path.startsWith(userPath)){
+            path = userPath+path;
         }
         path = path+File.separator+request.getName();
         File file = new File(path);

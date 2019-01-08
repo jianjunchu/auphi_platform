@@ -7,9 +7,7 @@ import com.aofei.joblog.entity.LogJob;
 import com.aofei.joblog.task.JobLogTimerTask;
 import com.aofei.kettle.App;
 import com.aofei.kettle.JobExecutor;
-
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
-import com.aofei.translog.entity.LogTrans;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -29,6 +27,7 @@ public class JobRunner extends QuartzJobBean {
 
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
+		Repository repository = App.getInstance().getRepository();
 		try {
 			String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
@@ -37,13 +36,13 @@ public class JobRunner extends QuartzJobBean {
 			String dir = request.getFilePath();
 			String name = request.getFile();
 
-			Repository repository = App.getInstance().getRepository();
+
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 			if(directory == null)
 				directory = repository.getUserHomeDirectory();
 
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
-
+			repository.disconnect();
 			JobExecutionConfiguration executionConfiguration = App.getInstance().getJobExecutionConfiguration();
 
 			// Remember the variables set previously
@@ -93,6 +92,8 @@ public class JobRunner extends QuartzJobBean {
 
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
+		}finally {
+			repository.disconnect();
 		}
 	}
 

@@ -5,6 +5,7 @@ package com.aofei.sys.controller;
  * @create 2018-09-13 13:38
  */
 
+import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.request.PageRequest;
@@ -34,6 +35,7 @@ import java.util.List;
 @Log4j
 @Api(tags = { "系统管理-用户管理模块接口" })
 @RestController
+@Authorization
 @RequestMapping(value = "/sys/user", produces = {"application/json;charset=UTF-8"})
 public class UserController extends BaseController {
 

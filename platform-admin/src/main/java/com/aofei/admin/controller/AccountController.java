@@ -23,11 +23,13 @@
  ******************************************************************************/
 package com.aofei.admin.controller;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.aofei.admin.authorization.Token;
 import com.aofei.admin.authorization.jwt.JwtConfig;
 import com.aofei.admin.authorization.jwt.JwtTokenBuilder;
+import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.common.Const;
 import com.aofei.base.common.UserUtil;
 import com.aofei.base.controller.BaseController;
@@ -52,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -70,6 +73,9 @@ public class AccountController extends BaseController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private DruidDataSource dataSource;
 
     @Autowired
     private JwtConfig jwtConfig;
@@ -203,10 +209,11 @@ public class AccountController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public Response<Integer> logout(@RequestHeader(name = "Authorization") String token) {
+    public Response<Integer> logout(@RequestHeader(name = "Authorization") String token, @ApiIgnore @CurrentUser CurrentUserResponse user) {
         //TODO JWT不能从服务端destroy token， logout目前只能在客户端的cookie 或 localStorage/sessionStorage  remove token
         //TODO 准备用jwt生成永久的token，再结合redis来实现Logout。具体是把token的生命周期交给redis来管理，jwt只负责生成token
         try {
+
 
             return Response.ok(1);
         } catch (Exception e) {

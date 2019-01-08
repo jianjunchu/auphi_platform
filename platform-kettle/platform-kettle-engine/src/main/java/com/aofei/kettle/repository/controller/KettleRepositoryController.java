@@ -116,7 +116,6 @@ public class KettleRepositoryController extends BaseController {
 		if(!transPath.endsWith("/"))
 			transPath = transPath + '/';
 		transPath = transPath + transName;
-		
 		JsonUtils.success(transPath);
 		
 	}
@@ -128,7 +127,8 @@ public class KettleRepositoryController extends BaseController {
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/createJob")
-	protected void createJob(@RequestParam String dir, @RequestParam String jobName) throws KettleException, IOException {
+	protected void createJob(@RequestParam String dir, @RequestParam String jobName,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
+		dir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(),dir);
 		Repository repository = App.getInstance().getRepository();
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
@@ -673,9 +673,10 @@ public class KettleRepositoryController extends BaseController {
 
 	
 	@RequestMapping(method=RequestMethod.POST, value="/exptree")
-	protected @ResponseBody List exptree(@RequestParam int loadElement) throws KettleException, IOException {
+	protected @ResponseBody List exptree(@RequestParam int loadElement,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface dir = repository.getUserHomeDirectory();
+		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
+		RepositoryDirectoryInterface dir = repository.findDirectory(root);
 		List list = browser(repository, dir, loadElement);
 		return list;
 	}

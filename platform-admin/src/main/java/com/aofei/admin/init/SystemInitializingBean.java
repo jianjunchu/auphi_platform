@@ -83,29 +83,15 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         KettleLogStore.init( 5000, 720 );
         KettleEnvironment.init();
         PropsUI.init( "KettleWebConsole", Props.TYPE_PROPERTIES_KITCHEN );
-        /*//加载
-        List<RepositoryResponse> repositorys = repositoryService.getRepositorys(new RepositoryRequest());
-        Map<String, Repository> repositoryMap = new HashMap<>();
-        for(RepositoryResponse repository : repositorys){
-            RepositoryDatabaseResponse repositoryDatabase =  repositoryDatabaseService.get(repository.getRepositoryConnectionId());
-            Repository databaseRepository = RepositoryCodec.decode(repository,repositoryDatabase);
-            repositoryMap.put(repository.getRepositoryName(),databaseRepository);
-            if(repository.getIsDefault()== Const.YES){
-                App.getInstance().setRepository(databaseRepository);
-            }
-        }*/
-        // App.getInstance().setRepositories(repositoryMap);
 
-        //默认当前系统dataSource为默认资源库
-        /*if(App.getInstance().getRepository()==null){
-            App.getInstance().setRepository(RepositoryCodec.decodeDefault(dataSource));
-        }*/
-        KettleDatabaseRepository repository =  RepositoryCodec.decodeDefault(dataSource);
-        repository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
-        repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
-        App.getInstance().setRepository(repository);
-        CheckRepositoryTimerTask checkRepositoryTimerTask = new CheckRepositoryTimerTask();
-        repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*60);
+        //KettleDatabaseRepository repository =  RepositoryCodec.decodeDefault(dataSource);
+        //repository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
+        //repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+        //App.getInstance().setRepository(repository);
+        //CheckRepositoryTimerTask checkRepositoryTimerTask = new CheckRepositoryTimerTask();
+        //repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
+
+        App.getInstance().setKettleDatabaseRepositoryMeta(RepositoryCodec.getDatabaseRepositoryMeta(dataSource));
         long timeSec = (System.currentTimeMillis() - start) / 1000;
         logger.info("********************************************");
         logger.info("平台启动成功[" + DateTime.now().toString() + "]");
@@ -144,12 +130,13 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
             Database database = repository.getDatabase();
             try {
                 logger.info("==============check repository connect=================");
-                database.openQuery("select 1");
+                database.openQuery("SELECT 'x'");
             } catch (KettleDatabaseException e) {
                 try {
                     repository.disconnect();
                     repository.setConnected(false);
                     repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+                    logger.info("==============重新链接资源库=================");
 
                 } catch (KettleException e1) {
                     e1.printStackTrace();

@@ -10,20 +10,20 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class App {
+
 
 	private static App app;
 	private LogChannelInterface log;
 
-	private Map<String,Repository> repositorys;
+
+	private KettleDatabaseRepositoryMeta kettleDatabaseRepositoryMeta;
 
 	private TransExecutionConfiguration transExecutionConfiguration;
 	private TransExecutionConfiguration transPreviewExecutionConfiguration;
@@ -68,10 +68,33 @@ public class App {
 
 	private Repository repository;
 
-	public Repository getRepository() {
+	private List<Repository> connects = new ArrayList<>();
 
-		return repository;
+
+	public Repository getRepository()  {
+
+		KettleDatabaseRepository databaseRepository = new KettleDatabaseRepository();
+		databaseRepository.init(kettleDatabaseRepositoryMeta);
+		databaseRepository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
+
+		try {
+
+			databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+
+			if(connects.size() > 10){
+				Repository first = connects.get(0);
+				first.disconnect();
+				connects.remove(0);
+			}
+			connects.add(databaseRepository);
+
+		} catch (KettleException e) {
+			e.printStackTrace();
+		}
+
+		return databaseRepository;
 	}
+
 
 	public void setRepository(Repository repository) {
 
@@ -79,21 +102,8 @@ public class App {
 	}
 
 	private Map<String, Repository> repositories = Collections.synchronizedMap(new HashMap<String, Repository>());
+	private Map<Long, Repository> currentRepository = Collections.synchronizedMap(new HashMap<Long, Repository>());
 
-
-
-
-//	private Repository defaultRepository;
-//
-//	public void initDefault(Repository defaultRepo) {
-//		if(this.defaultRepository == null)
-//			this.defaultRepository = defaultRepo;
-//		this.repository = defaultRepo;
-//	}
-//
-//	public Repository getDefaultRepository() {
-//		return this.defaultRepository;
-//	}
 
 	public void selectRepository(Repository repo) {
 		if(repository != null) {
@@ -153,7 +163,7 @@ public class App {
 	}
 
 	public Repository getRepository(String repositoryName) throws KettleException {
-		KettleDatabaseRepository repository = (KettleDatabaseRepository) repositorys.get(repositoryName);
+		KettleDatabaseRepository repository = (KettleDatabaseRepository) repositories.get(repositoryName);
 		if(repository!=null && !repository.isConnected()){
 			repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
 		}
@@ -162,11 +172,25 @@ public class App {
 	}
 
 	public void setRepository(String repositoryName, Repository repository) {
+
 		repositories.put(repositoryName,repository);
+	}
+
+	public KettleDatabaseRepositoryMeta getKettleDatabaseRepositoryMeta() {
+		return kettleDatabaseRepositoryMeta;
+	}
+
+	public void setKettleDatabaseRepositoryMeta(KettleDatabaseRepositoryMeta kettleDatabaseRepositoryMeta) {
+		this.kettleDatabaseRepositoryMeta = kettleDatabaseRepositoryMeta;
 	}
 
 
 
+	public void setCurrentRepository(Long userId,Repository repository) {
+		if(currentRepository.get(userId)!=null){
+			currentRepository.get(userId).disconnect();
+		}
 
-
+		this.currentRepository.put(userId,repository);
+	}
 }

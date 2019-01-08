@@ -1,6 +1,5 @@
 package com.aofei.datasource.model.request;
 
-import com.aofei.base.model.request.BaseRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,10 +19,7 @@ public class DiskFileDeleteRequest  {
     @ApiModelProperty(hidden = true)
     private Long organizerId;
 
-    @ApiModelProperty(value = "文件名称")
-    private String name;
-
-    @ApiModelProperty(value = "路径")
+    @ApiModelProperty(value = "路径(文件的路径和名称 '/'开头）")
     private String path;
 
 

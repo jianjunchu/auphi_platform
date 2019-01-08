@@ -1,16 +1,7 @@
 package com.aofei.dataservice.model.response;
 
-import com.aofei.base.entity.DataEntity;
 import com.aofei.base.model.response.BaseResponse;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-
-import java.io.Serializable;
 
 /**
  * <p>
@@ -29,7 +20,11 @@ public class ServiceAuthResponse extends BaseResponse {
 
     private Long userId;
 
+    private String username;
+
     private Long serviceId;
+
+    private String serviceName;
 
     private String authIp;
 
@@ -38,5 +33,9 @@ public class ServiceAuthResponse extends BaseResponse {
     private String useDept;
 
     private String userName;
+
+
+
+
 
 }
