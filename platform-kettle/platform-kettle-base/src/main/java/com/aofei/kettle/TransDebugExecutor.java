@@ -26,6 +26,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -285,40 +286,48 @@ public class TransDebugExecutor implements Runnable {
 		JSONArray jsonArray = new JSONArray();
 		
 		HashMap<String, Integer> stepIndex = new HashMap<String, Integer>();
-		if(executionConfiguration.isExecutingLocally()) {
-			for (StepMetaDataCombi combi : trans.getSteps()) {
-				Integer index = stepIndex.get(combi.stepMeta.getName());
-				if(index == null) {
-					JSONObject jsonObject = new JSONObject();
-					jsonObject.put("stepName", combi.stepMeta.getName());
-					int errCount = (int) combi.step.getErrors();
+		for (StepMetaDataCombi combi : trans.getSteps()) {
+			Integer index = stepIndex.get(combi.stepMeta.getName());
+			
+			if(index == null) {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("stepName", combi.stepMeta.getName());
+				
+				jsonObject.put("stepStatus", 0);	//执行中
+				if(combi.step.getStatus().equals( StepExecutionStatus.STATUS_FINISHED )
+						|| combi.step.getStatus().equals(StepExecutionStatus.STATUS_STOPPED)) {
+					jsonObject.put("stepStatus", -1);
+				}
+				
+				int errCount = (int) combi.step.getErrors();
+				if(errCount > 0) {
 					jsonObject.put("stepStatus", errCount);
-					
-					if(errCount > 0) {
-						StringBuilder logText = new StringBuilder();
-						String channelId = combi.step.getLogChannel().getLogChannelId();
-						List<KettleLoggingEvent> eventList = KettleLogStore.getLogBufferFromTo(channelId, false, -1, KettleLogStore.getLastBufferLineNr());
-						for (KettleLoggingEvent event : eventList) {
-							Object message = event.getMessage();
-							if (message instanceof LogMessage) {
-								LogMessage logMessage = (LogMessage) message;
-								if (logMessage.isError()) {
-									logText.append(logMessage.getMessage()).append(Const.CR);
-								}
+					StringBuilder logText = new StringBuilder();
+					String channelId = combi.step.getLogChannel().getLogChannelId();
+					List<KettleLoggingEvent> eventList = KettleLogStore.getLogBufferFromTo(channelId, false, -1, KettleLogStore.getLastBufferLineNr());
+					for (KettleLoggingEvent event : eventList) {
+						Object message = event.getMessage();
+						if (message instanceof LogMessage) {
+							LogMessage logMessage = (LogMessage) message;
+							if (logMessage.isError()) {
+								logText.append(logMessage.getMessage()).append(Const.CR);
 							}
 						}
-						jsonObject.put("logText", logText.toString());
 					}
-					
-					stepIndex.put(combi.stepMeta.getName(), jsonArray.size());
-					jsonArray.add(jsonObject);
-				} else {
-					JSONObject jsonObject = jsonArray.getJSONObject(index);
-					int errCount = (int) (combi.step.getErrors() + jsonObject.optInt("stepStatus"));
+					jsonObject.put("logText", logText.toString());
+				}
+				
+				stepIndex.put(combi.stepMeta.getName(), jsonArray.size());
+				jsonArray.add(jsonObject);
+			} else {
+				JSONObject jsonObject = jsonArray.getJSONObject(index);
+				int errCount = (int) (combi.step.getErrors() + jsonObject.optInt("stepStatus"));
+				if(errCount > 0) {
 					jsonObject.put("stepStatus", errCount);
 				}
+				
 			}
-    	}
+		}
 		
 		return jsonArray;
 	}
