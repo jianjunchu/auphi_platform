@@ -100,7 +100,6 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
         response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
 
-        App.getInstance().getRepository();
 
         // 跨域时会首先发送一个option请求，这里我们给option请求直接返回正常状态
         if (request.getMethod().equals(RequestMethod.OPTIONS.name())) {

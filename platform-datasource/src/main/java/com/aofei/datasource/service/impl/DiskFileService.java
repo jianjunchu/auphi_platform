@@ -101,9 +101,11 @@ public class DiskFileService implements IDiskFileService {
 
     @Override
     public int deleteDirectory(String path) throws FileSystemException {
-        FileSystemManager fsManager = VFS.getManager();
+
+
+        DiskFileUtil.delFolder(path);
         // 测试表明删除文件夹删除不了
-        return fsManager.resolveFile(path).delete(getFileSelector(Type.FOLDER));
+        return 1;
     }
 
     /**

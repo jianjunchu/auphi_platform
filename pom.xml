@@ -13,7 +13,6 @@
     <module>platform-generator</module>
     <module>platform-auth</module>
     <module>platform-kettle</module>
-    <module>platform-auth</module>
     <module>platfrom-quality</module>
     <module>platform-datasource</module>
     <module>platfrom-cluster</module>
