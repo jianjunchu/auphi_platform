@@ -66,8 +66,8 @@ public class DatabaseController extends BaseController {
      * 列表(分页查询)
      * @return
      */
-    @ApiOperation(value = "数据库名称列表(只返回name)", notes = "数据库名称列表", httpMethod = "GET")
-    @RequestMapping(value = "/listNames", method = RequestMethod.GET)
+    @ApiOperation(value = "数据库名称列表(只返回name)", notes = "数据库名称列表", httpMethod = "POST")
+    @RequestMapping(value = "/listNames", method = RequestMethod.POST)
     public List<DatabaseNameResponse> listNames(
             @ApiIgnore DatabaseRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
         request.setOrganizerId(user.getOrganizerId());
