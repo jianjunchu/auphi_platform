@@ -1141,6 +1141,34 @@ public class SystemMainController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(method=RequestMethod.POST, value="/dateLocales")
+	protected void dateLocales() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+		
+		for (String locale : EnvUtil.getLocaleList()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("name", locale);
+			jsonArray.add(jsonObject);
+		}
+		
+		JsonUtils.response(jsonArray);
+	}
+	
+	@ResponseBody
+	@RequestMapping(method=RequestMethod.POST, value="/timeZones")
+	protected void timeZones() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+		
+		for (String timeZone : EnvUtil.getTimeZones()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("name", timeZone);
+			jsonArray.add(jsonObject);
+		}
+		
+		JsonUtils.response(jsonArray);
+	}
+	
+	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/calcFunctions")
 	protected void calcFunctions() throws Exception{
 		JSONArray jsonArray = new JSONArray();
