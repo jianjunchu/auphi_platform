@@ -197,6 +197,52 @@ public class KettleRepositoryController extends BaseController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST, value = "/rename")
+	protected void rename(@RequestParam String path, String newName, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
+		Repository repository = App.getInstance().getRepository();
+		
+		String dir = path.substring(0, path.lastIndexOf("/"));
+		String name = path.substring(path.lastIndexOf("/") + 1);
+		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+		if(directory == null)
+			directory = repository.getUserHomeDirectory();
+		
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
+				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
+			ObjectId id_transformation = repository.getTransformationID(name, directory);
+			
+			//TODO 直接调用rename死锁！为什么
+			if(id_transformation != null) {
+				TransMeta transMeta = repository.loadTransformation(id_transformation, null);
+				transMeta.setName(newName);
+				transMeta.setModifiedDate(new Date());
+				transMeta.setModifiedUser(user.getUsername());
+				repository.save(transMeta, null, null);
+				
+				repository.deleteTransformation(id_transformation);
+			}
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
+				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
+			ObjectId id_job = repository.getJobId(name, directory);
+			//TODO 直接调用rename死锁！为什么
+			if(id_job != null) {
+				JobMeta jobMeta = repository.loadJob(id_job, null);
+				jobMeta.setName(newName);
+				jobMeta.setModifiedDate(new Date());
+				jobMeta.setModifiedUser(user.getUsername());
+				repository.save(jobMeta, null, null);
+				
+				repository.deleteJob(id_job);
+			}
+		} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
+			directory = repository.findDirectory(path);
+			repository.renameRepositoryDirectory(directory.getObjectId(), null, newName);
+		}
+		
+		JsonUtils.success("操作成功");
+	}
+	
+	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/open")
 	protected void open(@RequestParam String path, @RequestParam String type,@CurrentUser CurrentUserResponse user) throws Exception {
 		String dir = path.substring(0, path.lastIndexOf("/"));

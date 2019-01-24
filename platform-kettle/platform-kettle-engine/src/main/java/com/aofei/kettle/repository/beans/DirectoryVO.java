@@ -17,7 +17,9 @@ public class DirectoryVO {
 	public DirectoryVO(RepositoryDirectoryInterface rdi) {
 		name = rdi.getName();
 		path = rdi.getParent().getPath();
-		id = rdi.getObjectId().getId();
+		
+		String path2 = path.endsWith("/") ? path : path + '/';
+		id = path2 + name;
 	}
 
 	public DirectoryVO(RepositoryDirectoryInterface rdi,String replace) {
