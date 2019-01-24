@@ -34,6 +34,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.*;
+import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
@@ -217,9 +218,11 @@ public class KettleRepositoryController extends BaseController {
 				transMeta.setName(newName);
 				transMeta.setModifiedDate(new Date());
 				transMeta.setModifiedUser(user.getUsername());
-				repository.save(transMeta, null, null);
+				repository.save(transMeta, "重命名：oldname=" + name, null);
 				
-				repository.deleteTransformation(id_transformation);
+				if(repository instanceof KettleFileRepository) {
+					repository.deleteTransformation(id_transformation);
+				}
 			}
 		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
 				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
@@ -230,9 +233,11 @@ public class KettleRepositoryController extends BaseController {
 				jobMeta.setName(newName);
 				jobMeta.setModifiedDate(new Date());
 				jobMeta.setModifiedUser(user.getUsername());
-				repository.save(jobMeta, null, null);
+				repository.save(jobMeta, "重命名：oldname=" + name, null);
 				
-				repository.deleteJob(id_job);
+				if(repository instanceof KettleFileRepository) {
+					repository.deleteJob(id_job);
+				}
 			}
 		} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
 			directory = repository.findDirectory(path);
