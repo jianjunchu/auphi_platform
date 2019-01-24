@@ -31,6 +31,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Element;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.App;
 import com.aofei.kettle.JobExecutor;
 import com.aofei.kettle.PluginFactory;
@@ -147,7 +149,7 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/save")
-	protected void save(@RequestParam String graphXml) throws Exception {
+	protected void save(@CurrentUser CurrentUserResponse user, @RequestParam String graphXml) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(StringEscapeHelper.decode(graphXml));
 		Repository repository = App.getInstance().getRepository();
@@ -157,6 +159,7 @@ public class JobGraphController {
 		if(jobMeta.getObjectId() == null)
 			jobMeta.setObjectId(existingId);
 		jobMeta.setModifiedDate(new Date());
+		jobMeta.setModifiedUser(user.getUsername());
 		
 		 boolean versioningEnabled = true;
          boolean versionCommentsEnabled = true;

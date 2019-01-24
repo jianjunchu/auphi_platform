@@ -99,7 +99,7 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/save")
-	protected void save(HttpServletRequest request, HttpServletResponse response, @RequestParam String graphXml) throws Exception {
+	protected void save(HttpServletRequest request, HttpServletResponse response, @CurrentUser CurrentUserResponse user, @RequestParam String graphXml) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
 		AbstractMeta transMeta = codec.decode(StringEscapeHelper.decode(graphXml));
 		Repository repository = App.getInstance().getRepository();
@@ -109,6 +109,7 @@ public class TransGraphController {
 		if(transMeta.getObjectId() == null)
 			transMeta.setObjectId(existingId);
 		transMeta.setModifiedDate(new Date());
+		transMeta.setModifiedUser(user.getUsername());
 		
 		 boolean versioningEnabled = true;
          boolean versionCommentsEnabled = true;
