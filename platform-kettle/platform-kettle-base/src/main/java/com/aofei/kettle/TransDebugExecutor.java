@@ -120,6 +120,8 @@ public class TransDebugExecutor implements Runnable {
 	        } catch ( KettleException e ) {
 	        	e.printStackTrace();
 	            checkErrorVisuals();
+	            errCount = 1;
+	            return;
 	        }
 	        
 	        transDebugMeta.addRowListenersToTransformation( trans );
