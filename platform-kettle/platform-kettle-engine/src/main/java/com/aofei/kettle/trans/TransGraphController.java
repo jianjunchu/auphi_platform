@@ -359,6 +359,7 @@ public class TransGraphController {
 			jsonObject.put("finished", transExecutor.isFinished());
 			jsonObject.put("stepMeasure", transExecutor.getStepMeasure());
 			jsonObject.put("log", transExecutor.getExecutionLog());
+			jsonObject.put("errCount", transExecutor.getErrCount());
 			jsonObject.put("stepStatus", transExecutor.getStepStatus());
 			jsonObject.put("previewData", transExecutor.getPreviewData());
 			
