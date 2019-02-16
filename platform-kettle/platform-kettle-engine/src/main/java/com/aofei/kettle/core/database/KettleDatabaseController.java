@@ -228,6 +228,29 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.success(result.toString());
 	}
 	
+	/**
+	 * 测试数据库
+	 * 
+	 * @param databaseInfo
+	 * @throws IOException
+	 * @throws KettleDatabaseException
+	 */
+	@ResponseBody
+	@RequestMapping(method=RequestMethod.POST, value="/test")
+	public void test(@RequestParam String databaseInfo) throws IOException, KettleDatabaseException {
+	    JSONObject jsonObject = JSONObject.fromObject(databaseInfo);
+	    DatabaseMeta dbinfo = DatabaseCodec.decode(jsonObject);
+	    String[] remarks = dbinfo.checkParameters();
+	    if ( remarks.length == 0 ) {
+	    	String reportMessage = dbinfo.testConnection();
+	    	JsonUtils.success(StringEscapeHelper.encode(reportMessage));
+	    	return;
+	    	
+	    }
+	    
+	    JsonUtils.success(StringEscapeHelper.encode(remarks[0]));
+	}
+	
 	@RequestMapping(method=RequestMethod.POST, value="/features")
 	public @ResponseBody Map features(@RequestParam String databaseInfo) throws KettleValueException, IOException, KettleDatabaseException {
 	    JSONObject jsonObject = JSONObject.fromObject(databaseInfo);
