@@ -26,10 +26,15 @@ public class TransPreviewProgress {
 	    this.transMeta = transMeta;
 	    this.previewStepNames = previewStepNames;
 	    this.previewSize = previewSize;
-
-	    doPreview();
+	    try {
+	    	doPreview();
+	    } catch(Exception e) {
+	    	
+	    } finally {
+	    	// Capture preview activity to a String:
+		    loggingText = KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
+	    }
 	  }
-
 
 	  private void doPreview() throws KettleException {
 	    // This transformation is ready to run in preview!
@@ -85,8 +90,7 @@ public class TransPreviewProgress {
 
 	    trans.stopAll();
 
-	    // Capture preview activity to a String:
-	    loggingText = KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
+	    
 	  }
 
 	public List<Object[]> getPreviewRows(String stepname) {
@@ -128,5 +132,5 @@ public class TransPreviewProgress {
 	public TransDebugMeta getTransDebugMeta() {
 		return transDebugMeta;
 	}
-
+	  
 }

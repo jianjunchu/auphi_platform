@@ -35,6 +35,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -185,12 +186,7 @@ public class TransGraphController {
 		executionConfiguration.setRepository(App.getInstance().getRepository());
 		executionConfiguration.setSafeModeEnabled(true);
 		
-		TransDebugMeta transDebugMeta = transPreviewMetaMap.get(transMeta);
-		if (transDebugMeta == null) {
-			transDebugMeta = new TransDebugMeta(transMeta);
-			transPreviewMetaMap.put(transMeta, transDebugMeta);
-		}
-		
+		TransDebugMeta transDebugMeta = new TransDebugMeta(transMeta);
 		transDebugMeta.getTransMeta().setRepository( App.getInstance().getRepository() );
 		
 		JSONArray jsonArray = new JSONArray();
@@ -230,14 +226,8 @@ public class TransGraphController {
 		executionConfiguration.setRepository(App.getInstance().getRepository());
 		executionConfiguration.setSafeModeEnabled(true);
 		
-		TransDebugMeta transDebugMeta = transPreviewMetaMap.get(transMeta);
-		if (transDebugMeta == null) {
-			transDebugMeta = new TransDebugMeta(transMeta);
-			transPreviewMetaMap.put(transMeta, transDebugMeta);
-		}
-		
+		TransDebugMeta transDebugMeta = new TransDebugMeta(transMeta);
 		transDebugMeta.getTransMeta().setRepository( App.getInstance().getRepository() );
-		
 		
 		JSONArray cells = JSONArray.fromObject(URLDecoder.decode(selectedCells, "utf-8"));
 		for(int i=0; i<cells.size(); i++) {
@@ -332,48 +322,42 @@ public class TransGraphController {
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/previewResult")
 	protected void previewResult(@RequestParam String executionId, @RequestParam(required=false) String action) throws Exception {
-		TransDebugExecutor transExecutor = TransDebugExecutor.getExecutor(executionId);
-		if(transExecutor == null)
-			return;
-		
-		if("stop".equalsIgnoreCase(action)) {
-//			transExecutor.stop();
-//			while(!transExecutor.isFinished())
-//				Thread.sleep(500);
+		try {
+			TransDebugExecutor transExecutor = TransDebugExecutor.getExecutor(executionId);
+			if(transExecutor == null)
+				return;
 			
-//			JSONObject jsonObject = new JSONObject();
-//			jsonObject.put("finished", transExecutor.isFinished());
-//			jsonObject.put("stepMeasure", transExecutor.getStepMeasure());
-//			jsonObject.put("log", transExecutor.getExecutionLog());
-//			jsonObject.put("stepStatus", transExecutor.getStepStatus());
-//			jsonObject.put("previewData", transExecutor.getPreviewData());
-//			TransDebugExecutor.remove(executionId);
-			JsonUtils.response(stop(executionId));
-			return;
-		} else if("askformore".equalsIgnoreCase(action)) {
-			while(!transExecutor.isPreviewed() && !transExecutor.isFinished())
-				Thread.sleep(200);
-			
-			JSONObject jsonObject = new JSONObject();
-			
-			jsonObject.put("finished", transExecutor.isFinished());
-			jsonObject.put("stepMeasure", transExecutor.getStepMeasure());
-			jsonObject.put("log", transExecutor.getExecutionLog());
-			jsonObject.put("errCount", transExecutor.getErrCount());
-			jsonObject.put("stepStatus", transExecutor.getStepStatus());
-			jsonObject.put("previewData", transExecutor.getPreviewData());
-			
-			if(transExecutor.isFinished()) 
-				TransDebugExecutor.remove(executionId);
-			
-			JsonUtils.response(jsonObject);
-			transExecutor.clearPreview();
-			transExecutor.resume();
-			return;
+			if("stop".equalsIgnoreCase(action)) {
+				JsonUtils.response(stop(executionId));
+				return;
+			} else if("askformore".equalsIgnoreCase(action)) {
+				while(!transExecutor.isPreviewed() && !transExecutor.isFinished())
+					Thread.sleep(200);
+				
+				JSONObject jsonObject = new JSONObject();
+				
+				jsonObject.put("finished", transExecutor.isFinished());
+				jsonObject.put("stepMeasure", transExecutor.getStepMeasure());
+				jsonObject.put("log", transExecutor.getExecutionLog());
+				jsonObject.put("errCount", transExecutor.getErrCount());
+				jsonObject.put("stepStatus", transExecutor.getStepStatus());
+				jsonObject.put("previewData", transExecutor.getPreviewData());
+				System.out.println("return preview data: " + transExecutor.getPreviewData().optJSONArray("firstRecords"));
+				
+				if(transExecutor.isFinished()) 
+					TransDebugExecutor.remove(executionId);
+				
+				JsonUtils.response(jsonObject);
+				transExecutor.clearPreview();
+				transExecutor.resume();
+				return;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
-	private Map<TransMeta, TransDebugMeta> transPreviewMetaMap = new HashMap<TransMeta, TransDebugMeta>();
+//	private Map<TransMeta, TransDebugMeta> transPreviewMetaMap = new HashMap<TransMeta, TransDebugMeta>();
 	
 	@ApiOperation(value = "初始化执行", httpMethod = "POST")
 	@ApiImplicitParams({
@@ -715,6 +699,15 @@ public class TransGraphController {
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, stepMeta.getStepMetaInterface(), stepName );
 		TransPreviewProgress progresser = new TransPreviewProgress(previewMeta, new String[] {stepName }, new int[] { rowLimit } );
 		
+		
+		String loggingText = progresser.getLoggingText();
+	    Trans trans = progresser.getTrans();
+	      
+	    if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
+	    	JsonUtils.fail(StringEscapeHelper.encode(loggingText));
+	    	return;
+        }
+		
 		RowMetaInterface rowMeta = progresser.getPreviewRowsMeta(stepName);
 		List<Object[]> rowsData = progresser.getPreviewRows(stepName);
 		
@@ -723,6 +716,8 @@ public class TransGraphController {
 			
 		if (rowMeta != null) {
 			JSONObject jsonObject = new JSONObject();
+		    jsonObject.put("success", true);
+			
 			List<ValueMetaInterface> valueMetas = rowMeta.getValueMetaList();
 			
 			int width = 0;

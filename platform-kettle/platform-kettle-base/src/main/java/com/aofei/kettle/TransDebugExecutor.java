@@ -134,6 +134,7 @@ public class TransDebugExecutor implements Runnable {
 	        if ( trans.isReadyToStart() && initialized) {
 				trans.addTransListener(new TransAdapter() {
 					public void transFinished(Trans trans) {
+						checkTransEnded();
 						checkErrorVisuals();
 					}
 				});
@@ -148,7 +149,7 @@ public class TransDebugExecutor implements Runnable {
 	        	checkErrorVisuals();
 	        	errCount = trans.getErrors();
 	        }
-			
+	        System.out.println("preview is finish. errCount=" + errCount);
 		} catch(Exception e) {
 			e.printStackTrace();
 			App.getInstance().getLog().logError("执行失败！", e);
@@ -238,6 +239,22 @@ public class TransDebugExecutor implements Runnable {
 
 		} else {
 			stepLogMap.clear();
+		}
+	}
+	
+	private void checkTransEnded() {
+		if (transDebugMeta.getStepDebugMetaMap().isEmpty()) {
+			return;
+		}
+
+		Map<StepMeta, StepDebugMeta> stepDebugMetaMap = transDebugMeta.getStepDebugMetaMap();
+		if ( stepDebugMetaMap.size() > 0 ) {
+			StepDebugMeta stepDebugMeta = stepDebugMetaMap.values().iterator().next();
+			List<Object[]> rowsData = stepDebugMeta.getRowBuffer();
+		    RowMetaInterface rowMeta = stepDebugMeta.getRowBufferMeta();
+		    if(rowsData != null && rowMeta != null && rowsData.size() > 0) {
+		    	showPreview(transDebugMeta, stepDebugMeta, rowMeta, rowsData);
+		    }
 		}
 	}
 	
@@ -346,6 +363,7 @@ public class TransDebugExecutor implements Runnable {
 	
 	public synchronized void showPreview(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowMeta, List<Object[]> rowsData) {
 		List<ValueMetaInterface> valueMetas = rowMeta.getValueMetaList();
+		System.out.println("recived preview data: " + rowsData.size());
 		
 		JSONArray columns = new JSONArray();
 		JSONObject metaData = new JSONObject();
@@ -395,6 +413,7 @@ public class TransDebugExecutor implements Runnable {
 		jsonObject.put("columns", columns);
 		jsonObject.put("firstRecords", firstRecords);
 		
+		System.out.println("put recived preview data: " + firstRecords.size());
 		rowsData.clear();
 	}
 	
