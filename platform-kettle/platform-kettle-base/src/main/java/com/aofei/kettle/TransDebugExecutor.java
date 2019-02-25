@@ -371,11 +371,11 @@ public class TransDebugExecutor implements Runnable {
 		for (int i = 0; i < valueMetas.size(); i++) {
 			ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
 			fields.add(valueMeta.getName());
-			String header = valueMeta.getComments() == null ? valueMeta.getName() : valueMeta.getComments();
+//			String header = valueMeta.getComments() == null ? valueMeta.getName() : valueMeta.getComments();
 			
 			JSONObject column = new JSONObject();
 			column.put("dataIndex", valueMeta.getName());
-			column.put("header", header);
+			column.put("header", valueMeta.getName());
 			column.put("width", 800 / valueMetas.size());
 			columns.add(column);
 		}
