@@ -24,7 +24,7 @@ import java.util.List;
 public class DataGrid extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		DataGridMeta dataGridMeta = (DataGridMeta) stepMetaInterface;
 
 		JSONArray jsonArray = JSONArray.fromObject(cell.getAttribute("fields"));

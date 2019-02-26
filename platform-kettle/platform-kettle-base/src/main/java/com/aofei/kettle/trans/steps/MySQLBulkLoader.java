@@ -24,7 +24,7 @@ public class MySQLBulkLoader extends AbstractStep {
 
 	@Override
 	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases,
-			IMetaStore metaStore) throws Exception {
+			IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		MySQLBulkLoaderMeta mySQLBulkLoaderMeta = (MySQLBulkLoaderMeta) stepMetaInterface;
 
 		mySQLBulkLoaderMeta.setDatabaseMeta(DatabaseMeta.findDatabase(databases, cell.getAttribute("connection")));

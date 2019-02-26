@@ -1,5 +1,6 @@
 package com.aofei.kettle.job.steps;
 
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.App;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
@@ -26,7 +27,7 @@ import java.util.List;
 public class JobEntryTrans extends AbstractJobEntry {
 
 	@Override
-	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		org.pentaho.di.job.entries.trans.JobEntryTrans jobEntryTrans = (org.pentaho.di.job.entries.trans.JobEntryTrans) jobEntry;
 
 		String specification_method = cell.getAttribute("specification_method");

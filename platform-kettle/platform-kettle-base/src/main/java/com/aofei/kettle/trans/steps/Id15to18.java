@@ -21,7 +21,7 @@ import java.util.List;
 public class Id15to18 extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		ReflectUtils.set(stepMetaInterface, "fieldToUse", cell.getAttribute("fieldToUse"));
 		ReflectUtils.set(stepMetaInterface, "resultField", cell.getAttribute("resultField"));
 	}

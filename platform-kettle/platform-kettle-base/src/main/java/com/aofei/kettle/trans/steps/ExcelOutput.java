@@ -5,6 +5,7 @@ import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.UserUtils;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.Const;
@@ -25,11 +26,11 @@ import java.util.List;
 public class ExcelOutput extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		ExcelOutputMeta excelOutputMeta = (ExcelOutputMeta) stepMetaInterface;
 
 		// file tab
-		excelOutputMeta.setFileName(cell.getAttribute("file_name"));
+		excelOutputMeta.setFileName(UserUtils.decodePath(user, cell.getAttribute("file_name")));
 		excelOutputMeta.setCreateParentFolder("Y".equalsIgnoreCase(cell.getAttribute("create_parent_folder")));
 		excelOutputMeta.setDoNotOpenNewFileInit("Y".equalsIgnoreCase(cell.getAttribute("do_not_open_newfile_init")));
 		excelOutputMeta.setExtension(cell.getAttribute("file_extention"));
@@ -100,7 +101,7 @@ public class ExcelOutput extends AbstractStep {
 		ExcelOutputMeta excelOutputMeta = (ExcelOutputMeta) stepMetaInterface;
 
 		// file tab
-		e.setAttribute("file_name", excelOutputMeta.getFileName());
+		e.setAttribute("file_name", UserUtils.encodePath(user, excelOutputMeta.getFileName()));
 		e.setAttribute("create_parent_folder", excelOutputMeta.isCreateParentFolder() ? "Y" : "N");
 		e.setAttribute("do_not_open_newfile_init", excelOutputMeta.isDoNotOpenNewFileInit() ? "Y" : "N");
 		e.setAttribute("file_extention", excelOutputMeta.getExtension());

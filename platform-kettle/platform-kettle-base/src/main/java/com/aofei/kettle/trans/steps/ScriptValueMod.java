@@ -28,7 +28,7 @@ import java.util.List;
 public class ScriptValueMod extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		ScriptValuesMetaMod scriptValuesMetaMod = (ScriptValuesMetaMod) stepMetaInterface;
 
 		scriptValuesMetaMod.setCompatible("Y".equalsIgnoreCase(cell.getAttribute("compatible")));

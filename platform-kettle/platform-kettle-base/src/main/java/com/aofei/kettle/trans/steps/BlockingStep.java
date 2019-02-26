@@ -22,7 +22,7 @@ import java.util.List;
 public class BlockingStep extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		BlockingStepMeta bsm = (BlockingStepMeta) stepMetaInterface;
 		bsm.setPassAllRows("Y".equalsIgnoreCase(cell.getAttribute("pass_all_rows")));
 		bsm.setDirectory(cell.getAttribute("directory"));

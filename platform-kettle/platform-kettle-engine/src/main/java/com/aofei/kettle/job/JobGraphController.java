@@ -63,9 +63,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/engineXml")
-	protected void engineXml(@RequestParam String graphXml) throws Exception {
+	protected void engineXml(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
 		
 		JsonUtils.responseXml(xml);
@@ -78,9 +78,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/database")
-	protected void database(@RequestParam String graphXml, String name) throws Exception {
+	protected void database(@RequestParam String graphXml, String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		DatabaseMeta databaseMeta = jobMeta.findDatabase(name);
 		if(databaseMeta == null)
@@ -96,9 +96,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/entries")
-	protected void entries(@RequestParam String graphXml) throws Exception {
+	protected void entries(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		JSONArray jsonArray = new JSONArray();
 		for (int i = 0; i < jobMeta.getJobCopies().size(); i++) {
 			JobEntryCopy copy = jobMeta.getJobCopies().get(i);
@@ -117,9 +117,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/getSQL")
-	protected void getSQL(@RequestParam String graphXml) throws Exception {
+	protected void getSQL(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		GetJobSQLProgress getJobSQLProgress = new GetJobSQLProgress(jobMeta);
 		List<SQLStatement> stats = getJobSQLProgress.run();
@@ -151,7 +151,7 @@ public class JobGraphController {
 	@RequestMapping(method=RequestMethod.POST, value="/save")
 	protected void save(@CurrentUser CurrentUserResponse user, @RequestParam String graphXml) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(StringEscapeHelper.decode(graphXml));
+		JobMeta jobMeta = (JobMeta) codec.decode(StringEscapeHelper.decode(graphXml), user);
 		Repository repository = App.getInstance().getRepository();
 		ObjectId existingId = repository.getJobId( jobMeta.getName(), jobMeta.getRepositoryDirectory() );
 		if(jobMeta.getCreatedDate() == null)
@@ -189,9 +189,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/newJobEntry")
-	protected void newJobEntry(@RequestParam String graphXml, @RequestParam String pluginId, @RequestParam String name) throws Exception {
+	protected void newJobEntry(@RequestParam String graphXml, @RequestParam String pluginId, @RequestParam String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		PluginRegistry registry = PluginRegistry.getInstance();
 		PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, pluginId);
@@ -250,9 +250,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/newHop")
-	protected void newHop(@RequestParam String graphXml, @RequestParam String fromLabel, @RequestParam String toLabel) throws Exception {
+	protected void newHop(@RequestParam String graphXml, @RequestParam String fromLabel, @RequestParam String toLabel, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		JobEntryCopy fr = jobMeta.findJobEntry(URLDecoder.decode(fromLabel, "utf-8"));
 		JobEntryCopy to = jobMeta.findJobEntry(URLDecoder.decode(toLabel, "utf-8"));
@@ -263,9 +263,9 @@ public class JobGraphController {
 	
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/ftptest")
-	protected void ftpputtest(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void ftpputtest(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		String info = "";
@@ -365,9 +365,9 @@ public class JobGraphController {
 	
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/ftpdirtest")
-	protected void ftpputtestremotedir(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void ftpputtestremotedir(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		String servername = "";
@@ -460,9 +460,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/initRun")
-	protected void initRun(@RequestParam String graphXml) throws Exception {
+	protected void initRun(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		JobExecutionConfiguration executionConfiguration = App.getInstance().getJobExecutionConfiguration();
 		
@@ -504,9 +504,9 @@ public class JobGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/run")
-	protected void run(@RequestParam String graphXml, @RequestParam String executionConfiguration) throws Exception {
+	protected void run(@RequestParam String graphXml, @RequestParam String executionConfiguration, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		
 		JSONObject jsonObject = JSONObject.fromObject(executionConfiguration);
 		JobExecutionConfiguration jobExecutionConfiguration = JobExecutionConfigurationCodec.decode(jsonObject, jobMeta);

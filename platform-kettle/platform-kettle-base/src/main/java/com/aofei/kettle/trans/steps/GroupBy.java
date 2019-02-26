@@ -24,7 +24,7 @@ import com.mxgraph.util.mxUtils;
 public class GroupBy extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		GroupByMeta groupByMeta = (GroupByMeta) stepMetaInterface;
 		groupByMeta.setPassAllRows("Y".equalsIgnoreCase(cell.getAttribute("all_rows")));
 		groupByMeta.setDirectory(cell.getAttribute("directory"));

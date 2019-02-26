@@ -21,7 +21,7 @@ import java.util.List;
 public class SampleRows extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		SampleRowsMeta sampleRowsMeta = (SampleRowsMeta) stepMetaInterface;
 		sampleRowsMeta.setLinesRange(cell.getAttribute("linesrange"));
 		sampleRowsMeta.setLineNumberField(cell.getAttribute("linenumfield"));

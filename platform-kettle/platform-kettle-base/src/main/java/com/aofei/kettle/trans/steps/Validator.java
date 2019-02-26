@@ -27,7 +27,7 @@ import java.util.List;
 public class Validator extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		ValidatorMeta validatorMeta = (ValidatorMeta) stepMetaInterface;
 
 		validatorMeta.setValidatingAll("Y".equalsIgnoreCase(cell.getAttribute("validate_all")));

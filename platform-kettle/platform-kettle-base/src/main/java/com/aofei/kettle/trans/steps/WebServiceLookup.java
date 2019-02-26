@@ -1,5 +1,6 @@
 package com.aofei.kettle.trans.steps;
 
+import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
@@ -26,7 +27,7 @@ import java.util.List;
 public class WebServiceLookup extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		WebServiceMeta webServiceMeta = (WebServiceMeta) stepMetaInterface;
 
 		webServiceMeta.setUrl(cell.getAttribute("wsUrl"));

@@ -79,6 +79,8 @@ public class TransDebugExecutor implements Runnable {
 	public long getErrCount() {
 		return errCount;
 	}
+	
+	private int startLineNr = 0;
 
 	@Override
 	public void run() {
@@ -104,6 +106,7 @@ public class TransDebugExecutor implements Runnable {
 	          args[i] = arguments.get( argumentName );
 	        }
 	        boolean initialized = false;
+	        startLineNr = KettleLogStore.getLastBufferLineNr();
 	        trans = new Trans( transMeta );
 	        
 	        trans.setPreview(true);
@@ -286,16 +289,21 @@ public class TransDebugExecutor implements Runnable {
 	public String getExecutionLog() throws Exception {
 		
 		if(executionConfiguration.isExecutingLocally()) {
-			StringBuffer sb = new StringBuffer();
-			KettleLogLayout logLayout = new KettleLogLayout( true );
-			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( trans.getLogChannelId() );
-			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
-			 for ( int i = 0; i < logLines.size(); i++ ) {
-	             KettleLoggingEvent event = logLines.get( i );
-	             String line = logLayout.format( event ).trim();
-	             sb.append(line).append("\n");
-			 }
-			 return sb.toString();
+			String loggingText = KettleLogStore.getAppender().getBuffer(
+			          trans.getLogChannel().getLogChannelId(), false, startLineNr, KettleLogStore.getLastBufferLineNr() ).toString();
+			return loggingText;
+			
+			
+//			StringBuffer sb = new StringBuffer();
+//			KettleLogLayout logLayout = new KettleLogLayout( true );
+//			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( trans.getLogChannelId() );
+//			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
+//			 for ( int i = 0; i < logLines.size(); i++ ) {
+//	             KettleLoggingEvent event = logLines.get( i );
+//	             String line = logLayout.format( event ).trim();
+//	             sb.append(line).append("\n");
+//			 }
+//			 return sb.toString();
     	}
 		
 		return "";

@@ -2,6 +2,7 @@ package com.aofei.kettle.job.steps;
 
 import java.util.List;
 
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -20,7 +21,7 @@ import com.mxgraph.util.mxUtils;
 public class JobEntrySuccess extends AbstractJobEntry{
 
 	@Override
-	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore)
+	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user)
 			throws Exception {
 		// TODO Auto-generated method stub
 		org.pentaho.di.job.entries.success.JobEntrySuccess jobEntrySuccess = (org.pentaho.di.job.entries.success.JobEntrySuccess) jobEntry;

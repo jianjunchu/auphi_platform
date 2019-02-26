@@ -22,7 +22,7 @@ import com.mxgraph.util.mxUtils;
 public class Abort extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		AbortMeta abortMeta = (AbortMeta) stepMetaInterface;
 		abortMeta.setRowThreshold(cell.getAttribute("row_threshold"));
 		abortMeta.setMessage(cell.getAttribute("message"));

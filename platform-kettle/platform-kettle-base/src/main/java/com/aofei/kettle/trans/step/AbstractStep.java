@@ -18,7 +18,7 @@ import java.util.List;
 public abstract class AbstractStep implements StepEncoder, StepDecoder {
 
 	@Override
-	public StepMeta decodeStep(mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public StepMeta decodeStep(mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		String stepid = cell.getAttribute("ctype");
 	    String stepname = cell.getAttribute("label");
 
@@ -27,7 +27,7 @@ public abstract class AbstractStep implements StepEncoder, StepDecoder {
 	    StepMetaInterface stepMetaInterface = (StepMetaInterface) registry.loadClass( sp );
 
 	    if(stepMetaInterface != null) {
-	    	decode(stepMetaInterface, cell, databases, metaStore);
+	    	decode(stepMetaInterface, cell, databases, metaStore, user);
 
 	    	StepMeta stepMeta = new StepMeta(stepid, stepname, stepMetaInterface);
 	    	 /* Handle info general to all step types... */
@@ -118,7 +118,7 @@ public abstract class AbstractStep implements StepEncoder, StepDecoder {
 		return e;
 	}
 
-	public abstract void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception;
+	public abstract void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception;
 	public abstract Element encode(StepMetaInterface stepMetaInterface, CurrentUserResponse user) throws Exception;
 
 }

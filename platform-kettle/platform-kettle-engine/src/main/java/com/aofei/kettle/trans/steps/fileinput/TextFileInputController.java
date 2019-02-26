@@ -1,5 +1,7 @@
 package com.aofei.kettle.trans.steps.fileinput;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
 import io.swagger.annotations.Api;
@@ -55,9 +57,9 @@ public class TextFileInputController {
 		@ApiImplicitParam(name = "stepName", value = "环节名称", paramType="query", dataType = "string")
 	})
 	@RequestMapping(method=RequestMethod.POST, value="/fields")
-	protected @ResponseBody List fields(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected @ResponseBody List fields(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = transMeta.findStep(stepName);
 		TextFileInputMeta meta = (TextFileInputMeta) stepMeta.getStepMetaInterface();
 

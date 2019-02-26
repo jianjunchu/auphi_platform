@@ -24,7 +24,7 @@ import java.util.List;
 public class Denormaliser extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		DenormaliserMeta denormaliserMeta = (DenormaliserMeta) stepMetaInterface;
 
 		denormaliserMeta.setKeyField(cell.getAttribute("key_field"));

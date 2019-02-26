@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
 import com.aofei.kettle.utils.JSONArray;
@@ -24,7 +25,7 @@ import com.mxgraph.util.mxUtils;
 public class JobEntryMail extends AbstractJobEntry {
 
 	@Override
-	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		org.pentaho.di.job.entries.mail.JobEntryMail jem = (org.pentaho.di.job.entries.mail.JobEntryMail) jobEntry;
 		
 		//address

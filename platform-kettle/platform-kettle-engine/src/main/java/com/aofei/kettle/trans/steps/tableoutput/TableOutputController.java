@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
 import com.aofei.kettle.utils.JsonUtils;
@@ -43,9 +45,9 @@ public class TableOutputController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/generateSQL")
-	protected void generateSQL(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void generateSQL(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		StepMeta stepMeta = transMeta.findStep( URLDecoder.decode(stepName, "utf-8") );
 		TableOutputMeta info = (TableOutputMeta) stepMeta.getStepMetaInterface();

@@ -1,5 +1,7 @@
 package com.aofei.kettle.job.entries.sftp;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
 import com.aofei.kettle.utils.JsonUtils;
@@ -29,9 +31,9 @@ public class SftpController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/test")
-	protected void sftptest(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void sftptest(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		JobEntrySFTP sftp = (JobEntrySFTP) jobEntryCopy.getEntry();
@@ -82,9 +84,9 @@ public class SftpController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/testdir")
-	protected void sftpdirtest(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void sftpdirtest(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(graphXml);
+		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		JobEntrySFTP sftp = (JobEntrySFTP) jobEntryCopy.getEntry();

@@ -3,6 +3,8 @@ package com.aofei.kettle.job.steps;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -22,7 +24,7 @@ public class JobEntrySimpleEval extends AbstractJobEntry{
 
 	@Override
 	public void decode(JobEntryInterface jobEntry, mxCell cell,
-			List<DatabaseMeta> databases, IMetaStore metaStore)
+			List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user)
 			throws Exception {
 		org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval jobEntrySimpleEval = (org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval) jobEntry;
 

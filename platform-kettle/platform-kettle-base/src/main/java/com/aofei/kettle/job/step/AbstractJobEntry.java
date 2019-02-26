@@ -12,12 +12,14 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Element;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.mxgraph.model.mxCell;
 
 public abstract class AbstractJobEntry implements JobEntryEncoder, JobEntryDecoder {
 
 	@Override
-	public JobEntryCopy decodeStep(mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public JobEntryCopy decodeStep(mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		String stepid = cell.getAttribute("ctype");
 	    String stepname = cell.getAttribute("label");
 
@@ -26,7 +28,7 @@ public abstract class AbstractJobEntry implements JobEntryEncoder, JobEntryDecod
 		JobEntryInterface entry = registry.loadClass(jobPlugin, JobEntryInterface.class);
 
 		if(entry != null) {
-			decode(entry, cell, databases, metaStore);
+			decode(entry, cell, databases, metaStore, user);
 			// System.out.println("New JobEntryInterface built of type:
 			// "+entry.getTypeDesc());
 			if (jobPlugin != null) {
@@ -67,7 +69,7 @@ public abstract class AbstractJobEntry implements JobEntryEncoder, JobEntryDecod
 		return e;
 	}
 
-	public abstract void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception;
+	public abstract void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, @CurrentUser CurrentUserResponse user) throws Exception;
 	public abstract Element encode(JobEntryInterface jobEntry) throws Exception;
 
 }

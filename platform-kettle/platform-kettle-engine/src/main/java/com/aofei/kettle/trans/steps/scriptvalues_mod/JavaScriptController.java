@@ -55,9 +55,9 @@ public class JavaScriptController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/tree")
-	protected List tree(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected List tree(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = transMeta.findStep(stepName);
 		ScriptValuesMetaMod input = (ScriptValuesMetaMod) stepMeta.getStepMetaInterface();
 
@@ -172,9 +172,9 @@ public class JavaScriptController {
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/getVariables")
-	protected void getVariables(@RequestParam String graphXml, @RequestParam String stepName,  @RequestParam String scriptName) throws Exception {
+	protected void getVariables(@RequestParam String graphXml, @RequestParam String stepName,  @RequestParam String scriptName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		ScriptValuesMetaMod input = (ScriptValuesMetaMod) transMeta.findStep(stepName).getStepMetaInterface();
 
 		Context jscx = ContextFactory.getGlobal().enterContext();
@@ -351,7 +351,7 @@ public class JavaScriptController {
 	@RequestMapping(method = RequestMethod.POST, value = "/testData")
 	protected void testData(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 
 		RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepName).clone();
 		if (rowMeta != null) {
@@ -427,9 +427,9 @@ public class JavaScriptController {
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/test")
-	protected void test(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam String rowGenerator) throws Exception {
+	protected void test(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam String rowGenerator, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta scriptStep = transMeta.findStep(stepName);
 
 		Document doc = mxUtils.parseXml(rowGenerator);
@@ -437,7 +437,7 @@ public class JavaScriptController {
 		RowGenerator rg = (RowGenerator) PluginFactory.getBean("RowGenerator");
 		mxCell cell = new mxCell(doc.getDocumentElement());
 		cell.setGeometry(new mxGeometry(0, 0, 40, 40));
-		StepMeta genStep = rg.decodeStep(cell, null, null);
+		StepMeta genStep = rg.decodeStep(cell, null, null, user);
 		RowGeneratorMeta genMeta = (RowGeneratorMeta) genStep.getStepMetaInterface();
 
 		// Create a hop between both steps...

@@ -29,7 +29,7 @@ public class TextFileInput extends AbstractStep {
 
 	@Override
 	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases,
-					   IMetaStore metaStore) throws Exception {
+					   IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		TextFileInputMeta textFileInputMeta = (TextFileInputMeta) stepMetaInterface;
 
 		// file tab

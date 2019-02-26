@@ -1,5 +1,7 @@
 package com.aofei.kettle.trans.steps.webservices;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
 import io.swagger.annotations.Api;
@@ -34,11 +36,11 @@ public class WebServiceController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/loadWsdl")
-	public List loadWebService(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	public List loadWebService(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		ArrayList list = new ArrayList();
 
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = transMeta.findStep(stepName);
 
 		WebServiceMeta webServiceMeta = (WebServiceMeta) stepMeta.getStepMetaInterface();
@@ -86,14 +88,14 @@ public class WebServiceController {
 	})
 	@ResponseBody
 	@RequestMapping("/loadOperation")
-	public WsOperationInfo loadOperation(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	public WsOperationInfo loadOperation(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 //		HashMap operationInfo = new HashMap();
 		WsOperationInfo operationInfo = new WsOperationInfo();
 
 		Class PKG = WebServiceMeta.class;
 
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(URLDecoder.decode(graphXml, "utf-8"));
+		TransMeta transMeta = (TransMeta) codec.decode(URLDecoder.decode(graphXml, "utf-8"), user);
 		StepMeta stepMeta = transMeta.findStep(stepName);
 
 		WebServiceMeta webServiceMeta = (WebServiceMeta) stepMeta.getStepMetaInterface();

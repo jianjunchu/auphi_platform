@@ -1,5 +1,7 @@
 package com.aofei.kettle.trans.steps.userdefinedjavaclass;
 
+import com.aofei.base.annotation.CurrentUser;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
 import com.aofei.kettle.utils.NodeUtils;
@@ -35,9 +37,9 @@ public class JavaClassController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/tree")
-	protected List tree(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected List tree(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = transMeta.findStep(stepName);
 
 		Class PKG = UserDefinedJavaClassMeta.class;

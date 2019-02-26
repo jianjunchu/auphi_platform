@@ -5,6 +5,7 @@ import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.UserUtils;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.Const;
@@ -26,10 +27,11 @@ import java.util.List;
 public class TextFileOutput extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		TextFileOutputMeta textFileOutputMeta = (TextFileOutputMeta) stepMetaInterface;
 
-		textFileOutputMeta.setFilename(cell.getAttribute("file_name"));
+		textFileOutputMeta.setFilename(UserUtils.decodePath(user, cell.getAttribute("file_name")));
+		
 		//TODO is_command
 		//textFileOutputMeta.setFileAsCommand("Y".equalsIgnoreCase(cell.getAttribute("is_command")));
 		textFileOutputMeta.setServletOutput("Y".equalsIgnoreCase(cell.getAttribute("servlet_output")));
@@ -90,7 +92,7 @@ public class TextFileOutput extends AbstractStep {
 		Document doc = mxUtils.createDocument();
 		Element e = doc.createElement(PropsUI.TRANS_STEP_NAME);
 
-		e.setAttribute("file_name", textFileOutputMeta.getFileName());
+		e.setAttribute("file_name", UserUtils.encodePath(user, textFileOutputMeta.getFileName()));
 		//TODO is_command
 		//e.setAttribute("is_command", textFileOutputMeta.isFileAsCommand() ? "Y" : "N");
 		e.setAttribute("servlet_output", textFileOutputMeta.isServletOutput() ? "Y" : "N");

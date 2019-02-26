@@ -24,15 +24,15 @@ import java.util.List;
 public class MergeJoin extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		MergeJoinMeta mergeJoinMeta = (MergeJoinMeta) stepMetaInterface;
 
 		List<StreamInterface> infoStreams = mergeJoinMeta.getStepIOMeta().getInfoStreams();
 		StreamInterface referenceStream = infoStreams.get(0);
 		StreamInterface compareStream = infoStreams.get(1);
 
-		compareStream.setSubject(cell.getAttribute("step1"));
-		referenceStream.setSubject(cell.getAttribute("step2"));
+		referenceStream.setSubject(cell.getAttribute("step1"));
+		compareStream.setSubject(cell.getAttribute("step2"));
 
 		mergeJoinMeta.setJoinType(cell.getAttribute("join_type"));
 
@@ -61,11 +61,15 @@ public class MergeJoin extends AbstractStep {
 		Element e = doc.createElement(PropsUI.TRANS_STEP_NAME);
 		MergeJoinMeta mergeJoinMeta = (MergeJoinMeta) stepMetaInterface;
 
-		e.setAttribute("join_type", mergeJoinMeta.getJoinType());
+		
 		List<StreamInterface> infoStreams = mergeJoinMeta.getStepIOMeta().getInfoStreams();
-		e.setAttribute("step1", infoStreams.get(0).getStepname());
-		e.setAttribute("step2", infoStreams.get(1).getStepname());
+		StreamInterface referenceStream = infoStreams.get(0);
+		StreamInterface compareStream = infoStreams.get(1);
+		
+		e.setAttribute("step1", referenceStream.getStepname());
+		e.setAttribute("step2", compareStream.getStepname());
 
+		e.setAttribute("join_type", mergeJoinMeta.getJoinType());
 		JSONArray jsonArray = new JSONArray();
 		String[] keyFields1 = mergeJoinMeta.getKeyFields1();
 		for(int j=0; j<keyFields1.length; j++) {

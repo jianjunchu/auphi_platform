@@ -21,7 +21,7 @@ import java.util.List;
 public class MailValidator extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		MailValidatorMeta mailValidatorMeta = (MailValidatorMeta) stepMetaInterface;
 		mailValidatorMeta.setEmailField(cell.getAttribute("emailfield"));
 		mailValidatorMeta.setSMTPCheck("Y".equalsIgnoreCase(cell.getAttribute("smtpCheck")));

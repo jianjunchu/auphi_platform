@@ -2,6 +2,7 @@ package com.aofei.kettle.job.steps;
 
 import java.util.List;
 
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.App;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
@@ -24,7 +25,7 @@ import com.mxgraph.util.mxUtils;
 @Scope("prototype")
 public class JobEntryWaitForSQL extends AbstractJobEntry {
 	@Override
-	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(JobEntryInterface jobEntry, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL  jobEntryWaitForSQL = (org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL) jobEntry;
 		//一般---服务器设置
 		jobEntryWaitForSQL.customSQL=(StringEscapeHelper.decode(cell.getAttribute("customSQL")));

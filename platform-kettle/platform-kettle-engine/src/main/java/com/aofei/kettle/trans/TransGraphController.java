@@ -43,7 +43,6 @@ import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Element;
@@ -66,9 +65,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/engineXml")
-	protected void engineXml(HttpServletRequest request, HttpServletResponse response, @RequestParam String graphXml) throws Exception {
+	protected void engineXml(HttpServletRequest request, HttpServletResponse response, @RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		AbstractMeta transMeta = codec.decode(graphXml);
+		AbstractMeta transMeta = codec.decode(graphXml, user);
 		String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
 		
 		response.setContentType("text/html; charset=utf-8");
@@ -82,9 +81,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/database")
-	protected void database(@RequestParam String graphXml, String name) throws Exception {
+	protected void database(@RequestParam String graphXml, String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml,user);
 		
 		DatabaseMeta databaseMeta = transMeta.findDatabase(name);
 		if(databaseMeta == null)
@@ -100,9 +99,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/save")
-	protected void save(HttpServletRequest request, HttpServletResponse response, @CurrentUser CurrentUserResponse user, @RequestParam String graphXml) throws Exception {
+	protected void save(HttpServletRequest request, HttpServletResponse response, @RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		AbstractMeta transMeta = codec.decode(StringEscapeHelper.decode(graphXml));
+		AbstractMeta transMeta = codec.decode(StringEscapeHelper.decode(graphXml), user);
 		Repository repository = App.getInstance().getRepository();
 		ObjectId existingId = repository.getTransformationID( transMeta.getName(), transMeta.getRepositoryDirectory() );
 		if(transMeta.getCreatedDate() == null)
@@ -139,9 +138,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/check")
-	protected void check(@RequestParam String graphXml, @RequestParam boolean show_successful_results) throws Exception {
+	protected void check(@RequestParam String graphXml, @RequestParam boolean show_successful_results, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		ArrayList<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
 		transMeta.checkSteps(remarks, false, null, transMeta, App.getInstance().getRepository(), App.getInstance().getMetaStore() );
@@ -172,13 +171,13 @@ public class TransGraphController {
 	
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/initPreview")
-	protected void initPreview(@RequestParam String graphXml, @RequestParam String selectedCells) throws Exception {
+	protected void initPreview(@RequestParam String graphXml, @RequestParam String selectedCells, @CurrentUser CurrentUserResponse user) throws Exception {
 		JSONArray cells = JSONArray.fromObject(URLDecoder.decode(selectedCells, "utf-8"));
 		HashSet hs = new HashSet();
 		hs.addAll(cells);
 		
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		transMeta.setRepository(App.getInstance().getRepository());
 		transMeta.setMetaStore(App.getInstance().getMetaStore());
 		
@@ -216,9 +215,9 @@ public class TransGraphController {
 	
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/preview")
-	protected void preview(@RequestParam String graphXml, @RequestParam String selectedCells) throws Exception {
+	protected void preview(@RequestParam String graphXml, @RequestParam String selectedCells, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		transMeta.setRepository(App.getInstance().getRepository());
 		transMeta.setMetaStore(App.getInstance().getMetaStore());
 		
@@ -365,9 +364,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/initRun")
-	protected void initRun(@RequestParam String graphXml) throws Exception {
+	protected void initRun(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		transMeta.setRepository(App.getInstance().getRepository());
 		transMeta.setMetaStore(App.getInstance().getMetaStore());
 		
@@ -420,9 +419,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/run")
-	protected void run(@RequestParam String graphXml, @RequestParam String executionConfiguration) throws Exception {
+	protected void run(@RequestParam String graphXml, @RequestParam String executionConfiguration, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		JSONObject jsonObject = JSONObject.fromObject(executionConfiguration);
 		TransExecutionConfiguration transExecutionConfiguration = TransExecutionConfigurationCodec.decode(jsonObject, transMeta);
@@ -476,7 +475,7 @@ public class TransGraphController {
 	@RequestMapping(method=RequestMethod.POST, value="/newStep")
 	protected void newStep(@RequestParam String graphXml, @RequestParam String pluginId, @RequestParam String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 	    if ( transMeta.findStep( name ) != null ) {
 	      int i = 2;
@@ -533,9 +532,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/nextSteps")
-	protected void nextSteps(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void nextSteps(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		JSONArray jsonArray = new JSONArray();
 		StepMeta stepinfo = transMeta.findStep( URLDecoder.decode(stepName, "utf-8") );
@@ -556,9 +555,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/previousSteps")
-	protected void previousSteps(@RequestParam String graphXml, @RequestParam String stepName) throws Exception {
+	protected void previousSteps(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		JSONArray jsonArray = new JSONArray();
 		StepMeta stepinfo = transMeta.findStep( URLDecoder.decode(stepName, "utf-8") );
@@ -578,9 +577,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/getSQL")
-	protected void getSQL(@RequestParam String graphXml) throws Exception {
+	protected void getSQL(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		
 		GetSQLProgress getSQLProgress = new GetSQLProgress(transMeta);
 		List<SQLStatement> stats = getSQLProgress.run();
@@ -610,36 +609,41 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/inputOutputFields")
-	protected void inputOutputFields(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam boolean before) throws Exception {
-		stepName = StringEscapeHelper.decode(stepName);
-		
-		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
-		
-		StepMeta stepMeta = getStep(transMeta, stepName);
-		SearchFieldsProgress op = new SearchFieldsProgress( transMeta, stepMeta, before );
-		op.run();
-		RowMetaInterface rowMetaInterface = op.getFields();
-		
-		JSONArray jsonArray = new JSONArray();
-		for (int i = 0; i < rowMetaInterface.size(); i++) {
-			ValueMetaInterface v = rowMetaInterface.getValueMeta(i);
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("name", v.getName());
-			jsonObject.put("type", v.getTypeDesc());
-			jsonObject.put("length", v.getLength() < 0 ? "-" : "" + v.getLength());
-			jsonObject.put("precision", v.getPrecision() < 0 ? "-" : "" + v.getPrecision());
-			jsonObject.put("origin", Const.NVL(v.getOrigin(), ""));
-			jsonObject.put("storageType", ValueMeta.getStorageTypeCode(v.getStorageType()));
-			jsonObject.put("conversionMask", Const.NVL(v.getConversionMask(), ""));
-			jsonObject.put("currencySymbol", Const.NVL(v.getCurrencySymbol(), ""));
-			jsonObject.put("decimalSymbol", Const.NVL(v.getDecimalSymbol(), ""));
-			jsonObject.put("groupingSymbol", Const.NVL(v.getGroupingSymbol(), ""));
-			jsonObject.put("trimType", ValueMeta.getTrimTypeDesc(v.getTrimType()));
-			jsonObject.put("comments", Const.NVL(v.getComments(), ""));
-			jsonArray.add(jsonObject);
+	protected void inputOutputFields(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam boolean before, @CurrentUser CurrentUserResponse user) throws Exception {
+		try {
+			stepName = StringEscapeHelper.decode(stepName);
+			
+			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
+			TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
+			
+			StepMeta stepMeta = getStep(transMeta, stepName);
+			SearchFieldsProgress op = new SearchFieldsProgress( transMeta, stepMeta, before );
+			op.run();
+			RowMetaInterface rowMetaInterface = op.getFields();
+			
+			JSONArray jsonArray = new JSONArray();
+			for (int i = 0; i < rowMetaInterface.size(); i++) {
+				ValueMetaInterface v = rowMetaInterface.getValueMeta(i);
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("name", v.getName());
+				jsonObject.put("type", v.getTypeDesc());
+				jsonObject.put("length", v.getLength() < 0 ? "-" : "" + v.getLength());
+				jsonObject.put("precision", v.getPrecision() < 0 ? "-" : "" + v.getPrecision());
+				jsonObject.put("origin", Const.NVL(v.getOrigin(), ""));
+				jsonObject.put("storageType", ValueMeta.getStorageTypeCode(v.getStorageType()));
+				jsonObject.put("conversionMask", Const.NVL(v.getConversionMask(), ""));
+				jsonObject.put("currencySymbol", Const.NVL(v.getCurrencySymbol(), ""));
+				jsonObject.put("decimalSymbol", Const.NVL(v.getDecimalSymbol(), ""));
+				jsonObject.put("groupingSymbol", Const.NVL(v.getGroupingSymbol(), ""));
+				jsonObject.put("trimType", ValueMeta.getTrimTypeDesc(v.getTrimType()));
+				jsonObject.put("comments", Const.NVL(v.getComments(), ""));
+				jsonArray.add(jsonObject);
+			}
+			JsonUtils.response(jsonArray);
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
-		JsonUtils.response(jsonArray);
 	}
 	
 	public StepMeta getStep(TransMeta transMeta, String label) {
@@ -661,9 +665,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/tableFields")
-	protected void tableFields(@RequestParam String graphXml, @RequestParam String databaseName, @RequestParam String schema, @RequestParam String table) throws Exception {
+	protected void tableFields(@RequestParam String graphXml, @RequestParam String databaseName, @RequestParam String schema, @RequestParam String table, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		DatabaseMeta inf = transMeta.findDatabase(databaseName);
 		
 		Database db = new Database( loggingObject, inf );
@@ -692,9 +696,9 @@ public class TransGraphController {
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/previewData")
-	protected void previewData(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam int rowLimit) throws Exception {
+	protected void previewData(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam int rowLimit, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		TransMeta transMeta = (TransMeta) codec.decode(graphXml);
+		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = getStep(transMeta, stepName);
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, stepMeta.getStepMetaInterface(), stepName );
 		TransPreviewProgress progresser = new TransPreviewProgress(previewMeta, new String[] {stepName }, new int[] { rowLimit } );

@@ -22,7 +22,7 @@ import java.util.List;
 public class Delay extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		DelayMeta delayMeta = (DelayMeta) stepMetaInterface;
 		delayMeta.setTimeOut(cell.getAttribute("timeout"));
 		delayMeta.setScaleTimeCode(Const.toInt(cell.getAttribute("scaletime"), 1));

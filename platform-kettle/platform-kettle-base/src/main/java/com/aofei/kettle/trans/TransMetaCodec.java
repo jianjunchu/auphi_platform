@@ -291,7 +291,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 	}
 
 	@Override
-	public AbstractMeta decode(String graphXml) throws Exception {
+	public AbstractMeta decode(String graphXml, CurrentUserResponse user) throws Exception {
 		mxGraph graph = new mxGraph();
 		mxCodec codec = new mxCodec();
 		Document doc = mxUtils.parseXml(graphXml);
@@ -320,7 +320,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				Element e = (Element) cell.getValue();
 				if(PropsUI.TRANS_STEP_NAME.equals(e.getTagName())) {
 					StepDecoder stepDecoder = (StepDecoder) PluginFactory.getBean(cell.getAttribute("ctype"));
-					StepMeta stepMeta = stepDecoder.decodeStep(cell, transMeta.getDatabases(), transMeta.getMetaStore());
+					StepMeta stepMeta = stepDecoder.decodeStep(cell, transMeta.getDatabases(), transMeta.getMetaStore(), user);
 					
 					stepMeta.setParentTransMeta( transMeta );
 					if (stepMeta.isMissing()) {

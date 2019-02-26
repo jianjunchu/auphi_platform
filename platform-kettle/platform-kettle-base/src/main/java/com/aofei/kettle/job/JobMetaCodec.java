@@ -100,7 +100,7 @@ public class JobMetaCodec extends BaseGraphCodec {
 	}
 
 	@Override
-	public AbstractMeta decode(String graphXml) throws Exception {
+	public AbstractMeta decode(String graphXml, CurrentUserResponse user) throws Exception {
 		mxGraph graph = new mxGraph();
 		mxCodec codec = new mxCodec();
 		Document doc = mxUtils.parseXml(graphXml);
@@ -126,7 +126,7 @@ public class JobMetaCodec extends BaseGraphCodec {
 				Element e = (Element) cell.getValue();
 				if(PropsUI.JOB_JOBENTRY_NAME.equals(e.getTagName())) {
 					JobEntryDecoder jobEntryDecoder = (JobEntryDecoder) PluginFactory.getBean(cell.getAttribute("ctype"));
-					JobEntryCopy je = jobEntryDecoder.decodeStep(cell, jobMeta.getDatabases(), jobMeta.getMetaStore());
+					JobEntryCopy je = jobEntryDecoder.decodeStep(cell, jobMeta.getDatabases(), jobMeta.getMetaStore(), user);
 					if (je.isSpecial() && je.isMissing()) {
 						jobMeta.addMissingEntry((MissingEntry) je.getEntry());
 					}

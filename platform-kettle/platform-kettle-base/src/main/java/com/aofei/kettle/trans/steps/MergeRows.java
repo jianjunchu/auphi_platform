@@ -24,7 +24,7 @@ import java.util.List;
 public class MergeRows extends AbstractStep {
 
 	@Override
-	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore) throws Exception {
+	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		MergeRowsMeta mergeRowsMeta = (MergeRowsMeta) stepMetaInterface;
 
 		List<StreamInterface> infoStreams = mergeRowsMeta.getStepIOMeta().getInfoStreams();
