@@ -33,9 +33,9 @@ public class LogJobStep extends Model<LogJobStep> {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "LOG_JOB_STEP_ID", type = IdType.ID_WORKER)
-    private String logJobStepId;
+    private Long logJobStepId;
     @TableField("LOG_JOB_ID")
-    private String logJobId;
+    private Long logJobId;
     @TableField("CHANNEL_ID")
     private String channelId;
     @TableField("LOG_DATE")

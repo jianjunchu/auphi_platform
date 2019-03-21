@@ -37,7 +37,7 @@ public class JobLogTimerTask extends TimerTask {
                 if(first){
                     first = false;
                     logJobSteps = new ArrayList<>();
-                    logJob.setJobConfigId(Long.valueOf(jobExecutor.getJob().getObjectId().getId()));
+                    logJob.setJobConfigId(Long.valueOf(jobExecutor.getJobMeta().getObjectId().getId()));
 
                     logJob.insertAllColumn();
 
@@ -91,6 +91,7 @@ public class JobLogTimerTask extends TimerTask {
             }
 
         }catch (Exception e){
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
 

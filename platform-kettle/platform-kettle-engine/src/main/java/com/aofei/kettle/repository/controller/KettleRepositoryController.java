@@ -677,15 +677,15 @@ public class KettleRepositoryController extends BaseController {
 		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
 		RepositoryDirectoryInterface dir = repository.findDirectory(root);
 
-		RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerName());
+		//RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerName());
 
 		List<RepositoryCascaderVO> childs = getCascaderChildren(repository,dir);
-		if(!childs.isEmpty()){
+		/*if(!childs.isEmpty()){
 			repositoryCascaderVO.setChildren(childs);
 			list.add(repositoryCascaderVO);
-		}
+		}*/
 
-		return Response.ok(list);
+		return Response.ok(childs);
 
 	}
 

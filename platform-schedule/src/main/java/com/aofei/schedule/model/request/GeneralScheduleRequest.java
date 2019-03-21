@@ -85,6 +85,9 @@ public class GeneralScheduleRequest extends BaseRequest {
     @ApiModelProperty(value = "执行的转换或者作业path")
     private String filePath;
 
+    @ApiModelProperty(hidden = true)
+    private String absoluteFilePath;
+
     @ApiModelProperty(value = "TRANSFORMATION or JOB")
     private String fileType;
 

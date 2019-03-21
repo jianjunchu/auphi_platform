@@ -130,6 +130,7 @@ public class DiskFileController extends BaseController {
         long total = DiskFileUtil.getTotalSizeOfFilesInDir(new File(userPath));
 
         String path = ServletRequestUtils.getStringParameter(request,"path", userPath);
+
         if(StringUtils.isEmpty(path) || "/".equalsIgnoreCase(path)){
             path = userPath;
         }else{

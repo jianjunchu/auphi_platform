@@ -138,7 +138,6 @@ public class AccountController extends BaseController {
             //存储到redis
             //tokenManager.createRelationship(user.getUsername(), accessToken);
 
-
             return Response.ok(token);
         } else {
             throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), SystemError.LOGIN_FAILED.getMessage());

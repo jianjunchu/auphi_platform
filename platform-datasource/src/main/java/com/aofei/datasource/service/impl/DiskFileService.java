@@ -34,9 +34,14 @@ public class DiskFileService implements IDiskFileService {
     @Override
     public List<DiskFileResponse> getFileExplorer(DiskFileRequest request)  {
         List<DiskFileResponse> list = new LinkedList<>();
+        String userPath = Const.getUserDir(request.getOrganizerId());
         String path = request.getPath();
-        if(StringUtils.isEmpty(path)){
+        if(StringUtils.isEmpty(path) || "/".equalsIgnoreCase(path) ){
             path = Const.getUserDir(request.getOrganizerId());
+        }else{
+            if(!path.startsWith(userPath)){
+                path = userPath + path;
+            }
         }
         logger.info("path==>"+path);
         File[] files = new File(path).listFiles();

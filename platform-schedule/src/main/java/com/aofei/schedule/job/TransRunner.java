@@ -38,7 +38,7 @@ public class TransRunner extends QuartzJobBean {
             GeneralScheduleRequest request = JSON.parseObject(json,GeneralScheduleRequest.class);
 
 
-			String dir = request.getFilePath();
+			String dir = request.getAbsoluteFilePath();
 			String name = request.getFile();
 
 
@@ -75,7 +75,7 @@ public class TransRunner extends QuartzJobBean {
 			executionConfiguration.getUsedVariables( transMeta );
 			executionConfiguration.getUsedArguments(transMeta, App.getInstance().getArguments());
 			executionConfiguration.setReplayDate( null );
-			executionConfiguration.setRepository( App.getInstance().getRepository() );
+			executionConfiguration.setRepository( repository );
 			executionConfiguration.setSafeModeEnabled( false );
 
 			executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );

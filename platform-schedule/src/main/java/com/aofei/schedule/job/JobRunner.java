@@ -33,8 +33,10 @@ public class JobRunner extends QuartzJobBean {
 
 			GeneralScheduleRequest request = JSON.parseObject(json,GeneralScheduleRequest.class);
 
-			String dir = request.getFilePath();
+			String dir = request.getAbsoluteFilePath();
 			String name = request.getFile();
+
+
 
 
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
@@ -58,7 +60,7 @@ public class JobRunner extends QuartzJobBean {
 			executionConfiguration.setVariables( variableMap );
 			executionConfiguration.getUsedVariables( jobMeta );
 			executionConfiguration.setReplayDate( null );
-			executionConfiguration.setRepository( App.getInstance().getRepository() );
+			executionConfiguration.setRepository( repository );
 			executionConfiguration.setSafeModeEnabled( false );
 			executionConfiguration.setStartCopyName( null );
 			executionConfiguration.setStartCopyNr( 0 );
@@ -82,9 +84,9 @@ public class JobRunner extends QuartzJobBean {
 			logJob.setStatus("start");
 			logJob.setQrtzJobGroup(context.getJobDetail().getKey().getGroup());
 			logJob.setQrtzJobName(context.getJobDetail().getKey().getName());
-			logJob.setJobName(jobExecutor.getJob().getName());
+			logJob.setJobName(jobExecutor.getJobMeta().getName());
 			logJob.setChannelId(jobExecutor.getExecutionId());
-			logJob.setJobCnName(jobExecutor.getJob().getName());
+			logJob.setJobCnName(jobExecutor.getJobMeta().getName());
 
 			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
 			Timer logTimer = new Timer();

@@ -8,6 +8,7 @@ import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
+import com.aofei.kettle.utils.UserUtils;
 import com.aofei.schedule.job.JobRunner;
 import com.aofei.schedule.job.TransRunner;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
@@ -118,7 +119,7 @@ public class CycleScheduleController extends BaseController {
         }
         request.setUsername(user.getUsername());
         request.setOrganizerId(user.getOrganizerId());
-
+        request.setAbsoluteFilePath(Const.getUserPath(user.getOrganizerId(),request.getFilePath()));
 
         quartzService.create(request ,quartzExecuteClass);
 
@@ -170,6 +171,8 @@ public class CycleScheduleController extends BaseController {
         }else if("TRANSFORMATION".equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = TransRunner.class;
         }
+        request.setAbsoluteFilePath(Const.getUserPath(user.getOrganizerId(),request.getFilePath()));
+
         quartzService.update(request, quartzExecuteClass);
 
         return Response.ok(true) ;

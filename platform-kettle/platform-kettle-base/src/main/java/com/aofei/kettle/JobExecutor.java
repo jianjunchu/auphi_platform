@@ -326,5 +326,12 @@ public JSONArray getStepStatus() throws Exception {
 	public Job getJob() {
 		return job;
 	}
-	
+
+	public JobMeta getJobMeta() {
+		return jobMeta;
+	}
+
+	public void setJobMeta(JobMeta jobMeta) {
+		this.jobMeta = jobMeta;
+	}
 }
