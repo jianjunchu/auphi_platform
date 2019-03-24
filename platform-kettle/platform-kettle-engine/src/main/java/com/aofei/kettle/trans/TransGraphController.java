@@ -697,6 +697,7 @@ public class TransGraphController {
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/previewData")
 	protected void previewData(@RequestParam String graphXml, @RequestParam String stepName, @RequestParam int rowLimit, @CurrentUser CurrentUserResponse user) throws Exception {
+		try {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
 		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
 		StepMeta stepMeta = getStep(transMeta, stepName);
@@ -794,7 +795,9 @@ public class TransGraphController {
 			
 			JsonUtils.response(jsonObject);
 		}
-		
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("TransGraphController", LoggingObjectType.TRANSMETA, null );

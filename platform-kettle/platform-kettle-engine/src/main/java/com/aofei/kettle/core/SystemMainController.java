@@ -138,8 +138,8 @@ public class SystemMainController {
 					JSONObject child = new JSONObject();
 					child.put("text", i18n(locale, pluginName));
 					child.put("pluginId", p.getIds()[0]);
-					child.put("icon", SvgImageUrl.getMiddleUrl(p));
-					child.put("dragIcon", SvgImageUrl.getUrl(p));
+					child.put("icon", SvgImageUrl.getMiddleUrl(p.getIds()[0]));
+					child.put("dragIcon", SvgImageUrl.getUrl(p.getIds()[0]));
 					child.put("qtip", pluginDescription);
 					children.add(child);
 				}

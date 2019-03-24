@@ -18,6 +18,7 @@ import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import com.aofei.utils.StringUtils;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxUtils;
 
@@ -52,6 +53,9 @@ public class StreamLookup extends AbstractStep {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 			value[i] = jsonObject.optString("name");
 			valueName[i] = jsonObject.optString("rename");
+			if(valueName[i] == null || StringUtils.isBlank(valueName[i]))
+				valueName[i] = value[i];
+			
 			valueDefault[i] = jsonObject.optString("default");
 			valueDefaultType[i] = ValueMetaFactory.getIdForValueMeta( jsonObject.optString("type") );
 		}
@@ -94,7 +98,10 @@ public class StreamLookup extends AbstractStep {
 		for (int i=0; i<value.length; i++) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("name", value[i]);
-			jsonObject.put("rename", valueName[i]);
+			if(!StringUtils.isBlank(valueName[i]) && !valueName[i].equals(value[i]))
+				jsonObject.put("rename", valueName[i]);
+			else
+				jsonObject.put("rename", "");
 			jsonObject.put("default", valueDefault[i]);
 			jsonObject.put("type", ValueMetaFactory.getValueMetaName(valueDefaultType[i]));
 			jsonArray.add(jsonObject);

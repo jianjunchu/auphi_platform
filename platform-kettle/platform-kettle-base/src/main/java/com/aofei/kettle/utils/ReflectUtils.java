@@ -90,6 +90,18 @@ public class ReflectUtils {
 		return null;
 	}
 	
+	public static Object callStatic(Class clazz, String method, Object... value) throws Exception {
+		
+		Method[] methods = clazz.getDeclaredMethods();
+		for (Method m : methods) {
+			if(method.equals(m.getName())) {
+				return m.invoke(null, value);
+			}
+			
+		}
+		return null;
+	}
+	
 	public static Object getEnumName(Object obj) throws Exception {
 		
 		Method[] methods = obj.getClass().getMethods();

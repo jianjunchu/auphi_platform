@@ -125,13 +125,21 @@ public class KettleUIController {
 		if(sp != null) {
 			StepMetaInterface stepMetaInterface = PluginRegistry.getInstance().loadClass(sp, StepMetaInterface.class);
 			cl = stepMetaInterface.getClass().getClassLoader();
+			
+			BufferedImage image = StepImageManager.getUniversalImage(cl, sp.getImageFile(), scale);
+			
+			response.setContentType("image/png");
+			ImageIO.write(image, "PNG", response.getOutputStream());
+			response.getOutputStream().flush();
+		} else {
+			BufferedImage image = StepImageManager.getUniversalImage(cl, "ui/images/" + name + ".svg", scale);
+			
+			response.setContentType("image/png");
+			ImageIO.write(image, "PNG", response.getOutputStream());
+			response.getOutputStream().flush();
+			
 		}
-
-		BufferedImage image = StepImageManager.getUniversalImage(cl, "ui/images/" + name + ".svg", scale);
-
-		response.setContentType("image/png");
-		ImageIO.write(image, "PNG", response.getOutputStream());
-		response.getOutputStream().flush();
+		
 	}
 
 	@ApiOperation(value = "将kettle的图片转成css", httpMethod = "POST")
