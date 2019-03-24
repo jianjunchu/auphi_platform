@@ -60,6 +60,8 @@ public class JobExecutor implements Runnable {
 	
 	private boolean finished = false;
 	private long errCount = 0;
+	
+	private int startLineNr = 0;
 
 	@Override
 	public void run() {
@@ -78,6 +80,7 @@ public class JobExecutor implements Runnable {
 				 SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject( "SPOON", LoggingObjectType.SPOON, null );
 			     spoonLoggingObject.setContainerObjectId( executionId );
 			     spoonLoggingObject.setLogLevel( executionConfiguration.getLogLevel() );
+			     startLineNr = KettleLogStore.getLastBufferLineNr();
 			     job = new Job( App.getInstance().getRepository(), jobMeta, spoonLoggingObject );
 				
 				job.setLogLevel(executionConfiguration.getLogLevel());
@@ -241,16 +244,20 @@ public class JobExecutor implements Runnable {
 	
 	public String getExecutionLog() throws Exception {
 		if(executionConfiguration.isExecutingLocally()) {
-			StringBuffer sb = new StringBuffer();
-			KettleLogLayout logLayout = new KettleLogLayout( true );
-			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( job.getLogChannelId() );
-			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
-			 for ( int i = 0; i < logLines.size(); i++ ) {
-	             KettleLoggingEvent event = logLines.get( i );
-	             String line = logLayout.format( event ).trim();
-	             sb.append(line).append("\n");
-			 }
-			 return sb.toString();
+//			StringBuffer sb = new StringBuffer();
+//			KettleLogLayout logLayout = new KettleLogLayout( true );
+//			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( job.getLogChannelId() );
+//			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
+//			 for ( int i = 0; i < logLines.size(); i++ ) {
+//	             KettleLoggingEvent event = logLines.get( i );
+//	             String line = logLayout.format( event ).trim();
+//	             sb.append(line).append("\n");
+//			 }
+//			 return sb.toString();
+			
+			String loggingText = KettleLogStore.getAppender().getBuffer(
+			          job.getLogChannel().getLogChannelId(), false, startLineNr, KettleLogStore.getLastBufferLineNr() ).toString();
+			return loggingText;
     	} else {
     		SlaveServer remoteSlaveServer = executionConfiguration.getRemoteServer();
 			SlaveServerJobStatus jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), carteObjectId, 0);
