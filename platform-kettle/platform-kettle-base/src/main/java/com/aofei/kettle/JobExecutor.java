@@ -80,7 +80,7 @@ public class JobExecutor implements Runnable {
 				 SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject( "SPOON", LoggingObjectType.SPOON, null );
 			     spoonLoggingObject.setContainerObjectId( executionId );
 			     spoonLoggingObject.setLogLevel( executionConfiguration.getLogLevel() );
-			     startLineNr = KettleLogStore.getLastBufferLineNr();
+				 startLineNr = KettleLogStore.getLastBufferLineNr();
 			     job = new Job( App.getInstance().getRepository(), jobMeta, spoonLoggingObject );
 				
 				job.setLogLevel(executionConfiguration.getLogLevel());
@@ -244,17 +244,17 @@ public class JobExecutor implements Runnable {
 	
 	public String getExecutionLog() throws Exception {
 		if(executionConfiguration.isExecutingLocally()) {
-//			StringBuffer sb = new StringBuffer();
-//			KettleLogLayout logLayout = new KettleLogLayout( true );
-//			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( job.getLogChannelId() );
-//			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
-//			 for ( int i = 0; i < logLines.size(); i++ ) {
-//	             KettleLoggingEvent event = logLines.get( i );
-//	             String line = logLayout.format( event ).trim();
-//	             sb.append(line).append("\n");
-//			 }
-//			 return sb.toString();
-			
+			/**StringBuffer sb = new StringBuffer();
+			KettleLogLayout logLayout = new KettleLogLayout( true );
+			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( job.getLogChannelId() );
+			List<KettleLoggingEvent> logLines = KettleLogStore.getLogBufferFromTo( childIds, true, -1, KettleLogStore.getLastBufferLineNr() );
+			 for ( int i = 0; i < logLines.size(); i++ ) {
+	             KettleLoggingEvent event = logLines.get( i );
+	             String line = logLayout.format( event ).trim();
+	             sb.append(line).append("\n");
+			 }
+			 return sb.toString();*/
+			 
 			String loggingText = KettleLogStore.getAppender().getBuffer(
 			          job.getLogChannel().getLogChannelId(), false, startLineNr, KettleLogStore.getLastBufferLineNr() ).toString();
 			return loggingText;
@@ -266,7 +266,7 @@ public class JobExecutor implements Runnable {
 		
 	}
 	
-public JSONArray getStepStatus() throws Exception {
+	public JSONArray getStepStatus() throws Exception {
 		
 		JSONArray jsonArray = new JSONArray();
 		if(executionConfiguration.isExecutingLocally()) {
@@ -333,5 +333,12 @@ public JSONArray getStepStatus() throws Exception {
 	public Job getJob() {
 		return job;
 	}
-	
+
+	public JobMeta getJobMeta() {
+		return jobMeta;
+	}
+
+	public void setJobMeta(JobMeta jobMeta) {
+		this.jobMeta = jobMeta;
+	}
 }
