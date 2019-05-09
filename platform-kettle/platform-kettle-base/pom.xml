@@ -10,10 +10,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>platform-kettle-base</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
-
+		<dependency>
+  <groupId>com.aliyun.oss</groupId>
+  <artifactId>aliyun-sdk-oss</artifactId>
+  <version>2.8.3</version>
+</dependency>
 
     </dependencies>
 
