@@ -39,8 +39,7 @@ import java.util.List;
 @Service
 public class UserService extends BaseService<UserMapper, User> implements IUserService {
 
-    @Value("#{propertiesReader['disk.root.dir']}")
-    private String rootDir  ; //磁盘根目录
+
 
     /**
      * 更新用户登录信息

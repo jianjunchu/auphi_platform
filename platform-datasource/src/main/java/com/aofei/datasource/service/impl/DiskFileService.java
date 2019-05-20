@@ -28,8 +28,7 @@ public class DiskFileService implements IDiskFileService {
 
     private Logger logger = LoggerFactory.getLogger(DiskFileService.class);
 
-    @Value("#{propertiesReader['disk.root.dir']}")
-    private String rootDir  ; //磁盘根目录
+
 
     @Override
     public List<DiskFileResponse> getFileExplorer(DiskFileRequest request)  {

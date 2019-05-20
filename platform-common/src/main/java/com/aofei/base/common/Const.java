@@ -23,7 +23,7 @@ public class Const {
     /**
      * 属性文件加载对象
      */
-    private static PropertiesLoader loader = new PropertiesLoader("config/application.properties");
+    private static PropertiesLoader loader = new PropertiesLoader("config/application.properties","config/db.properties");
 
     /** session中存放的用户key*/
     public final static String SESSION_USER = "user";
@@ -66,7 +66,17 @@ public class Const {
 
     public static String getUserDir(Long organizerId){
 
-        return getConfig("disk.root.dir")+ File.separator +organizerId;
+        String path = System.getProperty("catalina.home")+File.separator +"disk"+ File.separator +organizerId;
+        File file = new File(path);
+        if(!file.exists()){
+            file.mkdir();
+        }
+
+        System.out.println(file.getAbsolutePath());
+
+       return  file.getAbsolutePath();
+
+        //return getConfig("disk.root.dir")+ File.separator +organizerId;
     }
 
 
