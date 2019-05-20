@@ -961,6 +961,17 @@
       <version>10.1</version>
     </dependency>
 
+      <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+          <version>2.5</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.servlet.jsp</groupId>
+          <artifactId>jsp-api</artifactId>
+          <version>2.1</version>
+      </dependency>
+
   </dependencies>
   
   <build>
@@ -980,26 +991,28 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-      <plugin>    
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>   
-        <executions>    
-          <execution>    
-            <id>unpack</id>    
-            <phase>generate-resources</phase>    
-            <goals>    
-                <goal>unpack-dependencies</goal>    
-            </goals>    
-            <configuration>    
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-resources</phase>
+            <goals>
+                <goal>unpack-dependencies</goal>
+            </goals>
+            <!--
+            <configuration>
               <includeGroupIds>org.pentaho</includeGroupIds>
               <includeArtifactIds>pentaho-big-data-plugin</includeArtifactIds>
               <version>5.0.1</version>
               <type>zip</type>
-              <outputDirectory>${project.basedir}/WebContent/plugins</outputDirectory>    
-              <includes>*/**</includes>    
-            </configuration>    
-          </execution>    
-        </executions>    
+              <outputDirectory>${project.basedir}/WebContent/plugins</outputDirectory>
+              <includes>*/**</includes>
+            </configuration>
+            -->
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>

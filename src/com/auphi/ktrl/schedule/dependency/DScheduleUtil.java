@@ -701,7 +701,7 @@ public class DScheduleUtil
 	public static PageList findJobFullnames(int page, String jobgroup, String job_class_name,
 			 String order,String orderby,String search_text,String trigger_state)
 	{
-		String querySQL = "SELECT distinct a.JOB_NAME,a.JOB_GROUP FROM QRTZ_JOB_DETAILS  a left join qrtz_triggers b  "
+		String querySQL = "SELECT distinct a.JOB_NAME,a.JOB_GROUP,NEXT_FIRE_TIME FROM QRTZ_JOB_DETAILS  a left join qrtz_triggers b  "
 				+ "on a.job_name =b.job_name WHERE 1=1 " ;
 		
 		String condition = "" ;

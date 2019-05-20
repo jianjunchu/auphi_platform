@@ -573,4 +573,8 @@ public class KettleEngineImpl2_3 implements KettleEngine {
 		return null;
 	}
 
+	@Override
+	public String stopRunningForcely(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean){
+		return null;
+	}
 }

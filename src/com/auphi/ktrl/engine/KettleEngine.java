@@ -209,6 +209,16 @@ public interface KettleEngine {
 	 * @return
 	 */
 	public String stopRunning(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean);
+
+	/**
+	 * stop the job and trans by kill thread.
+	 * @param repName
+	 * @param fileType
+	 * @param actionPath
+	 * @param actionRef
+	 * @return
+	 */
+	public String stopRunningForcely(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean);
 	
 	public Object getRepFromDatabase(String repName, String username, String password) throws Exception;
 }

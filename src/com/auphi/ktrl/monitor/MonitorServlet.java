@@ -53,7 +53,7 @@ import com.auphi.ktrl.util.StringUtil;
  */
 public class MonitorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
 	private static Logger logger = Logger.getLogger(MonitorServlet.class);
     /**
      * @see HttpServlet#HttpServlet()
@@ -327,7 +327,24 @@ public class MonitorServlet extends HttpServlet {
 			}
 			
 			response.sendRedirect("monitor?action=list&orderby=" + orderby + "&order=" + order + "&search_start_date=" + search_start_date + "&search_end_date=" + search_end_date + "&search_text=" + URLEncoder.encode(search_text, "UTF-8") + "&jobName=" + URLEncoder.encode(jobName, "UTF-8"));
-		}else if("clear".equals(action)){//monitor list
+		}else if("stopRunningForcely".equals(action)){
+			String checked_id = request.getParameter("checked_id")==null?"":request.getParameter("checked_id");
+			for(String monitorId : checked_id.split(",")){
+				MonitorScheduleBean monitorBean = MonitorUtil.getMonitorData(monitorId);
+				jobName =  monitorBean.getJobName();
+
+				System.out.println("========jobName="+jobName);
+				ScheduleBean scheduleBean = ScheduleUtil.getScheduleBeanByJobName(jobName, String.valueOf(userBean.getOrgId()));
+				String actionPath = scheduleBean.getActionPath();
+				String actionRef = scheduleBean.getActionRef();
+				String repName = scheduleBean.getRepName();
+				String fileType = scheduleBean.getFileType();
+				KettleEngine kettleEngine = new KettleEngineImpl4_3();
+				kettleEngine.stopRunningForcely(repName, fileType, actionPath, actionRef, monitorBean);
+			}
+			response.sendRedirect("monitor?action=list&orderby=" + orderby + "&order=" + order + "&search_start_date=" + search_start_date + "&search_end_date=" + search_end_date + "&search_text=" + URLEncoder.encode(search_text, "UTF-8") + "&jobName=" + URLEncoder.encode(jobName, "UTF-8"));
+		}
+		else if("clear".equals(action)){//monitor list
 			try{
 				String clear_date = request.getParameter("clear_date")==null?"":request.getParameter("clear_date");
 				

@@ -42,6 +42,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.trans.TransMeta;
 import org.quartz.JobDetail;
 
 import com.alibaba.fastjson.JSON;
@@ -69,7 +70,9 @@ public class KettleEngineImpl4_3 implements KettleEngine {
     
     private static List<Object> activeTrans = new ArrayList<Object>();
     private static List<Object> activeJobs = new ArrayList<Object>();
-    
+//    private static HashMap<Object,Thread> activeTransThreads= new HashMap<Object,Thread>();
+//    private static HashMap<Object,Thread> activeJobThreads= new HashMap<Object,Thread>();
+
     public static void init() {
         try {
             //init environment
@@ -419,8 +422,6 @@ public class KettleEngineImpl4_3 implements KettleEngine {
     /**
      * get connected repository
      * @param repName
-     * @param username
-     * @param password
      * @return
      * @throws Exception
      */
@@ -498,7 +499,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Class<?> transClass = Class.forName("org.pentaho.di.trans.Trans", true, classLoaderUtil);
             Constructor<?> transConstructor = transClass.getConstructor(transMetaClass);
             trans = transConstructor.newInstance(transMeta);
-            
+
             if(EXECTYPE_LOCAL == execType){
             	Class<?> simpleLoggingObjectClass = Class.forName("org.pentaho.di.core.logging.SimpleLoggingObject", true, classLoaderUtil);
             	Class<?> loggingObjectTypeClass = Class.forName("org.pentaho.di.core.logging.LoggingObjectType", true, classLoaderUtil);
@@ -531,14 +532,31 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 
                 //add to active 
                 activeTrans.add(trans);
-                
-                Method startThreads = transClass.getDeclaredMethod("startThreads");
-                startThreads.invoke(trans);
-                Method waitUntilFinished = transClass.getDeclaredMethod("waitUntilFinished");
-                waitUntilFinished.invoke(trans);
-                
-                //remove from active
-                activeTrans.remove(trans);
+//                Method startThreads = transClass.getDeclaredMethod("startThreads");
+//                startThreads.invoke(trans);
+//                Method waitUntilFinished = transClass.getDeclaredMethod("waitUntilFinished");
+//                waitUntilFinished.invoke(trans);
+
+                //run trans in thread
+                final Object trans1 = trans;
+                Thread thread  = new Thread()
+                {
+                    public void run()
+                    {
+                        try {
+                            Method startThreads = transClass.getDeclaredMethod("startThreads");
+                            startThreads.invoke(trans1);
+                            Method waitUntilFinished = transClass.getDeclaredMethod("waitUntilFinished");
+                            waitUntilFinished.invoke(trans1);
+                            //remove from active
+                            activeTrans.remove(trans1);
+                        }catch(Exception e){e.printStackTrace();}
+                    }
+                };
+                thread.start();
+//                activeTransThreads.put(trans,thread);
+//                //remove from active
+//                activeTrans.remove(trans);
                 
                 //log write
                 logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Finished", new Object[0]});
@@ -648,7 +666,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), transExcutionConfigClass, repositoryClass);
                 sendToSlaveServer.invoke(trans, transMeta, transExcutionConfig, rep);
-                
+
                 success = true;
             }
         } catch (Exception e) {
@@ -659,7 +677,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
 //            
 //            logger.error(e.getMessage(), e);
 //            MonitorUtil.updateMonitorAfterError(monitor_id, errMsg);
-            
+
             status = MonitorUtil.STATUS_ERROR;
             throw e;
         } finally {
@@ -738,17 +756,41 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 beginProcessing.invoke(job);
 //                Method getBatchId = jobClass.getDeclaredMethod("getBatchId");
 //                int batchId = getBatchId.invoke(job)==null?-1:((Long)getBatchId.invoke(job)).intValue();
-//                
+//
 //                MonitorUtil.updateMonitorInLocalRun(monitor_id, batchId);
-                
+
                 MonitorUtil.updateMonitorInLocalRun(monitor_id, logChannelId);
-                
+
                 Class<?> threadClass = Class.forName("java.lang.Thread", true, classLoaderUtil);
                 Method start_job = threadClass.getDeclaredMethod("start");
                 start_job.invoke(job);
                 Method waitUntilFinished = jobClass.getDeclaredMethod("waitUntilFinished");
                 waitUntilFinished.invoke(job);
-                
+
+                //run job in thread
+//                final Object job1 = job;
+//                String logChannelId1 = logChannelId;
+//                Thread thread  = new Thread()
+//                {
+//                    public void run()
+//                    {
+//                        try {
+//                                Method beginProcessing = jobClass.getDeclaredMethod("beginProcessing");
+//                                beginProcessing.invoke(job1);
+//                                MonitorUtil.updateMonitorInLocalRun(monitor_id, logChannelId1);
+//
+//                                Class<?> threadClass = Class.forName("java.lang.Thread", true, classLoaderUtil);
+//                                Method start_job = threadClass.getDeclaredMethod("start");
+//                                start_job.invoke(job1);
+//                                Method waitUntilFinished = jobClass.getDeclaredMethod("waitUntilFinished");
+//                                waitUntilFinished.invoke(job1);
+//                                activeJobs.remove(job1);
+//                        }catch(Exception e){e.printStackTrace();}
+//                    }
+//                };
+//                thread.start();
+//                activeJobThreads.put(job,thread);
+
                 //remove from active
                 activeJobs.remove(job);
                 
@@ -2107,8 +2149,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
     
     /**
      * create instance of SlaveServer using platform slave configuration
-     * @param remoteServer
-     * @param ha
+     * @param slaveServerBean
      * @return
      * @throws Exception
      */
@@ -2310,32 +2351,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
     		if(fileType.equalsIgnoreCase(TYPE_TRANS)){
     			List<Object> stopTrans = new ArrayList<Object>();
                 //get trans status
-    			for(Object trans : activeTrans){
-    				//get trans repname,if equal continue
-    				Method getTransMeta = trans.getClass().getDeclaredMethod("getTransMeta");
-    				Object transMeta = getTransMeta.invoke(trans);
-    				Method getRepository = transMeta.getClass().getDeclaredMethod("getRepository");
-    				Object rep = getRepository.invoke(transMeta);
-    				Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-    				Method getRepName = repositoryClass.getDeclaredMethod("getName");
-    				String trans_repName = (String)getRepName.invoke(rep);
-    				if(trans_repName.equals(repName)){
-    					//get trans repDirectory,if equal continue
-    					Method getRepDict = transMeta.getClass().getDeclaredMethod("getRepositoryDirectory");
-    					Object repDict = getRepDict.invoke(transMeta);
-    					Class<?> repDictClass = Class.forName("org.pentaho.di.repository.RepositoryDirectoryInterface", true, classLoaderUtil);
-    					Method getDictName = repDictClass.getDeclaredMethod("getPath");
-    					String trans_dictName = (String)getDictName.invoke(repDict);
-    					if(trans_dictName.equals(actionPath)){
-    						//get trans name,if equal continue
-    						Method getTransName = trans.getClass().getDeclaredMethod("getName");
-    						String trans_name = (String)getTransName.invoke(trans);
-    						if(trans_name.equals(actionRef)){
-    							stopTrans.add(trans);
-    						}
-    					}
-    				}
-    			}
+                stopTrans = getStopTrans( repName,  fileType,  actionPath,  actionRef,  monitorBean);
     			for(Object stop_trans : stopTrans){
 					Method stopAll = stop_trans.getClass().getDeclaredMethod("stopAll");
 					stopAll.invoke(stop_trans);
@@ -2345,64 +2361,39 @@ public class KettleEngineImpl4_3 implements KettleEngine {
 					initialized.set(stop_trans, false);
 					Field halted = stop_trans.getClass().getDeclaredField("halted");
 					halted.set(stop_trans, false);
-					
-//					Method getBatchId = stop_trans.getClass().getDeclaredMethod("getBatchId");
-//                	batch_id = getBatchId.invoke(stop_trans)==null?-1:((Long)getBatchId.invoke(stop_trans)).intValue();
-//                	Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
-//                	monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED, 
-//                			monitorBean.getId_logchannel(), null, 0, batch_id);
-//                    if(stop_trans != null && activeTrans.contains(stop_trans)){
-//                    	activeTrans.remove(stop_trans);
-//                    }
+
+					//stop thread
+//                    if(activeTransThreads.get(stop_trans)!=null)
+//                        activeTransThreads.get(stop_trans).stop();
+
+					Method getBatchId = stop_trans.getClass().getDeclaredMethod("getBatchId");
+                	batch_id = getBatchId.invoke(stop_trans)==null?-1:((Long)getBatchId.invoke(stop_trans)).intValue();
+                	Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+                	monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED,
+                			monitorBean.getId_logchannel(), null, 0, batch_id);
+                    if(stop_trans != null && activeTrans.contains(stop_trans)){
+                    	activeTrans.remove(stop_trans);
+                    }
 				}
             }else if(fileType.equalsIgnoreCase(TYPE_JOB)){
                 //get job status
             	List<Object> stopJobs = new ArrayList<Object>();
-            	for(Object job : activeJobs){
-    				Method getRepository = job.getClass().getDeclaredMethod("getRep");
-    				Object rep = getRepository.invoke(job);
-    				Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-    				Method getRepName = repositoryClass.getDeclaredMethod("getName");
-    				String job_repName = (String)getRepName.invoke(rep);
-    				if(job_repName.equals(repName)){
-//    					//get job repDirectory,if equal continue
-    					Method getJobMeta = job.getClass().getDeclaredMethod("getJobMeta");
-        				Object jobMeta = getJobMeta.invoke(job);
-    					Method getRepDict = jobMeta.getClass().getDeclaredMethod("getRepositoryDirectory");
-    					Object repDict = getRepDict.invoke(jobMeta);
-    					Class<?> repDictClass = Class.forName("org.pentaho.di.repository.RepositoryDirectoryInterface", true, classLoaderUtil);
-    					Method getDictName = repDictClass.getDeclaredMethod("getPath");
-    					String job_dictName = (String)getDictName.invoke(repDict);
-    					if(job_dictName.equals(actionPath)){
-    						//get job name,if equal continue
-    						Method getJobName = job.getClass().getDeclaredMethod("getJobname");
-    						String job_name = (String)getJobName.invoke(job);
-    						if(job_name.equals(actionRef)){
-    							Method isActive = job.getClass().getDeclaredMethod("isActive");
-    							boolean active = (Boolean)isActive.invoke(job);
-    							Method isInitialized = job.getClass().getDeclaredMethod("isInitialized");
-    							boolean initialized = (Boolean)isInitialized.invoke(job);
-    							if (job != null && active && initialized) {
-    								stopJobs.add(job);
-    							}
-    						}
-    					}
-    				}
-            	}
+                stopJobs = getStopJobs(repName,  fileType,  actionPath,  actionRef,  monitorBean);
             	for(Object stopJob : stopJobs){
 					Method stopAll = stopJob.getClass().getDeclaredMethod("stopAll");
 					stopAll.invoke(stopJob);
 					Method waitUntilFinished = stopJob.getClass().getDeclaredMethod("waitUntilFinished", long.class);
 					// wait until everything is stopped, maximum 5 seconds...
 					waitUntilFinished.invoke(stopJob, 5000);
-//					Method getBatchId = stopJob.getClass().getDeclaredMethod("getBatchId");
-//                	batch_id = getBatchId.invoke(stopJob)==null?-1:((Long)getBatchId.invoke(stopJob)).intValue();
-//                	Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
-//                	monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED, 
-//                			monitorBean.getId_logchannel(), null, 0, batch_id);
-//                    if(stopJob != null && activeJobs.contains(stopJob)){
-//                    	activeJobs.remove(stopJob);
-//                    }
+
+					Method getBatchId = stopJob.getClass().getDeclaredMethod("getBatchId");
+                	batch_id = getBatchId.invoke(stopJob)==null?-1:((Long)getBatchId.invoke(stopJob)).intValue();
+                	Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+                	monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED,
+                			monitorBean.getId_logchannel(), null, 0, batch_id);
+                    if(stopJob != null && activeJobs.contains(stopJob)){
+                    	activeJobs.remove(stopJob);
+                    }
 				}
             }
     	}catch(Exception e){
@@ -2413,4 +2404,139 @@ public class KettleEngineImpl4_3 implements KettleEngine {
         }
     	return statusJSON.toString();
 	}
+
+    public String stopRunningForcely(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean){
+        StringBuffer statusJSON = new StringBuffer();
+        int batch_id = 0;
+        try{
+            if(fileType.equalsIgnoreCase(TYPE_TRANS)){
+                List<Object> stopTrans = new ArrayList<Object>();
+                //get trans status
+                stopTrans = getStopTrans( repName,  fileType,  actionPath,  actionRef, monitorBean);
+                for(Object stop_trans : stopTrans){
+                    Method stopAll = stop_trans.getClass().getDeclaredMethod("stopAllForcely");
+                    stopAll.invoke(stop_trans);
+                    Field running = stop_trans.getClass().getDeclaredField("running");
+                    running.set(stop_trans, false);
+                    Field initialized = stop_trans.getClass().getDeclaredField("initialized");
+                    initialized.set(stop_trans, false);
+                    Field halted = stop_trans.getClass().getDeclaredField("halted");
+                    halted.set(stop_trans, false);
+
+                    Method getBatchId = stop_trans.getClass().getDeclaredMethod("getBatchId");
+                    batch_id = getBatchId.invoke(stop_trans)==null?-1:((Long)getBatchId.invoke(stop_trans)).intValue();
+                    Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+                    monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED,
+                            monitorBean.getId_logchannel(), null, 0, batch_id);
+                    if(stop_trans != null && activeTrans.contains(stop_trans)){
+                        activeTrans.remove(stop_trans);
+                    }
+                }
+            }else if(fileType.equalsIgnoreCase(TYPE_JOB)){
+                //get job status
+                List<Object> stopJobs = new ArrayList<Object>();
+                stopJobs = getStopJobs(repName,  fileType,  actionPath,  actionRef,  monitorBean);
+                for(Object stopJob : stopJobs){
+                    Method stopAll = stopJob.getClass().getDeclaredMethod("stopAll");
+                    stopAll.invoke(stopJob);
+                    Method waitUntilFinished = stopJob.getClass().getDeclaredMethod("waitUntilFinished", long.class);
+                    // wait until everything is stopped, maximum 5 seconds...
+                    waitUntilFinished.invoke(stopJob, 5000);
+
+                    Method getBatchId = stopJob.getClass().getDeclaredMethod("getBatchId");
+                    batch_id = getBatchId.invoke(stopJob)==null?-1:((Long)getBatchId.invoke(stopJob)).intValue();
+                    Date start_date = StringUtil.StringToDate(monitorBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+                    monitor(monitorBean.getId(), start_date, MonitorUtil.STATUS_STOPPED,
+                            monitorBean.getId_logchannel(), null, 0, batch_id);
+                    if(stopJob != null && activeJobs.contains(stopJob)){
+                        activeJobs.remove(stopJob);
+                    }
+                }
+            }
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+        }
+        if(statusJSON.length() == 0){
+            statusJSON.append("{objs:[]}");
+        }
+        return statusJSON.toString();
+    }
+
+    public List getStopTrans(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean) {
+        List<Object> stopTrans = new ArrayList<Object>();
+        try {
+            for (Object trans : activeTrans) {
+                //get trans repname,if equal continue
+                Method getTransMeta = trans.getClass().getDeclaredMethod("getTransMeta");
+                Object transMeta = getTransMeta.invoke(trans);
+                Method getRepository = transMeta.getClass().getDeclaredMethod("getRepository");
+                Object rep = getRepository.invoke(transMeta);
+                Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
+                Method getRepName = repositoryClass.getDeclaredMethod("getName");
+                String trans_repName = (String) getRepName.invoke(rep);
+                if (trans_repName.equals(repName)) {
+                    //get trans repDirectory,if equal continue
+                    Method getRepDict = transMeta.getClass().getDeclaredMethod("getRepositoryDirectory");
+                    Object repDict = getRepDict.invoke(transMeta);
+                    Class<?> repDictClass = Class.forName("org.pentaho.di.repository.RepositoryDirectoryInterface", true, classLoaderUtil);
+                    Method getDictName = repDictClass.getDeclaredMethod("getPath");
+                    String trans_dictName = (String) getDictName.invoke(repDict);
+                    if (trans_dictName.equals(actionPath)) {
+                        //get trans name,if equal continue
+                        Method getTransName = trans.getClass().getDeclaredMethod("getName");
+                        String trans_name = (String) getTransName.invoke(trans);
+                        if (trans_name.equals(actionRef)) {
+                            stopTrans.add(trans);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return stopTrans;
+    }
+
+    public List getStopJobs(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean){
+    List<Object> stopJobs = new ArrayList<Object>();
+        try {
+            for (Object job : activeJobs) {
+                Method getRepository = job.getClass().getDeclaredMethod("getRep");
+                Object rep = getRepository.invoke(job);
+                Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
+                Method getRepName = repositoryClass.getDeclaredMethod("getName");
+                String job_repName = (String) getRepName.invoke(rep);
+                if (job_repName.equals(repName)) {
+//    					//get job repDirectory,if equal continue
+                    Method getJobMeta = job.getClass().getDeclaredMethod("getJobMeta");
+                    Object jobMeta = getJobMeta.invoke(job);
+                    Method getRepDict = jobMeta.getClass().getDeclaredMethod("getRepositoryDirectory");
+                    Object repDict = getRepDict.invoke(jobMeta);
+                    Class<?> repDictClass = Class.forName("org.pentaho.di.repository.RepositoryDirectoryInterface", true, classLoaderUtil);
+                    Method getDictName = repDictClass.getDeclaredMethod("getPath");
+                    String job_dictName = (String) getDictName.invoke(repDict);
+                    if (job_dictName.equals(actionPath)) {
+                        //get job name,if equal continue
+                        Method getJobName = job.getClass().getDeclaredMethod("getJobname");
+                        String job_name = (String) getJobName.invoke(job);
+                        if (job_name.equals(actionRef)) {
+                            Method isActive = job.getClass().getDeclaredMethod("isActive");
+                            boolean active = (Boolean) isActive.invoke(job);
+                            Method isInitialized = job.getClass().getDeclaredMethod("isInitialized");
+                            boolean initialized = (Boolean) isInitialized.invoke(job);
+                            if (job != null && active && initialized) {
+                                stopJobs.add(job);
+                            }
+                        }
+                    }
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return stopJobs;
+    }
+
 }
