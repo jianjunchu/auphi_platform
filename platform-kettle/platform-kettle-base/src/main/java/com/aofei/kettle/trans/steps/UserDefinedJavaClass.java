@@ -11,11 +11,8 @@ import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.*;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
 import org.pentaho.metastore.api.IMetaStore;
 import org.springframework.context.annotation.Scope;
@@ -88,10 +85,10 @@ public class UserDefinedJavaClass extends AbstractStep {
 		str = cell.getAttribute("info_steps");
 		if(StringUtils.hasText(str)) {
 			JSONArray jsonArray = JSONArray.fromObject(str);
-			ArrayList<StepDefinition> stepDefinitions = new ArrayList<StepDefinition>();
+			List<InfoStepDefinition> stepDefinitions = new ArrayList<InfoStepDefinition>();
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				StepDefinition stepDefinition = new StepDefinition();
+				InfoStepDefinition stepDefinition = new InfoStepDefinition();
 
 				stepDefinition.tag = jsonObject.optString("step_tag");
 				stepDefinition.stepName = jsonObject.optString("step_name");
@@ -106,10 +103,10 @@ public class UserDefinedJavaClass extends AbstractStep {
 		str = cell.getAttribute("target_steps");
 		if(StringUtils.hasText(str)) {
 			JSONArray jsonArray = JSONArray.fromObject(str);
-			ArrayList<StepDefinition> stepDefinitions = new ArrayList<StepDefinition>();
+			ArrayList<TargetStepDefinition> stepDefinitions = new ArrayList<TargetStepDefinition>();
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				StepDefinition stepDefinition = new StepDefinition();
+				TargetStepDefinition stepDefinition = new TargetStepDefinition();
 
 				stepDefinition.tag = jsonObject.optString("step_tag");
 				stepDefinition.stepName = jsonObject.optString("step_name");
@@ -170,7 +167,7 @@ public class UserDefinedJavaClass extends AbstractStep {
 		e.setAttribute("usage_parameters", jsonArray.toString());
 
 		jsonArray = new JSONArray();
-		List<StepDefinition> stepDefinitions = userDefinedJavaClassMeta.getInfoStepDefinitions();
+		List<InfoStepDefinition> stepDefinitions = userDefinedJavaClassMeta.getInfoStepDefinitions();
 		if(stepDefinitions != null) {
 			for(StepDefinition stepDefinition: stepDefinitions) {
 				JSONObject jsonObject = new JSONObject();
@@ -184,7 +181,7 @@ public class UserDefinedJavaClass extends AbstractStep {
 
 
 		jsonArray = new JSONArray();
-		List<StepDefinition> targetStepDefinitions = userDefinedJavaClassMeta.getTargetStepDefinitions();
+		List<TargetStepDefinition> targetStepDefinitions = userDefinedJavaClassMeta.getTargetStepDefinitions();
 		if(stepDefinitions != null) {
 			for(StepDefinition stepDefinition: targetStepDefinitions) {
 				JSONObject jsonObject = new JSONObject();

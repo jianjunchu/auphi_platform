@@ -391,12 +391,26 @@ public class KettleDatabaseController extends BaseController {
 		JSONObject result = new JSONObject();
 		
 		DatabaseMeta database = checkDatabase(databaseInfo, result);
+
 	    if(result.size() > 0) {
 			JsonUtils.fail(result.toString());
 			return;
 	    }
-	    
-	    RepositoriesMeta repositories = new RepositoriesMeta();
+
+		Repository repository = App.getInstance().getRepository();
+
+
+		DatabaseMeta previousMeta = repository.loadDatabaseMeta(repository.getDatabaseID(database.getName()),null);
+		if(previousMeta != null) {
+			repository.deleteDatabaseMeta(database.getName());
+			// repositories.removeDatabase(repositories.indexOfDatabase(previousMeta));
+		}
+		repository.save(database, Const.VERSION_COMMENT_EDIT_VERSION, null);
+
+		JsonUtils.success(database.getName());
+
+
+	    /*RepositoriesMeta repositories = new RepositoriesMeta();
 	    if(repositories.readData()) {
 	    	DatabaseMeta previousMeta = repositories.searchDatabase(database.getName());
 	    	if(previousMeta != null) {
@@ -404,9 +418,9 @@ public class KettleDatabaseController extends BaseController {
 	    	}
 	    	repositories.addDatabase( database );
 	    	repositories.writeData();
-	    	
+
 	    	JsonUtils.success(database.getName());
-	    }
+	    }*/
 	}
 	
 	@ApiOperation(value = "移除全局数据库信息", httpMethod = "POST")
@@ -417,9 +431,13 @@ public class KettleDatabaseController extends BaseController {
 	@RequestMapping(method=RequestMethod.POST, value="/remove")
 	public void remove(@RequestParam String databaseName) throws IOException, KettleException {
 		JSONObject result = new JSONObject();
-		
-	    
-	    RepositoriesMeta repositories = new RepositoriesMeta();
+
+		Repository repository = App.getInstance().getRepository();
+		repository.deleteDatabaseMeta(databaseName);
+
+		JsonUtils.success(result.toString());
+
+	    /*RepositoriesMeta repositories = new RepositoriesMeta();
 	    if(repositories.readData()) {
 	    	DatabaseMeta previousMeta = repositories.searchDatabase(databaseName);
 	    	if(previousMeta != null) {
@@ -428,8 +446,10 @@ public class KettleDatabaseController extends BaseController {
 	    	repositories.writeData();
 	    	
 	    	JsonUtils.success(result.toString());
-	    }
+	    }*/
 	}
+
+
 	
 	/**
 	 * 校验数据库环境，确定该数据库是否已经被初始化

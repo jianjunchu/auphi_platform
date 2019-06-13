@@ -18,12 +18,12 @@
     </modules>
 
     <properties>
-        <pentaho.version>9.0.0.0-SNAPSHOT</pentaho.version>
-        <commons-xul.version>9.0.0.0-SNAPSHOT</commons-xul.version>
-        <pentaho-metastore.version>9.0.0.0-SNAPSHOT</pentaho-metastore.version>
-        <pentaho-reporting.version>9.0.0.0-SNAPSHOT</pentaho-reporting.version>
-        <pentaho-hadoop-shims-api.version>9.0.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
-        <mondrian.version>9.0.0.0-SNAPSHOT</mondrian.version>
+        <pentaho.version>8.3.0.0-SNAPSHOT</pentaho.version>
+        <commons-xul.version>8.3.0.0-SNAPSHOT</commons-xul.version>
+        <pentaho-metastore.version>8.3.0.0-SNAPSHOT</pentaho-metastore.version>
+        <pentaho-reporting.version>8.3.0.0-SNAPSHOT</pentaho-reporting.version>
+        <pentaho-hadoop-shims-api.version>8.3.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
+        <mondrian.version>8.3.0.0-SNAPSHOT</mondrian.version>
         <encoder.version>1.2</encoder.version>
         <ftp4che.version>0.7.1</ftp4che.version>
     </properties>
@@ -39,15 +39,21 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>9.0.0.0-SNAPSHOT</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>9.0.0.0-SNAPSHOT</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -75,7 +81,7 @@
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>pentaho-platform-api</artifactId>
-            <version>9.0.0.0-SNAPSHOT</version>
+            <version>8.3.0.0-SNAPSHOT</version>
         </dependency>
 
 
