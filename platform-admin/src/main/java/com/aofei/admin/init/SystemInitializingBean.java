@@ -73,6 +73,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
     @Override
     public void afterPropertiesSet() throws Exception {
         long start = System.currentTimeMillis();
+
         logger.info("********************************************");
         logger.info("********北京傲飞商智软件有限公司****************");
         logger.info("********傲飞数据整合平台***********************");

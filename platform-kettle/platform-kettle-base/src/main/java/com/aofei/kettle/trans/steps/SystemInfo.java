@@ -38,7 +38,9 @@ public class SystemInfo extends AbstractStep {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
 
 				fieldName[i] = jsonObject.optString("name");
-				fieldType[i] = SystemDataMeta.getType( jsonObject.optString("type") );
+				//fieldType[i] = SystemDataMeta.getType( jsonObject.optString("type") );
+
+				fieldType[i] = SystemDataTypes.getTypeFromString(jsonObject.optString("type"));
 			}
 
 			systemDataMeta.setFieldName(fieldName);

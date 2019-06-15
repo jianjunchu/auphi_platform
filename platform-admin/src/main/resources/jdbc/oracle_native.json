@@ -55,7 +55,7 @@
 	text: "密码：",
 	style: "line-height:25px; padding-left: 5px"
 },{
-	xtype: "textfield",
+	xtype: "password",
 	name: "password",
 	anchor: "-5"
 }]

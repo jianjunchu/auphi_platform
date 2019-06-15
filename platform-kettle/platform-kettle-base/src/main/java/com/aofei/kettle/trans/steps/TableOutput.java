@@ -31,6 +31,8 @@ public class TableOutput extends AbstractStep {
 		tableOutputMeta.setTableName(cell.getAttribute("table"));
 		tableOutputMeta.setCommitSize(cell.getAttribute("commit"));
 		tableOutputMeta.setTruncateTable("Y".equalsIgnoreCase(cell.getAttribute("truncate")));
+		tableOutputMeta.setCreateTable("Y".equalsIgnoreCase(cell.getAttribute("create")));
+		tableOutputMeta.setShardKeyField(cell.getAttribute("shard_key_field"));
 		tableOutputMeta.setIgnoreErrors("Y".equalsIgnoreCase(cell.getAttribute("ignore_errors")));
 		tableOutputMeta.setUseBatchUpdate("Y".equalsIgnoreCase(cell.getAttribute("use_batch")));
 
@@ -72,6 +74,9 @@ public class TableOutput extends AbstractStep {
 		e.setAttribute("table", tableOutputMeta.getTableName());
 		e.setAttribute("commit", tableOutputMeta.getCommitSize());
 		e.setAttribute("truncate", tableOutputMeta.truncateTable() ? "Y" : "N");
+		e.setAttribute("create", tableOutputMeta.createTable() ? "Y" : "N");
+		e.setAttribute("shard_key_field", tableOutputMeta.getShardKeyField());
+
 		e.setAttribute("ignore_errors", tableOutputMeta.ignoreErrors() ? "Y" : "N");
 		e.setAttribute("use_batch", tableOutputMeta.useBatchUpdate() ? "Y" : "N");
 		e.setAttribute("specify_fields", tableOutputMeta.specifyFields() ? "Y" : "N");
