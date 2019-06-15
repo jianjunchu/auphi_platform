@@ -164,8 +164,10 @@ public class KettleRepositoryController extends BaseController {
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null)
-			directory = repository.getUserHomeDirectory();
+		if(directory == null) {
+			JsonUtils.fail("删除失败，定位不到目录.");
+			return;
+		}
 		
 		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
@@ -181,21 +183,66 @@ public class KettleRepositoryController extends BaseController {
 			}
 		} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
 			directory = repository.findDirectory(path);
-			if(repository.getJobAndTransformationObjects(directory.getObjectId(), true).size() > 0) {
-				JsonUtils.fail("删除失败，该目录下存在子元素，请先移除他们！");
-				return;
-			}
-			
-			if(repository.getDirectoryNames(directory.getObjectId()).length > 0) {
-				JsonUtils.fail("删除失败，该目录下存在子元素，请先移除他们！");
-				return;
-			}
-			
-			repository.deleteRepositoryDirectory(directory);
+			dropDirectory(repository, directory);
 		}
 		
 		JsonUtils.success("操作成功");
 	}
+	
+	private void dropDirectory(Repository repository, RepositoryDirectoryInterface directory) throws KettleException, IOException {
+		List<RepositoryElementMetaInterface> jobAndTransformationObjects = repository.getJobAndTransformationObjects(directory.getObjectId(), true);
+		for(RepositoryElementMetaInterface jobAndTransformationObject : jobAndTransformationObjects) {
+			if(jobAndTransformationObject.getObjectType() == RepositoryObjectType.TRANSFORMATION) {
+				repository.deleteTransformation(jobAndTransformationObject.getObjectId());
+			} else if(jobAndTransformationObject.getObjectType() == RepositoryObjectType.JOB) {
+				repository.deleteJob(jobAndTransformationObject.getObjectId());
+			}
+		}
+		
+		
+		for( RepositoryDirectoryInterface subDirectory : directory.getChildren()) {
+			dropDirectory(repository, subDirectory);
+		}
+		
+		repository.deleteRepositoryDirectory(directory);
+		
+	}
+	
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST, value = "/dropVerify")
+	protected void dropVerify(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
+		Repository repository = App.getInstance().getRepository();
+		
+		String dir = path.substring(0, path.lastIndexOf("/"));
+		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+		if(directory == null) {
+			JsonUtils.fail("校验失败，定位不到目录.");
+			return;
+		}
+		
+		if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
+			directory = repository.findDirectory(path);
+			if(repository.getJobAndTransformationObjects(directory.getObjectId(), true).size() > 0) {
+				JsonUtils.fail("该目录下存在子元素，您确定要移除该目录吗?");
+				return;
+			}
+			
+			if(repository.getDirectoryNames(directory.getObjectId()).length > 0) {
+				JsonUtils.fail("该目录下存在子目录，您确定要移除该目录吗?");
+				return;
+			}
+			
+		} else {
+			JsonUtils.success("操作成功");
+		}
+		
+		JsonUtils.success("操作成功");
+	}
+	
+	
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/rename")
