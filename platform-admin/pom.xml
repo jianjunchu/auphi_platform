@@ -192,7 +192,14 @@
             <artifactId>thymeleaf</artifactId>
             <version>${thymeleaf.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>QLExpress</artifactId>
+            <version>3.2.0</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <finalName>etl_platform</finalName>
