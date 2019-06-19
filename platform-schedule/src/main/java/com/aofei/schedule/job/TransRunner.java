@@ -31,7 +31,7 @@ public class TransRunner extends QuartzJobBean {
 	private final Timer logTimer = new Timer();
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
-		Repository repository = App.getInstance().getRepository();
+/**/		Repository repository = App.getInstance().getRepository();
 		try {
             String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
@@ -106,8 +106,6 @@ public class TransRunner extends QuartzJobBean {
 
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
-		}finally {
-			repository.disconnect();
 		}
 
 	}

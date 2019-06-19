@@ -92,8 +92,6 @@ public class JobRunner extends QuartzJobBean {
 
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
-		}finally {
-			repository.disconnect();
 		}
 	}
 

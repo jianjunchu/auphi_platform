@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.aofei</groupId>
             <artifactId>platform-log-sys</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- log end -->

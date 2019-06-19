@@ -69,6 +69,9 @@ public class QuartzService implements IQuartzService {
     public  void create(GeneralScheduleRequest request,  Class<? extends Job> jobExecClass) throws SchedulerException {
         String jobName = request.getJobName();
         String group = request.getJobGroup();
+
+        request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
+
         if(!checkJobExist(jobName,group)){
             // 获取调度器
             Scheduler sched = quartzScheduler;
