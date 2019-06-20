@@ -719,20 +719,20 @@ public class KettleRepositoryController extends BaseController {
 	@RequestMapping(method=RequestMethod.POST, value="/cascader")
 	protected Response<List<RepositoryCascaderVO>> cascader(@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		List<RepositoryCascaderVO> list = new ArrayList<>();
+		//List<RepositoryCascaderVO> list = new ArrayList<>();
 
 		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
 		RepositoryDirectoryInterface dir = repository.findDirectory(root);
 
-		RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerName());
+		//RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerId().toString());
 
 		List<RepositoryCascaderVO> childs = getCascaderChildren(repository,dir);
-		if(!childs.isEmpty()){
+		/*if(!childs.isEmpty()){
 			repositoryCascaderVO.setChildren(childs);
 			list.add(repositoryCascaderVO);
-		}
+		}*/
 
-		return Response.ok(list);
+		return Response.ok(childs);
 
 	}
 

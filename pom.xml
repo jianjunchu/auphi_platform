@@ -146,6 +146,16 @@
       <id>auphi</id>
       <url>http://101.37.17.102:8081/nexus/content/groups/public/</url>
     </repository>
+
+    <repository>
+      <id>my-deploy-release</id>
+      <url>http://101.37.17.102:8081/nexus/content/repositories/releases/</url>
+    </repository>
+    <repository>
+      <id>my-deploy-snapshot</id>
+      <url>http://101.37.17.102:8081/nexus/content/repositories/snapshots/</url>
+    </repository>
+
   </repositories>
 
 
@@ -153,6 +163,9 @@
 
 
   <dependencyManagement>
+
+
+
   <dependencies>
 
     <dependency>
