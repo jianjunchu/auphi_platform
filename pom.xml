@@ -1020,11 +1020,11 @@
       <version>1.0</version>
     </dependency>-->
 
-    <!--<dependency>
+    <dependency>
       <groupId>net.sourceforge.jtds</groupId>
       <artifactId>jtds</artifactId>
-      <version>1.2.2</version>
-    </dependency>-->
+      <version>1.2.5</version>
+    </dependency>
 
 
     <!--<dependency>
