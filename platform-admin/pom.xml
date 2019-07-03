@@ -108,12 +108,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--数据接口管理-->
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-dataservice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.aofei</groupId>
             <artifactId>platform-kettle-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
-
 
         <!-- spring begin-->
         <dependency>
