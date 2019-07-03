@@ -31,7 +31,7 @@ import java.util.List;
 @Api(tags = { "对外数据接出接口-服务用户权限管理" })
 @RestController
 @RequestMapping("/dataservice/auth")
-public class DataServiceAuthController extends BaseController {
+public class AuthController extends BaseController {
 
 
     @Autowired

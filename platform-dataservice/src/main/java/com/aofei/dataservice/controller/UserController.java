@@ -31,7 +31,7 @@ import java.util.List;
 @Api(tags = { "对外数据接出接口-服务用户管理" })
 @RestController
 @RequestMapping("/dataservice/user")
-public class DataServiceUserController extends BaseController {
+public class UserController extends BaseController {
 
     @Autowired
     IServiceUserService serviceUserService;

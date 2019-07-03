@@ -5,7 +5,7 @@ import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
 import com.aofei.dataservice.model.request.PublishInterfaceRequest;
 import com.aofei.dataservice.model.response.PublishInterfaceResponse;
-import com.aofei.dataservice.service.IServiceInterfaceService;
+import com.aofei.dataservice.service.IPublishInterfaceService;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,10 +31,10 @@ import java.util.List;
 @Api(tags = { "数据发布接口-接口管理" })
 @RestController
 @RequestMapping("/dataservice/service")
-public class DataServiceController extends BaseController {
+public class PublishController extends BaseController {
 
     @Autowired
-    IServiceInterfaceService interfaceService;
+    IPublishInterfaceService interfaceService;
 
     /**
      * 对外数据接出接口列表(分页查询)

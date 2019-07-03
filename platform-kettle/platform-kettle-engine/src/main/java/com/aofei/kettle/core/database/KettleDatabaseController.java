@@ -58,7 +58,7 @@ import java.sql.Statement;
 import java.util.*;
 
 @Log4j
-@Api(tags = { "数据源连接 - 接口api" })
+@Api(tags = { "数据源管理 - 数据库接口" })
 @Authorization
 @RestController
 @RequestMapping(value = "/database", produces = {"application/json;charset=UTF-8"})

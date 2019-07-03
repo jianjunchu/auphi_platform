@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Api(tags = { "对外数据接出接口-服务接口监控管理" })
 @Controller
 @RequestMapping("/dataservice/monitor")
-public class DataServiceMonitorController extends BaseController {
+public class MonitorController extends BaseController {
 
 }
 

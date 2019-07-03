@@ -1,6 +1,6 @@
 package com.aofei.dataservice.service;
 
-import com.aofei.dataservice.entity.ServiceInterface;
+import com.aofei.dataservice.entity.PublishInterface;
 import com.aofei.dataservice.model.request.PublishInterfaceRequest;
 import com.aofei.dataservice.model.response.PublishInterfaceResponse;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -16,9 +16,9 @@ import java.util.List;
  * @author Tony
  * @since 2018-11-11
  */
-public interface IServiceInterfaceService extends IService<ServiceInterface> {
+public interface IPublishInterfaceService extends IService<PublishInterface> {
 
-    Page<PublishInterfaceResponse> getPage(Page<ServiceInterface> page, PublishInterfaceRequest request);
+    Page<PublishInterfaceResponse> getPage(Page<PublishInterface> page, PublishInterfaceRequest request);
 
     List<PublishInterfaceResponse> getServiceInterfaces(PublishInterfaceRequest request);
 

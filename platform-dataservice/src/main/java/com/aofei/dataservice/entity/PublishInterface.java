@@ -24,7 +24,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("DATASERVICE_INTERFACE")
-public class ServiceInterface extends DataEntity<ServiceInterface> {
+public class PublishInterface extends DataEntity<PublishInterface> {
 
     private static final long serialVersionUID = 1L;
 

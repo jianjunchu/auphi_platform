@@ -22,7 +22,7 @@ import java.util.Date;
  * @since 2018-11-11
  */
 @Data
-public class ServiceInterfaceResponse extends BaseResponse {
+public class PublishInterfaceResponse extends BaseResponse {
 
     private static final long serialVersionUID = 1L;
 

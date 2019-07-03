@@ -3838,4 +3838,44 @@ CREATE TABLE `SYS_USER_ROLE`  (
   PRIMARY KEY (`C_USER_ID`, `C_ROLE_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
+
+-- ----------------------------
+--  Table structure for `DATASERVICE_RECEIVE_INTERFACE`
+-- ----------------------------
+DROP TABLE IF EXISTS `DATASERVICE_RECEIVE_INTERFACE`;
+CREATE TABLE `DATASERVICE_RECEIVE_INTERFACE` (
+  `SERVICE_ID` bigint(64) NOT NULL,
+  `SERVICE_NAME` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SERVICE_IDENTIFY` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Client调用时唯一识别的标示',
+  `SERVICE_URL` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `DATASOURCE` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `TABLENAME` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CREATEDATE` datetime DEFAULT NULL,
+  `INTERFACE_DESC` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ID_DATABASE` bigint(20) DEFAULT NULL,
+  `CREATE_USER` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '创建用户',
+  `UPDATE_USER` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '修改用户',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '修改时间',
+  `DEL_FLAG` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '是否删除  1：已删除  0：正常',
+  PRIMARY KEY (`SERVICE_ID`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+--  Table structure for `DATASERVICE_RECEIVE_INTERFACE_FIELDS`
+-- ----------------------------
+DROP TABLE IF EXISTS `DATASERVICE_RECEIVE_INTERFACE_FIELDS`;
+CREATE TABLE `DATASERVICE_RECEIVE_INTERFACE_FIELDS` (
+  `FIELD_ID` bigint(64) NOT NULL,
+  `SERVICE_ID` bigint(64) NOT NULL,
+  `FIELD_NAME` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '字段名',
+  `JSON_PATH` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '提交的Json数据的路径，定位字段值',
+  `CREATE_USER` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '创建用户',
+  `UPDATE_USER` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '修改用户',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '修改时间',
+  `DEL_FLAG` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '是否删除  1：已删除  0：正常',
+  PRIMARY KEY (`FIELD_ID`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+
 SET FOREIGN_KEY_CHECKS = 1;

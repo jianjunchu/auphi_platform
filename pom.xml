@@ -158,13 +158,7 @@
 
   </repositories>
 
-
-
-
-
   <dependencyManagement>
-
-
 
   <dependencies>
 
@@ -1093,9 +1087,6 @@
       <version>3.4.0</version>
       <classifier>SNAPSHOT</classifier>
     </dependency>
-
-
-
 
     <dependency>
       <groupId>com.oracle</groupId>

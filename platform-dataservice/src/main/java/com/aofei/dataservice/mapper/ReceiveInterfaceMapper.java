@@ -13,6 +13,6 @@ import com.aofei.dataservice.entity.ReceiveInterface;
  * @since 2018-11-11
  */
 @MyBatisMapper
-public interface ReceiveServiceInterfaceMapper extends BaseMapper<ReceiveInterface> {
+public interface ReceiveInterfaceMapper extends BaseMapper<ReceiveInterface> {
 
 }

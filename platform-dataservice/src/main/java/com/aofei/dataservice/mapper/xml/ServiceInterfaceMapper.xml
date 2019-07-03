@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aofei.dataservice.mapper.ServiceInterfaceMapper">
+<mapper namespace="com.aofei.dataservice.mapper.PublishInterfaceMapper">
 
 
 
@@ -36,7 +36,7 @@
         LEFT JOIN R_DATABASE database ON database.ID_DATABASE = a.ID_DATABASE
     </sql>
 
-    <select id="findList"  resultType="com.aofei.dataservice.entity.ServiceInterface">
+    <select id="findList"  resultType="com.aofei.dataservice.entity.PublishInterface">
         select
         <include refid="Base_Column_List"/>
         from DATASERVICE_INTERFACE a

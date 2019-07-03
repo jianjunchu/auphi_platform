@@ -1,8 +1,8 @@
 package com.aofei.dataservice.service;
 
-import com.aofei.dataservice.entity.ServiceInterface;
-import com.aofei.dataservice.model.request.PublishInterfaceRequest;
-import com.aofei.dataservice.model.response.ServiceInterfaceResponse;
+import com.aofei.dataservice.entity.ReceiveInterface;
+import com.aofei.dataservice.model.request.ReceiveInterfaceRequest;
+import com.aofei.dataservice.model.response.ReceiveInterfaceResponse;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 
@@ -16,17 +16,17 @@ import java.util.List;
  * @author Tony
  * @since 2018-11-11
  */
-public interface IServiceInterfaceService extends IService<ServiceInterface> {
+public interface IReceiveInterfaceService extends IService<ReceiveInterface> {
 
-    Page<ServiceInterfaceResponse> getPage(Page<ServiceInterface> page, PublishInterfaceRequest request);
+    Page<ReceiveInterfaceResponse> getPage(Page<ReceiveInterface> page, ReceiveInterfaceRequest request);
 
-    List<ServiceInterfaceResponse> getServiceInterfaces(PublishInterfaceRequest request);
+    List<ReceiveInterfaceResponse> getServiceInterfaces(ReceiveInterfaceRequest request);
 
-    ServiceInterfaceResponse save(PublishInterfaceRequest request);
+    ReceiveInterfaceResponse save(ReceiveInterfaceRequest request);
 
-    ServiceInterfaceResponse update(PublishInterfaceRequest request);
+    ReceiveInterfaceResponse update(ReceiveInterfaceRequest request);
 
     int del(Long id);
 
-    ServiceInterfaceResponse get(Long id);
+    ReceiveInterfaceResponse get(Long id);
 }
