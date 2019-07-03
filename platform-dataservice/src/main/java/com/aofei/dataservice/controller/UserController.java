@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Log4j
 @Api(tags = { "对外数据接出接口-服务用户管理" })
-@RestController
+@RestController("serviceUserController")
 @RequestMapping("/dataservice/user")
 public class UserController extends BaseController {
 

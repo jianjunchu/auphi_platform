@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Log4j
 @Api(tags = { "对外数据接出接口-服务接口监控管理" })
-@Controller
+@Controller("serviceMonitorController")
 @RequestMapping("/dataservice/monitor")
 public class MonitorController extends BaseController {
 
