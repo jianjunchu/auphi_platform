@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import io.swagger.annotations.Api;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -42,6 +43,7 @@ import com.aofei.kettle.utils.ReflectUtils;
 
 @RestController
 @RequestMapping(value="/oss")
+@Api(tags = "Transformation转换 - OSS输入 - 接口api")
 public class OssController {
 
 	@RequestMapping("/test")

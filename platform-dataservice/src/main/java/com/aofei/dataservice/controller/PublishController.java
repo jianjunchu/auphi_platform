@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -28,9 +29,9 @@ import java.util.List;
  * @since 2018-11-10
  */
 @Log4j
-@Api(tags = { "数据发布接口-接口管理" })
 @RestController
-@RequestMapping("/dataservice/service")
+@RequestMapping("/dataservice/publish")
+@Api(tags = { "数据服务-数据发布接口管理" })
 public class PublishController extends BaseController {
 
     @Autowired

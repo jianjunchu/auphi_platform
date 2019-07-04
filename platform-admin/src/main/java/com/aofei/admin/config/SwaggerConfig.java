@@ -75,7 +75,7 @@ public class SwaggerConfig {
                 "傲飞数据整合平台接口文档",
                 "3.9",
                 "urn:tos",
-                "auphi platform",
+                "Auphi Data Management Platform",
                 "Apache 2.0",
                 "http://www.apache.org/licenses/LICENSE-2.0");
         return info;

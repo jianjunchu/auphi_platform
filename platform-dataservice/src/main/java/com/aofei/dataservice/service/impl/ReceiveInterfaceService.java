@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ *  数据接收服务实现类
  * </p>
  *
  * @author Tony
@@ -27,6 +27,7 @@ import java.util.List;
 public class ReceiveInterfaceService extends BaseService<ReceiveInterfaceMapper, ReceiveInterface> implements IReceiveInterfaceService {
 
 
+    @Log(module = "数据服务",description = "分页查询数据接收接口")
     @Override
     public Page<ReceiveInterfaceResponse> getPage(Page<ReceiveInterface> page, ReceiveInterfaceRequest request) {
         List<ReceiveInterface> list = baseMapper.findList(page, request);
@@ -34,13 +35,14 @@ public class ReceiveInterfaceService extends BaseService<ReceiveInterfaceMapper,
         return convert(page, ReceiveInterfaceResponse.class);
     }
 
+    @Log(module = "数据服务",description = "查询数据接收接口")
     @Override
     public List<ReceiveInterfaceResponse> getServiceInterfaces(ReceiveInterfaceRequest request) {
         List<ReceiveInterface> list = baseMapper.findList(request);
         return BeanCopier.copy(list, ReceiveInterfaceResponse.class);
     }
 
-    @Log(module = "数据接口管理",description = "新建接收数据接口")
+    @Log(module = "数据服务",description = "新建数据接收接口")
     @Override
     public ReceiveInterfaceResponse save(ReceiveInterfaceRequest request) {
         ReceiveInterface receiveInterface = BeanCopier.copy(request, ReceiveInterface.class);
@@ -49,7 +51,7 @@ public class ReceiveInterfaceService extends BaseService<ReceiveInterfaceMapper,
         return BeanCopier.copy(receiveInterface, ReceiveInterfaceResponse.class);
     }
 
-    @Log(module = "数据接口管理",description = "修改接收数据接口")
+    @Log(module = "数据服务",description = "修改数据接收接口")
     @Override
     public ReceiveInterfaceResponse update(ReceiveInterfaceRequest request) {
         ReceiveInterface existing = selectById(request.getServiceId());
@@ -62,7 +64,7 @@ public class ReceiveInterfaceService extends BaseService<ReceiveInterfaceMapper,
         }
     }
 
-    @Log(module = "数据接口管理",description = "删除接收数据接口")
+    @Log(module = "数据服务",description = "删除数据接收接口")
     @Override
     public int del(Long deptId) {
         ReceiveInterface existing = selectById(deptId);

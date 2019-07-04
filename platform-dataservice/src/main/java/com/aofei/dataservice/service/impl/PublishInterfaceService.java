@@ -27,6 +27,7 @@ import java.util.List;
 public class PublishInterfaceService extends BaseService<PublishInterfaceMapper, PublishInterface> implements IPublishInterfaceService {
 
 
+    @Log(module = "数据服务",description = "分页查询数据发布接口")
     @Override
     public Page<PublishInterfaceResponse> getPage(Page<PublishInterface> page, PublishInterfaceRequest request) {
         List<PublishInterface> list = baseMapper.findList(page, request);
@@ -34,22 +35,23 @@ public class PublishInterfaceService extends BaseService<PublishInterfaceMapper,
         return convert(page, PublishInterfaceResponse.class);
     }
 
+    @Log(module = "数据服务",description = "查询数据发布接口")
     @Override
     public List<PublishInterfaceResponse> getServiceInterfaces(PublishInterfaceRequest request) {
         List<PublishInterface> list = baseMapper.findList(request);
         return BeanCopier.copy(list, PublishInterfaceResponse.class);
     }
 
-    @Log(module = "对外数据接出接口管理",description = "新建对外数据接出接口信息")
+    @Log(module = "数据服务",description = "新建数据发布接口")
     @Override
     public PublishInterfaceResponse save(PublishInterfaceRequest request) {
-        PublishInterface ServiceInterface = BeanCopier.copy(request, PublishInterface.class);
-        ServiceInterface.preInsert();
-        super.insert(ServiceInterface);
-        return BeanCopier.copy(ServiceInterface, PublishInterfaceResponse.class);
+        PublishInterface publishInterface = BeanCopier.copy(request, PublishInterface.class);
+        publishInterface.preInsert();
+        super.insert(publishInterface);
+        return BeanCopier.copy(publishInterface, PublishInterfaceResponse.class);
     }
 
-    @Log(module = "对外数据接出接口管理",description = "修改对外数据接出接口信息")
+    @Log(module = "数据服务",description = "修改数据发布接口")
     @Override
     public PublishInterfaceResponse update(PublishInterfaceRequest request) {
         PublishInterface existing = selectById(request.getServiceId());
@@ -61,7 +63,7 @@ public class PublishInterfaceService extends BaseService<PublishInterfaceMapper,
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }
     }
-    @Log(module = "对外数据接出接口管理",description = "删除对外数据接出接口信息")
+    @Log(module = "数据服务",description = "删除数据发布接口")
     @Override
     public int del(Long deptId) {
         PublishInterface existing = selectById(deptId);

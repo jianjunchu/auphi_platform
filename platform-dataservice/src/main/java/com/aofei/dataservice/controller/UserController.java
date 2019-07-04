@@ -28,7 +28,7 @@ import java.util.List;
  * @since 2018-11-10
  */
 @Log4j
-@Api(tags = { "对外数据接出接口-服务用户管理" })
+@Api(tags = { "数据服务-数据发布访问用户管理" })
 @RestController("serviceUserController")
 @RequestMapping("/dataservice/user")
 public class UserController extends BaseController {

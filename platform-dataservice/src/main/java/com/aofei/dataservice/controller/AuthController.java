@@ -28,9 +28,9 @@ import java.util.List;
  * @since 2018-11-10
  */
 @Log4j
-@Api(tags = { "对外数据接出接口-服务用户权限管理" })
 @RestController
 @RequestMapping("/dataservice/auth")
+@Api(tags = { "数据服务-数据发布用户权限管理" })
 public class AuthController extends BaseController {
 
 

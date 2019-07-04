@@ -12,7 +12,7 @@ import lombok.Data;
  * @since 2018-11-11
  */
 @Data
-public class ServiceAuthResponse extends BaseResponse {
+public class ServiceAuthResponse  {
 
     private static final long serialVersionUID = 1L;
 

@@ -56,7 +56,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value="/trans")
-@Api(tags = "Transformation转换接口api")
+@Api(tags = "Transformation转换 - 接口api")
 public class TransGraphController {
 
 	@ApiOperation(value = "获取引擎文件", httpMethod = "POST")
@@ -74,7 +74,7 @@ public class TransGraphController {
 		response.getWriter().write(xml);
 	}
 	
-	@ApiOperation(value = "获取改转换内私有数据库连接", httpMethod = "POST")
+	@ApiOperation(value = "获取转换内私有数据库连接", httpMethod = "POST")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "database", value = "数据库连接名称", paramType="query", dataType = "string")
