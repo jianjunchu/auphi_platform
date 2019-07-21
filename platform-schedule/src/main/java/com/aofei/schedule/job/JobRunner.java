@@ -37,6 +37,9 @@ public class JobRunner extends QuartzJobBean {
 			String name = request.getFile();
 
 
+			System.out.println("Job path ==> " + dir);
+			System.out.println("Job name ==> " + name);
+
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 			if(directory == null)
 				directory = repository.getUserHomeDirectory();

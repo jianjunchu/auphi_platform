@@ -29,7 +29,6 @@
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath*:config/redis.properties</value>
                 <value>classpath*:config/token.properties</value>
             </list>
         </property>
@@ -153,36 +152,36 @@
     <bean id="tokenValidator" class="com.aofei.admin.authorization.jwt.JwtTokenValidator"></bean>
 
     <!--Redis配置-->
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <!--最大连接数-->
+    <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        &lt;!&ndash;最大连接数&ndash;&gt;
         <property name="maxTotal" value="${redis.maxTotal}" />
-        <!--最大空闲连接数-->
+        &lt;!&ndash;最大空闲连接数&ndash;&gt;
         <property name="maxIdle" value="${redis.maxIdle}" />
-        <!--初始化连接数-->
+        &lt;!&ndash;初始化连接数&ndash;&gt;
         <property name="minIdle" value="${redis.minIdle}"/>
-        <!--最大等待时间-->
+        &lt;!&ndash;最大等待时间&ndash;&gt;
         <property name="maxWaitMillis" value="${redis.maxWaitMillis}" />
-        <!--对拿到的connection进行validateObject校验-->
+        &lt;!&ndash;对拿到的connection进行validateObject校验&ndash;&gt;
         <property name="testOnBorrow" value="${redis.testOnBorrow}" />
-        <!--在进行returnObject对返回的connection进行validateObject校验-->
+        &lt;!&ndash;在进行returnObject对返回的connection进行validateObject校验&ndash;&gt;
         <property name="testOnReturn" value="${redis.testOnReturn}" />
-        <!--定时对线程池中空闲的链接进行validateObject校验-->
+        &lt;!&ndash;定时对线程池中空闲的链接进行validateObject校验&ndash;&gt;
         <property name="testWhileIdle" value="true" />
-    </bean>
+    </bean>-->
 
     <!--Redis连接池-->
-    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+    <!--<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
         <constructor-arg index="0" ref="jedisPoolConfig"/>
         <constructor-arg index="1" value="${redis.host}"/>
         <constructor-arg index="2" value="${redis.port}" type="int"/>
         <constructor-arg index="3" value="${redis.timeout}" type="int"/>
         <constructor-arg index="4" value="${redis.password}"/>
-    </bean>
+    </bean>-->
 
     <!--管理验证信息的bean-->
     <bean id="tokenManager" class="com.aofei.authorization.manager.impl.RedisTokenManager">
         <!--Redis客户端连接池配置-->
-        <property name="jedisPool" ref="jedisPool"/>
+        <!--<property name="jedisPool" ref="jedisPool"/>-->
         <!--Token失效时间-->
         <property name="tokenExpireSeconds" value="${token.expire.seconds}"/>
         <!--一个用户是否可以绑定多个Token-->

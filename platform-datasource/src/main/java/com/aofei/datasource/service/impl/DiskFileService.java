@@ -36,6 +36,8 @@ public class DiskFileService implements IDiskFileService {
         String path = request.getPath();
         if(StringUtils.isEmpty(path)){
             path = Const.getUserDir(request.getOrganizerId());
+        }else{
+            path = Const.getUserDir(request.getOrganizerId())+path;
         }
         logger.info("path==>"+path);
         File[] files = new File(path).listFiles();

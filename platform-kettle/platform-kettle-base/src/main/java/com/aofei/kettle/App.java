@@ -81,7 +81,7 @@ public class App {
 
 			databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
 
-			if(connects.size() > 10){
+			if(connects.size() > 50){
 				Repository first = connects.get(0);
 				first.disconnect();
 				connects.remove(0);

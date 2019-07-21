@@ -31,17 +31,17 @@ public class TransRunner extends QuartzJobBean {
 	private final Timer logTimer = new Timer();
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
-/**/		Repository repository = App.getInstance().getRepository();
+		Repository repository = App.getInstance().getRepository();
 		try {
             String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
             GeneralScheduleRequest request = JSON.parseObject(json,GeneralScheduleRequest.class);
 
-
 			String dir = request.getFilePath();
 			String name = request.getFile();
 
-
+			System.out.println("Trans path ==> " + dir);
+			System.out.println("Trans name ==> " + name);
 			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 			if(directory == null)
 				directory = repository.getUserHomeDirectory();
