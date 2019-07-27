@@ -555,8 +555,24 @@ public class KettleRepositoryController extends BaseController {
         @ApiImplicitParam(name = "filesPath", value = "文件路径，可以是多个，文件需要先调用上传接口", paramType="query", dataType = "string")
 	})
 	@RequestMapping("/multiImport")
-	protected @ResponseBody void multiImport(@RequestParam String repositoryCurrentDir, @RequestParam String filesPath) throws KettleException, IOException {
+	protected @ResponseBody void multiImport(@RequestParam String repositoryCurrentDir, @RequestParam String filesPath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		ArrayList list = new ArrayList();
+		
+		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
+		if(StringUtils.hasText(repositoryCurrentDir)) {
+			if(!repositoryCurrentDir.startsWith(root)) {
+				repositoryCurrentDir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(), repositoryCurrentDir);
+			}
+		} else {
+			repositoryCurrentDir = root;
+		}
+		
+		Repository repository = App.getInstance().getRepository();
+		RepositoryDirectoryInterface dir = repository.findDirectory(repositoryCurrentDir);
+		if(dir == null) {
+			JsonUtils.fail("目录【" + repositoryCurrentDir + "】加载失败！");
+			return;
+		}
 		
 		JSONArray jsonArray = JSONArray.fromObject(filesPath);
 		for(int i=0; i<jsonArray.size(); i++) {
@@ -564,7 +580,6 @@ public class KettleRepositoryController extends BaseController {
 			
 			File file = new File(filePath);
 			if(file.isFile()) {
-				Repository repository = App.getInstance().getRepository();
 				RepositoryDirectoryInterface parent = repository.findDirectory(repositoryCurrentDir);
 				if(parent != null) {
 					if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file))) {
@@ -574,7 +589,6 @@ public class KettleRepositoryController extends BaseController {
 				
 				file.delete();
 			}
-			
 		}
 		
 		if(list.size() > 0) {

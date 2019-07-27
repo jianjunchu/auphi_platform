@@ -35,6 +35,7 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -58,7 +59,7 @@ import java.sql.Statement;
 import java.util.*;
 
 @Log4j
-@Api(tags = { "数据源管理 - 数据库接口" })
+@Api(tags = { "数据源连接 - 接口api" })
 @Authorization
 @RestController
 @RequestMapping(value = "/database", produces = {"application/json;charset=UTF-8"})
@@ -98,6 +99,11 @@ public class KettleDatabaseController extends BaseController {
 			databaseMeta = new DatabaseMeta();
 		
 		JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
+		
+		if(databaseMeta.getObjectId() != null) {
+			jsonObject.put("objectId", databaseMeta.getObjectId().getId());
+		}
+		
 		JsonUtils.response(jsonObject);
 	}
 	
@@ -317,6 +323,10 @@ public class KettleDatabaseController extends BaseController {
 	private DatabaseMeta checkDatabase(String databaseInfo, JSONObject result) throws KettleDatabaseException, IOException {
 	    JSONObject jsonObject = JSONObject.fromObject(databaseInfo);
 	    DatabaseMeta database = DatabaseCodec.decode(jsonObject);
+	    if(jsonObject.containsKey("objectId")) {
+	    	String id = jsonObject.optString("objectId");
+	    	database.setObjectId(new LongObjectId(Long.parseLong(id)));
+	    }
 	    
 	    if(database.isUsingConnectionPool()) {
 	    	String parameters = "";
