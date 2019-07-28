@@ -134,7 +134,18 @@ public class ReflectUtils {
 	}
 	
 	public static void setFieldValue(Object obj, String name, Object value) throws Exception {
-		Field nameField = obj.getClass().getDeclaredField(name);
+		Field nameField = null;
+		
+		Class clazz = obj.getClass();
+		while(clazz != null && nameField == null) {
+			try {
+				nameField = clazz.getDeclaredField(name);
+			} catch(Exception e) {
+				clazz = clazz.getSuperclass();
+			}
+		}
+				
+				
 		boolean flag = nameField.isAccessible();
 		nameField.setAccessible(true);
 		nameField.set(obj, value);
