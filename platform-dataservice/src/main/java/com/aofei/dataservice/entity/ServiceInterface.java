@@ -1,35 +1,58 @@
 package com.aofei.dataservice.entity;
 
-import com.aofei.base.entity.DataEntity;
-import com.baomidou.mybatisplus.annotations.TableField;
+import java.io.Serializable;
+
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.aofei.base.entity.DataEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
  * <p>
- *
+ * 数据接口管理
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-22
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("DATASERVICE_INTERFACE")
-public class PublishInterface extends DataEntity<PublishInterface> {
+public class ServiceInterface extends DataEntity<ServiceInterface> {
 
     private static final long serialVersionUID = 1L;
 
+    public static final Integer INTERFACE_TYP_PUBLISH = 1;
+    public static final Integer INTERFACE_TYP_RECEIVE = 2;
+
+    public static final Integer RETURN_TYPE_FTP = 1;
+    public static final Integer RETURN_TYPE_WEBSERVICE = 2;
+
     @TableId(value = "SERVICE_ID", type = IdType.ID_WORKER)
     private Long serviceId;
+
+    /**
+     * 接口类型1:发布数据 2:接受数据
+     */
+    @TableField("INTERFACE_TYP")
+    private Integer interfaceTyp;
+
+    @TableField("ORGANIZER_ID")
+    private Long organizerId;
+
+    @TableField(exist = false)
+    private String organizerName;
+
+
+    /**
+     * 接口名称
+     */
     @TableField("SERVICE_NAME")
     private String serviceName;
     /**
@@ -37,7 +60,6 @@ public class PublishInterface extends DataEntity<PublishInterface> {
      */
     @TableField("SERVICE_IDENTIFY")
     private String serviceIdentify;
-
     @TableField("SERVICE_URL")
     private String serviceUrl;
     /**
@@ -45,17 +67,15 @@ public class PublishInterface extends DataEntity<PublishInterface> {
      */
     @TableField("JOB_TYPE")
     private Integer jobType;
-
     @TableField("TRANS_NAME")
     private String transName;
     /**
      * 用户可以自己选的，只支持FTP和Webservice
             1表示FTP，2表示Webservice
-
+            
      */
     @TableField("RETURN_TYPE")
     private Integer returnType;
-
     @TableField("DATASOURCE")
     private String datasource;
     /**
@@ -68,29 +88,46 @@ public class PublishInterface extends DataEntity<PublishInterface> {
      */
     @TableField("IS_COMPRESS")
     private Integer isCompress;
-    @TableField("TABLENAME")
-    private String tablename;
-    @TableField("DELIMITER")
-    private String delimiter;
-    @TableField("FIELDS")
-    private String fields;
-    @TableField("CONDITIONS")
-    private String conditions;
-
-    @TableField("CREATEDATE")
-    private Date createdate;
-
-    @TableField("INTERFACE_DESC")
-    private String interfaceDesc;
-
+    /**
+     * 数据源 ID
+     */
     @TableField("ID_DATABASE")
-    private String databaseId;
+    private Long databaseId;
 
     @TableField(exist = false)
     private String databaseName;
 
-
-    @TableField("job_Config_Id")
+    /**
+     * 连接模式名
+     */
+    @TableField("SCHEMA_NAME")
+    private String schemaName;
+    /**
+     * 连接表名
+     */
+    @TableField("TABLE_NAME")
+    private String tableName;
+    /**
+     * 分隔符
+     */
+    @TableField("DELIMITER")
+    private String delimiter;
+    /**
+     * 输出字段
+     */
+    @TableField("FIELDS")
+    private String fields;
+    /**
+     * 条件表达式
+     */
+    @TableField("CONDITIONS")
+    private String conditions;
+    /**
+     * 接口说明
+     */
+    @TableField("INTERFACE_DESC")
+    private String interfaceDesc;
+    @TableField("JOB_CONFIG_ID")
     private Integer jobConfigId;
 
 

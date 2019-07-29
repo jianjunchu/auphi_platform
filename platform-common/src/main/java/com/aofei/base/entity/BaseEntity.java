@@ -45,7 +45,7 @@ public abstract class BaseEntity<T> extends Model{
      * 插入之前执行方法，子类实现
      */
 
-    protected void preInsert() {
+    public void preInsert() {
        setCreateTime(new Date());
        setUpdateTime(new Date());
        setDelFlag(DEL_FLAG_NORMAL);

@@ -7,32 +7,44 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
           a.MONITOR_ID AS monitorId
+        , a.ORGANIZER_ID AS organizerId
         , a.SERVICE_ID AS serviceId
+        , di.SERVICE_NAME AS serviceName
         , a.START_TIME AS startTime
         , a.END_TIME AS endTime
         , a.STATUS AS status
-        , a.USERNAME AS userName
-        , a.SYSTEM_NAME AS systemName
-        , a.CREATE_USER AS createUser
-        , a.UPDATE_USER AS updateUser
+        , a.SERVICE_USER_ID AS serviceUserId
+        , du.USERNAME AS username
+        , du.SYSTEM_NAME AS systemName
         , a.CREATE_TIME AS createTime
         , a.UPDATE_TIME AS updateTime
         , a.DEL_FLAG AS delFlag
-        , dsi.SERVICE_NAME AS serviceName
     </sql>
+
 
     <sql id="Base_Joins">
-        LEFT JOIN DATASERVICE_INTERFACE dsi ON dsi.SERVICE_ID = a.SERVICE_ID
+        JOIN DATASERVICE_USER du  on a.SERVICE_USER_ID = du.USER_ID
+        JOIN DATASERVICE_INTERFACE di  on a.SERVICE_ID = di.SERVICE_ID
     </sql>
 
-    <select id="findList"  resultType="com.aofei.dataservice.entity.ServiceAuth">
+
+    <select id="findList"  resultType="com.aofei.dataservice.entity.ServiceMonitor">
         select
         <include refid="Base_Column_List"/>
         from DATASERVICE_MONITOR a
         <include refid="Base_Joins"/>
         <where>
             a.DEL_FLAG = 0
+            <if test="organizerId != null ">
+                AND a.ORGANIZER_ID = #{organizerId}
+            </if>
+            <if test="serviceName != null and serviceName != '' ">
+                AND di.SERVICE_NAME like  '%${serviceName}%'
+            </if>
         </where>
     </select>
 
+    <update id="deleteById">
+        update DATASERVICE_MONITOR a set a.DEL_FLAG = 1  where a.MONITOR_ID = #{id}
+    </update>
 </mapper>

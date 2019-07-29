@@ -42,6 +42,8 @@ public class Const {
     public static final  int NO = 0;
 
 
+
+
     /**
      * 获取配置
      * @see ${fns:getConfig('adminPath')}

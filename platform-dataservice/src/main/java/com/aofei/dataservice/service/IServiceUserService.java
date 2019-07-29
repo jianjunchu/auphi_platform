@@ -1,6 +1,7 @@
 package com.aofei.dataservice.service;
 
 import com.aofei.dataservice.entity.ServiceUser;
+import com.aofei.dataservice.entity.ServiceUser;
 import com.aofei.dataservice.model.request.ServiceUserRequest;
 import com.aofei.dataservice.model.response.ServiceUserResponse;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -10,13 +11,15 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 数据发布访问用户
+ 服务类
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-23
  */
 public interface IServiceUserService extends IService<ServiceUser> {
+
 
     Page<ServiceUserResponse> getPage(Page<ServiceUser> page, ServiceUserRequest request);
 
@@ -29,4 +32,6 @@ public interface IServiceUserService extends IService<ServiceUser> {
     int del(Long id);
 
     ServiceUserResponse get(Long id);
+
+    ServiceUserResponse getAuthUser(ServiceUserRequest userRequest);
 }

@@ -58,14 +58,10 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        for(int i = 0 ;i<100;i++){
-            if(list.size()>10){
-                list.remove(0);
+        String a = "192.168.0.*";
+        String b = "192.168.0.128";
 
-            }
-            list.add("11");
-        }
-        System.out.print(list);
+        System.out.println(b.matches(a));
+
     }
 }

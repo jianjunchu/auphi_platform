@@ -2,7 +2,6 @@ package com.aofei.dataservice.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -18,62 +17,51 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 数据发布访问用户
-
+ * 
  * </p>
  *
  * @author Tony
- * @since 2019-07-23
+ * @since 2019-07-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("DATASERVICE_USER")
-public class ServiceUser extends DataEntity<ServiceUser> {
+@TableName("DATASERVICE_INTERFACE_FIELD")
+public class ServiceInterfaceField extends DataEntity<ServiceInterfaceField> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户 id
+     * 字段 ID
      */
-    @TableId(value = "USER_ID", type = IdType.ID_WORKER)
-    private Long userId;
+    @TableId(value = "FIELD_ID", type = IdType.ID_WORKER)
+    private Long fieldId;
     /**
-     * 组织 id
+     * 所属接口 ID
      */
-    @TableField("ORGANIZER_ID")
-    private Long organizerId;
+    @TableField("SERVICE_ID")
+    private Long serviceId;
     /**
-     * 用户名
+     * 字段名称
      */
-    @TableField("USERNAME")
-    private String username;
+    @TableField("FIELD_NAME")
+    private String fieldName;
     /**
-     * 密码
+     * 字段类型
      */
-    @TableField("PASSWORD")
-    private String password;
+    @TableField("FIELD_TYPE")
+    private String fieldType;
     /**
-     * 系统名称
+     * 路径$开头
      */
-    @TableField("SYSTEM_NAME")
-    private String systemName;
-    /**
-     * 系统 IP
-     */
-    @TableField("SYSTEM_IP")
-    private String systemIp;
-    /**
-     * 系统描述
-     */
-    @TableField("SYSTEM_DESC")
-    private String systemDesc;
+    @TableField("JSON_PATH")
+    private String jsonPath;
 
 
 
     @Override
     protected Serializable pkVal() {
-        return this.userId;
+        return this.fieldId;
     }
 
 }

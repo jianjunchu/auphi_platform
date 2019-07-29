@@ -1,52 +1,82 @@
 package com.aofei.dataservice.entity;
 
-import com.aofei.base.entity.DataEntity;
+import java.io.Serializable;
+import java.util.Date;
+
+import com.aofei.base.entity.BaseEntity;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.aofei.base.entity.DataEntity;
+
+import com.baomidou.mybatisplus.annotations.Version;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-24
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("DATASERVICE_MONITOR")
-public class ServiceMonitor extends DataEntity<ServiceMonitor> {
+public class ServiceMonitor extends BaseEntity<ServiceMonitor> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "MONITOR_ID", type = IdType.ID_WORKER)
     private Long monitorId;
+    /**
+     * 组织 ID
+     */
+    @TableField("ORGANIZER_ID")
+    private Long organizerId;
+    /**
+     * 服务接口 ID
+     */
     @TableField("SERVICE_ID")
     private Long serviceId;
 
     @TableField(exist = false)
     private String serviceName;
 
+    /**
+     * 开始时间
+     */
     @TableField("START_TIME")
     private Date startTime;
+    /**
+     * 结束时间
+     */
     @TableField("END_TIME")
     private Date endTime;
-
+    /**
+     * 状态
+     */
     @TableField("STATUS")
     private String status;
+    /**
+     * 执行的用户
+     */
+    @TableField("SERVICE_USER_ID")
+    private Long serviceUserId;
 
-    @TableField("USERNAME")
-    private String userName;
+    @TableField(exist = false)
+    private String  username;
 
+    /**
+     * 系统名称
+     */
     @TableField("SYSTEM_NAME")
     private String systemName;
 

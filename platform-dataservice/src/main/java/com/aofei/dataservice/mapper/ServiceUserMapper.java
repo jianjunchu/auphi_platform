@@ -6,11 +6,12 @@ import com.aofei.base.mapper.BaseMapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * 数据发布访问用户
+ Mapper 接口
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-23
  */
 @MyBatisMapper
 public interface ServiceUserMapper extends BaseMapper<ServiceUser> {

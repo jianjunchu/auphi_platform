@@ -62,6 +62,21 @@ public class DatabaseController extends BaseController {
         Page<DatabaseResponse> page = databaseService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
+
+    /**
+     * 列表(分页查询)
+     * @return
+     */
+    @ApiOperation(value = "数据库列表", notes = "数据库列表", httpMethod = "GET")
+
+    @RequestMapping(value = "/listAll", method = RequestMethod.GET)
+    public Response<DataGrid<DatabaseResponse>> listAll(
+            @ApiIgnore DatabaseRequest request
+            , @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
+        request.setOrganizerId(user.getOrganizerId());
+        List<DatabaseResponse> page = databaseService.getDatabases( request);
+        return Response.ok(page) ;
+    }
     /**
      * 列表(分页查询)
      * @return

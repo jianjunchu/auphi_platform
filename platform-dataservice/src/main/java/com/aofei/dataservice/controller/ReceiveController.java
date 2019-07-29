@@ -1,22 +1,11 @@
 package com.aofei.dataservice.controller;
 
-import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.response.Response;
-import com.aofei.base.model.vo.DataGrid;
-import com.aofei.dataservice.model.request.PublishInterfaceRequest;
-import com.aofei.dataservice.model.response.PublishInterfaceResponse;
-import com.aofei.dataservice.service.IPublishInterfaceService;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.aofei.dataservice.model.response.ServiceInterfaceResponse;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
 
 
 /**
@@ -40,8 +29,10 @@ public class ReceiveController {
      */
     @ApiOperation(value = "数据服务接口-根据Id查询数据接收接口", notes = "根据Id查询数据接收接口", httpMethod = "GET")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Response<PublishInterfaceResponse> get(
+    public Response<ServiceInterfaceResponse> get(
             @PathVariable Long id)  {
         return null;
     }
+
+
 }

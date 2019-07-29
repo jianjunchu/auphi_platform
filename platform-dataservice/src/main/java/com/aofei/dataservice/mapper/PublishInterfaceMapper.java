@@ -1,7 +1,7 @@
 package com.aofei.dataservice.mapper;
 
 import com.aofei.base.annotation.MyBatisMapper;
-import com.aofei.dataservice.entity.PublishInterface;
+import com.aofei.dataservice.entity.ServiceInterface;
 import com.aofei.base.mapper.BaseMapper;
 
 /**
@@ -13,6 +13,6 @@ import com.aofei.base.mapper.BaseMapper;
  * @since 2018-11-11
  */
 @MyBatisMapper
-public interface PublishInterfaceMapper extends BaseMapper<PublishInterface> {
+public interface PublishInterfaceMapper extends BaseMapper<ServiceInterface> {
 
 }

@@ -10,15 +10,15 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务接口授权 服务类
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-24
  */
 public interface IServiceAuthService extends IService<ServiceAuth> {
 
-    Page<ServiceAuthResponse> getPage(Page<Object> pagination, ServiceAuthRequest request);
+    Page<ServiceAuthResponse> getPage(Page<ServiceAuth> page, ServiceAuthRequest request);
 
     List<ServiceAuthResponse> getServiceAuths(ServiceAuthRequest request);
 
@@ -28,6 +28,7 @@ public interface IServiceAuthService extends IService<ServiceAuth> {
 
     int del(Long id);
 
-    Object get(Long id);
+    ServiceAuthResponse get(Long id);
 
+    ServiceAuthResponse getServiceAuth(ServiceAuthRequest authRequest);
 }

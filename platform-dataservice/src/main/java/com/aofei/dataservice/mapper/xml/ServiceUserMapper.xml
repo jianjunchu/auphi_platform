@@ -7,6 +7,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
           a.USER_ID AS userId
+        , a.ORGANIZER_ID AS organizerId
         , a.USERNAME AS username
         , a.PASSWORD AS password
         , a.SYSTEM_NAME AS systemName
@@ -19,12 +20,29 @@
         , a.DEL_FLAG AS delFlag
     </sql>
 
+    <sql id="Base_Joins">
+    </sql>
+
+
     <select id="findList"  resultType="com.aofei.dataservice.entity.ServiceUser">
         select
         <include refid="Base_Column_List"/>
         from DATASERVICE_USER a
+        <include refid="Base_Joins"/>
         <where>
             a.DEL_FLAG = 0
+            <if test="organizerId != null ">
+                AND a.ORGANIZER_ID = #{organizerId}
+            </if>
+
+            <if test="username != null and username!=''">
+                AND a.USERNAME like  '%${username}%'
+            </if>
+
         </where>
     </select>
+
+    <update id="deleteById">
+        update DATASERVICE_USER a set a.DEL_FLAG = 1  where a.USER_ID = #{id}
+    </update>
 </mapper>

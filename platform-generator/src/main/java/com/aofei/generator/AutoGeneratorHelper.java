@@ -56,15 +56,15 @@ public class AutoGeneratorHelper {
 		dsc.setDbType(DbType.MYSQL);
 		dsc.setTypeConvert(new MySqlTypeConvert());
 		dsc.setDriverName("com.mysql.jdbc.Driver");
-		dsc.setUsername("etladmin");
-		dsc.setPassword("6XXxwlAi0S");
-		dsc.setUrl("jdbc:mysql://123.206.52.213:7581/etl_admin?characterEncoding=utf8");
+		dsc.setUsername("root");
+		dsc.setPassword("123456");
+		dsc.setUrl("jdbc:mysql://localhost:3306/etl_platform_cloud?characterEncoding=utf8");
 
 		mpg.setDataSource(dsc);
 		// 策略配置
 		StrategyConfig strategy = new StrategyConfig();
 
-		strategy.setTablePrefix(new String[] { "SYS_" });// 此处可以修改为您的表前缀
+		strategy.setTablePrefix(new String[] { "DATA" });// 此处可以修改为您的表前缀
 		strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
 		strategy.setSuperEntityClass("com.aofei.base.entity.DataEntity");
 		strategy.setSuperServiceImplClass("com.aofei.base.service.impl.BaseService");
@@ -74,7 +74,7 @@ public class AutoGeneratorHelper {
 
 		//strategy.setSuperEntityColumns(new String[]{"CREATE_USER","UPDATE_USER","CREATE_TIME","UPDATE_TIME","DEL_FLAG"});
 		strategy.setInclude(new String[] {
-				 "SYS_SMS_COUNTRY"
+				 "DATASERVICE_INTERFACE_FIELD"
 
 
 		});
@@ -87,7 +87,7 @@ public class AutoGeneratorHelper {
 
 		// 包配置
 		PackageConfig pc = new PackageConfig();
-		pc.setModuleName("sys");
+		pc.setModuleName("dataservice");
 
 		pc.setParent("com.aofei");// 自定义包路径
 		pc.setController("controller");// 这里是控制器包名，默认 web

@@ -10,7 +10,7 @@ import com.aofei.base.mapper.BaseMapper;
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-24
  */
 @MyBatisMapper
 public interface ServiceMonitorMapper extends BaseMapper<ServiceMonitor> {

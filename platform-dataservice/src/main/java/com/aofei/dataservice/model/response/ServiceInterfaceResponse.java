@@ -1,33 +1,47 @@
 package com.aofei.dataservice.model.response;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.aofei.base.entity.DataEntity;
-import com.aofei.base.model.response.BaseResponse;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
- *
+ * 数据接口管理
  * </p>
  *
  * @author Tony
- * @since 2018-11-11
+ * @since 2019-07-22
  */
 @Data
-public class PublishInterfaceResponse extends BaseResponse {
+public class ServiceInterfaceResponse {
 
     private static final long serialVersionUID = 1L;
 
     private Long serviceId;
 
+    /**
+     * 接口类型1:发布数据 2:接受数据
+     */
+    private Integer interfaceTyp;
+
+    @ApiModelProperty(hidden = true)
+    @JSONField(serialize=false)
+    private Long organizerId;
+
+    private String organizerName;
+
+    /**
+     * 接口名称
+     */
     private String serviceName;
     /**
      * Client调用时唯一识别的标示
@@ -44,10 +58,9 @@ public class PublishInterfaceResponse extends BaseResponse {
     /**
      * 用户可以自己选的，只支持FTP和Webservice
             1表示FTP，2表示Webservice
-
+            
      */
     private Integer returnType;
-
     private String datasource;
     /**
      * 服务接口生成的结果数据超时时间，超过这个时间就要删除数据，单位分钟
@@ -57,22 +70,37 @@ public class PublishInterfaceResponse extends BaseResponse {
      * 1表示压缩，0表示不压缩
      */
     private Integer isCompress;
-
-    private String tablename;
-
-    private String delimiter;
-
-    private String fields;
-
-    private String conditions;
-
-
-    private String interfaceDesc;
-
-    private String databaseId;
+    /**
+     * 数据源 ID
+     */
+    private Long databaseId;
 
     private String databaseName;
 
+    /**
+     * 连接模式名
+     */
+    private String schemaName;
+    /**
+     * 连接表名
+     */
+    private String tableName;
+    /**
+     * 分隔符
+     */
+    private String delimiter;
+    /**
+     * 输出字段
+     */
+    private String fields;
+    /**
+     * 条件表达式
+     */
+    private String conditions;
+    /**
+     * 接口说明
+     */
+    private String interfaceDesc;
     private Integer jobConfigId;
 
 
