@@ -331,7 +331,7 @@ public class KettleRepositoryController extends BaseController {
 	})
 	@ResponseBody
 	@RequestMapping("/open2")
-	protected void open2(@RequestParam String path, @RequestParam String type,@CurrentUser CurrentUserResponse user) throws Exception {
+	protected void open2(@RequestParam String path, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws Exception {
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
 		
@@ -358,6 +358,44 @@ public class KettleRepositoryController extends BaseController {
 			
 			JsonUtils.success(StringEscapeHelper.encode(graphXml));
 		}
+	}
+	
+	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
+        @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
+	})
+	@ResponseBody
+	@RequestMapping("/clone")
+	protected void clone(String path, String type, String newname, @CurrentUser CurrentUserResponse user) throws Exception {
+		String dir = path.substring(0, path.lastIndexOf("/"));
+		String name = path.substring(path.lastIndexOf("/") + 1);
+		
+		Repository repository = App.getInstance().getRepository();
+		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+		if(directory == null) {
+			JsonUtils.fail("克隆失败，目录：" + dir + "不存在！");
+			return;
+		}
+		
+		if(RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
+			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
+			transMeta.setRepositoryDirectory(directory);
+			transMeta.setObjectId(null);
+			transMeta.setName(newname);
+			
+			repository.save(transMeta, null, null);
+	    	
+		} else if(RepositoryObjectType.JOB.getExtension().equals(type)) {
+			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
+	    	jobMeta.setRepositoryDirectory(directory);
+	    	jobMeta.setObjectId(null);
+	    	jobMeta.setName(newname);
+	    	
+	    	repository.save(jobMeta, null, null);
+		}
+		
+		JsonUtils.success("克隆成功！");
 	}
 
 	@Authorization
@@ -397,6 +435,27 @@ public class KettleRepositoryController extends BaseController {
 				list.add(ro);
 			}
 		}
+		
+		Collections.sort(list, new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				if(o1 instanceof RepositoryObjectVO && o2 instanceof RepositoryObjectVO) {
+					RepositoryObjectVO r1 = (RepositoryObjectVO) o1;
+					RepositoryObjectVO r2 = (RepositoryObjectVO) o2;
+					
+					int value = r1.getModifiedDate().compareTo(r2.getModifiedDate());
+					
+					if(value > 0)
+						return value - value * 2;
+					else if(value < 0)
+						return Math.abs(value);
+					else
+						return value;
+						
+				}
+				return 0;
+			}
+		});
 		
 		return list;
 	}
