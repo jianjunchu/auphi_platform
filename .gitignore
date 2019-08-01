@@ -7,3 +7,5 @@
 *.settings
 */target/
 /WebContent/plugins
+platform-generator/
+platform-admin/src/main/resources/config
