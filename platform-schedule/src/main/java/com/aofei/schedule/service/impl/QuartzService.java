@@ -70,7 +70,9 @@ public class QuartzService implements IQuartzService {
         String jobName = request.getJobName();
         String group = request.getJobGroup();
 
-        request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
+        if(!request.getFilePath().contains(request.getOrganizerId().toString())){
+            request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
+        }
 
         if(!checkJobExist(jobName,group)){
             // 获取调度器
