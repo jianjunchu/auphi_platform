@@ -4,6 +4,9 @@ import com.aofei.joblog.entity.LogJob;
 import com.aofei.joblog.entity.LogJobStep;
 import com.aofei.kettle.JobExecutor;
 import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.toolkit.IdWorker;
 import org.pentaho.di.core.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,8 @@ public class JobLogTimerTask extends TimerTask {
 
     @Override
     public void run() {
+        logger.info("JobLogTimerTask.run");
+
 
         try {
             Date now =   new Date();
@@ -37,8 +42,8 @@ public class JobLogTimerTask extends TimerTask {
                 if(first){
                     first = false;
                     logJobSteps = new ArrayList<>();
-                    logJob.setJobConfigId(Long.valueOf(jobExecutor.getJob().getObjectId().getId()));
-
+                    logJob.setJobConfigId(Long.valueOf(jobExecutor.getJobMeta().getObjectId().getId()));
+                    logJob.setLogJobId(IdWorker.getId());
                     logJob.insertAllColumn();
 
                 }else{
@@ -49,24 +54,26 @@ public class JobLogTimerTask extends TimerTask {
                     logJob.updateById();
                     JSONArray jsonArray = jobExecutor.getJobMeasure();
                     for(int i = 0;i< jsonArray.size();i++ ){
-                        JSONArray childArray = (JSONArray) jsonArray.get(i);
+                        JSONObject childArray = (JSONObject) jsonArray.get(i);
                         LogJobStep logJobStep = getLogJobStep(i);
+                        logJobStep.setChannelId(jobExecutor.getExecutionId());
+                        logJobStep.setJobname(logJob.getJobName());
+                        logJobStep.setLogJobId(logJob.getLogJobId());
+
                         for(int j = 0;j< childArray.size();j++){
-                            logJobStep.setChannelId(jobExecutor.getExecutionId());
-                            logJobStep.setJobname(logJob.getJobName());
-                            logJobStep.setLogJobId(logJob.getLogJobId());
+
                             logJobStep.setStepname(String.valueOf(childArray.get(0)));
-                            logJobStep.setLinesRead(Long.valueOf(childArray.get(2).toString()));
+                            /*logJobStep.setLinesRead(Long.valueOf(childArray.get(2).toString()));
                             logJobStep.setLinesWritten(Long.valueOf(childArray.get(3).toString()));
                             logJobStep.setLinesInput(Long.valueOf(childArray.get(4).toString()));
                             logJobStep.setLinesOutput(Long.valueOf(childArray.get(5).toString()));
                             logJobStep.setLinesUpdated(Long.valueOf(childArray.get(6).toString()));
                             logJobStep.setLinesRejected(Long.valueOf(childArray.get(7).toString()));
-                            logJobStep.setErrors(Long.valueOf(childArray.get(8).toString()));
+                            logJobStep.setErrors(Long.valueOf(childArray.get(8).toString()));*/
                             logJobStep.setLogDate(now);
 
-                            logJobStep.insertOrUpdate();
                         }
+                        logJobStep.insertOrUpdate();
                     }
                 }
                 if(jobExecutor.isFinished()){
@@ -91,6 +98,7 @@ public class JobLogTimerTask extends TimerTask {
             }
 
         }catch (Exception e){
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
 

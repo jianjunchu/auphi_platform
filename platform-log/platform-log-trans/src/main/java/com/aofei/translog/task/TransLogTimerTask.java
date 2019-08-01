@@ -4,6 +4,7 @@ import com.aofei.kettle.TransExecutor;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.translog.entity.LogTrans;
 import com.aofei.translog.entity.LogTransStep;
+import com.baomidou.mybatisplus.toolkit.IdWorker;
 import org.pentaho.di.core.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class TransLogTimerTask extends TimerTask {
                     first = false;
                     logTransSteps = new ArrayList<>();
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
+                    logTrans.setLogTransId(IdWorker.getId());
                     logTrans.insertAllColumn();
 
                 }else{

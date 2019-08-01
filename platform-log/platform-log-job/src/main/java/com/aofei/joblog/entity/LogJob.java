@@ -33,7 +33,7 @@ public class LogJob extends Model<LogJob> {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "LOG_JOB_ID", type = IdType.ID_WORKER)
-    private String logJobId;
+    private Long logJobId;
     /**
      * 对应r_job表中的ID_JOB主键
      */

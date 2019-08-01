@@ -85,9 +85,10 @@ public class JobRunner extends QuartzJobBean {
 			logJob.setStatus("start");
 			logJob.setQrtzJobGroup(context.getJobDetail().getKey().getGroup());
 			logJob.setQrtzJobName(context.getJobDetail().getKey().getName());
-			logJob.setJobName(jobExecutor.getJob().getName());
+			logJob.setJobName(jobMeta.getName());
 			logJob.setChannelId(jobExecutor.getExecutionId());
-			logJob.setJobCnName(jobExecutor.getJob().getName());
+			logJob.setJobCnName(jobMeta.getName());
+
 
 			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
 			Timer logTimer = new Timer();
