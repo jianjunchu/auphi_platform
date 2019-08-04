@@ -23,6 +23,12 @@ public class GeneralScheduleRequest extends BaseRequest {
     private String jobName;
 
 
+    @ApiModelProperty(value = "原所属组update 必须携带")
+    private String originalJobGroup;
+
+    @ApiModelProperty(value = "原调度名称update 必须携带")
+    private String originalJobName;
+
     @ApiModelProperty(value = "备注")
     private String description;
 

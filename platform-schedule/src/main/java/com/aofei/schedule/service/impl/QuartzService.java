@@ -230,8 +230,8 @@ public class QuartzService implements IQuartzService {
     @Log(module = "周期调度",description = "更新调度信息")
     @Override
     public void update(GeneralScheduleRequest request, Class<Job> quartzExecuteClass) throws SchedulerException {
-        if(checkJobExist(request.getJobName(),request.getJobGroup())){
-            removeJob(request.getJobName(),request.getJobGroup(), request.getOrganizerId());
+        if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){
+            removeJob(request.getOriginalJobName(),request.getOriginalJobGroup(), request.getOrganizerId());
             create(request,quartzExecuteClass);
         }else{
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());

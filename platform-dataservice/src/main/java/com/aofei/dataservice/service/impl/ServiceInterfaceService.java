@@ -10,6 +10,7 @@ import com.aofei.dataservice.mapper.ServiceAuthMapper;
 import com.aofei.dataservice.mapper.ServiceInterfaceFieldMapper;
 import com.aofei.dataservice.model.request.ServiceInterfaceFieldRequest;
 import com.aofei.dataservice.model.request.ServiceInterfaceRequest;
+import com.aofei.dataservice.model.response.ServiceInterfaceFieldResponse;
 import com.aofei.dataservice.model.response.ServiceInterfaceResponse;
 import com.aofei.dataservice.service.IServiceAuthService;
 import com.aofei.dataservice.service.IServiceInterfaceService;
@@ -95,7 +96,15 @@ public class ServiceInterfaceService extends BaseService<PublishInterfaceMapper,
 
             serviceInterfaceFieldMapper.deleteByServiceId(request.getServiceId());
 
+            List<ServiceInterfaceFieldRequest> interfaceFields = request.getInterfaceFields();
+            for(ServiceInterfaceFieldRequest fieldRequest : interfaceFields){
 
+                ServiceInterfaceField serviceInterfaceFiel = BeanCopier.copy(fieldRequest,ServiceInterfaceField.class);
+                serviceInterfaceFiel.setServiceId(existing.getServiceId());
+                serviceInterfaceFiel.setFieldId(IdWorker.getId());
+                serviceInterfaceFiel.preInsert();
+                serviceInterfaceFiel.insert();
+            }
 
             super.insertOrUpdate(existing);
             return BeanCopier.copy(existing, ServiceInterfaceResponse.class);
@@ -124,7 +133,12 @@ public class ServiceInterfaceService extends BaseService<PublishInterfaceMapper,
     public ServiceInterfaceResponse get(Long deptId) {
         ServiceInterface existing = selectById(deptId);
         if(existing!=null){
-            return BeanCopier.copy(existing, ServiceInterfaceResponse.class);
+
+            List<ServiceInterfaceField> list = serviceInterfaceFieldMapper.selectByServiceId(existing.getServiceId());
+            ServiceInterfaceResponse response = BeanCopier.copy(existing, ServiceInterfaceResponse.class);
+            response.setInterfaceFields(BeanCopier.copy(list, ServiceInterfaceFieldResponse.class));
+
+            return response;
         }else{
             //不存在
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());

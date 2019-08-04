@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -102,6 +103,8 @@ public class ServiceInterfaceResponse {
      */
     private String interfaceDesc;
     private Integer jobConfigId;
+
+    private List<ServiceInterfaceFieldResponse> interfaceFields;
 
 
 
