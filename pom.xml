@@ -24,6 +24,7 @@
   <name>auphi_platform_v3.9.0</name>
 
 
+
   <properties>
     <package.environment>pro</package.environment>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -120,6 +121,18 @@
     <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
     <jwt.version></jwt.version>
   </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>my-deploy-release</id>
+      <url>http://101.37.17.102:8081/nexus/content/repositories/releases/</url>
+    </repository>
+
+    <snapshotRepository>
+      <id>my-deploy-snapshot</id>
+      <url>http://101.37.17.102:8081/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <repositories>
 
