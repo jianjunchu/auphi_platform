@@ -127,7 +127,8 @@ public class QuartzUtil {
 		{
 			PageList pl = DScheduleUtil.findJobFullnames(page,String.valueOf(userBean.getOrgId()),QuartzExecute.class.getName()
 					,sort,sortby,search_text,trigger_state) ;
-			List<String> fullnames = (List<String>)pl.getList() ;
+
+			List<String> fullnames = pl==null ? new ArrayList<>() : (List<String>)pl.getList() ;
 			for(String fullname:fullnames)
 			{
 				String jobgroup = fullname.split("\\.",2)[0] ;
