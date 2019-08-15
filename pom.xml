@@ -14,14 +14,31 @@
   </properties>  
   
   <repositories>
-  <repository>
-    <id>auphi</id>
-    <url>http://101.37.17.102:8081/nexus/content/groups/public/</url>
-  </repository>
+
+    <repository>
+      <id>maven-aliyun</id>
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>auphi</id>
+      <url>http://101.37.17.102:8081/nexus/content/groups/public/</url>
+    </repository>
+
     <repository>
       <id>artifacts.alfresco.com</id>
       <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
     </repository>
+
+
   </repositories>
 
   <dependencies>
@@ -390,9 +407,9 @@
       <version>2.7.8</version>
     </dependency>
     <dependency>
-      <groupId>javassist</groupId>
+      <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <version>3.12.1.GA</version>
+      <version>3.20.0-GA</version>
     </dependency>
     <dependency>
       <groupId>jaxen</groupId>
