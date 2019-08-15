@@ -22,7 +22,7 @@
 },{
   xtype: "textfield",
   name: "sqlServerInstance",
-  value:'SQLEXPRESS',
+  value:'',
   anchor: "-5"
 },{
   xtype: "label",

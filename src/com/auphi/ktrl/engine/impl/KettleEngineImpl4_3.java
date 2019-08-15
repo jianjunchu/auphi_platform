@@ -193,6 +193,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             success = 0;
             connected = false;
         } catch (Exception e) {
+            e.printStackTrace();
         	if(e.getCause() !=  null && e.getCause().getLocalizedMessage() != null){
 				String errorMessage = e.getCause().getLocalizedMessage();
 				if(errorMessage.indexOf("Incorrect password or login")>0){
@@ -448,6 +449,12 @@ public class KettleEngineImpl4_3 implements KettleEngine {
         
         //connect to the repository
         Method connect = repositoryClass.getDeclaredMethod("connect", new Class[]{String.class, String.class});
+
+
+        System.out.println("repName =====>"+repName);
+        System.out.println("LoginUser =====>"+Constants.get("LoginUser"));
+        System.out.println("LoginPassword =====>"+Constants.get("LoginPassword"));
+
         connect.invoke(rep, Constants.get("LoginUser"), Constants.get("LoginPassword"));
         
         return rep;

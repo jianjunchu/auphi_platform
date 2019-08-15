@@ -22,16 +22,6 @@
  *
  ******************************************************************************/
 package com.auphi.ktrl.system.repository.util;
-import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import com.auphi.ktrl.conn.bean.ConnConfigBean;
 import com.auphi.ktrl.conn.util.ConnectionPool;
 import com.auphi.ktrl.conn.util.DataBaseUtil;
@@ -43,6 +33,14 @@ import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.user.bean.UserBean;
 import com.auphi.ktrl.util.Constants;
 import com.auphi.ktrl.util.DBColumns;
+import org.apache.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RepositoryUtil 
 {
@@ -329,7 +327,38 @@ public class RepositoryUtil
        }
 	   return isExist;
    }
-   
+
+	public static List<RepositoryBean> getRepByVersion(String version)
+	{
+		List<RepositoryBean> repositoryList = new ArrayList<RepositoryBean>(8) ;
+		final String query_sql = "SELECT * FROM " + DBColumns.TABLE_REPOSITORY  + " WHERE " + DBColumns.COLUMN_REP_VERSION + "='" + version + "'";
+		Connection conn = null ;
+		try
+		{
+			conn = ConnectionPool.getConnection() ;
+			Statement stt = conn.createStatement() ;
+			ResultSet rs = stt.executeQuery(query_sql) ;
+
+			while(rs.next())
+			{
+				RepositoryBean bean = getRepositoryBean(rs) ;
+				repositoryList.add(bean) ;
+			}
+			rs.close() ;
+			stt.close() ;
+			return repositoryList ;
+		}
+		catch (SQLException e)
+		{
+			logger.error(e.getMessage(), e) ;
+			return null ;
+		}
+		finally
+		{
+			ConnectionPool.freeConn(null,null, null, conn) ;
+		}
+	}
+
    public static List<RepositoryBean> getRepByVersionAndOrg(String version, int orgId)
    {
        List<RepositoryBean> repositoryList = new ArrayList<RepositoryBean>(8) ;

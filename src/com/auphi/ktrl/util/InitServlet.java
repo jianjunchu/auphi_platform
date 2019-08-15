@@ -68,6 +68,15 @@ public class InitServlet extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
+		try{
+			VerifyLicense g = new VerifyLicense();
+			g.install(null);
+		}catch (Exception e){
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			return;
+		}
+
 		System.out.println(InitServlet.class.getResource("/log4j.properties"));
 		PropertyConfigurator.configure(InitServlet.class.getResource("/log4j_auphi.properties"));
 		

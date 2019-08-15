@@ -33,8 +33,9 @@ public class DatabaseCodec {
             jsonObject.put("streamingResults", databaseMeta.isStreamingResults());
         jsonObject.put("dataTablespace", databaseMeta.getDataTablespace());
         jsonObject.put("indexTablespace", databaseMeta.getIndexTablespace());
-        if (databaseMeta.getSQLServerInstance() != null)
+        if (!StringUtils.isEmpty(databaseMeta.getSQLServerInstance()))
             jsonObject.put("sqlServerInstance", databaseMeta.getSQLServerInstance());
+
         if (databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator())
             jsonObject.put("usingDoubleDecimalAsSchemaTableSeparator", databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator());
         jsonObject.put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, databaseMeta.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE));
