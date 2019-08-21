@@ -124,7 +124,8 @@ public class WebserviceTaskRun {
 	public Map<String,Object> runTransTask(int connID,String SQL,String slave,String transParams,String userName,String password){
 		try{
 			TransExecutionConfiguration config = createRemoteTransExecutionConfiguration();
-			
+
+
 			KettleDatabaseRepository repository = new KettleDatabaseRepository();
 			repository.init(kettleDatabaseRepositoryMeta);
 			// 连接资源库

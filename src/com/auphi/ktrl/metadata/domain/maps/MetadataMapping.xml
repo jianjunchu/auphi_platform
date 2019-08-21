@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="metadataMapping">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.ID AS id
+        , a.MAPPING_GROUP_ID AS mappingGroupId
+        , mmg.MAPPING_GROUP_NAME AS mappingGroupName
+        , a.SOURCE_DB_ID AS sourceDbId
+        , srd.NAME AS sourceDbName
+        , a.SOURCE_SCHEMA_NAME AS sourceSchemaName
+        , a.SOURCE_TABLE_NAME AS sourceTableName
+        , a.SOURCE_COLUMN_NAME AS sourceColumnName
+        , a.SOURCE_COLUMN_TYPE AS sourceColumnType
+        , a.SOURCE_COLUMN_TYPE_ETL AS sourceColumnTypeEtl
+        , a.SOURCE_COLUMN_LENGTH AS sourceColumnLength
+        , a.SOURCE_COLUMN_SCALE AS sourceColumnScale
+        , a.SOURCE_COLUMN_COMMENTS AS sourceColumnComments
+        , a.SOURCE_COLUMN_ORDER AS sourceColumnOrder
+        , a.IS_PK AS isPk
+        , a.DEST_DB_ID AS destDbId
+        , drd.NAME AS destDbName
+        , a.DEST_SCHEMA_NAME AS destSchemaName
+        , a.DEST_TABLE_NAME AS destTableName
+        , a.DEST_COLUMN_NAME AS destColumnName
+        , a.DEST_COLUMN_TYPE AS destColumnType
+        , a.DEST_COLUMN_TYPE_ETL AS destColumnTypeEtl
+        , a.DEST_COLUMN_LENGTH AS destColumnLength
+        , a.DEST_COLUMN_SCALE AS destColumnScale
+        , a.EXTRACT_STYLE AS extractStyle
+        , a.EXTRACT_STATUS AS extractStatus
+        , a.LAST_EXTRACT_START_TIME AS lastExtractStartTime
+        , a.LAST_EXTRACT_END_TIME AS lastExtractEndTime
+        , a.CREATE_TIME AS createTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_TIME AS updateTime
+        , a.UPDATE_USER AS updateUser
+    </sql>
+
+    <sql id="Base_Joins">
+        LEFT JOIN METADATA_MAPPING_GROUP mmg ON mmg.ID = a.MAPPING_GROUP_ID
+        LEFT JOIN R_DATABASE srd ON srd.ID_DATABASE = a.SOURCE_DB_ID
+        LEFT JOIN R_DATABASE drd ON drd.ID_DATABASE = a.DEST_DB_ID
+    </sql>
+
+
+    <select id="selectList" parameterType="map" resultType="com.auphi.ktrl.metadata.domain.MetadataMapping">
+        select
+        <include refid="Base_Column_List"/>
+        from METADATA_MAPPING a
+        <include refid="Base_Joins"/>
+      
+        <where>
+            <if test="mappingGroupId !=null and mappingGroupId!=''">
+                and a.MAPPING_GROUP_ID = #{mappingGroupId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectCount" parameterType="map"  resultType="java.lang.Integer">
+        select
+        count(*)
+        from METADATA_MAPPING a
+        <include refid="Base_Joins"/>
+        <where>
+            <if test="mappingGroupId !=null and mappingGroupId!=''">
+                and a.MAPPING_GROUP_ID = #{mappingGroupId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" parameterType="map" resultType="com.auphi.ktrl.metadata.domain.MetadataMapping">
+
+        select
+        <include refid="Base_Column_List"/>
+        from METADATA_MAPPING a
+        <include refid="Base_Joins"/>
+        where  a.ID = #{id}
+
+    </select>
+
+    <insert id="insert">
+		insert into METADATA_MAPPING (
+              ID
+            , MAPPING_GROUP_ID
+            , SOURCE_DB_ID
+            , SOURCE_SCHEMA_NAME
+            , SOURCE_TABLE_NAME
+            , SOURCE_COLUMN_NAME
+            , SOURCE_COLUMN_TYPE
+            , SOURCE_COLUMN_TYPE_ETL
+            , SOURCE_COLUMN_LENGTH
+            , SOURCE_COLUMN_SCALE
+            , SOURCE_COLUMN_COMMENTS
+            , SOURCE_COLUMN_ORDER
+            , IS_PK
+            , DEST_DB_ID
+            , DEST_SCHEMA_NAME
+            , DEST_TABLE_NAME
+            , DEST_COLUMN_NAME
+            , DEST_COLUMN_TYPE
+            , DEST_COLUMN_TYPE_ETL
+            , DEST_COLUMN_LENGTH
+            , DEST_COLUMN_SCALE
+            , EXTRACT_STYLE
+            , EXTRACT_STATUS
+            , LAST_EXTRACT_START_TIME
+            , LAST_EXTRACT_END_TIME
+            , CREATE_TIME
+            , CREATE_USER
+            , UPDATE_TIME
+            , UPDATE_USER
+		) values(
+              #{id}
+            , #{mappingGroupId}
+            , #{sourceDbId}
+            , #{sourceSchemaName}
+            , #{sourceTableName}
+            , #{sourceColumnName}
+            , #{sourceColumnType}
+            , #{sourceColumnTypeEtl}
+            , #{sourceColumnLength}
+            , #{sourceColumnScale}
+            , #{sourceColumnComments}
+            , #{sourceColumnOrder}
+            , #{isPk}
+            , #{destDbId}
+            , #{destSchemaName}
+            , #{destTableName}
+            , #{destColumnName}
+            , #{destColumnType}
+            , #{destColumnTypeEtl}
+            , #{destColumnLength}
+            , #{destColumnScale}
+            , #{extractStyle}
+            , #{extractStatus}
+            , #{lastExtractStartTime}
+            , #{lastExtractEndTime}
+            , #{createTime}
+            , #{createUser}
+            , #{updateTime}
+            , #{updateUser}
+		)
+	</insert>
+
+    <update id="updateById">
+        update METADATA_MAPPING a
+        <set>
+              a.MAPPING_GROUP_ID = #{mappingGroupId}
+            , a.SOURCE_DB_ID = #{sourceDbId}
+            , a.SOURCE_SCHEMA_NAME = #{sourceSchemaName}
+            , a.SOURCE_TABLE_NAME = #{sourceTableName}
+            , a.SOURCE_COLUMN_NAME = #{sourceColumnName}
+            , a.SOURCE_COLUMN_TYPE = #{sourceColumnType}
+            , a.SOURCE_COLUMN_TYPE_ETL = #{sourceColumnTypeEtl}
+            , a.SOURCE_COLUMN_LENGTH = #{sourceColumnLength}
+            , a.SOURCE_COLUMN_SCALE = #{sourceColumnScale}
+            , a.SOURCE_COLUMN_COMMENTS = #{sourceColumnComments}
+            , a.SOURCE_COLUMN_ORDER = #{sourceColumnOrder}
+            , a.IS_PK = #{isPk}
+            , a.DEST_DB_ID = #{destDbId}
+            , a.DEST_SCHEMA_NAME = #{destSchemaName}
+            , a.DEST_TABLE_NAME = #{destTableName}
+            , a.DEST_COLUMN_NAME = #{destColumnName}
+            , a.DEST_COLUMN_TYPE = #{destColumnType}
+            , a.DEST_COLUMN_TYPE_ETL = #{destColumnTypeEtl}
+            , a.DEST_COLUMN_LENGTH = #{destColumnLength}
+            , a.DEST_COLUMN_SCALE = #{destColumnScale}
+            , a.EXTRACT_STYLE = #{extractStyle}
+            , a.EXTRACT_STATUS = #{extractStatus}
+            , a.LAST_EXTRACT_START_TIME = #{lastExtractStartTime}
+            , a.LAST_EXTRACT_END_TIME = #{lastExtractEndTime}
+            , a.CREATE_TIME = #{createTime}
+            , a.CREATE_USER = #{createUser}
+            , a.UPDATE_TIME = #{updateTime}
+            , a.UPDATE_USER = #{updateUser}
+        </set>
+        where a.ID = #{id}
+    </update>
+
+
+    <update id="deleteById">
+        delete from METADATA_MAPPING where ID = #{id}
+    </update>
+
+    <update id="deleteByIds">
+        delete from METADATA_MAPPING  WHERE ID in (${ids})
+    </update>
+</mapper>

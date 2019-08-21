@@ -144,8 +144,8 @@ public static String getSchemaNames(String schemaNamejson)
 	public static Database getDatabase(Integer id)
 	{
 		//List<FastConfigDatabaseView> fastConfigDatabaseViews= new ArrayList<FastConfigDatabaseView>();	
-   	FastConfigDatabaseView fastConfigDatabaseView =new FastConfigDatabaseView();
-   	String typeName=null;
+   		FastConfigDatabaseView fastConfigDatabaseView =new FastConfigDatabaseView();
+   		String typeName=null;
 		Database database= null;
 		Connection connection=null;
 		PreparedStatement smt=null;
@@ -207,9 +207,6 @@ public static String getSchemaNames(String schemaNamejson)
        		fastConfigDatabaseView.getUserName(), Encr.decryptPasswordOptionallyEncrypted(fastConfigDatabaseView.getPassword()));
 
 
-
-
-
 		for(Map<String,String> map:attributes){
 			databaseMeta.getAttributes().put(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE), Const.NVL(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR), ""));
 		}
@@ -218,6 +215,8 @@ public static String getSchemaNames(String schemaNamejson)
 	    ConnectionPool.freeConn(rs, smt, null, connection);
 		return  database;
 	}
+
+
 
 
 	public static TreeMap<Integer, FieldMappingView> getDestHashMap(String json)

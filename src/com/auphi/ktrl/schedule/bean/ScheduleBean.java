@@ -67,6 +67,7 @@ public class ScheduleBean implements Serializable{
 	private String errorNoticeUserName;
 	private String errorNoticeUserId;
 	private String ha;
+	private String beforeSell;//前置脚本
 	
 	
 	public String getMiddlePath() {
@@ -356,5 +357,13 @@ public class ScheduleBean implements Serializable{
 
 	public void setHa(String ha) {
 		this.ha = ha;
+	}
+
+	public String getBeforeSell() {
+		return beforeSell;
+	}
+
+	public void setBeforeSell(String beforeSell) {
+		this.beforeSell = beforeSell;
 	}
 }

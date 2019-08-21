@@ -85,6 +85,7 @@ public class ScheduleUtil {
 			scheduleBean.setHa(request.getParameter("ha")==null?"":new String(request.getParameter("ha").getBytes("ISO8859-1"), "UTF-8"));
 			scheduleBean.setErrorNoticeUserName(request.getParameter("errorNoticeUserName")==null?"":new String(request.getParameter("errorNoticeUserName").getBytes("ISO8859-1"), "UTF-8"));
 			scheduleBean.setErrorNoticeUserId(request.getParameter("errorNoticeUserId")==null?"":new String(request.getParameter("errorNoticeUserId").getBytes("ISO8859-1"), "UTF-8"));
+			scheduleBean.setBeforeSell(request.getParameter("beforeSell")==null?"":new String(request.getParameter("beforeSell").getBytes("ISO8859-1"), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage(),e);
@@ -301,6 +302,8 @@ public class ScheduleUtil {
 				scheduleBean.setRemoteServer(data.getString("remoteServer"));
 				scheduleBean.setHa(data.getString("ha"));
 				scheduleBean.setErrorNoticeUserId(data.getString("errorNoticeUserId"));
+				scheduleBean.setBeforeSell(data.getString("beforeSell"));
+
 				String errorNoticeUserName = UserUtil.getErrorNoticeUserName(data.getString("errorNoticeUserId"));
 				scheduleBean.setErrorNoticeUserName(errorNoticeUserName);
 			}

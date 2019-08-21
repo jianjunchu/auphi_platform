@@ -44,7 +44,9 @@ var menu = new Ext.Panel({
                      expanded: true,
                      children: [
                          { iconCls:'icon_influence',  text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.Influence") %></span>", leaf: true, href: 'javascript:toLoadurl(\'metadata?action=influence\',\'metadataInfluence_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.Influence") %>\')' },
-                         { iconCls:'icon_descent',  text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %></span>", leaf: true, href: 'javascript:toLoadurl(\'metadata?action=descent\',\'metadataDescent_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %>\')' }
+                         { iconCls:'icon_descent',  text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %></span>", leaf: true, href: 'javascript:toLoadurl(\'metadata?action=descent\',\'metadataDescent_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %>\')' },
+						 { iconCls:'icon_influence',  text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMappingGroup") %></span>", leaf: true, href: 'javascript:toLoadurl(\'metadataMappingGroup/index.shtm\',\'metadataInfluence_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMappingGroup") %>\')' },
+						 { iconCls:'icon_descent',  text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMapping") %></span>", leaf: true, href: 'javascript:toLoadurl(\'metadataMapping/index.shtm\',\'metadataDescent_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMapping") %>\')' }
                      ]
                  }
              }

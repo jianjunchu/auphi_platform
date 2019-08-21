@@ -30,22 +30,32 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.auphi.ktrl.util.SnowflakeIdWorker;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.apache.log4j.Logger;
 
-import com.auphi.ktrl.schedule.tools.ConnectionPoolTools;
-import com.auphi.ktrl.util.InitServlet;
+
 
 public class ConnectionPool {
 	private static Logger logger = Logger.getLogger(ConnectionPool.class);
 	
 	private static BasicDataSource dataSource = null;
 
+
+	private static SnowflakeIdWorker snowflakeIdWorker;
+
+	public static long nextId(){
+		return snowflakeIdWorker.nextId();
+	}
+
 	/**
 	 * initialize connection pool
 	 */
 	public static void init() {
+
+		snowflakeIdWorker = new SnowflakeIdWorker(0, 0);
+
 	    if (dataSource != null) {
 	        try {
 	            dataSource.close();

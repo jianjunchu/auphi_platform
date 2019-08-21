@@ -15,6 +15,7 @@ import com.auphi.data.hub.service.DatasourceService;
 import com.auphi.ktrl.engine.KettleEngine;
 import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
 import com.auphi.ktrl.schedule.util.DatabaseUtil;
+import com.auphi.ktrl.schedule.util.MarketUtil;
 import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.repository.util.RepositoryUtil;
 import com.auphi.ktrl.system.user.bean.UserBean;
@@ -51,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -819,31 +821,19 @@ public class DatasourceController extends BaseMultiActionController {
     public ModelAndView tables(HttpServletRequest req,HttpServletResponse resp) throws IOException{
         try {
             JsonUtils.putResponse(resp);
-            int repId = ServletRequestUtils.getIntParameter(req,"repId",-1);
             String databaseId = ServletRequestUtils.getStringParameter(req,"databaseId","");
             String schemanamein = ServletRequestUtils.getStringParameter(req,"schemanamein",null);
             String tableName = ServletRequestUtils.getStringParameter(req,"tableName",null);
-            RepositoryBean repBean = RepositoryUtil.getRepositoryByID(repId);
-            Repository rep = null;
             Database database = null;
-            RepositoriesMeta repositories = new RepositoriesMeta();
-
             try {
-
-                KettleEngine kettleEngine = new KettleEngineImpl4_3();
-                rep = (Repository) kettleEngine.getRepFromDatabase(repBean.getRepositoryName(), Constants.get("LoginUser"), Constants.get("LoginPassword"));
 
 
                 if(!StringUtil.isEmpty(databaseId)){
-                    Long objectId = Long.valueOf(databaseId);
-
-                    DatabaseMeta databaseMeta = rep.loadDatabaseMeta(new LongObjectId(objectId),null);
-
-                    database = new Database(databaseMeta);
+                    database = MarketUtil.getDatabase(Integer.parseInt(databaseId));
                     database.connect();
-
-
                     String names[] = database.getTablenames(schemanamein,false);
+
+                    Arrays.sort(names);
 
                     List<Map<String,Object>> list = Lists.newArrayList();
                     for(String name:names){
@@ -856,8 +846,6 @@ public class DatasourceController extends BaseMultiActionController {
                     }
 
 
-                    rep.disconnect();
-                    database.disconnect();
                     String jsonString = JsonHelper.encodeObject2Json(list);
                     write(jsonString, resp);
 
@@ -866,15 +854,12 @@ public class DatasourceController extends BaseMultiActionController {
                 JsonUtils.fail("获取失败！");
 
             }catch (Exception e){
-                e.printStackTrace();
-                if(rep !=null){
-                    rep.disconnect();
-                }
+
+                JsonUtils.fail("获取失败！"+e.getMessage());
+            }finally {
                 if(database !=null){
                     database.disconnect();
                 }
-
-                JsonUtils.fail("获取失败！"+e.getMessage());
             }
 
         } catch (Exception e) {
