@@ -11,6 +11,7 @@ import com.auphi.ktrl.metadata.service.MetadataMappingGroupService;
 import com.auphi.ktrl.metadata.service.MetadataMappingService;
 import com.auphi.ktrl.schedule.util.MarketUtil;
 import com.auphi.ktrl.system.user.bean.UserBean;
+import com.auphi.ktrl.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -27,9 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @ApiIgnore
 @Controller("metadataMapping")
@@ -79,10 +78,18 @@ public class MetadataMappingController extends BaseMultiActionController {
     }
 
     public ModelAndView save(HttpServletRequest req,HttpServletResponse resp,MetadataMapping mapping) throws IOException{
+
+        Database database = null;
+
         try{
+
+
 
             UserBean user = (UserBean)req.getSession().getAttribute("userBean");
             if(mapping.getId()==null){
+
+                database = MarketUtil.getDatabase(mapping.getSourceDbId().intValue());
+                database.connect();
 
                 String[] sourceTableNames = null;
 
@@ -92,8 +99,6 @@ public class MetadataMappingController extends BaseMultiActionController {
                 }else{
                     sourceTableNames = mapping.getSourceTableName().split(",");
                 }
-
-
 
                 List<MetadataMapping> mappings = new ArrayList<>();
 
@@ -107,12 +112,15 @@ public class MetadataMappingController extends BaseMultiActionController {
 
                     MetadataMapping metadataMapping = new MetadataMapping();
 
+
                     BeanUtilsBean.getInstance().getConvertUtils()
                             .register(new SqlDateConverter(null), Date.class);
                     BeanUtils.copyProperties(metadataMapping,mapping);
 
                     metadataMapping.setSourceTableName(tableName);
                     metadataMapping.setDestTableName(tableName);
+                    metadataMapping.setSourceColumnName(getTableColumn(database,metadataMapping.getSourceSchemaName(),metadataMapping.getSourceTableName()));
+                    metadataMapping.setDestColumnName(metadataMapping.getSourceColumnName());
                     mappings.add(metadataMapping);
                 }
 
@@ -121,12 +129,18 @@ public class MetadataMappingController extends BaseMultiActionController {
             }else{
 
                 MetadataMapping ex = metadataMappingService.get(mapping.getId());
+
+                database = MarketUtil.getDatabase(ex.getSourceDbId().intValue());
+                database.connect();
+
                 ex.setMappingGroupId(mapping.getMappingGroupId());
                 ex.setDestDbId(mapping.getDestDbId());
                 ex.setDestSchemaName(mapping.getDestSchemaName());
                 ex.setDestTableName(mapping.getDestTableName());
                 ex.setUpdateTime(new Date());
                 ex.setUpdateUser(user.getUser_id());
+                ex.setSourceColumnName(getTableColumn(database,ex.getSourceSchemaName(),ex.getSourceTableName()));
+                ex.setDestColumnName(ex.getSourceColumnName());
                 metadataMappingService.update(ex);
                 this.setOkTipMsg("更新成功", resp);
             }
@@ -135,9 +149,24 @@ public class MetadataMappingController extends BaseMultiActionController {
         } catch(Exception e){
             e.printStackTrace();
             this.setFailTipMsg(e.getMessage(), resp);
+        }finally {
+            if(database !=null){
+                database.disconnect();
+            }
         }
         return null;
     }
+
+
+    private String getTableColumn(Database database,String schemaname,String tablename) throws KettleDatabaseException {
+
+        String tname = StringUtils.isEmpty(schemaname) ? tablename : schemaname +"."+tablename ;
+        String[] fieldNames =  database.getTableFields(tname).getFieldNames();
+        return StringUtils.join(fieldNames,",");
+
+    }
+
+
 
       private String[]  getTables(Integer dbId,String schemaname) throws KettleDatabaseException {
           Database database = null;

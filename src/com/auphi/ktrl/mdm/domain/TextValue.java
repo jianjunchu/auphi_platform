@@ -44,4 +44,13 @@ public class TextValue {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public TextValue() {
+
+	}
+
+	public TextValue(String text, String value) {
+		this.text = text;
+		this.value = value;
+	}
 }
