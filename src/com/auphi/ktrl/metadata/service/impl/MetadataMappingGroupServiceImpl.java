@@ -21,9 +21,9 @@ public class MetadataMappingGroupServiceImpl implements MetadataMappingGroupServ
     SystemDao systemDao;
 
     @Override
-    public PaginationSupport<MetadataMappingGroup> getPage(Dto<String, Object> dto) throws SQLException {
+    public PaginationSupport<MetadataMappingGroup> getPage(MetadataMappingGroup dto) throws SQLException {
 
-        List<MetadataMappingGroup> items = systemDao.queryForPage("metadataMappingGroup.selectList", dto);
+        List<MetadataMappingGroup> items = systemDao.queryForPage("metadataMappingGroup.selectList", dto,dto.getStart(),dto.getLimit());
         Integer total = (Integer)systemDao.queryForObject("metadataMappingGroup.selectCount",dto);
         PaginationSupport<MetadataMappingGroup> page = new PaginationSupport<MetadataMappingGroup>(items, total);
         return page;

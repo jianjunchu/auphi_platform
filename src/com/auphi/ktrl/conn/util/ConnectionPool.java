@@ -23,11 +23,7 @@
  ******************************************************************************/
 package com.auphi.ktrl.conn.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
 import com.auphi.ktrl.util.SnowflakeIdWorker;
@@ -42,7 +38,7 @@ public class ConnectionPool {
 	
 	private static BasicDataSource dataSource = null;
 
-
+	private static Properties p = new Properties();
 	private static SnowflakeIdWorker snowflakeIdWorker;
 
 	public static long nextId(){
@@ -66,7 +62,7 @@ public class ConnectionPool {
 	    }
 
 	    try {
-	        Properties p = new Properties();
+
 	        p.setProperty("driverClassName", DataBaseUtil.connConfig.getDriverclass());
 	        p.setProperty("url", DataBaseUtil.connConfig.getUrl());
 	        p.setProperty("password", DataBaseUtil.connConfig.getPassword());
@@ -100,7 +96,7 @@ public class ConnectionPool {
 	 * @return connection
 	 * @throws SQLException
 	 */
-    public static synchronized Connection getConnection(){
+    public static  Connection getConnection(){
         Connection conn = null;
        try{
         	if (dataSource != null) {
@@ -109,6 +105,8 @@ public class ConnectionPool {
         }catch(Exception e){
         	logger.error(e.getMessage(), e);
         }
+
+
       //  conn= ConnectionPoolTools.getConnection();  
        /// System.out.println("=============conn 2"+conn);  
         return conn;
@@ -121,7 +119,7 @@ public class ConnectionPool {
      * @param pstmt
      * @param conn
      */
-    public static synchronized void freeConn(ResultSet rs, Statement stmt, PreparedStatement pstmt, Connection conn){
+    public static  void freeConn(ResultSet rs, Statement stmt, PreparedStatement pstmt, Connection conn){
     	try{
     		if(rs != null){
 				rs.close();

@@ -20,6 +20,7 @@
         , a.SOURCE_COLUMN_COMMENTS AS sourceColumnComments
         , a.SOURCE_COLUMN_ORDER AS sourceColumnOrder
         , a.IS_PK AS isPk
+        , a.IS_INCREMENTAL_COLUMN AS isIncrementalColumn
         , a.DEST_DB_ID AS destDbId
         , drd.NAME AS destDbName
         , a.DEST_SCHEMA_NAME AS destSchemaName
@@ -56,7 +57,17 @@
             <if test="mappingGroupId !=null and mappingGroupId!=''">
                 and a.MAPPING_GROUP_ID = #{mappingGroupId}
             </if>
+            <if test="sourceDbId !=null and sourceDbId!=''">
+                and a.SOURCE_DB_ID = #{sourceDbId}
+            </if>
+            <if test="sourceSchemaName !=null and sourceSchemaName!=''">
+                and a.SOURCE_SCHEMA_NAME = #{sourceSchemaName}
+            </if>
+            <if test="sourceTableName !=null and sourceTableName!=''">
+                and a.SOURCE_TABLE_NAME = #{sourceTableName}
+            </if>
         </where>
+
     </select>
 
 
@@ -69,7 +80,25 @@
             <if test="mappingGroupId !=null and mappingGroupId!=''">
                 and a.MAPPING_GROUP_ID = #{mappingGroupId}
             </if>
+            <if test="sourceDbId !=null and sourceDbId!=''">
+                and a.SOURCE_DB_ID = #{sourceDbId}
+            </if>
+            <if test="sourceSchemaName !=null and sourceSchemaName!=''">
+                and a.SOURCE_SCHEMA_NAME = #{sourceSchemaName}
+            </if>
+            <if test="sourceTableName !=null and sourceTableName!=''">
+                and a.SOURCE_TABLE_NAME = #{sourceTableName}
+            </if>
         </where>
+    </select>
+
+    <select id="selectSourceTableCount" parameterType="metadataMapping"  resultType="java.lang.Integer">
+        select
+        count(*)
+        from METADATA_MAPPING a
+        where a.SOURCE_DB_ID = #{sourceDbId}
+        and a.SOURCE_SCHEMA_NAME = #{sourceSchemaName}
+        and a.SOURCE_TABLE_NAME = #{sourceTableName}
     </select>
 
     <select id="selectById" parameterType="map" resultType="com.auphi.ktrl.metadata.domain.MetadataMapping">
@@ -161,6 +190,7 @@
             , a.SOURCE_COLUMN_COMMENTS = #{sourceColumnComments}
             , a.SOURCE_COLUMN_ORDER = #{sourceColumnOrder}
             , a.IS_PK = #{isPk}
+            , a.IS_INCREMENTAL_COLUMN  = #{isIncrementalColumn}
             , a.DEST_DB_ID = #{destDbId}
             , a.DEST_SCHEMA_NAME = #{destSchemaName}
             , a.DEST_TABLE_NAME = #{destTableName}
@@ -180,6 +210,19 @@
         </set>
         where a.ID = #{id}
     </update>
+
+    <update id="updateDestTable">
+        update METADATA_MAPPING a
+        <set>
+              a.DEST_DB_ID = #{destDbId}
+            , a.DEST_SCHEMA_NAME = #{destSchemaName}
+            , a.DEST_TABLE_NAME = #{destTableName}
+
+        </set>
+        where a.SOURCE_DB_ID = #{sourceDbId} and a.SOURCE_SCHEMA_NAME = #{sourceSchemaName} and a.SOURCE_TABLE_NAME = #{sourceTableName}
+    </update>
+
+
 
 
     <update id="deleteById">

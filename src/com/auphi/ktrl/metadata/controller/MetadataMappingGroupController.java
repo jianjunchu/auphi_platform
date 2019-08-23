@@ -35,12 +35,11 @@ public class MetadataMappingGroupController extends BaseMultiActionController {
         return new ModelAndView(INDEX);
     }
 
-    public ModelAndView query(HttpServletRequest req,HttpServletResponse resp) throws IOException {
-        Dto<String,Object> dto = new BaseDto();
+    public ModelAndView query(HttpServletRequest req,HttpServletResponse resp,MetadataMappingGroup metadataMappingGroup) throws IOException {
+
 
         try {
-            this.setPageParam(dto, req);
-            PaginationSupport<MetadataMappingGroup> page = metadataMappingGroupService.getPage(dto);
+            PaginationSupport<MetadataMappingGroup> page = metadataMappingGroupService.getPage(metadataMappingGroup);
             String jsonString = JsonHelper.encodeObject2Json(page);
             write(jsonString, resp);
         } catch (Exception e) {

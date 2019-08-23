@@ -160,10 +160,7 @@ public static String getSchemaNames(String schemaNamejson)
 		   	smt.setInt(1, id);
 	        rs=smt.executeQuery();
 
-
-
-
-	        while (rs.next()) 
+	        while (rs.next())
 	        {
 				fastConfigDatabaseView.setIdDatase(rs.getInt("ID_DATABASE"));
 				fastConfigDatabaseView.setName(rs.getString("NAME"));

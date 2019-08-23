@@ -8,6 +8,7 @@ import com.auphi.ktrl.conn.util.ConnectionPool;
 import com.auphi.ktrl.metadata.domain.MetadataMapping;
 import com.auphi.ktrl.metadata.domain.MetadataMappingGroup;
 import com.auphi.ktrl.metadata.service.MetadataMappingService;
+import com.auphi.ktrl.system.user.bean.UserBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,10 @@ public class MetadataMappingServiceImpl implements MetadataMappingService {
     SystemDao systemDao;
 
     @Override
-    public PaginationSupport<MetadataMapping> getPage(Dto<String, Object> dto) throws SQLException {
+    public PaginationSupport<MetadataMapping> getPage(MetadataMapping dto) throws SQLException {
 
-        List<MetadataMapping> items = systemDao.queryForPage("metadataMapping.selectList", dto);
+
+        List<MetadataMapping> items = systemDao.queryForPage("metadataMapping.selectList", dto, dto.getStart(), dto.getLimit());
         Integer total = (Integer)systemDao.queryForObject("metadataMapping.selectCount",dto);
         PaginationSupport<MetadataMapping> page = new PaginationSupport<MetadataMapping>(items, total);
         return page;
@@ -63,6 +65,17 @@ public class MetadataMappingServiceImpl implements MetadataMappingService {
         Dto dto = new BaseDto();
         dto.put("id", id);
         return (MetadataMapping)this.systemDao.queryForObject("metadataMapping.selectById", dto);
+    }
+
+    @Override
+    public int updateDestTable(MetadataMapping ex) {
+        return this.systemDao.update("metadataMapping.updateDestTable",ex);
+
+    }
+
+    @Override
+    public int countSourceTable(MetadataMapping metadataMapping) {
+        return (Integer)this.systemDao.queryForObject("metadataMapping.selectSourceTableCount",metadataMapping);
     }
 
     @Override

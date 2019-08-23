@@ -164,6 +164,110 @@ Ext.onReady(function(){
     });
 
 
+    // 数据源
+    var dbIdComboBox = new Ext.form.ComboBox({
+        fieldLabel : '源数据库',
+        emptyText:'请选择源数据库',
+        hiddenName : "sourceDbId",
+        forceSelection: true,
+        anchor : '50%',
+        store: dbIdStore,
+        valueField : "sourceId",
+        displayField : "sourceName",
+        typeAhead: true,
+        mode: 'local',
+        triggerAction: 'all',
+        selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+        allowBlank : false,
+        resizable : true,
+        editable:false,
+        listeners: {
+            select : function(comboBox, record,index){
+                schemaNameComboBox.clearValue();
+                tableNameComboBox.clearValue();
+                var id_database = comboBox.value;
+                schemaNameComboBox.store.load({
+                    params : {id_database : id_database},
+                    callback:function(r,options,success){
+                        tableNameComboBox.store.load({
+                            params : {
+                                id_database : id_database,
+                                schema_name : ""
+                            }
+                        });
+                    }
+                });
+                store_reload(false);
+            }
+        }
+    });
+
+
+
+    var schemaNameComboBox = new Ext.form.ComboBox({
+        fieldLabel : '源模式名',
+        emptyText:'请选择源模式名',
+        hiddenName : "sourceSchemaName",
+        forceSelection: true,
+        anchor : '50%',
+        store: new Ext.data.JsonStore({
+            fields: ['value', 'text'],
+            url : "../mdmTable/getSchemaName.shtml",
+            autoLoad:true,
+            root : ""
+        }),
+        valueField : "value",
+        displayField : "text",
+        typeAhead: true,
+        mode: 'local',
+        triggerAction: 'all',
+        selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+        resizable : true,
+        editable:false,
+        listeners: {
+            select : function(combobox, record,index){
+                tableNameComboBox.clearValue();
+                tableNameComboBox.store.load({
+                    params : {
+                        id_database : dbIdComboBox.value,
+                        schema_name : combobox.value
+                    }
+                });
+                store_reload(false);
+            }
+        }
+    });
+
+
+    var tableNameComboBox = new Ext.form.ComboBox({
+        fieldLabel : '源模式名',
+        emptyText:'请选择源模式名',
+        hiddenName : "sourceSchemaName",
+        forceSelection: true,
+        anchor : '50%',
+        store: new Ext.data.JsonStore({
+            fields: ['value', 'text'],
+            url : "../mdmTable/getTableName.shtml",
+            autoLoad:true,
+            root : ""
+        }),
+        valueField : "value",
+        displayField : "text",
+        typeAhead: true,
+        mode: 'local',
+        triggerAction: 'all',
+        selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+        resizable : true,
+        editable:false,
+        listeners: {
+            select : function(combobox, record,index){
+                store_reload(false);
+            }
+        }
+    });
+
+
+
 
     var metadataMappingGroupComboBox = new Ext.form.ComboBox({
         emptyText:'请选择所属组',
@@ -237,7 +341,7 @@ Ext.onReady(function(){
 
             }
         },'-',"->",
-            '所属分组:',metadataMappingGroupComboBox
+            '源数据库:', dbIdComboBox ,"-",'源模式:', schemaNameComboBox,"-",'源表:',  tableNameComboBox,"-",'所属分组:',metadataMappingGroupComboBox
             ,"-",{
                 text :'刷新',
                 id:'reset',
@@ -301,7 +405,9 @@ Ext.onReady(function(){
                 start : 0,
                 limit :pagesize_combo.value,
                 'mappingGroupId':metadataMappingGroupComboBox.value,
-
+                'sourceDbId':dbIdComboBox.value,
+                'sourceSchemaName':schemaNameComboBox.value,
+                'sourceTableName':tableNameComboBox.value
             },
             callback:function(records, options, success){
                 if(!success){
@@ -318,7 +424,18 @@ Ext.onReady(function(){
      * 新增窗体初始化
      */
     function addItem() {
-        clearForm(metadataMappingFromPanel.getForm());
+
+        metadataMappingFromPanel.getForm().reset();
+
+
+        sourceDbIdComboBox.setDisabled(false);
+        sourceSchemaNameComboBox.setDisabled(false);
+        sourceTableNameComboBox.setDisabled(false);
+
+        sourceTableNameComboBox.clearValue()
+        fromAllowBlank = true;
+        Ext.getCmp("column_fieldset").hide() ;
+
         showCreateMetadataMappingFromWindow(store_reload);
     }
 
@@ -330,6 +447,24 @@ Ext.onReady(function(){
             Ext.Msg.alert('提示:', '请先选中一条您要修改的数据');
             return;
         }
+
+        metadataMappingFromPanel.getForm().reset();
+        Ext.getCmp("column_fieldset").show() ;
+        sourceColumnTypeStore.load({
+            params : {id_database : record[0].get("sourceDbId")},
+            callback:function(r,options,success){
+                destColumnTypeStore.load({
+                    params : {id_database : record[0].get("destDbId")}
+
+                });
+            }
+        });
+
+
+        fromAllowBlank = false;
+
+
+        sourceTableNameComboBox.clearValue()
 
         Ext.Ajax.request( {
             url : '../metadataMapping/get.shtml',

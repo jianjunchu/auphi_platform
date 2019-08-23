@@ -1,7 +1,9 @@
 package com.auphi.ktrl.metadata.domain;
 
 import com.auphi.ktrl.quality.base.BaseEntity;
+import org.apache.poi.ss.formula.functions.T;
 
+import java.sql.Types;
 import java.util.Date;
 
 /**
@@ -73,9 +75,9 @@ public class MetadataMapping extends BaseEntity {
      */
     private Long sourceColumnOrder;
     /**
-     * 是否主键 ， 0不是，1是主键
-     */
+     * 是否主键 ， 0不是，1是     */
     private Integer isPk;
+
     /**
      * 目的数据库ID
      */
@@ -117,6 +119,8 @@ public class MetadataMapping extends BaseEntity {
      * 抽取方式，0全量，1增量 ， 默认0
      */
     private Integer extractStyle;
+
+    private Integer isIncrementalColumn;
     /**
      * 抽取状态，0未抽取，1正在抽取  默认0
      */
@@ -383,5 +387,13 @@ public class MetadataMapping extends BaseEntity {
 
     public void setMappingGroupName(String mappingGroupName) {
         this.mappingGroupName = mappingGroupName;
+    }
+
+    public Integer getIsIncrementalColumn() {
+        return isIncrementalColumn;
+    }
+
+    public void setIsIncrementalColumn(Integer isIncrementalColumn) {
+        this.isIncrementalColumn = isIncrementalColumn;
     }
 }

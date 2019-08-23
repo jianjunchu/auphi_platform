@@ -1,5 +1,7 @@
 var store_reload;//表格刷新方法
 
+var fromAllowBlank = true;
+
 var mappingGroupIdStore = new Ext.data.JsonStore({
     fields: ['id', 'mappingGroupName'],
     url : "../metadataMapping/getMappingGroupList.shtml",
@@ -13,12 +15,39 @@ var extractStyleStore = new Ext.data.SimpleStore({
     }
 )
 
+var yesNoStore = new Ext.data.SimpleStore({
+        fields:['value','text'],
+        data:[[0,'否'], [1,'是']]
+    }
+)
+
+//字段类型Store
+var fieldTypeStore = new Ext.data.JsonStore({
+    fields: ['fieldTypeShow', 'fieldTypeValue'],
+    url : "../mdmModelAttribute/getFieldType.shtml",
+    autoLoad:true,
+    root : ""
+});
+
 var dbIdStore = new Ext.data.JsonStore({
     fields: ['sourceId', 'sourceName'],
     url : "../datasource/getDataSourceList.shtml",
     autoLoad:true,
     root : ""
 })
+
+var sourceColumnTypeStore = new Ext.data.JsonStore({
+    fields:['value','text'],
+    url : "../metadataMapping/getTypeInfo.shtml",
+    root : "data"
+});
+
+var destColumnTypeStore = new Ext.data.JsonStore({
+    fields:['value','text'],
+    url : "../metadataMapping/getTypeInfo.shtml",
+    root : "data"
+});
+
 
 var mappingGroupIdComboBox = new Ext.form.ComboBox({
     fieldLabel : '所属组',
@@ -57,6 +86,44 @@ var extractStyleComboBox = new Ext.form.ComboBox({
     triggerAction: 'all',
     editable:false,
     allowBlank : false,
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true,
+    width: 120
+});
+
+
+
+var isIncrementalColumnComboBox = new Ext.form.ComboBox({
+    fieldLabel : '增量字段',
+    hiddenName : 'isIncrementalColumn',
+    forceSelection: true,
+    anchor : '100%',
+    store: yesNoStore,
+    valueField : "value",
+    displayField : "text",
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all',
+    editable:false,
+    allowBlank : fromAllowBlank,
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true,
+    width: 120
+});
+
+var isPkComboBox = new Ext.form.ComboBox({
+    fieldLabel : '主键',
+    hiddenName : 'isPk',
+    forceSelection: true,
+    anchor : '100%',
+    store: yesNoStore,
+    valueField : "value",
+    displayField : "text",
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all',
+    editable:false,
+    allowBlank : fromAllowBlank,
     selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
     resizable : true,
     width: 120
@@ -205,6 +272,130 @@ var destTableNameTextField = {
     anchor : '100%'
 }
 
+var sourceColumnNameTextField = {
+    xtype:'textfield',
+    fieldLabel : '源列名',
+    name : 'sourceColumnName',
+    anchor : '100%'
+}
+
+var destColumnNameTextField = {
+    xtype:'textfield',
+    fieldLabel : '目标列名',
+    name : 'destColumnName',
+    anchor : '100%'
+}
+
+var sourceColumnTypeComboBox = new Ext.form.ComboBox({
+    name:'sourceColumnType',
+    fieldLabel:'源列类型',
+    hiddenName : "sourceColumnType",
+    forceSelection: true,
+    anchor : '100%',
+    store: sourceColumnTypeStore,
+    valueField : "value",
+    displayField : "text",
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all',
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true,
+    editable:false
+
+})
+
+var destColumnTypeComboBox = new Ext.form.ComboBox({
+    name:'destColumnType',
+    fieldLabel:'目标列类型',
+    hiddenName : "sourceColumnType",
+    forceSelection: true,
+    anchor : '100%',
+    store: destColumnTypeStore,
+    valueField : "value",
+    displayField : "text",
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all',
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true,
+    editable:false
+
+})
+
+
+
+var  sourceColumnTypeEtlComboBox = new Ext.form.ComboBox({
+    fieldLabel : '源列Kettle数据类型',
+    anchor : '100%',
+    store: fieldTypeStore,
+    hiddenName : 'sourceColumnTypeEtl',
+    valueField : "fieldTypeValue",
+    displayField : "fieldTypeShow",
+    mode: 'local',
+    triggerAction: 'all',
+    forceSelection: true,
+    typeAhead: true,
+    editable:false,
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true
+})
+
+var  destColumnTypeEtlComboBox = new Ext.form.ComboBox({
+    fieldLabel : '目标列Kettle数据类型',
+    anchor : '100%',
+    store: fieldTypeStore,
+    hiddenName : 'destColumnTypeEtl',
+    valueField : "fieldTypeValue",
+    displayField : "fieldTypeShow",
+    mode: 'local',
+    triggerAction: 'all',
+    forceSelection: true,
+    typeAhead: true,
+    editable:false,
+    selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
+    resizable : true
+})
+
+var sourceColumnLengthTextField = {
+    xtype:'textfield',
+    fieldLabel : '源列长度',
+    name : 'sourceColumnLength',
+    anchor : '100%'
+}
+
+var destColumnLengthTextField = {
+    xtype:'textfield',
+    fieldLabel : '目标列长度',
+    name : 'destColumnLength',
+    anchor : '100%'
+}
+
+var sourceColumnScaleTextField = {
+    xtype:'textfield',
+    fieldLabel : '源列精度',
+    name : 'sourceColumnScale',
+    anchor : '100%'
+}
+
+var destColumnScaleTextField = {
+    xtype:'textfield',
+    fieldLabel : '目标列精度',
+    name : 'destColumnScale',
+    anchor : '100%'
+}
+
+var sourceColumnCommentsTextField = {
+    xtype:'textfield',
+    fieldLabel : '列注释',
+    name : 'sourceColumnComments',
+    anchor : '100%'
+}
+
+var sourceColumnOrderTextField = new Ext.form.NumberField({
+    fieldLabel : '列排序',
+    name : 'sourceColumnOrder',
+    anchor : '100%'
+})
 
 
 var metadataMappingFromPanel = new Ext.form.FormPanel( {
@@ -231,42 +422,115 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
             hidden : true
         }]
     },{
-        layout : 'column',
-        border : false,
-        anchor : '100%',
-        items:[{
-            columnWidth:.5,
-            layout: 'form',
-            border:false,
-            items: [{
-                xtype:'fieldset',
-                title: '源数据',
-                autoHeight:true,
-                anchor : '99%',
-                collapsed: false,
-                items:[sourceDbIdComboBox,sourceSchemaNameComboBox,sourceTableNameComboBox]
-            }]//分组
-        },{
-            columnWidth:.5,
-            layout: 'form',
-            border:false,
-            items: [{
-                xtype:'fieldset',
-                title: '目标数据',
-                autoHeight:true,
-                anchor : '99%',
-                collapsed: false,
-                items:[destDbIdComboBox,destSchemaNameComboBox,destTableNameTextField]
-            }]
-
-        }]
-    },{
         xtype:'fieldset',
-        title: '',
+        title: '分组信息',
         autoHeight:true,
         anchor : '99.5%',
         collapsed: false,
-        items:[mappingGroupIdComboBox]
+        items:[mappingGroupIdComboBox,extractStyleComboBox]
+    },{
+        xtype:'fieldset',
+        title: '表信息',
+        autoHeight:true,
+        anchor : '99.5%',
+        collapsed: false,
+        items:[{
+            layout : 'column',
+            border : false,
+            anchor : '100%',
+            items:[{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [{
+                    xtype:'fieldset',
+                    title: '源表信息',
+                    autoHeight:true,
+                    anchor : '99%',
+                    collapsed: false,
+                    items:[sourceDbIdComboBox,sourceSchemaNameComboBox,sourceTableNameComboBox]
+                }]//分组
+            },{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [{
+                    xtype:'fieldset',
+                    title: '目标表信息',
+                    autoHeight:true,
+                    anchor : '99%',
+                    collapsed: false,
+                    items:[destDbIdComboBox,destSchemaNameComboBox,destTableNameTextField]
+                }]
+
+            }]
+        }]
+    },{
+        id:'column_fieldset',
+        xtype:'fieldset',
+        title: '列信息',
+        autoHeight:true,
+        anchor : '99.5%',
+        collapsed: false,
+        items:[{
+            layout : 'column',
+            border : false,
+            anchor : '100%',
+            items:[{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [isPkComboBox,sourceColumnCommentsTextField]//分组
+            },{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [isIncrementalColumnComboBox,sourceColumnOrderTextField]
+
+            }]
+        },{
+            layout : 'column',
+            border : false,
+            anchor : '100%',
+            items:[{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [{
+                    xtype:'fieldset',
+                    title: '源表列信息',
+                    autoHeight:true,
+                    anchor : '99%',
+                    collapsed: false,
+                    items:[
+                        sourceColumnNameTextField,
+                        sourceColumnTypeComboBox,
+                        sourceColumnTypeEtlComboBox,
+                        sourceColumnLengthTextField,
+                        sourceColumnScaleTextField
+                    ]
+                }]//分组
+            },{
+                columnWidth:.5,
+                layout: 'form',
+                border:false,
+                items: [{
+                    xtype: 'fieldset',
+                    title: '目标表列信息',
+                    autoHeight: true,
+                    anchor: '99%',
+                    collapsed: false,
+                    items: [
+                        destColumnNameTextField,
+                        destColumnTypeComboBox,
+                        destColumnTypeEtlComboBox,
+                        destColumnLengthTextField,
+                        destColumnScaleTextField
+                    ]
+                }]
+
+            }]
+        }]
     }]
 });
 

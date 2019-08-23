@@ -80,7 +80,8 @@ public class VerifyLicense {
 
 		lm.install(licenseFile);
 		LicenseContent lc = lm.verify();
-		if((lc.getNotAfter().getTime()- System.currentTimeMillis())>365*24*60*60*1000) {
+		//时间小于180天为测试License不验证 Mac 地址
+		if((lc.getNotAfter().getTime()- System.currentTimeMillis())>180*24*60*60*1000) {
 			ArrayList<String> list = getAllMacs();
 			boolean found = false;
 			for (String e : list) {

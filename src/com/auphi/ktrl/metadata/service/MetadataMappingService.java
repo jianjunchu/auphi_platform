@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MetadataMappingService {
 
-    PaginationSupport<MetadataMapping> getPage(Dto<String, Object> dto) throws SQLException;
+    PaginationSupport<MetadataMapping> getPage(MetadataMapping metadataMapping) throws SQLException;
 
     void save(MetadataMapping mapping);
 
@@ -22,4 +22,8 @@ public interface MetadataMappingService {
     void save(List<MetadataMapping> mappings);
 
     MetadataMapping get(Long id);
+
+    int updateDestTable(MetadataMapping ex);
+
+    int countSourceTable(MetadataMapping metadataMapping);
 }

@@ -32,6 +32,7 @@ import com.auphi.data.hub.core.struct.Dto;
 import com.auphi.data.hub.core.util.CloudUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 
@@ -184,5 +185,19 @@ public class BaseDaoImpl extends SqlSessionDaoSupport implements BaseDao {
 	}
 
 
+	/**
+	 *  按分页查询
+	 * @param statementName
+	 * @param parameterObject
+	 * @param start
+	 * @param limit
+	 * @return
+	 * @throws SQLException
+	 */
+	@Override
+	public List queryForPage(String statementName, Object parameterObject, Integer start, Integer limit)  {
+		RowBounds rb = new RowBounds(start, limit);
+		return getSqlSession().selectList(statementName, parameterObject,rb);
+	}
 
 }

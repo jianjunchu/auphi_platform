@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MetadataMappingGroupService {
 
-    PaginationSupport<MetadataMappingGroup> getPage(Dto<String, Object> dto) throws SQLException;
+    PaginationSupport<MetadataMappingGroup> getPage(MetadataMappingGroup dto) throws SQLException;
 
     void save(MetadataMappingGroup mapping);
 
