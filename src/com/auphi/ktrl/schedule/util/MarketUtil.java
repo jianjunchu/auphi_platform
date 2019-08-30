@@ -202,13 +202,14 @@ public static String getSchemaNames(String schemaNamejson)
        		typeName, "Native", fastConfigDatabaseView.getHostName(),
        		fastConfigDatabaseView.getDatabaseName(), fastConfigDatabaseView.getPort().toString(),
        		fastConfigDatabaseView.getUserName(), Encr.decryptPasswordOptionallyEncrypted(fastConfigDatabaseView.getPassword()));
-
+		databaseMeta.initializeVariablesFrom(null);
 
 		for(Map<String,String> map:attributes){
 			databaseMeta.getAttributes().put(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE), Const.NVL(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR), ""));
 		}
 
 	    database = new Database(databaseMeta);
+		database.initializeVariablesFrom(null);
 	    ConnectionPool.freeConn(rs, smt, null, connection);
 		return  database;
 	}

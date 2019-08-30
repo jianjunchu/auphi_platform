@@ -226,6 +226,7 @@ public class MdmModelController extends BaseMultiActionController {
 			ee.write(resp, fileName).dispose();
 
 		}catch(Exception e){
+			e.printStackTrace();
 
 		}
 		return null;

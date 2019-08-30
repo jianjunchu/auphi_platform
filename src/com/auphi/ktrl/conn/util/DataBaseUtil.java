@@ -262,13 +262,13 @@ public class DataBaseUtil {
 			}
 			MdmModelAttribute mdmModelAttribute = list.get(i);
 
-			ValueMeta ValueMeta = new ValueMeta(mdmModelAttribute.getField_name(),mdmModelAttribute.getField_type());
-			ValueMeta.setLength(mdmModelAttribute.getField_length());
-			ValueMeta.setPrecision(mdmModelAttribute.getField_precision());
+			ValueMeta valueMeta = new ValueMeta(mdmModelAttribute.getField_name(),mdmModelAttribute.getField_type());
+			valueMeta.setLength(mdmModelAttribute.getField_length() ==null ? 0 : mdmModelAttribute.getField_length());
+			valueMeta.setPrecision(mdmModelAttribute.getField_precision() == null ? 0:mdmModelAttribute.getField_precision());
 			if("Y".equalsIgnoreCase(mdmModelAttribute.getIs_primary())){
 				primary_key = primary_key + mdmModelAttribute.getField_name()+",";
 			}
-			retval.append(database.getDatabaseMeta().getFieldDefinition(ValueMeta, null, null, true));
+			retval.append(database.getDatabaseMeta().getFieldDefinition(valueMeta, null, null, true));
 			if(database.getDatabaseMeta().getDatabaseInterface() instanceof MySQLDatabaseMeta){
 				retval.append("COMMENT '").append(mdmModelAttribute.getAttribute_name()).append("'").append(Const.CR);
 			}
@@ -334,12 +334,12 @@ public class DataBaseUtil {
 		if(missing.size() != 0) {
 			for(surplus = 0; surplus < missing.size(); ++surplus) {
 				modify = missing.get(surplus);
-				ValueMeta ValueMeta = new ValueMeta(modify.getField_name(),modify.getField_type());
-				ValueMeta.setLength(modify.getField_length());
-				ValueMeta.setPrecision(modify.getField_precision());
+				ValueMeta valueMeta = new ValueMeta(modify.getField_name(),modify.getField_type());
+				valueMeta.setLength(modify.getField_length() ==null ? 0 : modify.getField_length() );
+				valueMeta.setPrecision(modify.getField_precision()==null? 0 : modify.getField_precision());
 
 				String pk = "Y".equals(modify.getIs_primary()) ? modify.getField_name() : null;
-				String temp = database.getDatabaseMeta().getAddColumnStatement(tableName, ValueMeta, null, true, pk , true);
+				String temp = database.getDatabaseMeta().getAddColumnStatement(tableName, valueMeta, null, true, pk , true);
 
 
 				if(database.getDatabaseMeta().getDatabaseInterface() instanceof MySQLDatabaseMeta){
@@ -394,8 +394,8 @@ public class DataBaseUtil {
 				String pk = "Y".equals(attribute.getIs_primary()) ? attribute.getField_name() : null;
 
 				v = new ValueMeta(attribute.getField_name(),attribute.getField_type());
-				v.setLength(attribute.getField_length());
-				v.setPrecision(attribute.getField_precision());
+				v.setLength(attribute.getField_length() ==null ? 0: attribute.getField_length());
+				v.setPrecision(attribute.getField_precision()==null? 0 : attribute.getField_precision());
 
 				String desiredDDL = database.getDatabaseMeta().getFieldDefinition(v, null, pk, true);
 				String currentDDL = database.getDatabaseMeta().getFieldDefinition(currentField, null , pk, true);
@@ -410,8 +410,8 @@ public class DataBaseUtil {
 			for(var20 = 0; var20 < var21.size(); ++var20) {
 				MdmModelAttribute attribute  = var21.get(var20);
 				v = new ValueMeta(attribute.getField_name(),attribute.getField_type());
-				v.setLength(attribute.getField_length());
-				v.setPrecision(attribute.getField_precision());
+				v.setLength(attribute.getField_length() ==null ? 0: attribute.getField_length());
+				v.setPrecision(attribute.getField_precision()==null? 0 : attribute.getField_precision());
 				String pk = "Y".equals(attribute.getIs_primary()) ? attribute.getField_name() : null;
 				retval.append(database.getDatabaseMeta().getModifyColumnStatement(tableName, v, null, true, pk, true));
 			}

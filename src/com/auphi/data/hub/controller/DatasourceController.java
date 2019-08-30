@@ -601,8 +601,10 @@ public class DatasourceController extends BaseMultiActionController {
         String databaseInfo = ServletRequestUtils.getStringParameter(req,"databaseInfo","");
         JSONObject jsonObject = JSONObject.fromObject(databaseInfo);
         DatabaseMeta dbinfo = DatabaseCodec.decode(jsonObject);
+        dbinfo.initializeVariablesFrom(null);
         String[] remarks = dbinfo.checkParameters();
         if ( remarks.length == 0 ) {
+
             String reportMessage = dbinfo.testConnection();
             JsonUtils.success(StringEscapeHelper.encode(reportMessage));
         } else {

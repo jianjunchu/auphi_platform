@@ -520,20 +520,27 @@ public class ProfileTableResultController extends BaseMultiActionController {
                 }
                 //开始执行
                 for (Integer databaseId : maps.keySet()) {
-                    database  = createDatabase(databaseId);
-                    List<ProfileTableColumn> runs = maps.get(databaseId);
-                    for(ProfileTableColumn column:runs){
-                        ProfileTableResult result = null;
-                        if(database!=null){
-                            result = execProfileSQl(column,database);
+
+                    try {
+                        database  = MarketUtil.getDatabase(databaseId);
+                        database.connect();
+                        List<ProfileTableColumn> runs = maps.get(databaseId);
+                        for(ProfileTableColumn column:runs){
+                            ProfileTableResult result = null;
+                            if(database!=null){
+                                result = execProfileSQl(column,database);
+                            }
+                            if(result!=null ){
+                                result.setCreateTime(date);
+                                mProfileTableResultService.save(result);
+                            }
                         }
-                        if(result!=null ){
-                            result.setCreateTime(date);
-                            mProfileTableResultService.save(result);
-                        }
+
+                    }catch (Exception e){
+                        database.disconnect();
                     }
 
-                    database.closeConnectionOnly();
+
                 }
 
 
@@ -547,11 +554,7 @@ public class ProfileTableResultController extends BaseMultiActionController {
             this.setFailTipMsg(e.getMessage(), resp);
         }finally{
             if(database!=null){
-                try {
-                    database.closeConnectionOnly();
-                } catch (KettleDatabaseException e) {
-                    e.printStackTrace();
-                }
+                database.disconnect();
             }
         }
         return null;

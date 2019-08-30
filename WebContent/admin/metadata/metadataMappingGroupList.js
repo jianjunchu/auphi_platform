@@ -9,6 +9,9 @@ Ext.onReady(function(){
 
     var cm = new Ext.grid.ColumnModel( [sm, rownum,
         {
+            header : '分组ID',
+            dataIndex : 'id',
+        },{
             header : '分组名称',
             sortable : true,
             dataIndex : 'mappingGroupName',

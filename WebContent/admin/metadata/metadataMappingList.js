@@ -21,6 +21,9 @@ Ext.onReady(function(){
             header : '源表名',
             dataIndex : 'sourceTableName'
         },{
+            header : '源列',
+            dataIndex : 'sourceColumnName'
+        },{
             header : '目的数据库',
             dataIndex : 'destDbName'
         },{
@@ -29,6 +32,35 @@ Ext.onReady(function(){
         },{
             header : '目的表名',
             dataIndex: "destTableName"
+        },{
+            header : '目标列',
+            dataIndex : 'destColumnName'
+        },{
+            header : '主键',
+            dataIndex : 'isPk',
+            sortable : true,
+            width : 50,
+            renderer: function (data, metadata, record, rowIndex, columnIndex, store) {
+                var isPk = store.getAt(rowIndex).get('isPk');
+                if(isPk == '0'){
+                    return '否'
+                }else if(isPk == '1'){
+                    return '是'
+                }
+            }
+        },{
+            header : '增量字段',
+            dataIndex : 'isIncrementalColumn',
+            sortable : true,
+            width : 70,
+            renderer: function (data, metadata, record, rowIndex, columnIndex, store) {
+                var isPk = store.getAt(rowIndex).get('isIncrementalColumn');
+                if(isPk == '0'){
+                    return '否'
+                }else if(isPk == '1'){
+                    return '是'
+                }
+            }
         },{
             header : '最后开始时间',
             dataIndex : 'lastExtractStartTime'

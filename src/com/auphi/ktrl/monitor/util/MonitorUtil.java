@@ -170,7 +170,10 @@ public class MonitorUtil {
 		
 		return pageList;
 	}
-	
+
+
+
+
 	/**
 	 * 获取调度的转换/作业的日志记录信息
 	 * @param int 调度名称
@@ -181,11 +184,11 @@ public class MonitorUtil {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		
+
 		try{
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			rs = stmt.executeQuery("SELECT * FROM KDI_T_MONITOR WHERE ID=" + id);
 			if(rs.next()){
 				monitorScheduleBean.setStartTime(rs.getString("START_TIME"));
@@ -203,13 +206,13 @@ public class MonitorUtil {
 				monitorScheduleBean.setLines_deleted(rs.getInt("LINES_DELETED"));
 				monitorScheduleBean.setLogMsg(rs.getString("LOGMSG")==null?"":rs.getString("LOGMSG"));
 			}
-			
+
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(rs, stmt, null, conn);
 		}
-		
+
 		return monitorScheduleBean;
 	}
 	

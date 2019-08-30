@@ -33,8 +33,8 @@ public class DatabaseCodec {
             jsonObject.put("streamingResults", databaseMeta.isStreamingResults());
         jsonObject.put("dataTablespace", databaseMeta.getDataTablespace());
         jsonObject.put("indexTablespace", databaseMeta.getIndexTablespace());
-        if (!StringUtils.isEmpty(databaseMeta.getSQLServerInstance()))
-            jsonObject.put("sqlServerInstance", databaseMeta.getSQLServerInstance());
+        if (!StringUtils.isEmpty(databaseMeta.getInstanceName()))
+            jsonObject.put("sqlServerInstance", databaseMeta.getInstanceName());
 
         if (databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator())
             jsonObject.put("usingDoubleDecimalAsSchemaTableSeparator", databaseMeta.isUsingDoubleDecimalAsSchemaTableSeparator());
@@ -161,7 +161,7 @@ public class DatabaseCodec {
         if (jsonObject.containsKey("indexTablespace"))    //oracle-jndi
             databaseMeta.setIndexTablespace(jsonObject.optString("indexTablespace"));
         if (jsonObject.containsKey("sqlServerInstance"))        //mssql-native
-            databaseMeta.setSQLServerInstance(jsonObject.optString("sqlServerInstance"));
+            databaseMeta.setInstanceName(jsonObject.optString("sqlServerInstance"));
         if (jsonObject.containsKey("usingDoubleDecimalAsSchemaTableSeparator"))    //mssql-jndi
             databaseMeta.setUsingDoubleDecimalAsSchemaTableSeparator(jsonObject.optBoolean("usingDoubleDecimalAsSchemaTableSeparator"));
 
