@@ -1,6 +1,5 @@
 package com.aofei.dataservice.controller;
 
-import afu.org.checkerframework.checker.oigj.qual.O;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -26,9 +25,8 @@ import com.aofei.dataservice.service.IServiceInterfaceService;
 import com.aofei.dataservice.service.IServiceUserService;
 import com.aofei.dataservice.utils.SqlUtil;
 import com.aofei.kettle.App;
+import com.aofei.utils.StringUtils;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.TypeRef;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import com.aofei.utils.IPUtils;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -46,7 +44,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -54,10 +51,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -181,12 +175,12 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @ApiOperation(value = "数据接口-数据对外发布接口", notes = "数据对外发布接口")
-    @RequestMapping(value = "/{id}/publish", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/publish")
     public Response<JSON> publish(
             @ApiIgnore HttpServletRequest request,
             @ApiParam(value = "接口ID", required = true) @PathVariable Long id,
-            @ApiParam(value = "用户名", required = true)  @RequestParam(value = "username") String username,
-            @ApiParam(value = "密码",   required = true)  @RequestParam(value = "password") String password) {
+            @ApiParam(value = "用户名")  @RequestParam(value = "username") String username,
+            @ApiParam(value = "密码")  @RequestParam(value = "password") String password) {
 
         ServiceInterfaceResponse interfaceResponse = serviceInterfaceService.get(id);
 
@@ -203,6 +197,10 @@ public class InterfaceController extends BaseController {
     }
 
     private ServiceUserResponse testAuth(ServiceInterfaceResponse interfaceResponse,String username,String password,HttpServletRequest request) {
+
+        if(StringUtils.isEmpty(username) && StringUtils.isEmpty(password)){
+            return new ServiceUserResponse();
+        }
 
         ServiceUserRequest userRequest = new ServiceUserRequest();
         userRequest.setUsername(username);
@@ -292,12 +290,12 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @ApiOperation(value = "数据接口-数据接受接口(单条数据)", notes = "数据接受接口(单条数据)")
-    @RequestMapping(value = "/{id}/receive", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/receive")
     public Response<Boolean> receive(@ApiIgnore HttpServletRequest request,
                                         @PathVariable Long id,
-                                        @ApiParam(value = "用户名", required = true)  @RequestParam(value = "username") String username,
-                                        @ApiParam(value = "密码",   required = true)  @RequestParam(value = "password") String password,
-                                        @ApiParam(value = "Json类型数据",   required = true)  @RequestParam(value = "text") String text)  {
+                                        @ApiParam(value = "用户名")  @RequestParam(value = "username") String username,
+                                        @ApiParam(value = "密码")  @RequestParam(value = "password") String password,
+                                        @RequestBody JSONObject jsonObject)  {
 
         ServiceInterfaceResponse interfaceResponse = serviceInterfaceService.get(id);
         testAuth(interfaceResponse,username,password,request);
@@ -309,7 +307,7 @@ public class InterfaceController extends BaseController {
         for( int i = 0;i < fieldResponses.size();i++){
             ServiceInterfaceFieldResponse fieldResponse= fieldResponses.get(i);
             missing.addValueMeta(new ValueMeta(fieldResponse.getFieldName(),ValueMetaInterface.TYPE_STRING));
-            data[i] = JsonPath.parse(text).read(fieldResponse.getJsonPath());
+            data[i] = JsonPath.parse(jsonObject.toJSONString()).read(fieldResponse.getJsonPath());
         }
 
         Database database = null;

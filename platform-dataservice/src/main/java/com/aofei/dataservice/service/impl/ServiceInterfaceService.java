@@ -63,9 +63,9 @@ public class ServiceInterfaceService extends BaseService<PublishInterfaceMapper,
         publishInterface.preInsert();
         publishInterface.setServiceId(IdWorker.getId());
         if(ServiceInterface.INTERFACE_TYP_PUBLISH.equals(publishInterface.getInterfaceTyp()) ){
-            publishInterface.setServiceUrl("/dataservice/publish/"+publishInterface.getServiceId()+"/publish");
+            publishInterface.setServiceUrl("/dataservice/interface/"+publishInterface.getServiceId()+"/publish");
         }else{
-            publishInterface.setServiceUrl("/dataservice/publish/"+publishInterface.getServiceId()+"/receive");
+            publishInterface.setServiceUrl("/dataservice/interface/"+publishInterface.getServiceId()+"/receive");
             List<ServiceInterfaceFieldRequest> interfaceFields = request.getInterfaceFields();
             for(ServiceInterfaceFieldRequest fieldRequest : interfaceFields){
 

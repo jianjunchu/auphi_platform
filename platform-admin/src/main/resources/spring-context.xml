@@ -35,6 +35,14 @@
                 <value>classpath*:config/application.properties</value>
             </list>
         </property>
+        
+        <property name="properties">
+            <props>
+                <prop key="DB2">db2</prop>
+                <prop key="Oracle">oracle</prop>
+                <prop key="MySQL">mysql</prop>
+            </props>
+        </property>
         <!-- 设置编码格式 -->
         <property name="fileEncoding" value="UTF-8"></property>
     </bean>
@@ -74,6 +82,12 @@
             </props>
         </property>
     </bean>
+
+    <bean id="databaseIdProvider" class="org.apache.ibatis.mapping.VendorDatabaseIdProvider">
+        <property name="properties" ref="propertiesReader"/>
+    </bean>
+
+
 
 
     <import resource="/spring-ehcache.xml" />

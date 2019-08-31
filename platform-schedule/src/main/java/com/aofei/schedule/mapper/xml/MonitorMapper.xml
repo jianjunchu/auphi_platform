@@ -57,6 +57,61 @@
         </where>
     </select>
 
+
+	<select id="findList"  databaseId="oracle" resultType="com.aofei.schedule.entity.Monitor">
+		SELECT
+		a.ID AS id,
+		a.QRTZ_JOB_NAME AS qrtzJobName,
+		a.QRTZ_JOB_GROUP AS qrtzJobGroup,
+		gp.GROUP_NAME AS qrtzJobGroupName,
+		a.STARTDATE AS startdate,
+		a.ENDDATE AS enddate,
+		a.STATUS AS status,
+		a.ERRORS AS errors,
+		a.FILE_TYPE AS fileType
+		FROM (
+		SELECT
+		LOG_TRANS_ID AS ID,
+		QRTZ_JOB_NAME,
+		QRTZ_JOB_GROUP,
+		STARTDATE,
+		ENDDATE,
+		STATUS,
+		ERRORS,
+		x1.FILE_TYPE AS FILE_TYPE
+		FROM LOG_TRANS,(select 'TRANSFORMATION' AS FILE_TYPE from dual ) x1
+		UNION
+		SELECT
+		LOG_JOB_ID AS ID,
+		QRTZ_JOB_NAME,
+		QRTZ_JOB_GROUP,
+		STARTDATE,
+		ENDDATE,
+		STATUS,
+		ERRORS,
+		x2.FILE_TYPE AS FILE_TYPE
+		FROM LOG_JOB ,(select 'JOB' AS FILE_TYPE from dual ) x2
+		) a
+
+		join QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = a.QRTZ_JOB_GROUP
+
+
+		<where>
+
+			<if test="organizerId != null ">
+				AND gp.ORGANIZER_ID = #{organizerId}
+			</if>
+
+			<if test="qrtzJobGroup != null and qrtzJobGroup!='' ">
+				AND  a.QRTZ_JOB_GROUP = #{qrtzJobGroup}
+			</if>
+
+			<if test="qrtzJobName != null and qrtzJobName!='' ">
+				AND  a.QRTZ_JOB_NAME  like '%${qrtzJobName}%'
+			</if>
+		</where>
+	</select>
+
     <select id="getTimeConsumingTop5" resultType="java.util.HashMap">
       	select NAME ,TIME  FROM  (
 			select NAME ,TIME ,QRTZ_JOB_GROUP from (
@@ -65,6 +120,20 @@
 				  UNION ALL
 				  select
 					  CONCAT(JOB_NAME,'.kjb') AS NAME , time_to_sec(timediff(ENDDATE,STARTDATE))  AS TIME ,QRTZ_JOB_GROUP  from LOG_JOB WHERE ENDDATE is not null
+			) a order by a.TIME
+		) b JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}
+
+
+    </select>
+
+    <select id="getTimeConsumingTop5" databaseId="oracle" resultType="java.util.HashMap">
+      	select NAME ,TIME  FROM  (
+			select NAME ,TIME ,QRTZ_JOB_GROUP from (
+				  select
+					  CONCAT(TRANSNAME,'.ktr')  AS NAME , ROUND(TO_NUMBER(ENDDATE - STARTDATE) * 24 * 60 * 60)  AS TIME ,QRTZ_JOB_GROUP  from  LOG_TRANS WHERE ENDDATE is not null
+				  UNION ALL
+				  select
+					  CONCAT(JOB_NAME,'.kjb') AS NAME , ROUND(TO_NUMBER(ENDDATE - STARTDATE) * 24 * 60 * 60)  AS TIME ,QRTZ_JOB_GROUP  from LOG_JOB WHERE ENDDATE is not null
 			) a order by a.TIME
 		) b JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}
 
@@ -108,6 +177,45 @@
       ) c on a.click_date = c.datetime ;
     </select>
 
+
+
+
+    <select id="get7DayErrorsAndFinishs" databaseId="oracle" resultType="java.util.HashMap">
+
+      SELECT a.click_date AS DATETIME,nvl(b.count,0) AS FINISH,nvl(c.count,0) AS ERROR FROM (
+        SELECT to_char(TRUNC(SYSDATE),'yyyy-MM-dd') AS click_date from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-1),'yyyy-MM-dd') AS click_date from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-2),'yyyy-MM-dd') AS click_date from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-3),'yyyy-MM-dd') AS click_date from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-4),'yyyy-MM-dd') AS click_date from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-5),'yyyy-MM-dd') AS click_date  from dual UNION ALL
+        SELECT to_char(TRUNC(SYSDATE-6),'yyyy-MM-dd') AS click_date from dual
+    ) a
+	left join (
+				SELECT datetime,count FROM  (
+						SELECT
+								to_char(tr.STARTDATE,'yyyy-MM-dd') datetime
+							,	count(1) AS count
+							,QRTZ_JOB_GROUP
+						FROM LOG_TRANS tr WHERE tr.STATUS='end' GROUP BY to_char(tr.STARTDATE,'yyyy-MM-dd'),QRTZ_JOB_GROUP) a1 JOIN QRTZ_GROUP gp ON gp.DEL_FLAG=0 AND gp.ID_GROUP=a1.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}
+				UNION ALL
+				SELECT datetime,count FROM (
+						SELECT
+								to_char(job.STARTDATE,'yyyy-MM-dd') datetime
+							,	count(1) AS count,QRTZ_JOB_GROUP
+						FROM LOG_JOB job WHERE job.STATUS='end' GROUP BY to_char(job.STARTDATE,'yyyy-MM-dd'),QRTZ_JOB_GROUP) a2 JOIN QRTZ_GROUP gp ON gp.DEL_FLAG=0 AND gp.ID_GROUP=a2.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}) b ON a.click_date=b.datetime
+	left join (
+		SELECT datetime,count FROM (
+				SELECT to_char(tr.STARTDATE,'yyyy-MM-dd') datetime,sum(tr.ERRORS) AS count,QRTZ_JOB_GROUP
+				FROM LOG_TRANS tr
+				GROUP BY to_char(tr.STARTDATE,'yyyy-MM-dd'),QRTZ_JOB_GROUP) b1 JOIN QRTZ_GROUP gp ON gp.DEL_FLAG=0 AND gp.ID_GROUP=b1.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}
+		UNION ALL
+		SELECT datetime,count FROM (
+			SELECT to_char(job.STARTDATE,'yyyy-MM-dd') datetime,sum(job.ERRORS) AS count,QRTZ_JOB_GROUP
+			FROM LOG_JOB job
+			GROUP BY to_char(job.STARTDATE,'yyyy-MM-dd'),QRTZ_JOB_GROUP) b2 JOIN QRTZ_GROUP gp ON gp.DEL_FLAG=0 AND gp.ID_GROUP=b2.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}) c ON a.click_date=c.datetime
+    </select>
+
     <select id="countRuning" resultType="java.lang.Integer">
         select COUNT(*)  from (
 			select NAME  ,QRTZ_JOB_GROUP from (
@@ -132,7 +240,9 @@
 		) b JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID =  #{organizerId}
     </select>
 
-    <select id="countError" resultType="java.lang.Integer">
+
+
+    <select id="countError"  resultType="java.lang.Integer">
 
 		select  ifnull(sum(COUNT),0) AS COUNT FROM (
 		    select COUNT
@@ -146,6 +256,25 @@
 				select COUNT
 			  from (
 			    select ifnull(sum(ERRORS),0)   AS COUNT , QRTZ_JOB_GROUP
+			    from  LOG_JOB GROUP BY QRTZ_JOB_GROUP
+			  ) b JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID  = #{organizerId}
+		) d
+    </select>
+
+    <select id="countError" databaseId="oracle"  resultType="java.lang.Integer">
+
+		select  nvl(sum(COUNT),0) AS COUNT FROM (
+		    select COUNT
+			  from (
+			    select nvl(sum(ERRORS),0)  AS COUNT , QRTZ_JOB_GROUP
+			    from  LOG_TRANS GROUP BY QRTZ_JOB_GROUP
+			  )a JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = a.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID  = #{organizerId}
+
+				UNION ALL
+
+				select COUNT
+			  from (
+			    select nvl(sum(ERRORS),0)   AS COUNT , QRTZ_JOB_GROUP
 			    from  LOG_JOB GROUP BY QRTZ_JOB_GROUP
 			  ) b JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID  = #{organizerId}
 		) d

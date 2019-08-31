@@ -8,6 +8,11 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
+
+
+
+
+
     <!-- ali druid 数据库连接池 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
         <!-- 数据库基本信息配置 -->
@@ -43,9 +48,12 @@
         <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
     </bean>
 
+
+
     <!-- Spring整合Mybatis，更多查看文档：http://mp.baomidou.com -->
     <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
+        <property name="databaseIdProvider" ref="databaseIdProvider"/>
         <property name="typeAliasesPackage" value="com.aofei"/>
         <property name="typeAliasesSuperType" value="com.aofei.base.entity.BaseEntity"/>
         <!-- 自动扫描Mapping.xml文件 -->
@@ -56,7 +64,7 @@
             <array>
                 <!-- 分页插件配置 -->
                 <bean id="paginationInterceptor" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
-                    <property name="dialectType" value="mysql" />
+                    <property name="dialectType" value="oracle" />
                 </bean>
             </array>
         </property>
