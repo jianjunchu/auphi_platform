@@ -409,6 +409,9 @@ public class QuartzUtil {
 		data.put("ha", scheduleBean.getHa());
 		data.put("errorNoticeUserId", scheduleBean.getErrorNoticeUserId());
 		data.put("errorNoticeUserName", scheduleBean.getErrorNoticeUserName());
+
+		data.put("beforeSell", scheduleBean.getBeforeSell());
+
 		//data.put("scheduleBean", scheduleBean);
 		
 		data.put("background_action_name", "");
@@ -518,7 +521,7 @@ public class QuartzUtil {
 			data.put("ha", scheduleBean.getHa());
 			data.put("errorNoticeUserId", scheduleBean.getErrorNoticeUserId());
 			data.put("errorNoticeUserName", scheduleBean.getErrorNoticeUserName());
-			
+			data.put("beforeSell", scheduleBean.getBeforeSell());
 			data.put("background_action_name", "");
 			data.put("processId", QuartzUtil.class.getName()); //$NON-NLS-1$
 			data.put("background_user_name", "");

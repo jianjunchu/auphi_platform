@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="metadataVersion">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.ID AS id
+        , a.MAPPING_GROUP_ID AS mappingGroupId
+        , a.SOURCE_DB_ID AS sourceDbId
+        , a.SOURCE_SCHEMA_NAME AS sourceSchemaName
+        , a.SOURCE_TABLE_NAME AS sourceTableName
+        , a.SOURCE_COLUMN_NAME AS sourceColumnName
+        , a.SOURCE_COLUMN_TYPE AS sourceColumnType
+        , a.SOURCE_COLUMN_TYPE_ETL AS sourceColumnTypeEtl
+        , a.SOURCE_COLUMN_LENGTH AS sourceColumnLength
+        , a.SOURCE_COLUMN_SCALE AS sourceColumnScale
+        , a.SOURCE_COLUMN_COMMENTS AS sourceColumnComments
+        , a.SOURCE_COLUMN_ORDER AS sourceColumnOrder
+        , a.IS_PK AS isPk
+        , a.REFRESH_TIME AS refreshTime
+        , a.REFRESH_TIME_VERSION AS refreshTimeVersion
+        , a.CREATE_TIME AS createTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_TIME AS updateTime
+        , a.UPDATE_USER AS updateUser
+    </sql>
+
+</mapper>

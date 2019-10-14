@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="metadataMappingGroup">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.ID AS id
+        , a.MAPPING_GROUP_NAME AS mappingGroupName
+        , a.MAPPING_GROUP_DESC AS mappingGroupDesc
+        , a.CREATE_TIME AS createTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_TIME AS updateTime
+        , a.UPDATE_USER AS updateUser
+    </sql>
+
+    <sql id="Base_Joins">
+
+    </sql>
+
+    <select id="selectList" parameterType="map" resultType="com.auphi.ktrl.metadata.domain.MetadataMappingGroup">
+        select
+        <include refid="Base_Column_List"/>
+        from METADATA_MAPPING_GROUP a
+        <include refid="Base_Joins"/>
+
+    </select>
+
+    <select id="selectById" parameterType="map" resultType="com.auphi.ktrl.metadata.domain.MetadataMappingGroup">
+        select
+        <include refid="Base_Column_List"/>
+        from METADATA_MAPPING_GROUP a
+        <include refid="Base_Joins"/>
+        where  a.ID = #{id}
+    </select>
+
+    <select id="selectCount" parameterType="map"  resultType="java.lang.Integer">
+        select
+          count(*)
+        from METADATA_MAPPING_GROUP a
+        <include refid="Base_Joins"/>
+
+    </select>
+
+    <insert id="insert">
+		insert into METADATA_MAPPING_GROUP (
+              ID
+            , MAPPING_GROUP_NAME
+            , MAPPING_GROUP_DESC
+            , CREATE_TIME
+            , CREATE_USER
+            , UPDATE_TIME
+            , UPDATE_USER
+		)values(
+              #{id}
+            , #{mappingGroupName}
+            , #{mappingGroupDesc}
+            , #{createTime}
+            , #{createUser}
+            , #{updateTime}
+            , #{updateUser}
+		)
+	</insert>
+
+    <update id="updateById">
+        update METADATA_MAPPING_GROUP a
+        <set>
+              a.MAPPING_GROUP_NAME = #{mappingGroupName}
+            , a.MAPPING_GROUP_DESC = #{mappingGroupDesc}
+            , a.CREATE_TIME = #{createTime}
+            , a.CREATE_USER = #{createUser}
+            , a.UPDATE_TIME = #{updateTime}
+            , a.UPDATE_USER = #{updateUser}
+
+        </set>
+        where a.ID = #{id}
+    </update>
+
+
+    <update id="deleteById">
+       delete from METADATA_MAPPING_GROUP  WHERE ID   = #{id}
+    </update>
+
+    <update id="deleteByIds">
+       delete from METADATA_MAPPING_GROUP  WHERE ID in (${ids})
+    </update>
+
+
+</mapper>

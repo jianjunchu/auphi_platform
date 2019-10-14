@@ -47,6 +47,7 @@ import com.auphi.ktrl.schedule.util.QuartzUtil;
 import com.auphi.ktrl.system.repository.CreateRepositoryThread;
 import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.repository.util.RepositoryUtil;
+import org.pentaho.di.core.KettleEnvironment;
 
 /**
  * Servlet implementation class InitServlet
@@ -77,6 +78,7 @@ public class InitServlet extends HttpServlet {
 			return;
 		}
 
+
 		System.out.println(InitServlet.class.getResource("/log4j.properties"));
 		PropertyConfigurator.configure(InitServlet.class.getResource("/log4j_auphi.properties"));
 		
@@ -84,7 +86,9 @@ public class InitServlet extends HttpServlet {
 		Statement stmt = null;
 		ResultSet rs = null;
 		try{
-			//init kettle engine 
+			KettleEnvironment.init();
+
+			//init kettle engine
 			//ClassLoader classLoader_servlet = Thread.currentThread().getContextClassLoader();
 			//KettleEngineImpl2_3.init();
 			//System.out.println("KingbaseDI V2.0 Engine initialized successfully!");

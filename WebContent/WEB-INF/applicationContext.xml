@@ -109,7 +109,7 @@
 	<context:component-scan base-package="com.auphi.ktrl" />
 	<context:component-scan base-package="com.auphi.ktrl.mdm" />
 	<context:component-scan base-package="com.auphi.ktrl.quality.*" />
-
+	<context:component-scan base-package="com.auphi.ktrl.metadata.*" />
 		
 	<import resource="applicationContext-jta.xml"/>
 	<import resource="applicationContext-quartz.xml"/>	

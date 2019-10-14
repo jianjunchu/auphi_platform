@@ -1,26 +1,3 @@
-/*******************************************************************************
- *
- * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
-
- * Support：support@pentahochina.com
- *
- *******************************************************************************
- *
- * Licensed under the LGPL License, Version 3.0 the "License";
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *    https://opensource.org/licenses/LGPL-3.0 
-
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
 package com.auphi.data.hub.core.util;
 
 import java.util.ArrayList;
@@ -28,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.json.processors.JsonValueProcessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,17 +21,28 @@ public class JsonHelper {
 
 	/**
 	 * 将不含日期时间格式的Java对象系列化为Json资料格式
-	 * 
+	 *
 	 * @param pObject  传入的Java对象
 	 * @return
 	 */
 	public static final String encodeObject2Json(Object pObject) {
 		String jsonString = "[]";
 		if (CloudUtils.isEmpty(pObject)) {
-			 log.warn("传入的Java对象为空,不能将其序列化为Json资料格式.请检查!");
+			log.warn("传入的Java对象为空,不能将其序列化为Json资料格式.请检查!");
 		} else {
-			JsonConfig config = new JsonConfig();  
-            config.registerJsonValueProcessor(Date.class, new DateJsonValueProcessor("yyyy-MM-dd HH:mm:ss")); 
+			JsonConfig config = new JsonConfig();
+			config.registerJsonValueProcessor(Date.class, new DateJsonValueProcessor("yyyy-MM-dd HH:mm:ss"));
+			config.registerJsonValueProcessor(java.lang.Long.class, new JsonValueProcessor() {
+				@Override
+				public Object processArrayValue(Object o, JsonConfig jsonConfig) {
+					return String.valueOf(o);
+				}
+
+				@Override
+				public Object processObjectValue(String s, Object o, JsonConfig jsonConfig) {
+					return String.valueOf(o);
+				}
+			});
 			if (pObject instanceof ArrayList) {
 				JSONArray jsonArray = JSONArray.fromObject(pObject,config);
 				jsonString = jsonArray.toString();
@@ -72,19 +61,30 @@ public class JsonHelper {
 	 * 将含有日期时间格式的Java对象系列化为Json资料格式
 	 * Json-Lib在处理日期时间格式是需要实现其JsonValueProcessor接口,所以在这里提供一个重载的方法对含有<br>
 	 * 日期时间格式的Java对象进行序列化
-	 * 
+	 *
 	 * @param pObject 传入的Java对象
 	 * @return
 	 */
 	public static final String encodeObject2Json(Object pObject, String pFormatString) {
 		String jsonString = "[]";
 		if (CloudUtils.isEmpty(pObject)) {
-			 log.warn("传入的Java对象为空,不能将其序列化为Json资料格式.请检查!");
+			log.warn("传入的Java对象为空,不能将其序列化为Json资料格式.请检查!");
 		} else {
 			JsonConfig cfg = new JsonConfig();
 			cfg.registerJsonValueProcessor(java.sql.Timestamp.class, new JsonValueProcessorImpl(pFormatString));
 			cfg.registerJsonValueProcessor(java.util.Date.class, new JsonValueProcessorImpl(pFormatString));
 			cfg.registerJsonValueProcessor(java.sql.Date.class, new JsonValueProcessorImpl(pFormatString));
+			cfg.registerJsonValueProcessor(java.lang.Long.class, new JsonValueProcessor() {
+				@Override
+				public Object processArrayValue(Object o, JsonConfig jsonConfig) {
+					return String.valueOf(o);
+				}
+
+				@Override
+				public Object processObjectValue(String s, Object o, JsonConfig jsonConfig) {
+					return String.valueOf(o);
+				}
+			});
 			if (pObject instanceof ArrayList) {
 				JSONArray jsonArray = JSONArray.fromObject(pObject, cfg);
 				jsonString = jsonArray.toString();
@@ -116,7 +116,7 @@ public class JsonHelper {
 
 	/**
 	 * 直接将List转为分页所需要的Json资料格式
-	 * 
+	 *
 	 * @param list 需要编码的List对象
 	 * @param totalCount  记录总数
 	 * @param pDataFormat 时间日期格式化,传null则表明List不包含日期时间属性
@@ -137,7 +137,7 @@ public class JsonHelper {
 
 	/**
 	 * 将数据系列化为表单数据填充所需的Json格式
-	 * 
+	 *
 	 * @param pObject 待系列化的对象
 	 * @param pFormatString 日期时间格式化,如果为null则认为没有日期时间型字段
 	 * @return
@@ -161,7 +161,7 @@ public class JsonHelper {
 
 	/**
 	 * 将单一Json对象解析为DTOJava对象
-	 * 
+	 *
 	 * @param jsonString  简单的Json对象
 	 * @return dto
 	 */
@@ -177,7 +177,7 @@ public class JsonHelper {
 
 	/**
 	 * 将复杂Json资料格式转换为List对象
-	 * 
+	 *
 	 * @param jsonString
 	 *            复杂Json对象,格式必须符合如下契约
 	 *            {"1":{"name":"成龙","age":"27"},

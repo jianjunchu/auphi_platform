@@ -27,6 +27,8 @@ package com.auphi.data.hub.core;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.auphi.ktrl.metadata.domain.MetadataMapping;
+import com.auphi.ktrl.system.user.bean.UserBean;
 import org.apache.ibatis.session.SqlSession;
 
 import com.auphi.data.hub.core.struct.Dto;
@@ -114,6 +116,7 @@ public interface BaseDao {
 	 * @param SQL语句ID号
 	 */
 	public int delete(String statementName);
-	
-	
+
+
+	List queryForPage(String s, Object dto, Integer start, Integer limit);
 }

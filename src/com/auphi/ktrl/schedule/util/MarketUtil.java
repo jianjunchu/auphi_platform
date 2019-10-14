@@ -144,8 +144,8 @@ public static String getSchemaNames(String schemaNamejson)
 	public static Database getDatabase(Integer id)
 	{
 		//List<FastConfigDatabaseView> fastConfigDatabaseViews= new ArrayList<FastConfigDatabaseView>();	
-   	FastConfigDatabaseView fastConfigDatabaseView =new FastConfigDatabaseView();
-   	String typeName=null;
+   		FastConfigDatabaseView fastConfigDatabaseView =new FastConfigDatabaseView();
+   		String typeName=null;
 		Database database= null;
 		Connection connection=null;
 		PreparedStatement smt=null;
@@ -160,10 +160,7 @@ public static String getSchemaNames(String schemaNamejson)
 		   	smt.setInt(1, id);
 	        rs=smt.executeQuery();
 
-
-
-
-	        while (rs.next()) 
+	        while (rs.next())
 	        {
 				fastConfigDatabaseView.setIdDatase(rs.getInt("ID_DATABASE"));
 				fastConfigDatabaseView.setName(rs.getString("NAME"));
@@ -205,19 +202,19 @@ public static String getSchemaNames(String schemaNamejson)
        		typeName, "Native", fastConfigDatabaseView.getHostName(),
        		fastConfigDatabaseView.getDatabaseName(), fastConfigDatabaseView.getPort().toString(),
        		fastConfigDatabaseView.getUserName(), Encr.decryptPasswordOptionallyEncrypted(fastConfigDatabaseView.getPassword()));
-
-
-
-
+		databaseMeta.initializeVariablesFrom(null);
 
 		for(Map<String,String> map:attributes){
 			databaseMeta.getAttributes().put(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE), Const.NVL(map.get(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR), ""));
 		}
 
 	    database = new Database(databaseMeta);
+		database.initializeVariablesFrom(null);
 	    ConnectionPool.freeConn(rs, smt, null, connection);
 		return  database;
 	}
+
+
 
 
 	public static TreeMap<Integer, FieldMappingView> getDestHashMap(String json)

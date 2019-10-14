@@ -26,8 +26,9 @@ Ext.onReady(function() {
 
 	//是否主键下拉框
 	var isPrimaryData = [
-		['Y','是'],
-		['N','否']
+		['N','否'],
+		['Y','是']
+
 	];
 	var isPrimaryStore = new Ext.data.SimpleStore(
 		{
@@ -506,7 +507,7 @@ Ext.onReady(function() {
 
 				}
 		},{
-				header : '字段长度',
+				header : '长度/精度',
 				dataIndex : 'field_length',
 				sortable : true,
 				width : 100,
@@ -515,7 +516,7 @@ Ext.onReady(function() {
 					xtype:'numberfield'
 				}
 		},{
-			header : '精度', 
+			header : '刻度',
 			dataIndex : 'field_precision', 
 			sortable : true,
 			width : 100,
@@ -792,7 +793,22 @@ Ext.onReady(function() {
 			mode: 'local',
 			triggerAction: 'all',
 			selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
-			allowBlank : false  
+			allowBlank : false,
+			listeners: {
+				select : function(comboBox, record,index){
+					if(comboBox.value == 1 || comboBox.value == 2 || comboBox.value == 6){
+						Ext.getCmp('field_length').allowBlank = false
+					}else{
+						Ext.getCmp('field_length').allowBlank = true
+					}
+
+					if(comboBox.value == 1  || comboBox.value == 6){
+						Ext.getCmp('field_precision').allowBlank = false
+					}else{
+						Ext.getCmp('field_precision').allowBlank = true
+					}
+				}
+			}
 		});
 
 		
@@ -828,11 +844,13 @@ Ext.onReady(function() {
 			displayField:'text',    
 			typeAhead : true,
 			mode : 'local',
+			value:'N',
 			triggerAction : 'all',
 			selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
 			allowBlank : false  
-		}); 			
-		
+		});
+
+		isPrimaryComboBox.setValue("N")
 		//表单
 		var attributeForm = new Ext.form.FormPanel( {
 			id : 'attributeForm',
@@ -892,7 +910,7 @@ Ext.onReady(function() {
 					 fieldTypeComboBox
 					,{
 						id:'field_length',
-						fieldLabel : '字段长度', // 标签
+						fieldLabel : '长度/精度', // 标签
 						name : 'field_length', // name:后台根据此name属性取值
 						maxLength : 50,
 						allowBlank : false,
@@ -902,7 +920,7 @@ Ext.onReady(function() {
 						}
 					},{
 						id:'field_precision',
-						fieldLabel : '精度', // 标签
+						fieldLabel : '刻度', // 标签
 						name : 'field_precision', // name:后台根据此name属性取值
 						maxLength : 50,
 						allowBlank : false,

@@ -28,6 +28,11 @@ import java.io.StringWriter;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -51,13 +56,23 @@ import com.auphi.ktrl.util.StringUtil;
 public class QuartzExecute implements Job {
 	private static Logger logger = Logger.getLogger(QuartzExecute.class);
 
+	public static final LogChannelInterface loggingObject = new LogChannel("QuartzExecute");
+
+	private static Class<?> PKG = QuartzExecute.class;
+
+
 	@Override
 	public synchronized void execute(JobExecutionContext arg0) {
 		// TODO Auto-generated method stub
 
 		JobDetail jobDetail = arg0.getJobDetail();
 		JobDataMap data = jobDetail.getJobDataMap();
-		
+
+		//执行前置脚本
+
+		String beforeSell = data.getString("beforeSell");
+
+
 		Boolean isFastConfig = data.getBoolean("isFastConfig");
 		
 		if(isFastConfig){
@@ -66,7 +81,10 @@ public class QuartzExecute implements Job {
 			executeNormal(data, jobDetail.getName(), jobDetail.getGroup());
 		}
 	}
-	
+
+
+
+
 	/**
 	 * run as normal
 	 * @param data jobDataMap
@@ -96,8 +114,15 @@ public class QuartzExecute implements Job {
 		try{
 			ScheduleBean scheduleBean = ScheduleUtil.getScheduleBeanByJobName(jobDetailName, jobGroup);
 			MonitorUtil.addMonitorBeforeRun(id, scheduleBean);
-			
-			kettleEngine.execute(repName, actionPath, actionRef, fileType, id, execType, remoteServer, ha);
+
+			if(ProcessUtil.runProcess(id,data.getString("beforeSell"))){
+				KettleEnvironment.init();
+				kettleEngine.execute(repName, actionPath, actionRef, fileType, id, execType, remoteServer, ha);
+
+			}
+
+
+
 			
 		}catch(Exception e){
 			StringWriter sw = new StringWriter();
@@ -150,10 +175,14 @@ public class QuartzExecute implements Job {
 			}
 				else
 			template.bind(fastConfigJson, fieldMappingJson);
-			
-			
 			MonitorUtil.addMonitorBeforeRun(id, jobDetailName, middlePath, data.getString("userId"), "", ha);
-			template.execute(id, execType, "", ha);
+
+
+			if(ProcessUtil.runProcess(id,data.getString("beforeSell"))){
+				KettleEnvironment.init();
+				template.execute(id, execType, "", ha);
+			}
+
 		}catch (Exception e){
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);

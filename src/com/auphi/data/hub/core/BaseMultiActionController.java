@@ -228,47 +228,7 @@ public class BaseMultiActionController extends MultiActionController {
 		return null;
 	}
 
-	public Database createDatabase(int id_dataBase){
-		Database database = null;
-		try{
 
-			if(dataSourceMap.size() == 0 ||  !dataSourceMap.containsKey(id_dataBase)){
-				List<Datasource> dataSourceList = datasourceService.querySourceList();
-				for(Datasource dataSource :dataSourceList){
-					dataSourceMap.put(dataSource.getSourceId(), dataSource);
-				}
-			}
-			if(dataBaseTypeMap.size() == 0){
-				List<DataBaseType> dataBaseTypeList = dataBaseTypeService.queryAll();
-				for(DataBaseType dataBaseType : dataBaseTypeList){
-					dataBaseTypeMap.put(dataBaseType.getId_database_type(), dataBaseType);
-				}
-			}
-			if(dataSourceMap.containsKey(id_dataBase)){
-				Datasource datasource = dataSourceMap.get(id_dataBase);
-				DataBaseType dataBaseType = dataBaseTypeMap.get(datasource.getSourceType());
-				DatabaseMeta databaseMeta = new DatabaseMeta(
-						datasource.getSourceName(),
-						dataBaseType.getDescription(),
-						"Native",
-						datasource.getSourceIp(),
-						datasource.getSourceDataBaseName(),
-						datasource.getSourcePort(),
-						datasource.getSourceUserName(),
-						datasource.getSourcePassword());
-				database = new Database(databaseMeta);
-				database.connect();
-				if(dataBaseType.getDescription().equalsIgnoreCase("Hadoop Hive 2") || dataBaseType.getDescription().equalsIgnoreCase("Hadoop Hive"))
-				{
-					database.execStatement("use "+datasource.getSourceDataBaseName());
-				}
-			}
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return database;
-	}
 
 
 }

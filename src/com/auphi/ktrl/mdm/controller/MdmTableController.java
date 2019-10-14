@@ -38,9 +38,12 @@ import com.auphi.ktrl.mdm.domain.TextValue;
 import com.auphi.ktrl.mdm.service.DataBaseTypeService;
 import com.auphi.ktrl.mdm.service.MdmModelAttributeService;
 import com.auphi.ktrl.mdm.service.MdmTableService;
+import com.auphi.ktrl.schedule.util.MarketUtil;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -48,6 +51,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -57,6 +61,7 @@ import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 @ApiIgnore
@@ -147,20 +152,50 @@ public class MdmTableController extends BaseMultiActionController {
 	public ModelAndView getSchemaName(HttpServletRequest req,HttpServletResponse resp) throws IOException{	
 		Database database = null;
 		try {
-			String id_database = req.getParameter("id_database");
+			Integer id_database = ServletRequestUtils.getIntParameter(req,"id_database");
 			
 			List<TextValue> list = new ArrayList<TextValue>();
-			database = createDatabase(id_database);
+			database = MarketUtil.getDatabase(id_database);
 			if(database != null){
-				String[] schemaNames = database.getSchemas();
-				if(schemaNames != null && schemaNames.length > 0){
-					for(String schemaName : schemaNames){
-						TextValue textValue = new TextValue();
-						textValue.setText(schemaName);
-						textValue.setValue(schemaName);
-						list.add(textValue);
+
+				database.connect();
+
+				DatabaseMetaData dbmd = database.getDatabaseMetaData();
+				Map<String, String> connectionExtraOptions = database.getDatabaseMeta().getExtraOptions();
+				if (dbmd.supportsSchemasInTableDefinitions()) {
+
+					String schemaFilterKey = database.getDatabaseMeta().getPluginId() + "." + DatabaseMetaInformation.FILTER_SCHEMA_LIST;
+					if ((connectionExtraOptions != null) && connectionExtraOptions.containsKey(schemaFilterKey)) {
+						String schemasFilterCommaList = connectionExtraOptions.get(schemaFilterKey);
+						String[] schemasFilterArray = schemasFilterCommaList.split(",");
+						for (int i = 0; i < schemasFilterArray.length; i++) {
+							String schemaName = schemasFilterArray[i].trim();
+							list.add(new TextValue(schemaName,schemaName));
+						}
 					}
+					if (list.size() == 0) {
+						String sql = database.getDatabaseMeta().getSQLListOfSchemas();
+						if (!Const.isEmpty(sql)) {
+							Statement schemaStatement = database.getConnection().createStatement();
+							ResultSet schemaResultSet = schemaStatement.executeQuery(sql);
+							while (schemaResultSet != null && schemaResultSet.next()) {
+								String schemaName = schemaResultSet.getString("name");
+								list.add(new TextValue(schemaName,schemaName));
+							}
+							schemaResultSet.close();
+							schemaStatement.close();
+						} else {
+							ResultSet schemaResultSet = dbmd.getSchemas();
+							while (schemaResultSet != null && schemaResultSet.next()) {
+								String schemaName = schemaResultSet.getString(1);
+								list.add(new TextValue(schemaName,schemaName));
+							}
+							schemaResultSet.close();
+						}
+					}
+
 				}
+
 			}
 			if(list.size() == 0){
 				TextValue textValue = new TextValue();
@@ -174,11 +209,7 @@ public class MdmTableController extends BaseMultiActionController {
 			e.printStackTrace();
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
@@ -190,9 +221,9 @@ public class MdmTableController extends BaseMultiActionController {
 			String id_database = req.getParameter("id_database");
 			String schema_name = req.getParameter("schema_name");
 			List<TextValue> list = new ArrayList<TextValue>();
-			database = createDatabase(id_database);
+			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
 			if(database != null){
-				
+				database.connect();
 				String[] tableNames = null;
 							
 				if(schema_name!=null && !"".equals(schema_name)){
@@ -234,11 +265,7 @@ public class MdmTableController extends BaseMultiActionController {
 			e.printStackTrace();
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
@@ -249,20 +276,24 @@ public class MdmTableController extends BaseMultiActionController {
 		try{
 			String table_name = req.getParameter("table_name");
 			String schema_name = req.getParameter("schema_name");
-			String id_database = req.getParameter("id_database");
+			Integer id_database = ServletRequestUtils.getIntParameter(req,"id_database");
 			String id_model = req.getParameter("id_model");
 			List<MdmModelAttribute> list = getMdmModelAttributeList(id_model);
-			database = createDatabase(id_database);
+			database = MarketUtil.getDatabase(id_database);
+
 			boolean isSame = true;
 			if(database != null || list.size() > 0){
-				
+				database.connect();
+
 				//获取主键
 				DatabaseMetaData dbMeta = database.getConnection().getMetaData(); 
 				ResultSet pkRSet = dbMeta.getPrimaryKeys(null, null, table_name); 
 				List<Object> pkList = new ArrayList<Object>();
 				while( pkRSet.next() ) { 
 					pkList.add(pkRSet.getObject(4)); 
-				} 
+				}
+				pkRSet.close();
+
 				ResultSet rs = dbMeta.getColumns(null, null, table_name.toUpperCase(), null);
 				
 				while(rs.next()){
@@ -289,6 +320,7 @@ public class MdmTableController extends BaseMultiActionController {
 					}
 					if(!isSame) break;
 				}
+				rs.close();
 			}else{
 				isSame = false;
 			}
@@ -301,11 +333,7 @@ public class MdmTableController extends BaseMultiActionController {
 			this.setOkTipMsg("检查失败", resp);
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
@@ -323,17 +351,19 @@ public class MdmTableController extends BaseMultiActionController {
 				return null;
 			}
 			String createSQL = "";
-			database = createDatabase(id_database);
+			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
 			boolean hasPrimaryKey = false;
 			if(database != null){
+
+				database.connect();
 				List<MdmModelAttribute> list = getMdmModelAttributeList(id_model);
 				String pk = null;
 				RowMetaInterface rm = new RowMeta();
 
 				for(MdmModelAttribute mdmModelAttribute : list){
 					ValueMeta ValueMeta = new ValueMeta(mdmModelAttribute.getField_name(),mdmModelAttribute.getField_type());
-					ValueMeta.setLength(mdmModelAttribute.getField_length());
-					ValueMeta.setPrecision(mdmModelAttribute.getField_precision());
+					ValueMeta.setLength(mdmModelAttribute.getField_length()==null ? 0 : mdmModelAttribute.getField_length());
+					ValueMeta.setPrecision(mdmModelAttribute.getField_precision() ==null ? 0 : mdmModelAttribute.getField_precision());
 
 					rm.addValueMeta(ValueMeta);
 					if(mdmModelAttribute.getIs_primary().equals("Y")){
@@ -368,11 +398,7 @@ public class MdmTableController extends BaseMultiActionController {
 			this.setFailTipMsg(e.getMessage(), resp);
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
@@ -388,11 +414,12 @@ public class MdmTableController extends BaseMultiActionController {
 			String schema_name = req.getParameter("schema_name");
 			String id_database = req.getParameter("id_database");
 			String sql = req.getParameter("sql");
-			
-			database = createDatabase(id_database);
+
+			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
 			if(database != null){
+				database.connect();
 				Result result = database.execStatements(sql);
-				
+
 			}
 			//this.mdmTableService.delete(dto);s
 			
@@ -401,63 +428,13 @@ public class MdmTableController extends BaseMultiActionController {
 			this.setOkTipMsg("运行失败:"+e.getMessage(), resp);
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
 	}
 	
-	private Database createDatabase(String id_database){
-		Database database = null;
-		try{
-			int id_dataBase = 0;
-			if(id_database !=null && !id_database.isEmpty()){
-				id_dataBase = Integer.parseInt(id_database);
-			}
-			if(dataSourceMap.size() == 0 ||  !dataSourceMap.containsKey(id_dataBase)){
-				List<Datasource> dataSourceList = datasourceService.querySourceList();
-				for(Datasource dataSource :dataSourceList){
-					dataSourceMap.put(dataSource.getSourceId(), dataSource);
-				}
-			}
-			if(dataBaseTypeMap.size() == 0){
-				List<DataBaseType> dataBaseTypeList = dataBaseTypeService.queryAll();
-				for(DataBaseType dataBaseType : dataBaseTypeList){
-					dataBaseTypeMap.put(dataBaseType.getId_database_type(), dataBaseType);
-				}
-			}
-			if(dataSourceMap.containsKey(id_dataBase)){
-				Datasource datasource = dataSourceMap.get(id_dataBase);
-				DataBaseType dataBaseType = dataBaseTypeMap.get(datasource.getSourceType());
-				DatabaseMeta databaseMeta = new DatabaseMeta(
-						datasource.getSourceName(),
-						dataBaseType.getDescription(),
-						"Native",
-						datasource.getSourceIp(),
-						datasource.getSourceDataBaseName(),
-						datasource.getSourcePort(),
-						datasource.getSourceUserName(),
-						datasource.getSourcePassword());
-				database = new Database(databaseMeta);
-				database.connect();
-				if(dataBaseType.getDescription().equalsIgnoreCase("Hadoop Hive 2") || dataBaseType.getDescription().equalsIgnoreCase("Hadoop Hive"))
-				{
-					database.execStatement("use "+datasource.getSourceDataBaseName());
-				}
-			}
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return database;
-	}
-	
-	
-	
+
 	
 	private List<MdmModelAttribute> getMdmModelAttributeList(String id_model){
 		List<MdmModelAttribute> list = null;
@@ -477,7 +454,9 @@ public class MdmTableController extends BaseMultiActionController {
 			String id_database = req.getParameter("id_database");
 			String tableName = req.getParameter("tableName");
 			List<TextValue> list = new ArrayList<TextValue>();
-			database = createDatabase(id_database);
+			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
+			database.connect();
+
 			List<ValueMetaInterface> ls = database.getTableFields(tableName).getValueMetaList();
 			for(ValueMetaInterface vm:ls){
 				TextValue textValue = new TextValue();
@@ -497,17 +476,17 @@ public class MdmTableController extends BaseMultiActionController {
 			e.printStackTrace();
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		
 		return null;
 	}
-	
+
+
+
+
+
 	private String getPrimaryKey(List<MdmModelAttribute> attributes) throws SQLException{
 		
 		String primary_key = "";
@@ -539,8 +518,9 @@ public class MdmTableController extends BaseMultiActionController {
 			metaData.put("totalProperty", "totalCount");
 			metaData.put("fields", colums);
 			String primary_key = getPrimaryKey(attributes);
-			
-			database = createDatabase(mdmTable.getId_database()+"");
+
+			database = MarketUtil.getDatabase(mdmTable.getId_database());
+			database.connect();
 
 			String tablename =mdmTable.getTable_name();
 			if(mdmTable.getSchema_name()!=null && !"".equals(mdmTable.getSchema_name())){
@@ -573,17 +553,13 @@ public class MdmTableController extends BaseMultiActionController {
 			jsonMap.put("totalCount", datas.size());
 			jsonMap.put("success", true);
 			String jsonString = JsonHelper.encodeObject2Json(jsonMap);
-			
+			result.close();
 			write(jsonString, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;
@@ -598,7 +574,8 @@ public class MdmTableController extends BaseMultiActionController {
 			MdmTable mdmTable = mdmTableService.queryById(dto);
 			dto.put("id_model", mdmTable.getId_model());
 			List<MdmModelAttribute> attributes = mdmModelAttributeService.query4ComboBox(dto);
-			database = createDatabase(mdmTable.getId_database()+"");
+			database = MarketUtil.getDatabase(mdmTable.getId_database());
+			database.connect();
 			String action = req.getParameter("action");
 			if("add".equals(action)){
 				StringBuffer sql = new StringBuffer("INSERT INTO ");
@@ -650,11 +627,7 @@ public class MdmTableController extends BaseMultiActionController {
 			e.printStackTrace();
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		
@@ -674,7 +647,8 @@ public class MdmTableController extends BaseMultiActionController {
 					Dto<String,Object> dto = new BaseDto();
 					dto.put("id_table", id_table);
 					MdmTable mdmTable = mdmTableService.queryById(dto);
-					database = createDatabase(mdmTable.getId_database()+"");
+					database = MarketUtil.getDatabase(mdmTable.getId_database());
+					database.connect();
 					for(int i = 0 ; i< columns.length;i++){
 						StringBuffer sql = new StringBuffer("DELETE FROM ");
 						if(mdmTable.getSchema_name()!=null && !"".equals(mdmTable.getSchema_name())){
@@ -698,11 +672,7 @@ public class MdmTableController extends BaseMultiActionController {
 			this.setFailTipMsg(e.getMessage(), resp);
 		}finally{
 			if(database!=null){
-				try {
-					database.closeConnectionOnly();
-				} catch (KettleDatabaseException e) {
-					e.printStackTrace();
-				}
+				database.disconnect();
 			}
 		}
 		return null;

@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -59,7 +60,7 @@ public class ExportExcel {
 	/**
 	 * 工作表对象
 	 */
-	private Sheet sheet;
+	private SXSSFSheet sheet;
 	
 	/**
 	 * 样式列表
@@ -104,6 +105,7 @@ public class ExportExcel {
 	private void initialize(String title, List<String> headerList) {
 		this.wb = new SXSSFWorkbook(500);
 		this.sheet = wb.createSheet("Export");
+		sheet.trackAllColumnsForAutoSizing();
 		this.styles = createStyles(wb);
 		// Create title
 		if (StringUtils.isNotBlank(title)){
@@ -152,24 +154,24 @@ public class ExportExcel {
 		Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
 		
 		CellStyle style = wb.createCellStyle();
-		style.setAlignment(CellStyle.ALIGN_CENTER);
-		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 		Font titleFont = wb.createFont();
 		titleFont.setFontName("Arial");
 		titleFont.setFontHeightInPoints((short) 16);
-		titleFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		//titleFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		style.setFont(titleFont);
 		styles.put("title", style);
 
 		style = wb.createCellStyle();
-		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-		style.setBorderRight(CellStyle.BORDER_THIN);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		//style.setBorderRight(CellStyle.BORDER_THIN);
 		style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-		style.setBorderLeft(CellStyle.BORDER_THIN);
+		//style.setBorderLeft(CellStyle.BORDER_THIN);
 		style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-		style.setBorderTop(CellStyle.BORDER_THIN);
+		//style.setBorderTop(CellStyle.BORDER_THIN);
 		style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-		style.setBorderBottom(CellStyle.BORDER_THIN);
+		//style.setBorderBottom(CellStyle.BORDER_THIN);
 		style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
 		Font dataFont = wb.createFont();
 		dataFont.setFontName("Arial");
@@ -179,29 +181,29 @@ public class ExportExcel {
 		
 		style = wb.createCellStyle();
 		style.cloneStyleFrom(styles.get("data"));
-		style.setAlignment(CellStyle.ALIGN_LEFT);
+		//style.setAlignment(CellStyle.ALIGN_LEFT);
 		styles.put("data1", style);
 
 		style = wb.createCellStyle();
 		style.cloneStyleFrom(styles.get("data"));
-		style.setAlignment(CellStyle.ALIGN_CENTER);
+		//style.setAlignment(CellStyle.ALIGN_CENTER);
 		styles.put("data2", style);
 
 		style = wb.createCellStyle();
 		style.cloneStyleFrom(styles.get("data"));
-		style.setAlignment(CellStyle.ALIGN_RIGHT);
+		//style.setAlignment(CellStyle.ALIGN_RIGHT);
 		styles.put("data3", style);
 		
 		style = wb.createCellStyle();
 		style.cloneStyleFrom(styles.get("data"));
 //		style.setWrapText(true);
-		style.setAlignment(CellStyle.ALIGN_CENTER);
+		//style.setAlignment(CellStyle.ALIGN_CENTER);
 		style.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
-		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		//style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		Font headerFont = wb.createFont();
 		headerFont.setFontName("Arial");
 		headerFont.setFontHeightInPoints((short) 10);
-		headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		//headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		headerFont.setColor(IndexedColors.WHITE.getIndex());
 		style.setFont(headerFont);
 		styles.put("header", style);

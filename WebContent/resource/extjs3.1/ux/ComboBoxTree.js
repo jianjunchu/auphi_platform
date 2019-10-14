@@ -6,7 +6,6 @@ Ext.form.ComboBoxTree = Ext.extend(Ext.form.ComboBox,{
     }),
     editable : this.editable || false,
     mode : 'local',
-    emptyText : this.emptyText || "请选择所属目录",
     allowBlank : this.allowBlank || true,
     triggerAction : 'all',
     maxHeight : 200,
@@ -118,8 +117,6 @@ Ext.form.ComboBoxTree = Ext.extend(Ext.form.ComboBox,{
             clearBlank : true,
             autoClear : true
         });
-
-
 
 
 
