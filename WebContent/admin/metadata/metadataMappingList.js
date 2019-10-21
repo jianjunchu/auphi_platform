@@ -54,10 +54,10 @@ Ext.onReady(function(){
             sortable : true,
             width : 70,
             renderer: function (data, metadata, record, rowIndex, columnIndex, store) {
-                var isPk = store.getAt(rowIndex).get('isIncrementalColumn');
-                if(isPk == '0'){
+                    var isIncrementalColumn = store.getAt(rowIndex).get('isIncrementalColumn');
+                if(isIncrementalColumn == '0'){
                     return '否'
-                }else if(isPk == '1'){
+                }else if(isIncrementalColumn == '1'){
                     return '是'
                 }
             }
@@ -110,6 +110,8 @@ Ext.onReady(function(){
             name:'sourceColumnOrder'
         },{
             name:'isPk'
+        },{
+            name:'isIncrementalColumn'
         },{
             name:'destDbId'
         },{
@@ -457,15 +459,15 @@ Ext.onReady(function(){
      */
     function addItem() {
 
-        metadataMappingFromPanel.getForm().reset();
+        Ext.getCmp('metadataMappingFromPanel').getForm().reset();
 
 
         sourceDbIdComboBox.setDisabled(false);
         sourceSchemaNameComboBox.setDisabled(false);
         sourceTableNameComboBox.setDisabled(false);
-
         sourceTableNameComboBox.clearValue()
         fromAllowBlank = true;
+
         Ext.getCmp("column_fieldset").hide() ;
 
         showCreateMetadataMappingFromWindow(store_reload);
@@ -480,8 +482,11 @@ Ext.onReady(function(){
             return;
         }
 
-        metadataMappingFromPanel.getForm().reset();
+       
         Ext.getCmp("column_fieldset").show() ;
+        metadataMappingFromPanel.getForm().reset();
+        metadataMappingFromPanel.doLayout()
+
         sourceColumnTypeStore.load({
             params : {id_database : record[0].get("sourceDbId")},
             callback:function(r,options,success){
@@ -494,7 +499,6 @@ Ext.onReady(function(){
 
 
         fromAllowBlank = false;
-
 
         sourceTableNameComboBox.clearValue()
 
