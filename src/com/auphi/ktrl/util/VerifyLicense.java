@@ -73,23 +73,35 @@ public class VerifyLicense {
 
 		LicenseManager lm = new LicenseManager(licenseParam);
 		File licenseFile;
-		if(fileName==null || fileName.length()==0)
+		if(fileName==null || fileName.length()==0){
 			licenseFile= new File("KettlePlatform.lic");
-		else
+		}
+
+		else{
 			licenseFile= new File(fileName);
+		}
+
 
 		lm.install(licenseFile);
 		LicenseContent lc = lm.verify();
-		//时间小于180天为测试License不验证 Mac 地址
-		if((lc.getNotAfter().getTime()- System.currentTimeMillis())>180*24*60*60*1000) {
+		//时间小于5年不验证 Mac 地址
+		System.out.println("License 到期时间:"+StringUtil.DateToString(lc.getNotAfter(),"yyyy-MM-dd HH:mm:ss") );
+		if( (lc.getNotAfter().getTime()- System.currentTimeMillis()) < 1000L*60*60*24*365*3) {
 			ArrayList<String> list = getAllMacs();
 			boolean found = false;
+
+			System.out.println("License MAC:"+lc.getInfo());
 			for (String e : list) {
-				if (e.equals(lc.getInfo())) ;
-				found = true;
+
+				System.out.println("本机MAC:"+e);
+
+				if (e.equalsIgnoreCase(lc.getInfo())){
+					found = true;
+				}
+
 			}
 			if (!found) {
-				throw new Exception("Mac address not match");
+				throw new Exception("该License 绑定到非本机 MAC 地址");
 			}
 		}
 	}
@@ -129,6 +141,8 @@ public class VerifyLicense {
 	}
 
 	public static void main(String[] args) {
+
+		System.out.println(1000L*60*60*24*365*5);
 		VerifyLicense g = new VerifyLicense();
 		try {
 			g.install();

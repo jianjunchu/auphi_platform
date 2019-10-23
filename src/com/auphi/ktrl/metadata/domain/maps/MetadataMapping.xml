@@ -217,7 +217,7 @@
               a.DEST_DB_ID = #{destDbId}
             , a.DEST_SCHEMA_NAME = #{destSchemaName}
             , a.DEST_TABLE_NAME = #{destTableName}
-
+            , a.EXTRACT_STYLE = #{extractStyle}
         </set>
         where a.SOURCE_DB_ID = #{sourceDbId} and a.SOURCE_SCHEMA_NAME = #{sourceSchemaName} and a.SOURCE_TABLE_NAME = #{sourceTableName}
     </update>

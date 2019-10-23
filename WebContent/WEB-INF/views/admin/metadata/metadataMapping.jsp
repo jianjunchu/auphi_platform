@@ -12,7 +12,8 @@
     <skyform:import src="/resource/extjs3.1/ux/Ext.ux.form.LovCombo.css" />
     <skyform:import src="/resource/DateTime/DateTimeField.js"/>
     <skyform:import src="/resource/extjs3.1/ux/ComboBoxTree.js"/>
-    <skyform:import src="/admin/metadata/metadataMappingFrom.js"/>
+    <skyform:import src="/admin/metadata/metadataMappingNewFrom.js"/>
+    <skyform:import src="/admin/metadata/metadataMappingEditFrom.js"/>
     <skyform:import src="/admin/metadata/metadataMappingList.js"/>
     <skyform:body>
     </skyform:body>

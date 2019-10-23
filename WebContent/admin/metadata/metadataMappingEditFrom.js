@@ -1,55 +1,56 @@
-var store_reload;//表格刷新方法
+var edit_store_reload;//表格刷新方法
 
-var fromAllowBlank = true;
+var editFromAllowBlank = true;
 
-var mappingGroupIdStore = new Ext.data.JsonStore({
+var editMappingGroupIdStore = new Ext.data.JsonStore({
     fields: ['id', 'mappingGroupName'],
     url : "../metadataMapping/getMappingGroupList.shtml",
     autoLoad:true,
     root : "data"
 })
 
-var extractStyleStore = new Ext.data.SimpleStore({
+var editExtractStyleStore = new Ext.data.SimpleStore({
         fields:['value','text'],
         data:[[0,'全量'], [1,'增量']]
     }
 )
 
-var yesNoStore = new Ext.data.SimpleStore({
+var editYesNoStore = new Ext.data.SimpleStore({
         fields:['value','text'],
         data:[[0,'否'], [1,'是']]
     }
 )
 
 //字段类型Store
-var fieldTypeStore = new Ext.data.JsonStore({
+var editFieldTypeStore = new Ext.data.JsonStore({
     fields: ['fieldTypeShow', 'fieldTypeValue'],
     url : "../mdmModelAttribute/getFieldType.shtml",
     autoLoad:true,
     root : ""
 });
 
-var dbIdStore = new Ext.data.JsonStore({
+var editDbIdStore = new Ext.data.JsonStore({
     fields: ['sourceId', 'sourceName'],
     url : "../datasource/getDataSourceList.shtml",
     autoLoad:true,
     root : ""
 })
 
-var sourceColumnTypeStore = new Ext.data.JsonStore({
+var editSourceColumnTypeStore = new Ext.data.JsonStore({
     fields:['value','text'],
     url : "../metadataMapping/getTypeInfo.shtml",
     root : "data"
 });
 
-var destColumnTypeStore = new Ext.data.JsonStore({
+var editDestColumnTypeStore = new Ext.data.JsonStore({
     fields:['value','text'],
     url : "../metadataMapping/getTypeInfo.shtml",
     root : "data"
 });
 
 
-var mappingGroupIdComboBox = new Ext.form.ComboBox({
+
+var editMappingGroupIdComboBox = new Ext.form.ComboBox({
     fieldLabel : '所属组',
     emptyText:'请选择所属组',
     xtype:'combobox',
@@ -57,7 +58,7 @@ var mappingGroupIdComboBox = new Ext.form.ComboBox({
     name:'mappingGroupId',
     forceSelection: true,
     anchor : '100%',
-    store: mappingGroupIdStore,
+    store: editMappingGroupIdStore,
     valueField : "id",
     displayField : "mappingGroupName",
     typeAhead: true,
@@ -72,13 +73,13 @@ var mappingGroupIdComboBox = new Ext.form.ComboBox({
 
 
 
-var extractStyleComboBox = new Ext.form.ComboBox({
+var editExtractStyleComboBox = new Ext.form.ComboBox({
     fieldLabel : '抽取方式',
     emptyText : '请选择抽取方式',
     hiddenName : 'extractStyle',
     forceSelection: true,
     anchor : '100%',
-    store: extractStyleStore,
+    store: editExtractStyleStore,
     valueField : "value",
     displayField : "text",
     typeAhead: true,
@@ -93,37 +94,37 @@ var extractStyleComboBox = new Ext.form.ComboBox({
 
 
 
-var isIncrementalColumnComboBox = new Ext.form.ComboBox({
+var editIsIncrementalColumnComboBox = new Ext.form.ComboBox({
     fieldLabel : '增量字段',
     hiddenName : 'isIncrementalColumn',
     forceSelection: true,
     anchor : '100%',
-    store: yesNoStore,
+    store: editYesNoStore,
     valueField : "value",
     displayField : "text",
     typeAhead: true,
     mode: 'local',
     triggerAction: 'all',
     editable:false,
-    allowBlank : fromAllowBlank,
+    allowBlank : editFromAllowBlank,
     selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
     resizable : true,
     width: 120
 });
 
-var isPkComboBox = new Ext.form.ComboBox({
+var editIsPkComboBox = new Ext.form.ComboBox({
     fieldLabel : '主键',
     hiddenName : 'isPk',
     forceSelection: true,
     anchor : '100%',
-    store: yesNoStore,
+    store: editYesNoStore,
     valueField : "value",
     displayField : "text",
     typeAhead: true,
     mode: 'local',
     triggerAction: 'all',
     editable:false,
-    allowBlank : fromAllowBlank,
+    allowBlank : editFromAllowBlank,
     selectOnFocus : true,// 设置用户能不能自己输入,true为只能选择列表中有的记录
     resizable : true,
     width: 120
@@ -132,13 +133,13 @@ var isPkComboBox = new Ext.form.ComboBox({
 
 
 // 数据源
-var sourceDbIdComboBox = new Ext.form.ComboBox({
+var editSourceDbIdComboBox = new Ext.form.ComboBox({
     fieldLabel : '源数据库',
     emptyText:'请选择源数据库',
     hiddenName : "sourceDbId",
     forceSelection: true,
     anchor : '100%',
-    store: dbIdStore,
+    store: editDbIdStore,
     valueField : "sourceId",
     displayField : "sourceName",
     typeAhead: true,
@@ -150,10 +151,10 @@ var sourceDbIdComboBox = new Ext.form.ComboBox({
     editable:false,
     listeners: {
         select : function(comboBox, record,index){
-            sourceSchemaNameComboBox.clearValue();
-            sourceTableNameComboBox.clearValue();
+            editSourceSchemaNameComboBox.clearValue();
+            editSourceTableNameComboBox.clearValue();
             var id_database = comboBox.value;
-            sourceSchemaNameComboBox.store.load({
+            editSourceSchemaNameComboBox.store.load({
                 params : {id_database : id_database}
             });
         }
@@ -169,7 +170,7 @@ var schemaNameStore = new Ext.data.JsonStore({
     root : ""
 });
 
-var sourceSchemaNameComboBox = new Ext.form.ComboBox({
+var editSourceSchemaNameComboBox = new Ext.form.ComboBox({
     fieldLabel : '源模式名',
     emptyText:'请选择源模式名',
     hiddenName : "sourceSchemaName",
@@ -190,7 +191,7 @@ var sourceSchemaNameComboBox = new Ext.form.ComboBox({
 
 
 
-var sourceTableNameComboBox =  new Ext.form.ComboBoxTree ({
+var editSourceTableNameComboBox =  new Ext.form.ComboBoxTree ({
     name : 'sourceTableName',
     treeUrl:"../datasource/tables.shtml",
     fieldLabel : '源表名',
@@ -200,29 +201,29 @@ var sourceTableNameComboBox =  new Ext.form.ComboBoxTree ({
     anchor : '100%'
 });
 
-sourceTableNameComboBox.on('expand',function (combo) {
+editSourceTableNameComboBox.on('expand',function (combo) {
 
-    var loader = sourceTableNameComboBox.tree.getLoader();
+    var loader = editSourceTableNameComboBox.tree.getLoader();
     loader.on('beforeload', function(loader, node) {
         this.baseParams.repId = 1; // 通过这个传递参数，这样就可以点一个节点出来它的子节点来实现异步加载
-        this.baseParams.databaseId = sourceDbIdComboBox.getValue();
-        this.baseParams.schemanamein = sourceSchemaNameComboBox.getValue();
-        this.baseParams.tableName = sourceTableNameComboBox.emp.toString();
+        this.baseParams.databaseId = editSourceDbIdComboBox.getValue();
+        this.baseParams.schemanamein = editSourceSchemaNameComboBox.getValue();
+        this.baseParams.tableName = editSourceTableNameComboBox.emp.toString();
     }, loader);
 
 
-    loader.load(sourceTableNameComboBox.tree.root);
-    sourceTableNameComboBox.tree.expandAll();
+    loader.load(editSourceTableNameComboBox.tree.root);
+    editSourceTableNameComboBox.tree.expandAll();
 });
 
 
-var destDbIdComboBox = new Ext.form.ComboBox({
+var editDestDbIdComboBox = new Ext.form.ComboBox({
     fieldLabel : '目的数据库',
     emptyText:'请选择目的数据库',
     hiddenName : "destDbId",
     forceSelection: true,
     anchor : '100%',
-    store: dbIdStore,
+    store: editDbIdStore,
     valueField : "sourceId",
     displayField : "sourceName",
     typeAhead: true,
@@ -233,9 +234,9 @@ var destDbIdComboBox = new Ext.form.ComboBox({
     editable:false,
     listeners: {
         select : function(comboBox, record,index){
-            destSchemaNameComboBox.clearValue();
+            editDestSchemaNameComboBox.clearValue();
             var id_database = comboBox.value;
-            destSchemaNameComboBox.store.load({
+            editDestSchemaNameComboBox.store.load({
                 params : {id_database : id_database}
 
             });
@@ -245,7 +246,7 @@ var destDbIdComboBox = new Ext.form.ComboBox({
 
 
 
-var destSchemaNameComboBox = new Ext.form.ComboBox({
+var editDestSchemaNameComboBox = new Ext.form.ComboBox({
     fieldLabel : '目的模式名',
     emptyText:'请选择目的模式名',
     hiddenName : "destSchemaName",
@@ -265,34 +266,34 @@ var destSchemaNameComboBox = new Ext.form.ComboBox({
 
 
 
-var destTableNameTextField = {
+var editDestTableNameTextField = {
     xtype:'textfield',
     fieldLabel : '目的表名',
     name : 'destTableName',
     anchor : '100%'
 }
 
-var sourceColumnNameTextField = {
+var editSourceColumnNameTextField = {
     xtype:'textfield',
     fieldLabel : '源列名',
     name : 'sourceColumnName',
     anchor : '100%'
 }
 
-var destColumnNameTextField = {
+var editDestColumnNameTextField = {
     xtype:'textfield',
     fieldLabel : '目标列名',
     name : 'destColumnName',
     anchor : '100%'
 }
 
-var sourceColumnTypeComboBox = new Ext.form.ComboBox({
+var editSourceColumnTypeComboBox = new Ext.form.ComboBox({
     name:'sourceColumnType',
     fieldLabel:'源列类型',
     hiddenName : "sourceColumnType",
     forceSelection: true,
     anchor : '100%',
-    store: sourceColumnTypeStore,
+    store: editSourceColumnTypeStore,
     valueField : "value",
     displayField : "text",
     typeAhead: true,
@@ -304,13 +305,13 @@ var sourceColumnTypeComboBox = new Ext.form.ComboBox({
 
 })
 
-var destColumnTypeComboBox = new Ext.form.ComboBox({
+var editDestColumnTypeComboBox = new Ext.form.ComboBox({
     name:'destColumnType',
     fieldLabel:'目标列类型',
     hiddenName : "sourceColumnType",
     forceSelection: true,
     anchor : '100%',
-    store: destColumnTypeStore,
+    store: editDestColumnTypeStore,
     valueField : "value",
     displayField : "text",
     typeAhead: true,
@@ -324,10 +325,10 @@ var destColumnTypeComboBox = new Ext.form.ComboBox({
 
 
 
-var  sourceColumnTypeEtlComboBox = new Ext.form.ComboBox({
+var  editSourceColumnTypeEtlComboBox = new Ext.form.ComboBox({
     fieldLabel : '源列Kettle数据类型',
     anchor : '100%',
-    store: fieldTypeStore,
+    store: editFieldTypeStore,
     hiddenName : 'sourceColumnTypeEtl',
     valueField : "fieldTypeValue",
     displayField : "fieldTypeShow",
@@ -340,10 +341,10 @@ var  sourceColumnTypeEtlComboBox = new Ext.form.ComboBox({
     resizable : true
 })
 
-var  destColumnTypeEtlComboBox = new Ext.form.ComboBox({
+var  editDestColumnTypeEtlComboBox = new Ext.form.ComboBox({
     fieldLabel : '目标列Kettle数据类型',
     anchor : '100%',
-    store: fieldTypeStore,
+    store: editFieldTypeStore,
     hiddenName : 'destColumnTypeEtl',
     valueField : "fieldTypeValue",
     displayField : "fieldTypeShow",
@@ -356,50 +357,50 @@ var  destColumnTypeEtlComboBox = new Ext.form.ComboBox({
     resizable : true
 })
 
-var sourceColumnLengthTextField = {
+var editSourceColumnLengthTextField = {
     xtype:'textfield',
     fieldLabel : '源列长度',
     name : 'sourceColumnLength',
     anchor : '100%'
 }
 
-var destColumnLengthTextField = {
+var editDestColumnLengthTextField = {
     xtype:'textfield',
     fieldLabel : '目标列长度',
     name : 'destColumnLength',
     anchor : '100%'
 }
 
-var sourceColumnScaleTextField = {
+var editSourceColumnScaleTextField = {
     xtype:'textfield',
     fieldLabel : '源列精度',
     name : 'sourceColumnScale',
     anchor : '100%'
 }
 
-var destColumnScaleTextField = {
+var editDColumnScaleTextField = {
     xtype:'textfield',
     fieldLabel : '目标列精度',
     name : 'destColumnScale',
     anchor : '100%'
 }
 
-var sourceColumnCommentsTextField = {
+var editSourceColumnCommentsTextField = {
     xtype:'textfield',
     fieldLabel : '列注释',
     name : 'sourceColumnComments',
     anchor : '100%'
 }
 
-var sourceColumnOrderTextField = new Ext.form.NumberField({
+var editSourceColumnOrderTextField = new Ext.form.NumberField({
     fieldLabel : '列排序',
     name : 'sourceColumnOrder',
     anchor : '100%'
 })
 
 
-var metadataMappingFromPanel = new Ext.form.FormPanel( {
-    id : 'metadataMappingFromPanel',
+var editMetadataMappingFromPanel = new Ext.form.FormPanel( {
+    id : 'editMetadataMappingFromPanel',
     autoScroll:true,
     collapsible : false,
     border : true,
@@ -427,7 +428,7 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
         autoHeight:true,
         anchor : '99.5%',
         collapsed: false,
-        items:[mappingGroupIdComboBox,extractStyleComboBox]
+        items:[editMappingGroupIdComboBox,editExtractStyleComboBox]
     },{
         xtype:'fieldset',
         title: '表信息',
@@ -448,7 +449,7 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
                     autoHeight:true,
                     anchor : '99%',
                     collapsed: false,
-                    items:[sourceDbIdComboBox,sourceSchemaNameComboBox,sourceTableNameComboBox]
+                    items:[editSourceDbIdComboBox,editSourceSchemaNameComboBox,editSourceTableNameComboBox]
                 }]//分组
             },{
                 columnWidth:.5,
@@ -460,7 +461,7 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
                     autoHeight:true,
                     anchor : '99%',
                     collapsed: false,
-                    items:[destDbIdComboBox,destSchemaNameComboBox,destTableNameTextField]
+                    items:[editDestDbIdComboBox,editDestSchemaNameComboBox,editDestTableNameTextField]
                 }]
 
             }]
@@ -480,12 +481,12 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
                 columnWidth:.5,
                 layout: 'form',
                 border:false,
-                items: [isPkComboBox,sourceColumnCommentsTextField]//分组
+                items: [editIsPkComboBox,editSourceColumnCommentsTextField]//分组
             },{
                 columnWidth:.5,
                 layout: 'form',
                 border:false,
-                items: [isIncrementalColumnComboBox,sourceColumnOrderTextField]
+                items: [editIsIncrementalColumnComboBox,editSourceColumnOrderTextField]
 
             }]
         },{
@@ -503,11 +504,11 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
                     anchor : '99%',
                     collapsed: false,
                     items:[
-                        sourceColumnNameTextField,
-                        sourceColumnTypeComboBox,
-                        sourceColumnTypeEtlComboBox,
-                        sourceColumnLengthTextField,
-                        sourceColumnScaleTextField
+                        editSourceColumnNameTextField,
+                        editSourceColumnTypeComboBox,
+                        editSourceColumnTypeEtlComboBox,
+                        editSourceColumnLengthTextField,
+                        editSourceColumnScaleTextField
                     ]
                 }]//分组
             },{
@@ -521,11 +522,11 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
                     anchor: '99%',
                     collapsed: false,
                     items: [
-                        destColumnNameTextField,
-                        destColumnTypeComboBox,
-                        destColumnTypeEtlComboBox,
-                        destColumnLengthTextField,
-                        destColumnScaleTextField
+                        editDestColumnNameTextField,
+                        editDestColumnTypeComboBox,
+                        editDestColumnTypeEtlComboBox,
+                        editDestColumnLengthTextField,
+                        editDColumnScaleTextField
                     ]
                 }]
 
@@ -538,9 +539,9 @@ var metadataMappingFromPanel = new Ext.form.FormPanel( {
 /**
  * 编辑窗口
  */
-var metadataMappingFromWindow = new Ext.Window({
+var editMetadataMappingFromWindow = new Ext.Window({
     layout: 'fit', // 设置窗口布局模式
-    title:'<span class="commoncss">新增</span>',
+    title:'<span class="commoncss">编辑</span>',
     width: 760, // 窗口宽度
     height: 530, // 窗口高度
     modal: true,
@@ -554,7 +555,7 @@ var metadataMappingFromWindow = new Ext.Window({
     animateTarget: Ext.getBody(),
     pageY: 20, // 页面定位Y坐标
     pageX: document.body.clientWidth / 2 - 900 / 2, // 页面定位X坐标
-    items: [metadataMappingFromPanel], // 嵌入的表单面板
+    items: [editMetadataMappingFromPanel], // 嵌入的表单面板
     buttons: [{
         text: '保存',
         iconCls: 'acceptIcon',
@@ -566,39 +567,39 @@ var metadataMappingFromWindow = new Ext.Window({
         id: 'btnReset',
         iconCls: 'tbar_synchronizeIcon',
         handler: function () {
-            clearForm(metadataMappingFromPanel.getForm());
+            clearForm(editMetadataMappingFromPanel.getForm());
         }
     }, {
         text: '关闭',
         iconCls: 'deleteIcon',
         handler: function () {
-            metadataMappingFromWindow.hide();
+            editMetadataMappingFromWindow.hide();
         }
     }]
 });
 
 
-function showCreateMetadataMappingFromWindow(reload){
-    store_reload = reload;
+function showEditMetadataMappingFromWindow(reload){
+    edit_store_reload = reload;
 
-    metadataMappingFromWindow.show();
+    editMetadataMappingFromWindow.show();
 
 }
 
 
 
 function submitCreateForm(){
-    if (!metadataMappingFromPanel.getForm().isValid())
+    if (!editMetadataMappingFromPanel.getForm().isValid())
         return;
 
-    metadataMappingFromPanel.form.submit({
+    editMetadataMappingFromPanel.form.submit({
         url : '../metadataMapping/save.shtml',
         waitTitle : '提示',
         method : 'POST',
         waitMsg : '正在处理数据,请稍候...',
         success : function(form, action) { // 回调函数有2个参数
-            metadataMappingFromWindow.hide();
-            store_reload(false);
+            editMetadataMappingFromWindow.hide();
+            edit_store_reload(false);
         },
         failure : function(form, action) {
             Ext.Msg.alert('提示', action.result.msg);

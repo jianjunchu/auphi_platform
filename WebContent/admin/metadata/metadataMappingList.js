@@ -205,7 +205,7 @@ Ext.onReady(function(){
         hiddenName : "sourceDbId",
         forceSelection: true,
         anchor : '50%',
-        store: dbIdStore,
+        store: newDbIdStore,
         valueField : "sourceId",
         displayField : "sourceName",
         typeAhead: true,
@@ -442,11 +442,6 @@ Ext.onReady(function(){
                 'sourceDbId':dbIdComboBox.value,
                 'sourceSchemaName':schemaNameComboBox.value,
                 'sourceTableName':tableNameComboBox.value
-            },
-            callback:function(records, options, success){
-                if(!success){
-                    Ext.Msg.alert('❌出错了',store.reader.jsonData.msg);
-                }
             }
         });
     }
@@ -458,19 +453,9 @@ Ext.onReady(function(){
      * 新增窗体初始化
      */
     function addItem() {
-
-        Ext.getCmp('metadataMappingFromPanel').getForm().reset();
-
-
-        sourceDbIdComboBox.setDisabled(false);
-        sourceSchemaNameComboBox.setDisabled(false);
-        sourceTableNameComboBox.setDisabled(false);
-        sourceTableNameComboBox.clearValue()
+        Ext.getCmp('newMetadataMappingFromPanel').getForm().reset();
         fromAllowBlank = true;
-
-        Ext.getCmp("column_fieldset").hide() ;
-
-        showCreateMetadataMappingFromWindow(store_reload);
+        showCreateMetadataMappingFromWindow();
     }
 
 
@@ -481,36 +466,25 @@ Ext.onReady(function(){
             Ext.Msg.alert('提示:', '请先选中一条您要修改的数据');
             return;
         }
-
-       
-        Ext.getCmp("column_fieldset").show() ;
-        metadataMappingFromPanel.getForm().reset();
-        metadataMappingFromPanel.doLayout()
-
-        sourceColumnTypeStore.load({
+        Ext.getCmp('editMetadataMappingFromPanel').getForm().reset();
+        editSourceColumnTypeStore.load({
             params : {id_database : record[0].get("sourceDbId")},
             callback:function(r,options,success){
-                destColumnTypeStore.load({
+                editDestColumnTypeStore.load({
                     params : {id_database : record[0].get("destDbId")}
-
                 });
             }
         });
 
-
         fromAllowBlank = false;
-
-        sourceTableNameComboBox.clearValue()
 
         Ext.Ajax.request( {
             url : '../metadataMapping/get.shtml',
             success : function(response) {
                 var obj = Ext.util.JSON.decode(response.responseText);
-                metadataMappingFromPanel.getForm().setValues(obj.data)
-                sourceDbIdComboBox.setDisabled(true);
-                sourceSchemaNameComboBox.setDisabled(true);
-                sourceTableNameComboBox.setDisabled(true);
-                showCreateMetadataMappingFromWindow(store_reload)
+                Ext.getCmp('editMetadataMappingFromPanel').getForm().setValues(obj.data)
+
+                showEditMetadataMappingFromWindow(store_reload)
 
 
             },
