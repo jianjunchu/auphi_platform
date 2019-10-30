@@ -480,7 +480,7 @@ public class MonitorUtil {
 			conn = ConnectionPool.getConnection();
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, errMsg );
+			pstmt.setString(1, StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + ":\n\r" + errMsg);
 			pstmt.setString(2, STATUS_ERROR);
 			pstmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
 			pstmt.setLong(4, id);
