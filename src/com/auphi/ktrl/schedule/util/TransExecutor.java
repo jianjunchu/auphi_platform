@@ -4,6 +4,7 @@ import com.auphi.ktrl.engine.KettleEngine;
 import com.auphi.ktrl.ha.bean.SlaveServerBean;
 import com.auphi.ktrl.ha.util.SlaveServerUtil;
 import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.util.MonitorUtil;
 import com.auphi.ktrl.util.ClassLoaderUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
@@ -31,6 +32,8 @@ public class TransExecutor implements Runnable{
     private Class<?> repositoryClass;
     private Object repository;
 
+    private Object transSplitter;
+
     private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil();
 
     private boolean finished = false;
@@ -42,13 +45,17 @@ public class TransExecutor implements Runnable{
 
     private int startLineNr = 0;
 
-    public TransExecutor(MonitorScheduleBean monitorSchedule, Object trans, int execType) {
+    private String carteObjectId = null;
+
+
+
+    public TransExecutor(MonitorScheduleBean monitorSchedule, Object trans, int execType) throws Exception {
         this.monitorSchedule = monitorSchedule;
         this.trans = trans;
         this.execType = execType;
 
         try {
-            CentralLogStore.init(50000, Const.MAX_NR_LOG_LINES);
+            CentralLogStore.init(100000, Const.MAX_NR_LOG_LINES);
             this.transMetaClass = Class.forName("org.pentaho.di.trans.TransMeta", true, classLoaderUtil);
             this.transClass= Class.forName("org.pentaho.di.trans.Trans", true, classLoaderUtil);
             Method getJobMeta = this.transClass.getDeclaredMethod("getTransMeta");
@@ -76,6 +83,7 @@ public class TransExecutor implements Runnable{
                 setExecutingClustered.invoke(this.executionConfiguration, false);
 
                 kettleLogStoreClass = Class.forName("org.pentaho.di.core.logging.CentralLogStore");
+
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
 
@@ -117,6 +125,8 @@ public class TransExecutor implements Runnable{
 
         }catch (Exception e){
             e.printStackTrace();
+            throw e;
+
 
         }
 
@@ -125,7 +135,7 @@ public class TransExecutor implements Runnable{
 
     private static Hashtable<Integer, TransExecutor> executors = new Hashtable<Integer, TransExecutor>();
 
-    public static synchronized TransExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object transMeta, int execType) {
+    public static synchronized TransExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object transMeta, int execType) throws Exception {
         TransExecutor transExecutor = new TransExecutor(monitorSchedule,transMeta,execType);
         executors.put(transExecutor.getMonitorSchedule().getId(), transExecutor);
         return transExecutor;
@@ -187,12 +197,13 @@ public class TransExecutor implements Runnable{
 
 
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
-                sendToSlaveServer.invoke(trans, transMeta, this.executionConfiguration, repository);
+                carteObjectId = (String) sendToSlaveServer.invoke(trans, transMeta, this.executionConfiguration, repository);
 
             }else if(KettleEngine.EXECTYPE_CLUSTER == execType){
 
                 Method executeClustered = trans.getClass().getDeclaredMethod("executeClustered", transMeta.getClass(), executionConfigurationClass);
-                executeClustered.invoke(trans, transMeta, executionConfiguration);
+
+                transSplitter =  executeClustered.invoke(trans, transMeta, executionConfiguration);
             }else if(KettleEngine.EXECTYPE_HA == execType){
                 SlaveServerBean slaveServerBean = getSlaveServerBean("", monitorSchedule.getHaName());
                 Object slaveServer = createSlaveServer(slaveServerBean);
@@ -200,9 +211,10 @@ public class TransExecutor implements Runnable{
                 setRemoteServer.invoke(executionConfiguration, slaveServer);
 
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
-                sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
+                carteObjectId = (String)  sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
             }
         } catch (Exception e) {
+            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getMessage());
             e.printStackTrace();
         }finally {
             finished = true;
@@ -254,16 +266,29 @@ public class TransExecutor implements Runnable{
 
     public String getExecutionLog() throws Exception {
 
-        Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
-        Object logChannel = getLogChannel.invoke(trans);
 
-        Method  getLogChannelId  =  logChannel.getClass().getDeclaredMethod("getLogChannelId");
-        String logChannelId =   (String) getLogChannelId.invoke(logChannel);
+        if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingLocally").invoke(executionConfiguration)) {
+            Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
+            Object logChannel = getLogChannel.invoke(trans);
+
+            Method  getLogChannelId  =  logChannel.getClass().getDeclaredMethod("getLogChannelId");
+            String logChannelId =   (String) getLogChannelId.invoke(logChannel);
 
 
-        String loggingText = CentralLogStore.getAppender().getBuffer(
-                logChannelId, false, startLineNr, CentralLogStore.getLastBufferLineNr()).toString();
-        return loggingText;
+            String loggingText = CentralLogStore.getAppender().getBuffer(
+                    logChannelId, false, startLineNr, CentralLogStore.getLastBufferLineNr()).toString();
+            return loggingText;
+
+        } else if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingRemotely").invoke(executionConfiguration)) {
+            Object remoteSlaveServer = executionConfiguration.getClass().getDeclaredMethod("getRemoteServer").invoke(executionConfiguration);
+
+            String transMetaName = (String) transMeta.getClass().getDeclaredMethod("getName").invoke(transMeta);
+
+            Object transStatus = remoteSlaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class).invoke(remoteSlaveServer,transMetaName,carteObjectId,0) ;
+            return (String) transStatus.getClass().getDeclaredMethod("getLoggingString").invoke(transStatus);
+        }
+
+        return "";
     }
 
     public boolean isFinished() throws Exception {
