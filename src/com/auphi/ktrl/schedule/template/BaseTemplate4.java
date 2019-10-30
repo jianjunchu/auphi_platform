@@ -23,13 +23,13 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.template;
 
-import java.util.List;
-
 import com.auphi.ktrl.schedule.view.FieldMappingView;
+
+import java.util.List;
 
 public abstract class BaseTemplate4 implements Template {
 	
-	protected String generateOracelFieldsStr(List<FieldMappingView> fieldMappingList,String enclosedChar) {
+	protected String generateOracelFieldsStr(List<FieldMappingView> fieldMappingList, String enclosedChar) {
 		String sourceFields = "";
 		for(int i = 0; i<fieldMappingList.size();i++)
 		{
@@ -66,7 +66,7 @@ public abstract class BaseTemplate4 implements Template {
 		return sourceFields;
 	}
 	
-	protected String generateSourceFieldNames(List<FieldMappingView> fieldMappingList,String databaseDesc) {
+	protected String generateSourceFieldNames(List<FieldMappingView> fieldMappingList, String databaseDesc) {
 		
 		String str = "";
 //		if(databaseDesc.indexOf("HIVE")>-1)
@@ -144,8 +144,6 @@ public abstract class BaseTemplate4 implements Template {
 		return str;
 	}
 	
-	@Override
-	public abstract boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception;
 
 	@Override
 	public abstract void bind(String fastConfigJson, String fieldMappingJson)  throws Exception;

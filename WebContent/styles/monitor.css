@@ -1,0 +1,6 @@
+.x-form-text-wrap {
+    display: table-cell;
+    overflow: hidden;
+    height: 100%;
+    width: 200;
+}

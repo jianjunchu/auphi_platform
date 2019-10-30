@@ -23,23 +23,23 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.template;
 
-import java.util.Date;
-import java.util.List;
-
+import com.alibaba.fastjson.JSON;
+import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.schedule.view.FastConfigView;
+import com.auphi.ktrl.schedule.view.FieldMappingView;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
-import com.alibaba.fastjson.JSON;
-import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
-import com.auphi.ktrl.schedule.view.FastConfigView;
-import com.auphi.ktrl.schedule.view.FieldMappingView;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Template111, 数据库到数据库
  *
  */
-public class Template111 implements Template { 
+public class Template111 implements Template {
 
 	private String middlePath;
 	private JobMeta jobMeta;
@@ -89,11 +89,11 @@ public class Template111 implements Template {
 	}
 
 	@Override
-	public boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception{
+	public boolean execute(int execType, MonitorScheduleBean monitorSchedule) throws Exception{
 		boolean success = false;
 
 		KettleEngineImpl4_3 kettleEngine = new KettleEngineImpl4_3();
-		kettleEngine.executeJob(jobMeta, rep, null, null, monitorId, execType, remoteServer, ha);
+		kettleEngine.executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
 		
 		return success;
 	}

@@ -39,7 +39,7 @@ import com.auphi.ktrl.engine.KettleEngine;
 import com.auphi.ktrl.engine.impl.KettleEngineImpl2_3;
 import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
 import com.auphi.ktrl.i18n.Messages;
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
 import com.auphi.ktrl.schedule.bean.ScheduleBean;
 import com.auphi.ktrl.schedule.template.Template;

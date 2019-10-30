@@ -28,16 +28,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import io.swagger.models.auth.In;
 import org.apache.log4j.Logger;
 
 import com.auphi.ktrl.conn.util.ConnectionPool;
 import com.auphi.ktrl.conn.util.DataBaseUtil;
 import com.auphi.ktrl.i18n.Messages;
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
 import com.auphi.ktrl.schedule.bean.ScheduleBean;
 import com.auphi.ktrl.schedule.template.Template;
 import com.auphi.ktrl.system.user.bean.UserBean;
@@ -46,9 +45,9 @@ import com.auphi.ktrl.util.PageList;
 import com.auphi.ktrl.util.StringUtil;
 
 public class MonitorUtil {
-	
+
 	private static Logger logger = Logger.getLogger(MonitorUtil.class);
-	
+
 	/**
 	 * 监控状态,正在运行
 	 */
@@ -61,13 +60,13 @@ public class MonitorUtil {
 	 * 监控状态,失败
 	 */
 	public static final String STATUS_ERROR = Messages.getString("Monitor.Status.Error");
-	
+
 	/**
 	 * 监控状态,异常中止运行
 	 */
-	public static final String STATUS_STOPPED = Messages.getString("Monitor.Status.Stopped"); 
-	
-	
+	public static final String STATUS_STOPPED = Messages.getString("Monitor.Status.Stopped");
+
+
 	/**
 	 * 获取监控列表，每个调度对应一个监控
 	 * @param page 页码
@@ -76,23 +75,23 @@ public class MonitorUtil {
 	 * @param search_text 搜索词
 	 * @return List<MonitorScheduleBean> 监控记录列表list
 	 */
-	public static PageList findAll(int page, String orderby, String order, String search_start_date, 
-			String search_end_date, String search_text,String jobStatus, int user_id, String jobName, 
-			UserBean userBean) {
+	public static PageList findAll(int page, String orderby, String order, String search_start_date,
+								   String search_end_date, String search_text,String jobStatus, int user_id, String jobName,
+								   UserBean userBean) {
 		PageList pageList = new PageList();
 		String sql = "SELECT a.ID,a.JOBNAME,a.JOBGROUP,a.JOBFILE,a.JOBSTATUS,a.START_TIME,a.END_TIME"
 				+ ",a.CONTINUED_TIME,a.ID_BATCH,a.ID_LOGCHANNEL,LINES_ERROR"
-				+ ", b.NAME as CLUSTER_NAME, c.NAME as SERVER_NAME FROM KDI_T_MONITOR a " 
-				+ "LEFT JOIN KDI_T_HA_CLUSTER b ON a.ID_CLUSTER=b.ID_CLUSTER " 
+				+ ", b.NAME as CLUSTER_NAME, c.NAME as SERVER_NAME FROM KDI_T_MONITOR a "
+				+ "LEFT JOIN KDI_T_HA_CLUSTER b ON a.ID_CLUSTER=b.ID_CLUSTER "
 				+ "LEFT JOIN KDI_T_HA_SLAVE c ON a.ID_SLAVE=c.ID_SLAVE WHERE 1=1";
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		
+
 		if(!userBean.isSuperAdmin()){
 			sql = sql + " AND a.JOBGROUP='" + userBean.getOrgId() + "'";
 		}
-		
+
 		if(!"".equals(search_start_date)){
 			if(DataBaseUtil.ORACLE.equals(DataBaseUtil.connConfig.getDbms())){
 				sql = sql + " AND START_TIME>=TO_DATE('" + search_start_date + " 00:00:00', 'yyyy-MM-dd HH24:mi:ss')";
@@ -100,20 +99,20 @@ public class MonitorUtil {
 				sql = sql + " AND START_TIME>='" + search_start_date + " 00:00:00'";
 			}
 		}
-		
+
 		if(!"".equals(search_end_date)){
 			if(DataBaseUtil.ORACLE.equals(DataBaseUtil.connConfig.getDbms())){
 				sql = sql + " AND END_TIME<=TO_DATE('" + search_end_date + " 23:59:59', 'yyyy-MM-dd HH24:mi:ss')";
 			}else {
 				sql = sql + " AND END_TIME<='" + search_end_date + " 23:59:59'";
 			}
-			
+
 		}
-		
+
 		if(!"".equals(search_text)){
 			sql = sql + " AND (JOBNAME LIKE '%" + search_text + "%' OR JOBFILE LIKE '%" + search_text + "%' OR ERRMSG LIKE '%" + search_text + "%')";
 		}
-		
+
 		if(!"".equals(jobName)){
 			sql = sql + " AND JOBNAME='" + jobName + "'";
 		}
@@ -121,58 +120,55 @@ public class MonitorUtil {
 			sql = sql + " AND jobStatus='" + jobStatus + "'";
 		}
 		int count = 0;
-		
+
 		List<MonitorScheduleBean> listMonitorSchedule = new ArrayList<MonitorScheduleBean>();
 		try{
 			String sqlData = DataBaseUtil.generatePagingSQL(sql, page, orderby, order);
 			String sqlCount = "SELECT COUNT(*) FROM (" + sql + ") A";
-			
+
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			rs = stmt.executeQuery(sqlData);
-			
+
 			while(rs.next()){
 				MonitorScheduleBean monitorScheduleBean = new MonitorScheduleBean();
-				
+
 				monitorScheduleBean.setId(rs.getInt("ID"));
 				monitorScheduleBean.setJobName(rs.getString("JOBNAME"));
 				monitorScheduleBean.setJobGroup(rs.getString("JOBGROUP"));
 				monitorScheduleBean.setJobFile(rs.getString("JOBFILE"));
 				monitorScheduleBean.setJobStatus(rs.getString("JOBSTATUS"));
-				monitorScheduleBean.setStartTime(StringUtil.DateToString(rs.getTimestamp("START_TIME"), "yyyy-MM-dd HH:mm:ss"));
-				monitorScheduleBean.setEndTime(StringUtil.DateToString(rs.getTimestamp("END_TIME"), "yyyy-MM-dd HH:mm:ss"));
+				monitorScheduleBean.setStartTime(rs.getDate("START_TIME"));
+				monitorScheduleBean.setEndTime(rs.getDate("END_TIME"));
 				monitorScheduleBean.setContinuedTime(rs.getFloat("CONTINUED_TIME"));
 				monitorScheduleBean.setHaName(rs.getString("CLUSTER_NAME")==null?"":rs.getString("CLUSTER_NAME"));
 				monitorScheduleBean.setServerName(rs.getString("SERVER_NAME")==null?"":rs.getString("SERVER_NAME"));
 				monitorScheduleBean.setId_batch(rs.getInt("ID_BATCH"));
 				monitorScheduleBean.setId_logchannel(rs.getString("ID_LOGCHANNEL"));
 				monitorScheduleBean.setLines_error(rs.getInt("LINES_ERROR"));
-				
+
 				listMonitorSchedule.add(monitorScheduleBean);
 			}
-			
+
 			ResultSet rs_count = stmt.executeQuery(sqlCount);
 			while(rs_count.next()){
 				count = rs_count.getInt(1);
 			}
 			rs_count.close();
-			
+
 			pageList.setList(listMonitorSchedule);
 			PageInfo pageInfo = new PageInfo(page, count);
 			pageList.setPageInfo(pageInfo);
-			
+
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(rs, stmt, null, conn);
 		}
-		
+
 		return pageList;
 	}
-
-
-
 
 	/**
 	 * 获取调度的转换/作业的日志记录信息
@@ -191,19 +187,19 @@ public class MonitorUtil {
 
 			rs = stmt.executeQuery("SELECT * FROM KDI_T_MONITOR WHERE ID=" + id);
 			if(rs.next()){
-				monitorScheduleBean.setStartTime(rs.getString("START_TIME"));
+				monitorScheduleBean.setStartTime(rs.getDate("START_TIME"));
 				monitorScheduleBean.setJobName(rs.getString("JOBNAME"));
 				monitorScheduleBean.setJobGroup(rs.getString("JOBGROUP"));
 				monitorScheduleBean.setJobFile(rs.getString("JOBFILE"));
 				monitorScheduleBean.setJobStatus(rs.getString("JOBSTATUS"));
 				monitorScheduleBean.setId_logchannel(rs.getString("ID_LOGCHANNEL"));
 				monitorScheduleBean.setLines_error(rs.getInt("LINES_ERROR"));
-				monitorScheduleBean.setLines_input(rs.getInt("LINES_INPUT"));
-				monitorScheduleBean.setLines_output(rs.getInt("LINES_OUTPUT"));
-				monitorScheduleBean.setLines_updated(rs.getInt("LINES_UPDATED"));
-				monitorScheduleBean.setLines_read(rs.getInt("LINES_READ"));
-				monitorScheduleBean.setLines_written(rs.getInt("LINES_WRITTEN"));
-				monitorScheduleBean.setLines_deleted(rs.getInt("LINES_DELETED"));
+				monitorScheduleBean.setLines_input(rs.getLong("LINES_INPUT"));
+				monitorScheduleBean.setLines_output(rs.getLong("LINES_OUTPUT"));
+				monitorScheduleBean.setLines_updated(rs.getLong("LINES_UPDATED"));
+				monitorScheduleBean.setLines_read(rs.getLong("LINES_READ"));
+				monitorScheduleBean.setLines_written(rs.getLong("LINES_WRITTEN"));
+				monitorScheduleBean.setLines_deleted(rs.getLong("LINES_DELETED"));
 				monitorScheduleBean.setLogMsg(rs.getString("LOGMSG")==null?"":rs.getString("LOGMSG"));
 			}
 
@@ -215,7 +211,7 @@ public class MonitorUtil {
 
 		return monitorScheduleBean;
 	}
-	
+
 	/**
 	 * 获取调度中监控到的错误信息
 	 * @param id 监控记录的ID
@@ -226,25 +222,25 @@ public class MonitorUtil {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		
+
 		try{
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			rs = stmt.executeQuery("SELECT ERRMSG FROM KDI_T_MONITOR WHERE ID=" + id);
 			if(rs.next()){
 				errorMessage = rs.getString("ERRMSG")==null?"":rs.getString("ERRMSG");
 			}
-			
+
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(rs, stmt, null, conn);
 		}
-		
+
 		return errorMessage;
 	}
-	
+
 	/**
 	 * 在调度执行之前新增本次的监控
 	 * @param scheduleBean 调度Bean
@@ -254,10 +250,10 @@ public class MonitorUtil {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try{
-			
+
 			conn = ConnectionPool.getConnection();
-			
-			String sql = "INSERT INTO KDI_T_MONITOR(ID,JOBNAME,JOBGROUP,JOBFILE,JOBSTATUS,START_TIME,END_TIME,CONTINUED_TIME,LOGMSG,ERRMSG,USERID,ID_CLUSTER,ID_SLAVE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
+
+			String sql = "INSERT INTO KDI_T_MONITOR(ID,JOBNAME,JOBGROUP,JOBFILE,JOBSTATUS,START_TIME,END_TIME,CONTINUED_TIME,LOGMSG,ERRMSG,USERID,ID_CLUSTER,ID_SLAVE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, scheduleBean.getJobName());
@@ -281,18 +277,18 @@ public class MonitorUtil {
 				id_server = Integer.parseInt(scheduleBean.getRemoteServer());
 			}
 			pstmt.setInt(13, id_server);
-			
+
 			pstmt.execute();
-			
+
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @param jobDetailName
 	 * @param jobName
@@ -304,10 +300,10 @@ public class MonitorUtil {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try{
-			
+
 			conn = ConnectionPool.getConnection();
-			
-			String sql = "INSERT INTO KDI_T_MONITOR(ID,JOBNAME,JOBGROUP,JOBFILE,JOBSTATUS,START_TIME,END_TIME,CONTINUED_TIME,LOGMSG,ERRMSG,USERID,ID_CLUSTER,ID_SLAVE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
+
+			String sql = "INSERT INTO KDI_T_MONITOR(ID,JOBNAME,JOBGROUP,JOBFILE,JOBSTATUS,START_TIME,END_TIME,CONTINUED_TIME,LOGMSG,ERRMSG,USERID,ID_CLUSTER,ID_SLAVE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, jobDetailName);
@@ -330,16 +326,16 @@ public class MonitorUtil {
 				id_server = Integer.parseInt(remoteServer);
 			}
 			pstmt.setInt(13, id_server);
-			
+
 			pstmt.execute();
-			
+
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
 	/**
 	 * 在调度本地运行时更新logchannel id
 	 * @param id
@@ -349,16 +345,16 @@ public class MonitorUtil {
 		String sql = "";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try{
 			conn = ConnectionPool.getConnection();
-			
+
 			sql = "UPDATE KDI_T_MONITOR SET ID_LOGCHANNEL=? WHERE ID=?";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, id_logchannel);
 			pstmt.setInt(2, id);
-			
+
 			pstmt.executeUpdate();
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
@@ -366,7 +362,31 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
+	public static void updateMonitorExecutionLog(int monitorId, String executionLog){
+		String sql = "";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+
+			sql = "UPDATE KDI_T_MONITOR SET LOGMSG=? WHERE ID=?";
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, executionLog);
+			pstmt.setInt(2, monitorId);
+
+			pstmt.executeUpdate();
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(null, null, pstmt, conn);
+		}
+	}
+
+
+
 	/**
 	 * 在调度本地运行时更新batchid
 	 * @param id
@@ -376,16 +396,16 @@ public class MonitorUtil {
 		String sql = "";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try{
 			conn = ConnectionPool.getConnection();
-			
+
 			sql = "UPDATE KDI_T_MONITOR SET ID_BATCH=? WHERE ID=?";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setInt(1, id_batch);
 			pstmt.setInt(2, id);
-			
+
 			pstmt.executeUpdate();
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
@@ -393,7 +413,7 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
 	/**
 	 * 在调度文件执行之后更新监控信息
 	 * @param id monitor id
@@ -412,13 +432,13 @@ public class MonitorUtil {
 		String sql = "";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try{
 			conn = ConnectionPool.getConnection();
-			
+
 			sql = "UPDATE KDI_T_MONITOR SET END_TIME=?,JOBSTATUS=?,CONTINUED_TIME=?,LOGMSG=?,LINES_ERROR=?,LINES_INPUT=?,LINES_OUTPUT=?,LINES_UPDATED=?,LINES_READ=?,LINES_WRITTEN=?,LINES_DELETED=?,ID_SLAVE=?,ID_BATCH=? WHERE ID=?";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			Date end = new Date();
 			pstmt.setTimestamp(1, new Timestamp(end.getTime()));
 			pstmt.setString(2, status);
@@ -435,7 +455,7 @@ public class MonitorUtil {
 			pstmt.setInt(12, id_server);
 			pstmt.setInt(13, id_batch);
 			pstmt.setInt(14, id);
-			
+
 			pstmt.executeUpdate();
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
@@ -443,29 +463,29 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
 	/**
 	 * 更新监控的错误信息
 	 * @param errMsg 错误信息
 	 * @param jobName 调度名称
 	 */
-	public static void updateMonitorAfterError(int id, String errMsg){
+	public static void updateMonitorAfterError(long id, String errMsg){
 		String sql = "UPDATE KDI_T_MONITOR SET ERRMSG=? ,JOBSTATUS=? WHERE ID=?";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try{
 			if(errMsg.length() >= 3950){
 				errMsg = errMsg.substring(0, 3949) + "<br>......";
 			}
-			
+
 			conn = ConnectionPool.getConnection();
-			
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + ":<br>" + errMsg);
 			pstmt.setString(2, STATUS_ERROR);
-			pstmt.setInt(3, id);
-			
+			pstmt.setLong(3, id);
+
 			pstmt.executeUpdate();
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
@@ -473,7 +493,7 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
-	
+
 	/**
 	 * 删除监控信息
 	 * @param ids 监控id
@@ -482,11 +502,11 @@ public class MonitorUtil {
 		String sql = "DELETE FROM KDI_T_MONITOR WHERE ID IN (" + ids + ")";
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		try {
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -495,7 +515,7 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, stmt, null, conn);
 		}
 	}
-	
+
 	/**
 	 * 删除监控信息
 	 * @param ids 监控id
@@ -504,11 +524,11 @@ public class MonitorUtil {
 		String sql = "DELETE FROM KDI_T_MONITOR WHERE START_TIME<='" + start_date + " 23:59:59'";
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		try {
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -517,7 +537,7 @@ public class MonitorUtil {
 			ConnectionPool.freeConn(null, stmt, null, conn);
 		}
 	}
-	
+
 	/**
 	 * 在启动时，将正在运行的状态改为中止运行
 	 */
@@ -525,17 +545,259 @@ public class MonitorUtil {
 		String sql = "UPDATE KDI_T_MONITOR SET JOBSTATUS='" + STATUS_STOPPED + "' WHERE JOBSTATUS='" + STATUS_RUNNING + "'";
 		Connection conn = null;
 		Statement stmt = null;
-		
+
 		try {
 			conn = ConnectionPool.getConnection();
 			stmt = conn.createStatement();
-			
+
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage(),e);
 		}finally{
 			ConnectionPool.freeConn(null, stmt, null, conn);
+		}
+	}
+
+	/**
+	 * 获取调度中今日完成作业数
+	 * @return Integer 今日完成作业数
+	 */
+	public static Integer getTodayFinishJobNumber(){
+		Integer todayFinishJobNumber = 0;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+			stmt = conn.createStatement();
+
+			rs = stmt.executeQuery("SELECT count(*) NUM FROM KDI_T_MONITOR WHERE to_days(START_TIME) = to_days(now()) AND JOBSTATUS='成功'" );
+			if(rs.next()){
+				todayFinishJobNumber = rs.getInt("NUM");
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(rs, stmt, null, conn);
+		}
+
+		return todayFinishJobNumber;
+	}
+
+	/**
+	 * 获取调度中运行中作业数
+	 * @return Integer 运行中作业数
+	 */
+	public static Integer getRunningJobNumber(){
+		Integer runningJobNumber = 0;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+			stmt = conn.createStatement();
+
+			rs = stmt.executeQuery("SELECT count(*) NUM FROM KDI_T_MONITOR WHERE JOBSTATUS='正在运行'" );
+			if(rs.next()){
+				runningJobNumber = rs.getInt("NUM");
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(rs, stmt, null, conn);
+		}
+
+		return runningJobNumber;
+	}
+
+	/**
+	 * 获取作业名列表
+	 * @return List 作业名列表
+	 */
+	public static List getJobNames(){
+		List<Map> returnList = new LinkedList<Map>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+			stmt = conn.createStatement();
+
+			rs = stmt.executeQuery("  SELECT ID,JOBNAME,JOBGROUP,JOBFILE FROM KDI_T_MONITOR  " );
+			while(rs.next()){
+				Map map = new HashMap();
+				map.put("id",rs.getLong("ID"));
+				map.put("jobName",rs.getString("JOBNAME"));
+				map.put("jobGroup",rs.getString("JOBGROUP"));
+				map.put("jobFile",rs.getString("JOBFILE"));
+				returnList.add(map);
+			}
+
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(rs, stmt, null, conn);
+		}
+
+		return returnList;
+	}
+
+	/**
+	 * 获取近七日作业的错误输出条数和正确输出条数
+	 * @return Map 近七日内每天作业的错误输出条数和正确输出条数
+	 */
+	public static LinkedList get7DayOutputNum(String id){
+		LinkedList<Map> returnList = new LinkedList<Map>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+			stmt = conn.createStatement();
+
+			rs = stmt.executeQuery(" SELECT DATE_FORMAT( START_TIME, '%Y-%m-%d' ) DAYS, sum(LINES_ERROR) ERRORS,sum(LINES_OUTPUT) OUTPUTS " +
+					" FROM ( SELECT * FROM KDI_T_MONITOR  WHERE DATE_SUB( CURDATE( ), INTERVAL 7 DAY ) <= date(START_TIME) AND ID="+id+") as aa " +
+					" GROUP BY DAYS ORDER BY DAYS ASC ");
+			while(rs.next()){
+				Map map = new HashMap();
+				map.put("days",rs.getString("DAYS"));
+				map.put("errors",rs.getInt("ERRORS"));
+				map.put("outputs",rs.getInt("OUTPUTS"));
+				returnList.add(map);
+			}
+
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(rs, stmt, null, conn);
+		}
+
+		return returnList;
+	}
+
+	/**
+	 * 获取作业耗时排名（前五）
+	 * @return Map 作业耗时排名（前五）
+	 */
+	public static LinkedList getJobDurationTop5(){
+		LinkedList<Map> returnList = new LinkedList<Map>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+			stmt = conn.createStatement();
+
+			rs = stmt.executeQuery(" SELECT JOBNAME,JOBFILE,TIMESTAMPDIFF(HOUR,START_TIME,END_TIME) as DURATION FROM KDI_T_MONITOR " +
+					" WHERE START_TIME is not null and END_TIME is not null " +
+					" ORDER BY TIMESTAMPDIFF(HOUR,START_TIME,END_TIME) desc limit 0,5  ");
+			while(rs.next()){
+				Map map = new HashMap();
+				map.put("jobName",rs.getString("JOBNAME"));
+				map.put("jobFile",rs.getString("JOBFILE"));
+				map.put("duration",rs.getInt("DURATION"));
+				returnList.add(map);
+			}
+
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(rs, stmt, null, conn);
+		}
+
+		return returnList;
+	}
+
+	public static void updateMonitorFinished(Long executionId) {
+	}
+
+	public static void updateMonitorAfter(MonitorScheduleBean monitorScheduleBean) {
+
+		String sql = "";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try{
+			conn = ConnectionPool.getConnection();
+
+			sql = "UPDATE KDI_T_MONITOR SET END_TIME=?,JOBSTATUS=?,CONTINUED_TIME=?,LOGMSG=?,LINES_ERROR=?,LINES_INPUT=?,LINES_OUTPUT=?,LINES_UPDATED=?,LINES_READ=?,LINES_WRITTEN=?,LINES_DELETED=?,ID_SLAVE=?,ID_BATCH=? WHERE ID=?";
+			pstmt = conn.prepareStatement(sql);
+
+			Date end = new Date();
+			pstmt.setTimestamp(1, new Timestamp(end.getTime()));
+			pstmt.setString(2, monitorScheduleBean.getJobStatus());
+			Long continuedTime = null;
+			if(monitorScheduleBean.getEndTime()!=null){
+				continuedTime = (monitorScheduleBean.getEndTime().getTime() - monitorScheduleBean.getStartTime().getTime())/1000L;
+			}
+
+			pstmt.setLong(3, continuedTime);
+			pstmt.setString(4, monitorScheduleBean.getLogMsg());
+			pstmt.setInt(5, monitorScheduleBean.getLines_error());
+			pstmt.setLong(6, monitorScheduleBean.getLines_input());
+			pstmt.setLong(7, monitorScheduleBean.getLines_output());
+			pstmt.setLong(8, monitorScheduleBean.getLines_updated());
+			pstmt.setLong(9, monitorScheduleBean.getLines_read());
+			pstmt.setLong(10, monitorScheduleBean.getLines_written());
+			pstmt.setLong(11, monitorScheduleBean.getLines_deleted ());
+			pstmt.setInt(12, org.pentaho.di.core.util.StringUtil.isEmpty(monitorScheduleBean.getServerName()) ? 0 : Integer.parseInt(monitorScheduleBean.getServerName()));
+			pstmt.setInt(13, monitorScheduleBean.getId_batch() == null ? 0 : monitorScheduleBean.getId_batch());
+			pstmt.setLong(14, monitorScheduleBean.getId());
+
+			pstmt.executeUpdate();
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(null, null, pstmt, conn);
+		}
+	}
+
+	public static void saveMonitorBefore(MonitorScheduleBean monitorSchedule) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try{
+			conn = ConnectionPool.getConnection();
+			String sql = "INSERT INTO KDI_T_MONITOR(ID,JOBNAME,JOBGROUP,JOBFILE,JOBSTATUS,START_TIME,END_TIME,CONTINUED_TIME,LOGMSG,ERRMSG,USERID,ID_CLUSTER,ID_SLAVE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, monitorSchedule.getId());
+			pstmt.setString(2, monitorSchedule.getJobName());
+			pstmt.setString(3, monitorSchedule.getJobGroup());
+			pstmt.setString(4, monitorSchedule.getJobFile());
+			pstmt.setString(5, STATUS_RUNNING);
+
+			pstmt.setTimestamp(6, new Timestamp(new Date().getTime()));
+			pstmt.setDate(7, null);
+			pstmt.setInt(8, 0);
+			pstmt.setString(9, "");
+			pstmt.setString(10, "");
+			pstmt.setString(11, monitorSchedule.getUserId());
+			int id_cluster = 0;
+			if(monitorSchedule.getHaName() != null && !"".equals(monitorSchedule.getHaName())){
+				id_cluster = Integer.parseInt(monitorSchedule.getHaName());
+			}
+			pstmt.setInt(12, id_cluster);
+			int id_server = 0;
+			if(monitorSchedule.getServerName() != null && !"".equals(monitorSchedule.getServerName())){
+				id_server = Integer.parseInt(monitorSchedule.getServerName());
+			}
+			pstmt.setInt(13, id_server);
+
+			pstmt.execute();
+
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}finally{
+			ConnectionPool.freeConn(null, null, pstmt, conn);
 		}
 	}
 }

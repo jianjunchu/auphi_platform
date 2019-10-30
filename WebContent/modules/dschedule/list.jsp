@@ -1094,7 +1094,7 @@ function countlen(){
 } 
 
 function showMonitor(jobName){
-	parent.toLoadurl('monitor?action=list&jobName=' + encodeURI(jobName),'monitor_main_' + jobName,'<%=Messages.getString("Default.Jsp.Menu.Monitor") + "_" %>' + jobName);
+	parent.toLoadurl('monitor/index.shtml?action=list&jobName=' + encodeURI(jobName),'monitor_main_' + jobName,'<%=Messages.getString("Default.Jsp.Menu.Monitor") + "_" %>' + jobName);
 }
 
 function changeExecType(execType, remoteServer, ha){

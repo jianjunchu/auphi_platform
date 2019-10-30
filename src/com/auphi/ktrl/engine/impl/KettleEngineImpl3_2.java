@@ -23,21 +23,20 @@
  ******************************************************************************/
 package com.auphi.ktrl.engine.impl;
 
+import com.auphi.ktrl.engine.KettleEngine;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.system.repository.bean.RepositoryBean;
+import com.auphi.ktrl.system.user.bean.UserBean;
+import com.auphi.ktrl.util.ClassLoaderUtil;
+import com.auphi.ktrl.util.Constants;
+import org.apache.log4j.Logger;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
-import org.apache.log4j.Logger;
-
-import com.auphi.ktrl.engine.KettleEngine;
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
-import com.auphi.ktrl.system.repository.bean.RepositoryBean;
-import com.auphi.ktrl.system.user.bean.UserBean;
-import com.auphi.ktrl.util.ClassLoaderUtil;
-import com.auphi.ktrl.util.Constants;
 
 public class KettleEngineImpl3_2 implements KettleEngine {
 	private static Logger logger = Logger.getLogger(KettleEngineImpl3_2.class);
@@ -51,7 +50,7 @@ public class KettleEngineImpl3_2 implements KettleEngine {
 	private static Class<?> jobLoaderClass = null;
 	private static Object jobLoader = null;
 	
-	private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil(); 
+	private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil();
 	
 	public static void init(){
 		try {
@@ -86,58 +85,11 @@ public class KettleEngineImpl3_2 implements KettleEngine {
 		}
 	}
 
+
+
 	@Override
-	public synchronized boolean execute(String repName, String filePath, String fileName, String fileType, int monitor_id, int execType, String remoteServer, String ha) throws Exception{
-		//Thread.currentThread().setContextClassLoader(classLoaderUtil);
-		
-		boolean success = false;
-		
-		Method disconnect = null;
-		Object rep = null;
-		boolean connected = false;
-		try {
-			rep = getRep(repName);
-			connected = true;
-			
-			Object directory = getDirectory(rep, filePath);
-			
-			if(directory!=null){
-				if(fileType.equalsIgnoreCase(TYPE_TRANS)){
-					//execute trans
-					Class<?> transMetaClass = Class.forName("org.pentaho.di.trans.TransMeta", true, classLoaderUtil);
-					Constructor<?> transMetaConstructor = transMetaClass.getConstructor(Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil), 
-							String.class, directory.getClass());
-					Object transMeta = transMetaConstructor.newInstance(rep, fileName, directory);
-					
-					success = executeTrans(transMeta, null, null);
-				}else if(fileType.equalsIgnoreCase(TYPE_JOB)){
-					//execute job
-					Class<?> jobMetaClass = Class.forName("org.pentaho.di.job.JobMeta", true, classLoaderUtil);
-					Constructor<?> JobMetaConstructor = jobMetaClass.getConstructor(logWriter.getClass(), rep.getClass(), String.class, directory.getClass());
-					Object jobMeta = JobMetaConstructor.newInstance(logWriter, rep, fileName, directory);
-					
-					success = executeJob(jobMeta, rep, null, null);
-				}	
-			}
-			
-			disconnect = rep.getClass().getDeclaredMethod("disconnect");
-			disconnect.invoke(rep);
-			connected = false;
-		} catch (Exception e) {
-			throw e;
-		}finally {
-			try {
-				if(connected){
-					disconnect = rep.getClass().getDeclaredMethod("disconnect");
-					disconnect.invoke(rep);
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage(),e);
-			} 
-		} 
-		
-		return success;
+	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule) throws Exception {
+		return false;
 	}
 
 	@Override
@@ -549,7 +501,7 @@ public class KettleEngineImpl3_2 implements KettleEngine {
 	
 	@Override
 	public MonitorScheduleBean getMonitorDataFromJobLogTable(
-			MonitorScheduleBean monitorScheduleBean, UserBean userBean) {
+            MonitorScheduleBean monitorScheduleBean, UserBean userBean) {
 		// TODO Auto-generated method stub
 		return null;
 	}

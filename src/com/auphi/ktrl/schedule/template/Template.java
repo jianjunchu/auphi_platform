@@ -24,6 +24,8 @@
 package com.auphi.ktrl.schedule.template;
 
 
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+
 public interface Template {
 	public static final String TEMPLATE_PATH = "/Template";
 	public static final String JOB_NAME = "job";
@@ -54,5 +56,5 @@ public interface Template {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception;
+	public boolean execute(int execType, MonitorScheduleBean monitorSchedule) throws Exception;
 }

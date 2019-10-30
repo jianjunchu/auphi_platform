@@ -23,25 +23,17 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.template;
 
-import java.util.Date;
-import java.util.List;
-
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import com.alibaba.fastjson.JSON;
+import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.schedule.view.FastConfigView;
+import com.auphi.ktrl.schedule.view.FieldMappingView;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.LongObjectId;
-import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
-import com.alibaba.fastjson.JSON;
-import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
-import com.auphi.ktrl.schedule.view.FastConfigView;
-import com.auphi.ktrl.schedule.view.FieldMappingView;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Template411, 数据集市到数据库
@@ -76,7 +68,9 @@ public class Template411 extends BaseTemplate4 implements Template {
 	public String getTemplateClassName(){
 		return middlePath;
 	}
-	
+
+
+
 	@Override
 	public void bind(String fastConfigJson, String fieldMappingJson)  throws Exception{
 		FastConfigView fastConfigView = JSON.parseObject(fastConfigJson, FastConfigView.class);
@@ -162,14 +156,12 @@ public class Template411 extends BaseTemplate4 implements Template {
 	}
 
 	@Override
-	public boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception{
+	public boolean execute(int execType, MonitorScheduleBean monitorSchedule) throws Exception{
 		boolean success = false;
 
 		KettleEngineImpl4_3 kettleEngine = new KettleEngineImpl4_3();
-		
-		//createTable(destTableName, idDestDatabase, fieldMappingList);
-		kettleEngine.executeJob(jobMeta, rep, null, null, monitorId, execType, remoteServer, ha);
-		
+		kettleEngine.executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
+
 		return success;
 	}
 
