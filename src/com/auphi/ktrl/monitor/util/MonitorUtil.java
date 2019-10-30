@@ -470,21 +470,20 @@ public class MonitorUtil {
 	 * @param jobName 调度名称
 	 */
 	public static void updateMonitorAfterError(long id, String errMsg){
-		String sql = "UPDATE KDI_T_MONITOR SET ERRMSG=? ,JOBSTATUS=? WHERE ID=?";
+		String sql = "UPDATE KDI_T_MONITOR SET LOGMSG=? ,JOBSTATUS=? ,END_TIME = ? WHERE ID=?";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 
 		try{
-			if(errMsg.length() >= 3950){
-				errMsg = errMsg.substring(0, 3949) + "<br>......";
-			}
+
 
 			conn = ConnectionPool.getConnection();
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + ":<br>" + errMsg);
+			pstmt.setString(1, errMsg );
 			pstmt.setString(2, STATUS_ERROR);
-			pstmt.setLong(3, id);
+			pstmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+			pstmt.setLong(4, id);
 
 			pstmt.executeUpdate();
 		}catch(Exception e){

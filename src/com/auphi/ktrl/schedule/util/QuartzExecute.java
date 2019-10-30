@@ -136,11 +136,8 @@ public class QuartzExecute implements Job {
 
 
 		}catch(Exception e){
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			String errMsg = sw.toString();
-
+			String errMsg = e.getMessage();
+			MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(),errMsg);
 
 		}finally{
 			MonitorScheduleBean monitorData = MonitorUtil.getMonitorData(String.valueOf(monitorSchedule.getId()));
