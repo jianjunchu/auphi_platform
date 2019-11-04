@@ -8,7 +8,7 @@ Ext.onReady(function(){
 		id:"service_name",
 		header:'接口服务名称',
 		dataIndex:'service_name',
-		width:200
+		width:170
 	},{
 		header:'接口服务地址',
 		dataIndex:'service_url',
@@ -16,7 +16,7 @@ Ext.onReady(function(){
 	},{
 		header:'授权IP',
 		dataIndex:'authIP',
-		width:200
+		width:150
 	},{
 		header:'授权用户',
 		dataIndex:'userName',
@@ -24,11 +24,23 @@ Ext.onReady(function(){
 	},{
 		header:'使用部门',
 		dataIndex:'use_dept',
-		width:200
+		width:100
 	},{
 		header:'使用人员',
 		dataIndex:'user_name',
-		width:170
+		width:100
+	},{
+		header:'限制条数',
+		width:170,
+		renderer: function (data, metadata, record, rowIndex, columnIndex, store) {
+			var cycleLimit = store.getAt(rowIndex).get('cycleLimit');
+			var linesLimit = store.getAt(rowIndex).get('linesLimit');
+			var timeLimit = store.getAt(rowIndex).get('timeLimit');
+			var cycleLimitName = getCycleLimitName(cycleLimit);
+
+			return timeLimit+cycleLimitName+linesLimit+"条";
+
+		}
 	}]);
 	
 	/**
@@ -58,7 +70,11 @@ Ext.onReady(function(){
 		},{
 			name : 'use_dept'
 		},{
-			name : 'user_name'
+			name : 'cycleLimit'
+		},{
+			name : 'linesLimit'
+		},{
+			name : 'timeLimit'
 		}])
 	});
 	
@@ -254,21 +270,62 @@ Ext.onReady(function(){
 		 name : "userId", 
 		 id: 'user_Id'	 
 	});
-	
-	
+
+
+
+
+	var cycleLimitComboData = [ [ 1,'分钟' ], [ 2,'小时' ], [ 3,'天' ]];
+	var getCycleLimitName = function (id) {
+		for(var i=0;i<cycleLimitComboData.length;i++){
+			if(cycleLimitComboData[i][0] = id){
+				return cycleLimitComboData[i][1];
+				break;
+			}
+		}
+	}
+	var cycleLimitCombo = new Ext.form.ComboBox({
+		store : new Ext.data.SimpleStore({
+			fields : [ "cycleLimitId", "cycleLimitName" ],
+			data : cycleLimitComboData
+		}),
+		labelWidth : 0,
+		valueField : "cycleLimitId",
+		displayField : "cycleLimitName",
+		mode : 'local',
+		forceSelection : true,
+		hiddenName : 'cycleLimit',
+		emptyText : '选择限制周期',
+		editable : false,
+		value : 1,
+		triggerAction : 'all',
+		name : 'cycleLimit'
+
+	});
+
+	var timeLimitField = {
+		xtype:'numberfield',
+		id:'timeLimit',
+		fieldLabel : '限制时间',
+		name : 'timeLimit',
+		emptyText : '请输入数据限制的时间',
+		allowBlank : true,
+		width:'100%',
+		anchor : '100%'
+	}
+
 	/**
 	 * 创建FormPanel
 	 */
 	var serviceAuthPanel = new Ext.form.FormPanel({
 		id : 'serviceAuthPanel',
 		name : 'serviceAuthPanel',
-		defaultType : 'textfield',
 		labelAlign : 'right',
-		labelWidth : 65,
+		labelWidth : 80,
 		frame : false,
 		bodyStyle : 'padding:5 5 0',
 		items : [serviceCombox,serviceUserCombox,{
 					fieldLabel : '授权IP',
+					xtype:'textfield',
 					name : 'authIP',
 					id : 'authIP',
 					allowBlank : false,
@@ -280,6 +337,7 @@ Ext.onReady(function(){
 					fieldLabel : '使用部门',
 					name : 'use_dept',
 					id : 'use_dept',
+					xtype:'textfield',
 					allowBlank : true,
 					anchor : '70%'
 				},{
@@ -287,7 +345,31 @@ Ext.onReady(function(){
 					name : 'user_name',
 					id : 'user_name',
 					allowBlank : true,
+					xtype:'textfield',
 					anchor : '70%'
+				},{
+					fieldLabel : '数据限制',
+					name : 'linesLimit',
+					id : 'linesLimit',
+					allowBlank : true,
+					anchor : '70%',
+					xtype : 'numberfield',
+					emptyText:'限制周期内返回的数据条数'
+				},{
+					layout : 'column',
+					border : false,
+					items:[{
+						columnWidth:.5,
+						layout: 'form',
+						border:false,
+						items: [timeLimitField]//分组
+					},{
+						columnWidth:.5,
+						layout: 'form',
+						border:false,
+						items: [cycleLimitCombo]
+
+					}]
 				},{
 					fieldLabel : '业务用途',
 					name : 'use_desc',
@@ -299,18 +381,20 @@ Ext.onReady(function(){
 			    },{
 			    	id : 'authId',
 					name : 'authId',
+					xtype:'textfield',
 					hidden : true,
 			    },{
 			    	id : 'windowmode',
 					name : 'windowmode',
+					xtype:'textfield',
 					hidden : true
 			    }]
 	});
 	
 	var serviceAuthWindow = new Ext.Window({
 			layout : 'fit',
-			width : 600,
-			height : 300,
+			width : 650,
+			height : 400,
 			resizable : false,
 			draggable : true,
 			closeAction : 'hide',
@@ -400,9 +484,8 @@ Ext.onReady(function(){
 		serviceAuthWindow.show();
 		serviceAuthWindow.setTitle('<span class="commoncss">修改服务授权</span>');
 		Ext.getCmp('windowmode').setValue('edit');
-		Ext.getCmp('authId').setValue(record.get('authId'));
-		Ext.getCmp('service_id').setValue(record.get('serviceId'));
-		Ext.getCmp('user_Id').setValue(record.get('userId'));
+
+		serviceAuthPanel.getForm().setValues(record)
 		Ext.getCmp('btnReset').hide();
 	}
 	
