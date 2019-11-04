@@ -27,6 +27,7 @@ package com.auphi.data.hub.service.impl;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,17 @@ public class InterfaceServiceImpl implements InterfaceService,Serializable {
 	//更新服务监控信息
 	public void updateServiceMonitor(Dto dto){
 		systemDao.update("Service.updateServiceMonitor",dto);
+	}
+
+	@Override
+	public int getOutputCount(String serviceId, String userName, String systemName, Date time) {
+		Dto<String,Object> dto = new BaseDto();
+		dto.put("serviceId",serviceId);
+		dto.put("userName",userName);
+		dto.put("systemName",systemName);
+		dto.put("startTime",time);
+		Object o = systemDao.queryForObject("Service.queryServiceOutputCount",dto);
+		return o == null ? 0 : (Integer) o;
 	}
 
 

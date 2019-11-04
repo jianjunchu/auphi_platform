@@ -105,7 +105,7 @@ public class QuartzExecute implements Job {
 
 		MonitorScheduleBean monitorSchedule = new MonitorScheduleBean();
 		monitorSchedule.setId(Integer.parseInt(StringUtil.createNumberString(9)));
-
+		monitorSchedule.setErrorNoticeUserId(data.getString("errorNoticeUserId"));
 		//run kettle engine for different version
 		if(KettleEngine.VERSION_2_3.equals(version)){
 			kettleEngine = new KettleEngineImpl2_3();
@@ -142,14 +142,11 @@ public class QuartzExecute implements Job {
 			String errMsg = sw.toString();
 			MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(),errMsg);
 
-		}finally{
-			MonitorScheduleBean monitorData = MonitorUtil.getMonitorData(String.valueOf(monitorSchedule.getId()));
-			if(MonitorUtil.STATUS_ERROR.equals(monitorData.getJobStatus())){
-				String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + jobDetailName + "]";
-				String errorNoticeUserId = data.getString("errorNoticeUserId");
-				String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
-				MailUtil.sendMail(user_mails, title, monitorData.getLogMsg());
-			}
+			String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + monitorSchedule.getJobName() + "]";
+			String errorNoticeUserId = monitorSchedule.getErrorNoticeUserId();
+			String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+			MailUtil.sendMail(user_mails, title, monitorSchedule.getLogMsg());
+
 		}
 	}
 
@@ -205,14 +202,10 @@ public class QuartzExecute implements Job {
 			logger.error(e.getMessage(), e);
 			MonitorUtil.updateMonitorAfterError(id, errMsg);
 
-		}finally{
-			MonitorScheduleBean monitorData = MonitorUtil.getMonitorData(String.valueOf(id));
-			if(MonitorUtil.STATUS_ERROR.equals(monitorData.getJobStatus())){
-				String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + jobDetailName + "]";
-				String errorNoticeUserId = data.getString("errorNoticeUserId");
-				String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
-				MailUtil.sendMail(user_mails, title, monitorData.getLogMsg());
-			}
+			String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + jobDetailName + "]";
+			String errorNoticeUserId = data.getString("errorNoticeUserId");
+			String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+			MailUtil.sendMail(user_mails, title, errMsg);
 		}
 	}
 }

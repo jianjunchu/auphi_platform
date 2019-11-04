@@ -5,15 +5,28 @@
 <mapper namespace="ServiceAuth">
 
 	<insert id="insertServiceAuth">
-        insert into t_service_auth (USER_ID,SERVICE_ID,AUTH_IP,
-        USE_DESC,USE_DEPT,USER_NAME) 
+        insert into t_service_auth(
+        	USER_ID
+        	,SERVICE_ID
+        	,AUTH_IP
+        	,USE_DESC
+        	,USE_DEPT
+        	,USER_NAME
+        	,LINES_LIMIT
+        	,CYCLE_LIMIT
+        	,TIME_LIMIT
+        )
         values (
-        #{userId},
-        #{serviceId},
-        #{authIP},
-        #{use_desc},
-        #{use_dept},
-        #{user_name}
+        	#{userId},
+        	#{serviceId},
+       	 	#{authIP},
+        	#{use_desc},
+        	#{use_dept},
+        	#{user_name},
+        	#{linesLimit},
+        	#{cycleLimit},
+        	#{timeLimit}
+
        )
 	</insert>
 	
@@ -38,6 +51,15 @@
 			<if test="user_name != null and user_name != ''">
 				,USER_NAME=#{user_name}
 			</if>
+			<if test="linesLimit != null ">
+				,LINES_LIMIT=#{linesLimit}
+			</if>
+			<if test="cycleLimit != null ">
+				,CYCLE_LIMIT=#{cycleLimit}
+			</if>
+			<if test="timeLimit != null ">
+				,TIME_LIMIT=#{timeLimit}
+			</if>
 		</set>
 		WHERE AUTH_ID = #{authId}
 	</update>
@@ -53,26 +75,84 @@
 		<result column="USE_DESC" property="use_desc"/>
 		<result column="USE_DEPT" property="use_dept"/>
 		<result column="USER_NAME" property="user_name"/>
+		<result column="LINES_LIMIT" property="linesLimit"/>
+		<result column="CYCLE_LIMIT" property="cycleLimit"/>
+		<result column="TIME_LIMIT" property="timeLimit"/>
 	</resultMap>
 
 	<select id="queryServiceAuthList" parameterType="map"  resultMap="serviceAuthMap">
 	    select * from 
-		(SELECT AUTH_ID,tsa.USER_ID,tsa.SERVICE_ID,SERVICE_NAME,SERVICE_URL,AUTH_IP,USERNAME,USE_DESC,USE_DEPT,USER_NAME FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi 
-           WHERE tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID
+		(SELECT AUTH_ID,tsa.USER_ID,tsa.SERVICE_ID,SERVICE_NAME,SERVICE_URL,AUTH_IP,USERNAME,USE_DESC,USE_DEPT,USER_NAME,LINES_LIMIT,CYCLE_LIMIT,TIME_LIMIT FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi
+		<where>
+			tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID
 			<if test="queryParam != null and queryParam != ''">
-		  		AND USERNAME like '%${queryParam}%' 
+				AND USERNAME like '%${queryParam}%'
 			</if>
-		  order by AUTH_ID desc) u limit ${start},${end}
+
+			<if test="username != null and username != ''">
+				AND USERNAME = #{username}
+			</if>
+
+			<if test="userId != null ">
+				AND tsa.USER_ID  = #{userId}
+			</if>
+			<if test="serviceId != null ">
+				AND tsa.SERVICE_ID  = #{serviceId}
+			</if>
+			<if test="serviceIdentify != null and serviceIdentify !='' ">
+				AND tsa.SERVICE_IDENTIFY  = #{serviceIdentify}
+			</if>
+			<if test="authIP != null ">
+				AND AUTH_IP  = #{authIP}
+			</if>
+		</where>
+
+		order by AUTH_ID desc) u limit ${start},${end}
 	</select>
 	
 	<select id="queryServiceAuthListCount" parameterType="map" resultType="java.lang.Integer">
 		select count(*) from 
-		(SELECT AUTH_ID,tsa.USER_ID,tsa.SERVICE_ID,SERVICE_NAME,SERVICE_URL,AUTH_IP,USERNAME,USE_DESC,USE_DEPT,USER_NAME FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi 
-           WHERE tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID
-			<if test="queryParam != null and queryParam != ''">
-		  		AND USERNAME like '%${queryParam}%' 
-			</if>	
-		  order by AUTH_ID desc) u
+			(SELECT
+				 AUTH_ID
+				,tsa.USER_ID
+				,tsa.SERVICE_ID
+				,SERVICE_NAME
+				,SERVICE_URL
+				,AUTH_IP
+				,USERNAME
+				,USE_DESC
+				,USE_DEPT
+				,USER_NAME
+				,LINES_LIMIT
+				,CYCLE_LIMIT
+				,TIME_LIMIT
+				FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi
+
+           <where>
+			   tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID
+			   <if test="queryParam != null and queryParam != ''">
+				   AND USERNAME like '%${queryParam}%'
+			   </if>
+
+			   <if test="username != null and username != ''">
+				   AND USERNAME = #{username}
+			   </if>
+
+			   <if test="userId != null ">
+				   AND tsa.USER_ID  = #{userId}
+			   </if>
+			   <if test="serviceId != null ">
+				   AND tsa.SERVICE_ID  = #{serviceId}
+			   </if>
+			   <if test="serviceIdentify != null and serviceIdentify !='' ">
+				   AND tsa.SERVICE_IDENTIFY  = #{serviceIdentify}
+			   </if>
+			   <if test="authIP != null ">
+				   AND AUTH_IP  = #{authIP}
+			   </if>
+		   </where>
+
+		order by AUTH_ID desc) u
 	</select>
 	
 	<delete id="deleteServiceAuthByIds">
@@ -81,8 +161,19 @@
 	
 	
 	<select id="getServiceAuth" parameterType="map"  resultType="dto">
-		   SELECT tiu.USERNAME as userName,tsi.SERVICE_NAME as service_name,tsi.SERVICE_IDENTIFY as identify  FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi 
-           WHERE tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID 
+		   SELECT
+			     tiu.USERNAME as userName
+			   	,tsi.SERVICE_NAME as service_name
+			   	,tsi.SERVICE_IDENTIFY as identify
+			   	,tsa.LINES_LIMIT AS linesLimit
+				,tsa.CYCLE_LIMIT AS cycleLimit
+				,tsa.TIME_LIMIT  AS timeLimit
+		   FROM t_service_auth tsa,t_interface_user tiu,t_service_interface tsi
+           WHERE tsa.USER_ID = tiu.USER_ID AND tsa.SERVICE_ID = tsi.SERVICE_ID
+
+			<if test="serviceId != null and serviceId != ''">
+				and tsa.SERVICE_ID=#{serviceId}
+			</if>
            <if test="userName != null and userName != ''">
 		  		and USERNAME=#{userName} 
 		   </if>

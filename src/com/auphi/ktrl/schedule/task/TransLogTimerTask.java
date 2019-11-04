@@ -3,6 +3,9 @@ package com.auphi.ktrl.schedule.task;
 import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
 import com.auphi.ktrl.schedule.util.TransExecutor;
+import com.auphi.ktrl.system.mail.util.MailUtil;
+import com.auphi.ktrl.system.user.util.UserUtil;
+import com.auphi.ktrl.util.StringUtil;
 
 import java.util.Date;
 import java.util.TimerTask;
@@ -25,12 +28,18 @@ public class TransLogTimerTask extends TimerTask {
             if(transExecutor!=null){
                 MonitorUtil.updateMonitorExecutionLog(transExecutor.getMonitorSchedule().getId(),transExecutor.getExecutionLog());
 
-                if(transExecutor.isFinishedOrStopped()){
+                if(transExecutor.isFinished() || transExecutor.isStopped()){
+
                     MonitorScheduleBean monitorScheduleBean = transExecutor.getMonitorSchedule();
                     monitorScheduleBean.setLogMsg(transExecutor.getExecutionLog());
                     monitorScheduleBean.setEndTime(new Date() );
-                    if(transExecutor.getResult()!=null && transExecutor.getErrors()!=0){
+                    if(transExecutor.isStopped() ||  transExecutor.getErrors()!=0){
                         monitorScheduleBean.setJobStatus(MonitorUtil.STATUS_ERROR);
+
+                        String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + monitorScheduleBean.getJobName() + "]";
+                        String errorNoticeUserId = monitorScheduleBean.getErrorNoticeUserId();
+                        String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+                        MailUtil.sendMail(user_mails, title, monitorScheduleBean.getLogMsg());
                     }else{
                         monitorScheduleBean.setJobStatus(MonitorUtil.STATUS_FINISHED);
                     }

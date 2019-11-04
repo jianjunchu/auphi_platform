@@ -41,6 +41,11 @@ public class ServiceMonitor implements Serializable{
 	
 	private String endTime;
 
+	private String params; //请求参数
+
+	private String linesOutput; //输出记录数
+
+
 	public String getMonitorId() {
 		return monitorId;
 	}
@@ -96,6 +101,20 @@ public class ServiceMonitor implements Serializable{
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	
-	
+
+	public String getParams() {
+		return params;
+	}
+
+	public void setParams(String params) {
+		this.params = params;
+	}
+
+	public String getLinesOutput() {
+		return linesOutput;
+	}
+
+	public void setLinesOutput(String linesOutput) {
+		this.linesOutput = linesOutput;
+	}
 }

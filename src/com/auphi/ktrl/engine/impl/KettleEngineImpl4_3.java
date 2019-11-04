@@ -45,6 +45,7 @@ import com.auphi.ktrl.util.ClassLoaderUtil;
 import com.auphi.ktrl.util.Constants;
 import com.auphi.ktrl.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.quartz.JobDetail;
 
@@ -111,7 +112,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                     success = executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
                 }
             }
-            
+
             disconnect = rep.getClass().getDeclaredMethod("disconnect");
             disconnect.invoke(rep);
             connected = false;
@@ -364,6 +365,10 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 RepositoryBean rep = reps.get(i) ;
                 Object databaseMeta = databaseMetaConstructor.newInstance(rep.getRepositoryName(),rep.getDbType(),
                     rep.getDbAccess(),rep.getDbHost(),rep.getDbName(),rep.getDbPort(),rep.getUserName(),rep.getPassword()) ;
+                if("MySQL".equalsIgnoreCase(rep.getDbType())){
+                    databaseMeta.getClass().getDeclaredMethod("setStreamingResults",boolean.class).invoke(databaseMeta,false);
+                }
+
                 Object repositoryMeta = kettleDatabaseRepositoryMetaConstructor.newInstance(String.valueOf(rep.getRepositoryID()),rep.getRepositoryName(),
                         rep.getDbType(),databaseMeta) ;
                 addDatabase.invoke(repsMeta, databaseMeta) ;
@@ -527,9 +532,6 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Thread tr = new Thread(transExecutor, "TransExecutor_" + transExecutor.getMonitorSchedule().getId());
             tr.start();
 
-            Timer logTimer = new Timer();
-            TransLogTimerTask transTimerTask = new TransLogTimerTask(transExecutor);
-            logTimer.schedule(transTimerTask, 0,1000);
 
         } catch (Exception e) {
             MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getLocalizedMessage());
@@ -596,108 +598,24 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
             logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start of run", new Object[0]});
 
-            if(EXECTYPE_LOCAL == execType){
+            JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,job,execType);
+            jobExecutor.run();
+
+            //log write
+            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Finished!", new Object[0]});
+            stop = new Date();
+            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start="+ StringUtil.DateToString(start, "yyyy/MM/dd HH:mm:ss")+", Stop="+ StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
+            long millis=stop.getTime()-start.getTime();
+            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
+
+            Method getResult = jobClass.getDeclaredMethod("getResult");
+            result = getResult.invoke(job);
+
+            success = true;
 
 
-                JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,job,execType);
-
-                Timer logTimer = new Timer();
-                JobLogTimerTask transTimerTask = new JobLogTimerTask(jobExecutor);
-                logTimer.schedule(transTimerTask, 0,1000);
-
-                jobExecutor.run();
-
-
-
-
-
-                //log write
-                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Finished!", new Object[0]});
-                stop = new Date();
-                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start="+ StringUtil.DateToString(start, "yyyy/MM/dd HH:mm:ss")+", Stop="+ StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
-                long millis=stop.getTime()-start.getTime();
-                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
-
-                Method getResult = jobClass.getDeclaredMethod("getResult");
-                result = getResult.invoke(job);
-
-                success = true;
-            }else if(EXECTYPE_REMOTE == execType){
-                Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-                Class<?> jobExcutionConfigClass = Class.forName("org.pentaho.di.job.JobExecutionConfiguration", true, classLoaderUtil);
-
-                Constructor<?> consJobExcutionConfig = jobExcutionConfigClass.getConstructor();
-                Object jobExcutionConfig = consJobExcutionConfig.newInstance();
-
-                Method setRepository = jobExcutionConfigClass.getDeclaredMethod("setRepository", repositoryClass);
-                setRepository.invoke(jobExcutionConfig, rep);
-
-                Method setExcutingLocally = jobExcutionConfigClass.getDeclaredMethod("setExecutingLocally", boolean.class);
-                setExcutingLocally.invoke(jobExcutionConfig, false);
-                Method setExecutingRemotely = jobExcutionConfigClass.getDeclaredMethod("setExecutingRemotely", boolean.class);
-                setExecutingRemotely.invoke(jobExcutionConfig, true);
-
-//                Method findSlaveServer = jobMeta.getClass().getDeclaredMethod("findSlaveServer", String.class);
-//                Object slaveServer = findSlaveServer.invoke(jobMeta, remoteServer);
-                SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
-                Object slaveServer = createSlaveServer(slaveServerBean);
-
-                Method setRemoteServer = jobExcutionConfigClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(jobExcutionConfig, slaveServer);
-
-
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), jobExcutionConfigClass, repositoryClass);
-                sendToSlaveServer.invoke(job, jobMeta, jobExcutionConfig, rep);
-
-                success = true;
-            }else if(EXECTYPE_HA == execType){
-                Class<?> repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-                Class<?> jobExcutionConfigClass = Class.forName("org.pentaho.di.job.JobExecutionConfiguration", true, classLoaderUtil);
-
-                Constructor<?> consJobExcutionConfig = jobExcutionConfigClass.getConstructor();
-                Object jobExcutionConfig = consJobExcutionConfig.newInstance();
-
-                Method setRepository = jobExcutionConfigClass.getDeclaredMethod("setRepository", repositoryClass);
-                setRepository.invoke(jobExcutionConfig, rep);
-
-                Method setExcutingLocally = jobExcutionConfigClass.getDeclaredMethod("setExecutingLocally", boolean.class);
-                setExcutingLocally.invoke(jobExcutionConfig, false);
-                Method setExecutingRemotely = jobExcutionConfigClass.getDeclaredMethod("setExecutingRemotely", boolean.class);
-                setExecutingRemotely.invoke(jobExcutionConfig, true);
-
-//                Method findSlaveServer = jobMeta.getClass().getDeclaredMethod("findSlaveServer", String.class);
-//                Object slaveServer = findSlaveServer.invoke(jobMeta, remoteServer);
-                SlaveServerBean slaveServerBean = getSlaveServerBean("", monitorSchedule.getHaName());
-                id_server = slaveServerBean.getId_slave();
-                Object slaveServer = createSlaveServer(slaveServerBean);
-
-                Method setRemoteServer = jobExcutionConfigClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(jobExcutionConfig, slaveServer);
-
-
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), jobExcutionConfigClass, repositoryClass);
-                sendToSlaveServer.invoke(job, jobMeta, jobExcutionConfig, rep);
-
-                success = true;
-            }
         }catch (Exception e) {
-//            StringWriter sw = new StringWriter();
-//            PrintWriter pw = new PrintWriter(sw);
-//            e.printStackTrace(pw);
-//            String errMsg = sw.toString();
-//
-//            logger.error(e.getMessage(), e);
-//            MonitorUtil.updateMonitorAfterError(monitor_id, errMsg);
-
-            status = MonitorUtil.STATUS_ERROR;
-            throw e;
-        } finally {
-            //Method getBatchId = job.getClass().getDeclaredMethod("getBatchId");
-            //int batch_id = getBatchId.invoke(job)==null?-1:((Long)getBatchId.invoke(job)).intValue();
-            //monitor(monitorSchedule.getId(), start, status, logChannelId, result, id_server, batch_id);
-            if(job != null && activeJobs.contains(job)){
-                activeJobs.remove(job);
-            }
+            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getLocalizedMessage());
         }
 
         return success;

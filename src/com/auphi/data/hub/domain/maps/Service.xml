@@ -140,14 +140,24 @@
 		<selectKey keyProperty="MONITOR_ID" resultType="java.lang.String">
             select LAST_INSERT_ID()
         </selectKey>
-        insert into t_service_monitor (SERVICE_ID,START_TIME,END_TIME,STATUS,userName,systemName) values 
-        (
-        #{serviceId},
-        #{startTime},
-        #{endTime},
-        #{status},
-        #{userName},
-        #{systemName}
+        insert into t_service_monitor (
+        	 SERVICE_ID
+        	,START_TIME
+        	,END_TIME
+        	,STATUS
+        	,userName
+        	,systemName
+			,PARAMS
+			,LINES_OUTPUT
+        )values(
+        	 #{serviceId}
+        	,#{startTime}
+        	,#{endTime}
+        	,#{status}
+        	,#{userName}
+        	,#{systemName}
+			,#{params}
+			,#{linesOutput}
         )
 	</insert>
 	
@@ -192,6 +202,27 @@
 		  		AND tsi.SERVICE_NAME like '%${queryParam}%' 
 		  </if>
 		  order by MONITOR_ID desc) sm 
+	</select>
+
+	<select id="queryServiceOutputCount" parameterType="map"  resultType="java.lang.Integer">
+		select SUM(LINES_OUTPUT) from  T_SERVICE_MONITOR
+		<where>
+			<if test="serviceId != null and serviceId != ''">
+				AND SERVICE_ID = #{serviceId}
+			</if>
+
+			<if test="userName != null and userName != ''">
+				AND userName = #{userName}
+			</if>
+
+			<if test="systemName != null and systemName != ''">
+				AND systemName = #{systemName}
+			</if>
+			<if test="startTime != null ">
+				AND START_TIME <![CDATA[  >=  ]]> #{startTime}
+			</if>
+
+		</where>
 	</select>
 
 </mapper>

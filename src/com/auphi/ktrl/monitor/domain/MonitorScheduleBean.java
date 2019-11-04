@@ -52,6 +52,8 @@ public class MonitorScheduleBean extends BaseEntity {
 	private Long lines_deleted;
 	private String userId;
 
+	private String errorNoticeUserId;
+
 	public Integer getId() {
 		return id;
 	}
@@ -234,5 +236,13 @@ public class MonitorScheduleBean extends BaseEntity {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getErrorNoticeUserId() {
+		return errorNoticeUserId;
+	}
+
+	public void setErrorNoticeUserId(String errorNoticeUserId) {
+		this.errorNoticeUserId = errorNoticeUserId;
 	}
 }

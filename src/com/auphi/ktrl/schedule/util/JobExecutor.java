@@ -5,13 +5,21 @@ import com.auphi.ktrl.ha.bean.SlaveServerBean;
 import com.auphi.ktrl.ha.util.SlaveServerUtil;
 import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
+import com.auphi.ktrl.schedule.task.JobLogTimerTask;
+import com.auphi.ktrl.system.mail.util.MailUtil;
+import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.ClassLoaderUtil;
+import com.auphi.ktrl.util.StringUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.Timer;
 
 public class JobExecutor implements Runnable{
 
@@ -151,11 +159,25 @@ public class JobExecutor implements Runnable{
                 Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
             }
-        } catch (Exception e) {
-            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getMessage());
-            e.printStackTrace();
-        }finally {
+            Timer logTimer = new Timer();
+            JobLogTimerTask transTimerTask = new JobLogTimerTask (this);
+            logTimer.schedule(transTimerTask, 0,1000);
             finished = true;
+        } catch (Exception e) {
+            String errMsg = null;
+            try {
+                errMsg = getExecutionLog();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), errMsg);
+
+            String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + monitorSchedule.getJobName() + "]";
+            String errorNoticeUserId = monitorSchedule.getErrorNoticeUserId();
+            String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+            MailUtil.sendMail(user_mails, title, errMsg);
+
+            finished = false;
         }
 
 

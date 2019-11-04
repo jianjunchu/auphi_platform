@@ -5,16 +5,26 @@ import com.auphi.ktrl.ha.bean.SlaveServerBean;
 import com.auphi.ktrl.ha.util.SlaveServerUtil;
 import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
+import com.auphi.ktrl.schedule.task.TransLogTimerTask;
+import com.auphi.ktrl.system.mail.util.MailUtil;
+import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.ClassLoaderUtil;
+import com.auphi.ktrl.util.StringUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Timer;
 
 public class TransExecutor implements Runnable{
 
@@ -123,10 +133,9 @@ public class TransExecutor implements Runnable{
             }
 
 
-        }catch (Exception e){
-            e.printStackTrace();
-            throw e;
 
+        }catch (Exception e){
+            throw e;
 
         }
 
@@ -158,7 +167,6 @@ public class TransExecutor implements Runnable{
 
         try {
 
-
             if(KettleEngine.EXECTYPE_LOCAL == execType){
                 Method getLastBufferLineNr = kettleLogStoreClass.getMethod("getLastBufferLineNr");
                 startLineNr = (Integer) getLastBufferLineNr.invoke(null);
@@ -167,9 +175,6 @@ public class TransExecutor implements Runnable{
                 Method isSafeModeEnabled =  this.executionConfigurationClass.getDeclaredMethod("isSafeModeEnabled");
                 setSafeModeEnabled.invoke(this.trans,isSafeModeEnabled.invoke(this.executionConfiguration));
 
-                Method setGatheringMetrics =  this.transClass.getDeclaredMethod("setGatheringMetrics",boolean.class);
-                Method isGatheringMetrics =  this.executionConfigurationClass.getDeclaredMethod("isGatheringMetrics");
-                setGatheringMetrics.invoke(this.trans,isGatheringMetrics.invoke(this.executionConfiguration));
 
                 Method setLogLevel =  this.transClass.getDeclaredMethod("setLogLevel", LogLevel.class);
                 Method getLogLevel =  this.executionConfigurationClass.getDeclaredMethod("getLogLevel");
@@ -213,11 +218,26 @@ public class TransExecutor implements Runnable{
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String)  sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
             }
-        } catch (Exception e) {
-            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getMessage());
-            e.printStackTrace();
-        }finally {
+            Timer logTimer = new Timer();
+            TransLogTimerTask transTimerTask = new TransLogTimerTask(this);
+            logTimer.schedule(transTimerTask, 0,1000);
             finished = true;
+        } catch (Exception  e) {
+
+            String errMsg = null;
+            try {
+                errMsg = getExecutionLog();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), errMsg);
+
+            String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + monitorSchedule.getJobName() + "]";
+            String errorNoticeUserId = monitorSchedule.getErrorNoticeUserId();
+            String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+            MailUtil.sendMail(user_mails, title, errMsg);
+
+            finished = false;
         }
 
 
@@ -267,28 +287,33 @@ public class TransExecutor implements Runnable{
     public String getExecutionLog() throws Exception {
 
 
-        if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingLocally").invoke(executionConfiguration)) {
-            Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
-            Object logChannel = getLogChannel.invoke(trans);
+            try {
+                if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingLocally").invoke(executionConfiguration)) {
+                    Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
+                    Object logChannel = getLogChannel.invoke(trans);
 
-            Method  getLogChannelId  =  logChannel.getClass().getDeclaredMethod("getLogChannelId");
-            String logChannelId =   (String) getLogChannelId.invoke(logChannel);
+                    Method  getLogChannelId  =  logChannel.getClass().getDeclaredMethod("getLogChannelId");
+                    String logChannelId =   (String) getLogChannelId.invoke(logChannel);
 
 
-            String loggingText = CentralLogStore.getAppender().getBuffer(
-                    logChannelId, false, startLineNr, CentralLogStore.getLastBufferLineNr()).toString();
-            return loggingText;
+                    String loggingText = CentralLogStore.getAppender().getBuffer(
+                            logChannelId, false, startLineNr, CentralLogStore.getLastBufferLineNr()).toString();
+                    return loggingText;
 
-        } else if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingRemotely").invoke(executionConfiguration)) {
-            Object remoteSlaveServer = executionConfiguration.getClass().getDeclaredMethod("getRemoteServer").invoke(executionConfiguration);
+                } else if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingRemotely").invoke(executionConfiguration)) {
+                    Object remoteSlaveServer = executionConfiguration.getClass().getDeclaredMethod("getRemoteServer").invoke(executionConfiguration);
 
-            String transMetaName = (String) transMeta.getClass().getDeclaredMethod("getName").invoke(transMeta);
+                    String transMetaName = (String) transMeta.getClass().getDeclaredMethod("getName").invoke(transMeta);
 
-            Object transStatus = remoteSlaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class).invoke(remoteSlaveServer,transMetaName,carteObjectId,0) ;
-            return (String) transStatus.getClass().getDeclaredMethod("getLoggingString").invoke(transStatus);
-        }
+                    Object transStatus = remoteSlaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class).invoke(remoteSlaveServer,transMetaName,carteObjectId,0) ;
+                    return (String) transStatus.getClass().getDeclaredMethod("getLoggingString").invoke(transStatus);
+                }
+            }catch (Exception e){
+                return "";
+            }
 
-        return "";
+
+            return "";
     }
 
     public boolean isFinished() throws Exception {
@@ -310,10 +335,6 @@ public class TransExecutor implements Runnable{
 
     }
 
-    public boolean isFinishedOrStopped() throws Exception {
-        Method  isFinishedOrStopped  =  transClass.getDeclaredMethod("isFinishedOrStopped");
-        return (boolean) isFinishedOrStopped.invoke(trans);
-    }
 
     public Long getNrLinesInput() throws Exception {
         Method  getResult  =  transClass.getDeclaredMethod("getResult");
