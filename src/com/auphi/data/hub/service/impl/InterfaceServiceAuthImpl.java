@@ -76,5 +76,18 @@ public class InterfaceServiceAuthImpl implements InterfaceServiceAuth{
 		return (Dto)systemDao.queryForObject("ServiceAuth.getServiceAuth",dto);
 	}
 
+	@Override
+	public boolean checkAuthExist(ServiceAuth serviceAuth) {
+
+		Dto<String,Object> dto = new BaseDto();
+		dto.put("userId",serviceAuth.getUserId());
+		dto.put("serviceId",serviceAuth.getServiceId());
+		dto.put("authIP",serviceAuth.getAuthIP());
+
+		Integer total = (Integer)systemDao.queryForObject("ServiceAuth.queryServiceAuthListCount",dto);
+
+		return total > 0;
+	}
+
 
 }

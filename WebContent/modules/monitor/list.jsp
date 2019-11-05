@@ -5,6 +5,7 @@
 <%@ page import="com.auphi.ktrl.monitor.bean.*" %>
 <%@ page import="com.auphi.ktrl.monitor.util.MonitorUtil" %>
 <%@ page import="com.auphi.ktrl.i18n.Messages" %>
+<%@ page import="com.auphi.ktrl.monitor.domain.MonitorScheduleBean" %>
 
 <%
 	PageList pageList = (PageList)request.getAttribute("pageList");
@@ -408,7 +409,7 @@ function showDetails(jobName, jobStatus, idBatch, jobFile, id_logchannel){
 		float continuedTime = monitorScheduleBean.getContinuedTime();
 		String continued_time = String.valueOf(continuedTime); 
 		if("".equals(monitorScheduleBean.getEndTime()) && !MonitorUtil.STATUS_ERROR.equals(monitorScheduleBean.getJobStatus())){//now running,time is now-start
-			Date start = StringUtil.StringToDate(monitorScheduleBean.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+			Date start = monitorScheduleBean.getStartTime();
 			Date now = new Date();
 			continuedTime = ((float)(now.getTime() - start.getTime()))/1000;
 			continued_time = String.valueOf(continuedTime);

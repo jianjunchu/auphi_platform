@@ -65,7 +65,7 @@ public class ExportExcel {
 	/**
 	 * 样式列表
 	 */
-	private Map<String, CellStyle> styles;
+	//private Map<String, CellStyle> styles;
 	
 	/**
 	 * 当前行号
@@ -106,13 +106,13 @@ public class ExportExcel {
 		this.wb = new SXSSFWorkbook(500);
 		this.sheet = wb.createSheet("Export");
 		sheet.trackAllColumnsForAutoSizing();
-		this.styles = createStyles(wb);
+		//this.styles = createStyles(wb);
 		// Create title
 		if (StringUtils.isNotBlank(title)){
 			Row titleRow = sheet.createRow(rownum++);
 			titleRow.setHeightInPoints(30);
 			Cell titleCell = titleRow.createCell(0);
-			titleCell.setCellStyle(styles.get("title"));
+			//titleCell.setCellStyle(styles.get("title"));
 			titleCell.setCellValue(title);
 			sheet.addMergedRegion(new CellRangeAddress(titleRow.getRowNum(),
 					titleRow.getRowNum(), titleRow.getRowNum(), headerList.size()-1));
@@ -125,7 +125,7 @@ public class ExportExcel {
 		headerRow.setHeightInPoints(16);
 		for (int i = 0; i < headerList.size(); i++) {
 			Cell cell = headerRow.createCell(i);
-			cell.setCellStyle(styles.get("header"));
+			//cell.setCellStyle(styles.get("header"));
 			String[] ss = StringUtils.split(headerList.get(i), "**", 2);
 			if (ss.length==2){
 				cell.setCellValue(ss[0]);
@@ -241,7 +241,7 @@ public class ExportExcel {
 	 */
 	public Cell addCell(Row row, int column, Object val, int align, Class<?> fieldType){
 		Cell cell = row.createCell(column);
-		CellStyle style = styles.get("data"+(align>=1&&align<=3?align:""));
+		//CellStyle style = styles.get("data"+(align>=1&&align<=3?align:""));
 		try {
 			if (val == null){
 				cell.setCellValue("");
@@ -257,7 +257,7 @@ public class ExportExcel {
 				cell.setCellValue((Float) val);
 			} else if (val instanceof Date) {
 				DataFormat format = wb.createDataFormat();
-	            style.setDataFormat(format.getFormat("yyyy-MM-dd"));
+	            //style.setDataFormat(format.getFormat("yyyy-MM-dd"));
 				cell.setCellValue((Date) val);
 			} else {
 				if (fieldType != Class.class){
@@ -271,7 +271,7 @@ public class ExportExcel {
 			log.info("Set cell value ["+row.getRowNum()+","+column+"] error: " + ex.toString());
 			cell.setCellValue(val.toString());
 		}
-		cell.setCellStyle(style);
+		//cell.setCellStyle(style);
 		return cell;
 	}
 

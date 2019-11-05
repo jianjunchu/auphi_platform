@@ -27,12 +27,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 
+import com.auphi.ktrl.conn.util.ConnectionPool;
 import org.apache.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 
 import com.alibaba.fastjson.JSON;
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
 import com.auphi.ktrl.schedule.template.Template;
 import com.auphi.ktrl.schedule.template.TemplateFactory;
@@ -46,7 +47,7 @@ public class MonitorReloadThread extends Thread {
 	private static Logger logger = Logger.getLogger(MonitorReloadThread.class);
 	
 	private Template template;
-	private int id;
+	private Integer id;
 	private int execType;
 	private String ha;
 	private boolean isFastConfig;
@@ -100,7 +101,10 @@ public class MonitorReloadThread extends Thread {
 	public void run() {
 		try{
 			if(isFastConfig){
-				template.execute(id, execType, "", ha);
+				MonitorScheduleBean monitorScheduleBean = new MonitorScheduleBean();
+				monitorScheduleBean.setId(id);
+				monitorScheduleBean.setHaName(ha);
+				template.execute(execType, monitorScheduleBean);
 			}else {
 				QuartzUtil.execute(new String[]{jobName}, userBean);
 			}

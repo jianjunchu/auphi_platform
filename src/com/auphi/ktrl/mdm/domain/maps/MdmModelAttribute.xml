@@ -58,11 +58,11 @@
 	</resultMap>
 
 	<select id="query" parameterType="map"  resultMap="MdmModelAttribute">
-		select * from MDM_MODEL_ATTRIBUTE where ID_MODEL=${id_model} order by ATTRIBUTE_ORDER limit ${start},${end} 
+		select * from MDM_MODEL_ATTRIBUTE where ID_MODEL=#{id_model} order by ATTRIBUTE_ORDER limit ${start},${end}
 	</select>
 	
 	<select id="query4ComboBox" parameterType="map"  resultMap="MdmModelAttribute">
-		select * from MDM_MODEL_ATTRIBUTE where ID_MODEL=${id_model} order by ATTRIBUTE_ORDER 
+		select * from MDM_MODEL_ATTRIBUTE where ID_MODEL=#{id_model} order by ATTRIBUTE_ORDER
 	</select>
 	
 	<select id="queryMaxId" parameterType="map"  resultType="java.lang.Integer">

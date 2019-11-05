@@ -46,6 +46,12 @@ public class ServiceAuth implements Serializable{
 	private String user_name;         //使用人员
 	
 	private String use_desc;          //业务用途
+
+	private String cycleLimit;          //数据限制周期
+
+	private String timeLimit;          //数据限制时间
+
+	private String linesLimit;          //数据限制条数
 	
 
 	public String getAuthId() {
@@ -127,7 +133,28 @@ public class ServiceAuth implements Serializable{
 	public void setUse_desc(String useDesc) {
 		use_desc = useDesc;
 	}
-	
-	
-	
+
+	public String getCycleLimit() {
+		return cycleLimit;
+	}
+
+	public void setCycleLimit(String cycleLimit) {
+		this.cycleLimit = cycleLimit;
+	}
+
+	public String getTimeLimit() {
+		return timeLimit;
+	}
+
+	public void setTimeLimit(String timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+
+	public String getLinesLimit() {
+		return linesLimit;
+	}
+
+	public void setLinesLimit(String linesLimit) {
+		this.linesLimit = linesLimit;
+	}
 }

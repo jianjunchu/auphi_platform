@@ -102,21 +102,15 @@ public class ServiceAuthController extends BaseMultiActionController {
 	 */
 	public ModelAndView saveServiceAuth(HttpServletRequest req,HttpServletResponse resp,ServiceAuth serviceAuth) throws IOException{
 		try{
-			//生成服务标识
-			String serviceId = serviceAuth.getServiceId();
-			System.out.println("serviceId="+serviceId);
-			String userId = serviceAuth.getUserId();
-			System.out.println("userId="+userId);
-			String authIP = serviceAuth.getAuthIP();
-			System.out.println("authIP="+authIP);
-			String use_dept = serviceAuth.getUse_dept();
-			System.out.println(use_dept);
-			String user_name = serviceAuth.getUser_name();
-			System.out.println(user_name);
-			
-			interfaceServiceAuth.saveServiceAuth(serviceAuth);
-			
-			this.setOkTipMsg("服务授权成功",resp); 
+
+			if(interfaceServiceAuth.checkAuthExist(serviceAuth)){
+				this.setFailTipMsg("重复授权！",resp);
+			}else{
+				interfaceServiceAuth.saveServiceAuth(serviceAuth);
+				this.setOkTipMsg("服务授权成功",resp);
+			}
+
+
 		}catch(Exception e){
 			this.setFailTipMsg("服务授权失败",resp);
 			e.printStackTrace();
@@ -134,17 +128,7 @@ public class ServiceAuthController extends BaseMultiActionController {
 	 */
 	public ModelAndView updateServiceAuth(HttpServletRequest req,HttpServletResponse resp,ServiceAuth serviceAuth) throws IOException{
 		try{
-			String serviceId = serviceAuth.getServiceId();
-			System.out.println("serviceId="+serviceId);
-			String userId = serviceAuth.getUserId();
-			System.out.println("userId="+userId);
-			String authIP = serviceAuth.getAuthIP();
-			System.out.println("authIP="+authIP);
-			String use_dept = serviceAuth.getUse_dept();
-			System.out.println(use_dept);
-			String user_name = serviceAuth.getUser_name();
-			System.out.println(user_name);					
-			
+
 			interfaceServiceAuth.updateServiceAuth(serviceAuth);
 			
 			this.setOkTipMsg("修改服务权限成功", resp);

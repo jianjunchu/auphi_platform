@@ -23,9 +23,14 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.template;
 
-import java.util.Date;
-import java.util.List;
-
+import com.alibaba.fastjson.JSON;
+import com.auphi.data.hub.domain.FTP;
+import com.auphi.data.hub.domain.Hadoop;
+import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.schedule.util.ScheduleUtil;
+import com.auphi.ktrl.schedule.view.FastConfigView;
+import com.auphi.ktrl.schedule.view.FieldMappingView;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -35,20 +40,14 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
-import com.auphi.data.hub.domain.FTP;
-import com.auphi.data.hub.domain.Hadoop;
-
-import com.alibaba.fastjson.JSON;
-import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
-import com.auphi.ktrl.schedule.util.ScheduleUtil;
-import com.auphi.ktrl.schedule.view.FastConfigView;
-import com.auphi.ktrl.schedule.view.FieldMappingView;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Template231, ftp到hadoop
  *
  */
-public class Template231 implements Template { 
+public class Template231 implements Template {
 
 	private String middlePath;
 	private JobMeta jobMeta;
@@ -144,17 +143,17 @@ public class Template231 implements Template {
 	}
 
 	@Override
-	public boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception{
+	public boolean execute(int execType, MonitorScheduleBean monitorSchedule) throws Exception{
 		boolean success = false;
 
 		KettleEngineImpl4_3 kettleEngine = new KettleEngineImpl4_3();
-		kettleEngine.executeJob(jobMeta, rep, null, null, monitorId, execType, remoteServer, ha);
-		
+		kettleEngine.executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
+
 		return success;
 	}
 	
 	private String generateCreateHiveTableSQL(String destTableName,
-			List<FieldMappingView> fieldMappingList, String sepChar) {
+                                              List<FieldMappingView> fieldMappingList, String sepChar) {
 		StringBuffer bf = new StringBuffer();
 		bf.append("CREATE TABLE IF NOT EXISTS ").append(destTableName);
 		bf.append("(");
@@ -174,7 +173,7 @@ public class Template231 implements Template {
 				ex.printStackTrace();
 			}
 			 
-			bf.append(" "+TemplateUtil.getFieldDefinition(new ValueMeta(fieldName,type,length,scale)));		// public ValueMeta(String name, int type, int length, int precision)	
+			bf.append(" "+ TemplateUtil.getFieldDefinition(new ValueMeta(fieldName,type,length,scale)));		// public ValueMeta(String name, int type, int length, int precision)
 			
 			
 			if(i!=fieldMappingList.size()-1)

@@ -36,6 +36,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.auphi.ktrl.conn.util.ConnectionPool;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -46,7 +47,7 @@ import org.quartz.JobExecutionException;
 import com.auphi.ktrl.engine.KettleEngine;
 import com.auphi.ktrl.engine.impl.KettleEngineImpl2_3;
 import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
 import com.auphi.ktrl.schedule.bean.ScheduleBean;
 import com.auphi.ktrl.schedule.util.ScheduleUtil;
@@ -84,7 +85,7 @@ public class DSchedule implements Job{
 	private void taskRunning(Task task){
 		
 		synchronized(this){
-			int monitorId = Integer.parseInt(StringUtil.createNumberString(9)) ;
+			int monitorId = Integer.parseInt(StringUtil.createNumberString(9)); ;
 			task.setStatus(TaskStatus.running) ;
 			task.setStarttime(System.currentTimeMillis()) ;
 			task.setMonitorId(monitorId) ;
@@ -198,7 +199,7 @@ public class DSchedule implements Job{
 			String jobgroup = task.getName().split("\\.",2)[0] ;
 			String jobname = task.getName().split("\\.",2)[1] ;
 			
-			int id = task.getMonitorId() ;
+			Integer id = task.getMonitorId() ;
 			
 			if(DScheduleUtil.isDSchedule(jobname, jobgroup))
 				executeDSchedule(jobname,jobgroup,id) ;
@@ -255,7 +256,7 @@ public class DSchedule implements Job{
 	
 	private TaskStatus queryTaskStatus(Task task)
 	{
-		int monitorid = task.getMonitorId() ;
+		Integer monitorid = task.getMonitorId() ;
 		MonitorScheduleBean msb = MonitorUtil.getMonitorData(String.valueOf(monitorid)) ;
 		String status = msb.getJobStatus() ;
 		
@@ -595,8 +596,13 @@ public class DSchedule implements Job{
 			}else if(KettleEngine.VERSION_4_3.equals(version)){
 				kettleEngine = new KettleEngineImpl4_3();
 			}
-			
-			return kettleEngine.execute(repName, actionPath, actionRef, fileType, monitorid, execType, remoteServer, ha) ;
+
+			MonitorScheduleBean monitorSchedule = new MonitorScheduleBean();
+			monitorSchedule.setHaName(ha);
+			monitorSchedule.setServerName(remoteServer);
+			monitorSchedule.setId(monitorid);
+
+			return kettleEngine.execute(repName, actionPath, actionRef, fileType, execType, monitorSchedule) ;
 			
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();

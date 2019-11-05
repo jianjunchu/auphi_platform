@@ -26,6 +26,7 @@ package com.auphi.data.hub.service;
 
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import com.auphi.data.hub.core.PaginationSupport;
@@ -69,4 +70,6 @@ public interface InterfaceService {
 	public void saveServiceMonitor(Dto dto);
 	
 	public void updateServiceMonitor(Dto dto);
+
+	int getOutputCount(String serviceId, String userName, String systemName, Date time);
 }

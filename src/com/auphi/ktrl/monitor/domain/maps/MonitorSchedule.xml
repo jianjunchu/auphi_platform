@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="monitorSchedule">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.ID AS id
+        , a.JOBNAME AS jobName
+        , a.JOBGROUP AS jobGroup
+        , a.JOBFILE AS jobFile
+        , a.JOBSTATUS AS jobStatus
+        , a.START_TIME AS startTime
+        , a.END_TIME AS endTime
+        , a.CONTINUED_TIME AS continuedTime
+        , a.LINES_READ AS lines_read
+        , a.LINES_WRITTEN AS lines_written
+        , a.LINES_UPDATED AS lines_updated
+        , a.LINES_INPUT AS lines_input
+        , a.LINES_OUTPUT AS lines_output
+        , a.LINES_ERROR AS lines_error
+        , a.LINES_DELETED AS lines_deleted
+        , a.USERID AS userid
+        , b.NAME as serverName
+        , c.NAME as haName
+        , a.ID_BATCH AS id_batch
+        , a.ID_LOGCHANNEL AS id_logchannel
+    </sql>
+
+
+    <sql id="Base_Joins">
+       left JOIN KDI_T_HA_CLUSTER b ON a.ID_CLUSTER=b.ID_CLUSTER
+       left JOIN KDI_T_HA_SLAVE  c  ON a.ID_SLAVE=c.ID_SLAVE
+    </sql>
+
+
+    <select id="selectList" parameterType="map" resultType="com.auphi.ktrl.monitor.domain.MonitorScheduleBean">
+        select
+        <include refid="Base_Column_List"/>
+        from KDI_T_MONITOR a
+        <include refid="Base_Joins"/>
+
+        <where>
+
+            <if test="jobStatus !=null and jobStatus!=''">
+                and a.JOBSTATUS = #{jobStatus}
+            </if>
+            <if test="jobName !=null and jobName!=''">
+                and a.JOBNAME = #{jobName}
+            </if>
+        </where>
+
+        order by a.START_TIME desc
+    </select>
+
+
+    <select id="selectCount" parameterType="map"  resultType="java.lang.Integer">
+        select
+        count(*)
+        from KDI_T_MONITOR a
+        <include refid="Base_Joins"/>
+        <where>
+
+
+            <if test="jobStatus !=null and jobStatus!=''">
+                and a.JOBSTATUS = #{jobStatus}
+            </if>
+            <if test="jobName !=null and jobName!=''">
+                and a.JOBNAME = #{jobName}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" parameterType="map" resultType="com.auphi.ktrl.monitor.domain.MonitorScheduleBean">
+
+        select
+        <include refid="Base_Column_List"/>
+        , a.LOGMSG AS logMsg
+        , a.ERRMSG AS errMsg
+
+        from KDI_T_MONITOR a
+        <include refid="Base_Joins"/>
+        where  a.ID = #{id}
+
+    </select>
+
+
+    <update id="deleteById">
+        delete from KDI_T_MONITOR where ID = #{id}
+    </update>
+
+    <update id="deleteBySartDate" parameterType="map">
+        delete from KDI_T_MONITOR
+        <where>
+
+            <if test="startTime !=null">
+                and START_TIME <![CDATA[<= ]]> #{startTime}
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteByIds">
+        delete from KDI_T_MONITOR  WHERE ID in (${ids})
+    </update>
+</mapper>

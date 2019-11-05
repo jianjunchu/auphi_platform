@@ -7,14 +7,15 @@
 --%>
 <%@ page contentType="text/html; charset=utf-8"%>
 <%@ include file="/common/include/taglib.jsp"%>
-<skyform:import src="/admin/compare/compareSqlResult.css"/>
-<skyform:html title="元数据映射" uxEnabled="true">
+<skyform:html title="作业监控" uxEnabled="true">
     <skyform:import src="/resource/extjs3.1/ux/Ext.ux.form.LovCombo.css" />
+    <skyform:import src="/styles/monitor.css" />
     <skyform:import src="/resource/DateTime/DateTimeField.js"/>
     <skyform:import src="/resource/extjs3.1/ux/ComboBoxTree.js"/>
-    <skyform:import src="/admin/metadata/metadataMappingNewFrom.js"/>
-    <skyform:import src="/admin/metadata/metadataMappingEditFrom.js"/>
-    <skyform:import src="/admin/metadata/metadataMappingList.js"/>
+    <skyform:import src="/admin/monitor/monitorGrid.js"/>
+
     <skyform:body>
+        <input type="hidden" id="jobName" value="${jobName}">
     </skyform:body>
+
 </skyform:html>

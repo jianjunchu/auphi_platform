@@ -74,7 +74,7 @@ public class InitServlet extends HttpServlet {
 			g.install(null);
 		}catch (Exception e){
 			e.printStackTrace();
-			logger.error(e.getMessage(), e);
+			logger.error("您的 License 已过期", e);
 			return;
 		}
 

@@ -14,7 +14,7 @@ public class ProcessUtil {
 
     private static Logger logger = Logger.getLogger(ProcessUtil.class);
 
-    public static boolean runProcess(int monitorId, String command) throws KettleException {
+    public static boolean runProcess(long monitorId, String command) throws KettleException {
         String result = "";
 
         List<String> commands = new ArrayList<String>();
@@ -25,15 +25,19 @@ public class ProcessUtil {
             commands.add("command.com");
             commands.add("/C");
             commands.add(command);
-            if (parameterLine != null)
+            if (parameterLine != null){
                 commands.add(parameterLine);
+            }
+
 
         } else if (Const.getOS().startsWith("Windows")) {
             commands.add("cmd");
             commands.add("/C");
             commands.add(command);
-            if (parameterLine != null)
+            if (parameterLine != null){
                 commands.add(parameterLine);
+            }
+
         } else {
             commands.add("sh");
             commands.add("-c");

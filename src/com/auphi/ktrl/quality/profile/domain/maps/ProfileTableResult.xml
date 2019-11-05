@@ -91,16 +91,16 @@
     <select id="queryCount" parameterType="profileTableResult" resultType="java.lang.Integer">
         SELECT
         COUNT(*)
-        FROM  etl_platform.PROFILE_TABLE_COLUMN b
+        FROM  PROFILE_TABLE_COLUMN b
         LEFT JOIN  (select *
         from PROFILE_TABLE_RESULT t
         where not exists
         (select 1 from PROFILE_TABLE_RESULT
         where ID_PROFILE_TABLE_COLUMN=t.ID_PROFILE_TABLE_COLUMN
         and ID_PROFILE_TABLE_RESULT>t.ID_PROFILE_TABLE_RESULT) ) a ON b.ID_PROFILE_TABLE_COLUMN = a.ID_PROFILE_TABLE_COLUMN
-        LEFT JOIN etl_platform.PROFILE_TABLE d ON d.ID_PROFILE_TABLE = b.ID_PROFILE_TABLE
-        LEFT JOIN etl_platform.PROFILE_TABLE_GROUP e ON e.ID_PROFIEL_TABLE_GROUP = d.ID_PROFIEL_TABLE_GROUP
-        LEFT JOIN etl_platform.R_DATABASE f ON f.ID_DATABASE = d.ID_DATABASE
+        LEFT JOIN PROFILE_TABLE d ON d.ID_PROFILE_TABLE = b.ID_PROFILE_TABLE
+        LEFT JOIN PROFILE_TABLE_GROUP e ON e.ID_PROFIEL_TABLE_GROUP = d.ID_PROFIEL_TABLE_GROUP
+        LEFT JOIN R_DATABASE f ON f.ID_DATABASE = d.ID_DATABASE
         <where>
             <if test="profielTableGroup != null and profielTableGroup.profielTableGroupId != null and '' != profielTableGroup.profielTableGroupId ">
                 AND d.ID_PROFIEL_TABLE_GROUP  = #{profielTableGroup.profielTableGroupId}

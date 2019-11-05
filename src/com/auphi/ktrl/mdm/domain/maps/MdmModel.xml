@@ -75,7 +75,7 @@
 				AND A.ID_MODEL in (${ids})
 			</if>
 		</where>
-		ORDER BY A.ID_MODEL
+		ORDER BY A.ID_MODEL, b.ATTRIBUTE_ORDER
 	</select>
 	
 	<select id="query4ComboBox" parameterType="map"  resultMap="MdmModel">

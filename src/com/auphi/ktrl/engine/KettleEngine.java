@@ -23,10 +23,9 @@
  ******************************************************************************/
 package com.auphi.ktrl.engine;
 
-import com.auphi.ktrl.monitor.bean.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.user.bean.UserBean;
-
 
 
 public interface KettleEngine {
@@ -80,8 +79,8 @@ public interface KettleEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean execute(String repName, String filePath, String fileName, String fileType, int id, int execType, String remoteServer, String ha) throws Exception;
-	
+	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule) throws Exception;
+
 	/**
 	 * get a repository tree described by a JSON string
 	 * @param repName
@@ -90,7 +89,7 @@ public interface KettleEngine {
 	 * @return
 	 */
 	public String getRepTreeJSON(String repName, String user_id);
-	
+
 	/**
 	 * check username,password is correct or not
 	 * @param repName
@@ -99,25 +98,25 @@ public interface KettleEngine {
 	 * @return
 	 */
 	public int checkRepLogin(String repName);
-	
+
 	/**
 	 * Authorize resources to user.
-	 * 
+	 *
 	 * @param rep_name : repository name
 	 * @param user_id : user id
 	 * @param resource_ids : string contains resource IDs, split by ','
-	 * 
-	 * 
+	 *
+	 *
 	 * */
 	public void authResourcesToUser(String rep_name, String user_id, String resource_ids) ;
-	
-    
+
+
 	/**
-	 * Get JSON string of repostiory's resource tree. 
-	 * 
+	 * Get JSON string of repostiory's resource tree.
+	 *
 	 * */
     public String getResourceTreeJSON(String rep_name, String user_id) ;
-    
+
     /**
      * get xml data from repository
      * @param repName
@@ -126,7 +125,7 @@ public interface KettleEngine {
      * @return
      */
     public String getXML(String repName, String fileType, String actionPath, String actionRef);
-    
+
     /**
      * Get JSON String of running trans`s/job`s details
      * @param repName
@@ -137,7 +136,7 @@ public interface KettleEngine {
      * @return
      */
     public String getActiveDetails(String repName, String fileType, String actionPath, String actionRef, String id_logchannel);
-    
+
     /**
      * Get JSON String of trans steps results
      * @param repName
@@ -147,7 +146,7 @@ public interface KettleEngine {
      * @return
      */
     public String getTransStepsLog(String repName, String actionPath, String actionRef, int batch_id);
-    
+
     /**
      * Get JSON String of trans steps results
      * @param repName
@@ -157,30 +156,30 @@ public interface KettleEngine {
      * @return
      */
     public String getJobEntriesLog(String repName, String actionPath, String actionRef, int batch_id);
-    
+
     public MonitorScheduleBean getMonitorDataFromJobLogTable(MonitorScheduleBean monitorScheduleBean, UserBean userBean);
-    
+
     /**
      * get slave server names from the repository
      * @param repName repository name
      * @return
      */
-    public String[] getSlaveNames(String repName); 
-    
+    public String[] getSlaveNames(String repName);
+
     /**
      * create repository
      * @param repBean repository connection info
      * @param update update or not
      */
-    public void createRepository(RepositoryBean repBean,boolean update);
-    
+    public void createRepository(RepositoryBean repBean, boolean update);
+
     /**
      * check if the rep tables exists or not
      * @param repBean repository connection info
      * @param tableName table name
      * @return
      */
-	public String checkTableExist(RepositoryBean repBean,String tableName);
+	public String checkTableExist(RepositoryBean repBean, String tableName);
 	
 	/**
 	 * add role auth contorl table to repository
@@ -221,4 +220,5 @@ public interface KettleEngine {
 	public String stopRunningForcely(String repName, String fileType, String actionPath, String actionRef, MonitorScheduleBean monitorBean);
 	
 	public Object getRepFromDatabase(String repName, String username, String password) throws Exception;
+
 }

@@ -23,28 +23,26 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.template;
 
-import java.util.Date;
-import java.util.List;
-
-import org.pentaho.di.core.RowMetaAndData;
+import com.alibaba.fastjson.JSON;
+import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.schedule.view.FastConfigView;
+import com.auphi.ktrl.schedule.view.FieldMappingView;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.LongObjectId;
-import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
-import com.alibaba.fastjson.JSON;
-import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
-import com.auphi.ktrl.schedule.view.FastConfigView;
-import com.auphi.ktrl.schedule.view.FieldMappingView;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Template141, 关系库和hive 到数据集市
  *
  */
-public class Template141  extends BaseTemplate4 implements Template { 
+public class Template141  extends BaseTemplate4 implements Template {
 
 	private String middlePath;
 	private JobMeta jobMeta;
@@ -73,11 +71,13 @@ public class Template141  extends BaseTemplate4 implements Template {
 	public String getTemplateClassName(){
 		return middlePath;
 	}
-	
+
+
+
 	@Override
 	public void bind(String fastConfigJson, String fieldMappingJson)  throws Exception{
 		FastConfigView fastConfigView = JSON.parseObject(fastConfigJson, FastConfigView.class);
-		List<FieldMappingView> fieldMappingList = JSON.parseArray(fieldMappingJson, FieldMappingView.class);		
+		List<FieldMappingView> fieldMappingList = JSON.parseArray(fieldMappingJson, FieldMappingView.class);
 		String sourceSchemaName = fastConfigView.getSourceSchenaName();
 		String sourceTableName = fastConfigView.getSourceTableName();
 		String condition = fastConfigView.getSourceCondition();
@@ -110,7 +110,7 @@ public class Template141  extends BaseTemplate4 implements Template {
 			System.out.println("arguments["+i+"]="+arguments[i]);
 	}
 
-	private String generateSelectSql(List<FieldMappingView> fieldMappingList,String sourceSchemaName,String sourceTableName,String condition, String databaseDesc) {
+	private String generateSelectSql(List<FieldMappingView> fieldMappingList, String sourceSchemaName, String sourceTableName, String condition, String databaseDesc) {
 		StringBuffer sql = new StringBuffer();
 		String sourceFields=generateSourceFieldNames(fieldMappingList,databaseDesc);
 		sql.append("SELECT ");
@@ -130,12 +130,12 @@ public class Template141  extends BaseTemplate4 implements Template {
 	}
 
 	@Override
-	public boolean execute(int monitorId, int execType, String remoteServer, String ha) throws Exception{
+	public boolean execute(int execType, MonitorScheduleBean monitorSchedule) throws Exception{
 		boolean success = false;
 
 		KettleEngineImpl4_3 kettleEngine = new KettleEngineImpl4_3();
-		kettleEngine.executeJob(jobMeta, rep, null, null, monitorId, execType, remoteServer, ha);
-		
+		kettleEngine.executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
+
 		return success;
 	}
 }

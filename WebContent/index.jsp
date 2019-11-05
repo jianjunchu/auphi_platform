@@ -111,7 +111,7 @@ var menu = new Ext.Panel({
                    //{ iconCls:'icon_diaodu',text: "调度", leaf: true, href: 'javascript:toLoadurl(\'schedule?action=index\',\'schedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.Schedule") %>\');'},
                    { iconCls:'icon_diaodu',text: "<span class='menu_text' >周期调度</span>", leaf: true, href: 'javascript:toLoadurl(\'schedule?action=list\',\'schedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.Schedule") %>\');'},
        		       { iconCls:'icon_diaodu',text: "<span class='menu_text' >事件调度</span>", leaf: true, href: 'javascript:toLoadurl(\'dschedule?action=list\',\'dschedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.DSchedule") %>\');'},
-       		       { iconCls:'icon_jiankong',text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Monitor") %>", leaf: true, href: 'javascript:toLoadurl(\'monitor?action=list\',\'monitor_main\',\'<%=Messages.getString("Default.Jsp.Menu.Monitor") %>\');'}
+       		       { iconCls:'icon_jiankong',text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Monitor") %>", leaf: true, href: 'javascript:toLoadurl(\'monitor/index.shtml?action=list\',\'monitor_main\',\'<%=Messages.getString("Default.Jsp.Menu.Monitor") %>\');'}
                 ]
                }
            }

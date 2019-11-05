@@ -38,7 +38,7 @@ final class Task implements Comparable<Object>{
 	private final ArrayList<Task> dependentTasks ;
 	private long starttime ;
 	private long endtime ;
-	private int monitorId  ;
+	private Integer monitorId  ;
 	private Future<?> ft ;
 	
 	private TaskStatus status ;
@@ -65,11 +65,11 @@ final class Task implements Comparable<Object>{
 	}
 
 
-	public int getMonitorId() {
+	public Integer getMonitorId() {
 		return monitorId;
 	}
 
-	public void setMonitorId(int monitorId) {
+	public void setMonitorId(Integer monitorId) {
 		this.monitorId = monitorId;
 	}
 

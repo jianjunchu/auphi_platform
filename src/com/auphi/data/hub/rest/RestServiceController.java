@@ -32,6 +32,8 @@ import com.auphi.data.hub.core.struct.Dto;
 import com.auphi.data.hub.core.util.JsonHelper;
 import com.auphi.data.hub.domain.Service;
 import com.auphi.data.hub.service.*;
+import com.auphi.ktrl.util.StringUtil;
+import net.sf.ezmorph.bean.MorphDynaBean;
 import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -202,45 +204,27 @@ public class RestServiceController {
 		String userName = inDto.getAsString("userName");
 		String password = inDto.getAsString("password");
 		String systemName = inDto.getAsString("systemName");
-		String requestIP  =req.getRemoteAddr();
-		
+		String requestIP  = StringUtil.getIpAddr(req);
+
+
+
 		String parameterValueIdentify = null;
 		try{
-			Object obj = inDto.get("parameter");
-			net.sf.ezmorph.bean.MorphDynaBean bean = (net.sf.ezmorph.bean.MorphDynaBean)obj;
-			if(bean!=null)
-			{
-				for(int i=0;i<bean.getDynaClass().getDynaProperties().length;i++)
-				{
-					String name = bean.getDynaClass().getDynaProperties()[i].getName();
+			ArrayList<MorphDynaBean> list = (ArrayList<MorphDynaBean>) inDto.get("parameter");
+			if(list!=null) {
+				for(int i=0;i<list.size();i++) {
+					net.sf.ezmorph.bean.MorphDynaBean bean = list.get(i);
+					String name = bean.getDynaClass().getDynaProperties()[0].getName();
 					String value = bean.get(name).toString();
 					parameters.put(name, value);
 					System.out.println("name="+name+", value="+value);
 					parameterValueIdentify +=value+",";
 				}
 			}
-		}
-	catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-//		try{
-//		System.out.println("======parameter  "+parameter);
-//		JSONObject jsonObject = (JSONObject)JSONObject.parse(parameter);		
-//		Set entry = jsonObject.entrySet();
-//		Iterator it = entry.iterator();
-//		parameters = new HashMap();
-//		while (it.hasNext())
-//		{
-//			String string = it.next().toString();
-//			String key = string.substring(0,string.indexOf("="));
-//			String value = string.substring(string.indexOf("=")+1,string.length());
-//			parameters.put(key,value);
-//		}
-//		}catch (Exception ex)
-//		{
-//			ex.printStackTrace();
-//		}
+
 		//判断用户请求的参数是够为空，如果为空给客户端返回参数错误消息
 		if(!isNotEmpty(identify)){
 			status.setStatus(TaskStatus.Status.NULL);
@@ -298,7 +282,7 @@ public class RestServiceController {
 				return jsonString;
 			}
 			//判断用户是否有服务权限
-			if(!userAuthority(userName,identify,requestIP)){
+			if(!userAuthority(service.getServiceId(),userName,identify,requestIP)){
 				status.setStatus(TaskStatus.Status.MethodNotAllowed);
 				status.setStatusCode(405);
 				status.setFtpUserName(userName);
@@ -306,6 +290,30 @@ public class RestServiceController {
 				jsonString = JsonHelper.encodeObject2Json(status);	
 				return jsonString;
 			}
+			Dto<String,Object> dto = new BaseDto();
+			dto.put("serviceId",service.getServiceId());
+			dto.put("userName",userName);
+			dto.put("identify",identify);
+			dto.put("IP",requestIP);
+
+			Dto auth = interfaceServiceAuth.getServiceAuth(dto);
+
+			Date time = getAuthTimeLimit(auth);
+
+			long count = interfaceService.getOutputCount(service.getServiceId(),userName,systemName,time);
+
+			long surplus = auth.getAsLong("linesLimit") - count;
+
+			if(surplus < 1){
+				status.setStatus(TaskStatus.Status.MethodNotAllowed);
+				status.setStatusCode(408);
+				status.setFtpUserName(userName);
+				status.setMessage("Limited number of outputs!");
+				jsonString = JsonHelper.encodeObject2Json(status);
+				return jsonString;
+			}
+
+
 			//判断数据返回的方式，是ftp还是webservice，如果是ftp，则返回客户端数据生成的状态及FTP路径等信息，
 			//如果Webservice直接将结果写入到Webservice消息体中
 			if(service.getReturnType().equals("1")){
@@ -324,7 +332,7 @@ public class RestServiceController {
 			} else {//如果是Webservice直接返回结果数据
 				String result="";
 				try {
-					result =  webserviceReturnData(inDto, service,parameters);
+					result =  webserviceReturnData(inDto, service,parameters,surplus);
 					return result;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -337,7 +345,25 @@ public class RestServiceController {
 			}
 		}
 	}
-	
+
+	private Date getAuthTimeLimit(Dto auth) {
+
+		Integer timeLimit = auth.getAsInteger("timeLimit");
+		if(auth.get("cycleLimit").equals(new Integer(1))){
+			return new Date(System.currentTimeMillis() - 60L*1000L * timeLimit);
+		}else if(auth.get("cycleLimit").equals(new Integer(2))){
+			return new Date(System.currentTimeMillis() - 60 * 60L * 1000L* timeLimit);
+		}else if(auth.get("cycleLimit").equals(new Integer(3))){
+			return new Date(System.currentTimeMillis() - 24 * 60 * 60L * 1000L* timeLimit);
+		}else if(auth.get("cycleLimit").equals(new Integer(4))){
+			return new Date(System.currentTimeMillis() - 30 * 24 *  60 * 60L * 1000L* timeLimit);
+		}else if(auth.get("cycleLimit").equals(new Integer(5))){
+			return new Date(System.currentTimeMillis() - 365 * 24 *  60 * 60L * 1000L* timeLimit);
+		}
+
+		return null;
+	}
+
 	private String getSQL(Service service, Map<String,String> parameters) throws Exception
 	{
 		String tableNameWithVariable = service.getTableName();
@@ -356,10 +382,11 @@ public class RestServiceController {
 	 * @param inDto
 	 * @param service
 	 * @param parameters
+	 * @param surplus
 	 * @return
 	 * @throws Exception
 	 */
-	private String webserviceReturnData(Dto inDto, Service service, Map<String,String> parameters) throws Exception{
+	private String webserviceReturnData(Dto inDto, Service service, Map<String, String> parameters, long surplus) throws Exception{
 		String identify = inDto.getAsString("identify");
 		String userName = inDto.getAsString("userName");
 		String password = inDto.getAsString("password");
@@ -378,6 +405,10 @@ public class RestServiceController {
 		data.setStatuscode(200);
 		data.setMsg("OK");
 		List results = (List)records.get("result");
+		if(results.size() > surplus){
+			results = results.subList(0,new Long(surplus).intValue());
+		}
+
 		data.setRecordCount(results.size());
 		data.setRecords(results);
 		data.setTableFields(records.get("field").toString());
@@ -389,6 +420,9 @@ public class RestServiceController {
 		dto.put("endTime",format.format(new Date()));
 		dto.put("status", "completed");
 		dto.put("monitorId",dto.get("MONITOR_ID"));
+		dto.put("params",JSONObject.toJSON(parameters).toString());
+		dto.put("linesOutput",results.size());
+
 		this.interfaceService.saveServiceMonitor(dto);
 		return JsonHelper.encodeObject2Json(data);
 	}
@@ -599,13 +633,15 @@ public class RestServiceController {
 	
 	/**
 	 * 验证调用接口的用户是否具有操作接口的权限
-	 * @param userName
 	 * @param password
 	 * @param systemName
+	 * @param serviceId
+	 * @param userName
 	 * @return
 	 */
-	private boolean userAuthority(String userName,String identify,String IP){
+	private boolean userAuthority(String serviceId, String userName, String identify, String IP){
 		Dto dto = new BaseDto();
+		dto.put("serviceId",serviceId);
 		dto.put("userName",userName);
 		dto.put("identify",identify);
 		dto.put("IP","%"+IP+"%"); 

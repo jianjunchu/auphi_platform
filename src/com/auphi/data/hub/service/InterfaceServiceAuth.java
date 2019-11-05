@@ -75,6 +75,7 @@ public interface InterfaceServiceAuth {
 	 * @return
 	 */
 	public Dto getServiceAuth(Dto dto);
-	
-	
+
+
+    boolean checkAuthExist(ServiceAuth serviceAuth);
 }
