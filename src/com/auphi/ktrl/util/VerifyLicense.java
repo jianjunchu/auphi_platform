@@ -84,24 +84,21 @@ public class VerifyLicense {
 
 		lm.install(licenseFile);
 		LicenseContent lc = lm.verify();
-		//时间小于5年不验证 Mac 地址
-		System.out.println("License 到期时间:"+StringUtil.DateToString(lc.getNotAfter(),"yyyy-MM-dd HH:mm:ss") );
-		if( (lc.getNotAfter().getTime()- System.currentTimeMillis()) < 1000L*60*60*24*365*3) {
+		System.out.println("License Valid Until:"+StringUtil.DateToString(lc.getNotAfter(),"yyyy-MM-dd HH:mm:ss") );
+		//时间小于1年不验证 Mac 地址
+		if( (lc.getNotAfter().getTime()- System.currentTimeMillis()) > 1000L*60*60*24*365) {
 			ArrayList<String> list = getAllMacs();
 			boolean found = false;
 
 			System.out.println("License MAC:"+lc.getInfo());
 			for (String e : list) {
-
-				System.out.println("本机MAC:"+e);
-
+				System.out.println("MAC:"+e);
 				if (e.equalsIgnoreCase(lc.getInfo())){
 					found = true;
 				}
-
 			}
 			if (!found) {
-				throw new Exception("该License 绑定到非本机 MAC 地址");
+				throw new Exception("No Valid MAC found in Mac List");
 			}
 		}
 	}
