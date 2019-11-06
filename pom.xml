@@ -480,7 +480,7 @@
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>rhino</artifactId>
-      <version>1.7R3</version>
+      <version>1.5R4.1</version>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>

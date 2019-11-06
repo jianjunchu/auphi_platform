@@ -35,8 +35,9 @@ public enum UMStatus
     ROLE_NAME_EXIST(DATABASE_EXCEPTION.statusCode+1,"UserManager.Status.RoleNameExist"),
     WRONG_PASSWORD(ROLE_NAME_EXIST.statusCode+1,"UserManager.Status.WrongPassword"),
     NICK_NAME_EXIST(WRONG_PASSWORD.statusCode+1,"UserManager.Status.NickNameExist"),
-	USER_NOT_ACTIVE(NICK_NAME_EXIST.statusCode+1,"UserManager.Status.UserNotActive");
-    
+	USER_NOT_ACTIVE(NICK_NAME_EXIST.statusCode+1,"UserManager.Status.UserNotActive"),
+    DB_NOT_CONNECTED(USER_NOT_ACTIVE.statusCode+1,"UserManager.Status.DBNotConnected");
+
     final int statusCode ;
     final String statusMessage ; 
     

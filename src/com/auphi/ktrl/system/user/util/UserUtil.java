@@ -140,6 +140,9 @@ public class UserUtil
         try
         {
             conn = ConnectionPool.getConnection() ;
+            if(conn==null)
+                return UMStatus.DB_NOT_CONNECTED ;
+
             stt = conn.createStatement() ;
             
             rs = stt.executeQuery(query_sql_prefix+userName+"'") ;
