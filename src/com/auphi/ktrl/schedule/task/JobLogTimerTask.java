@@ -29,6 +29,7 @@ public class JobLogTimerTask extends TimerTask {
                 MonitorUtil.updateMonitorExecutionLog(jobExecutor.getMonitorSchedule().getId(),jobExecutor.getExecutionLog());
 
                 if(jobExecutor.isFinished() || jobExecutor.isStopped()){
+
                     MonitorScheduleBean monitorScheduleBean = jobExecutor.getMonitorSchedule();
                     monitorScheduleBean.setLogMsg(jobExecutor.getExecutionLog());
                     monitorScheduleBean.setEndTime(new Date() );
@@ -54,6 +55,8 @@ public class JobLogTimerTask extends TimerTask {
                     monitorScheduleBean.setLines_error(jobExecutor.getErrors());
                     MonitorUtil.updateMonitorAfter(monitorScheduleBean);
                     cancel();
+                    this.jobExecutor.getRepository().getClass().getDeclaredMethod("disconnect").invoke(this.jobExecutor.getRepository());
+
                 }
 
             }else{

@@ -113,21 +113,10 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 }
             }
 
-            disconnect = rep.getClass().getDeclaredMethod("disconnect");
-            disconnect.invoke(rep);
-            connected = false;
+
         } catch (Exception e) {
             throw e;
-        }finally {
-            try {
-                if(connected){
-                    disconnect = rep.getClass().getDeclaredMethod("disconnect");
-                    disconnect.invoke(rep);
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage(),e);
-            } 
-        } 
+        }
         
         return success;
     }
@@ -532,6 +521,10 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Thread tr = new Thread(transExecutor, "TransExecutor_" + transExecutor.getMonitorSchedule().getId());
             tr.start();
 
+            Timer logTimer = new Timer();
+            TransLogTimerTask transTimerTask = new TransLogTimerTask (transExecutor);
+            logTimer.schedule(transTimerTask, 0,1000);
+
 
         } catch (Exception e) {
             MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), e.getLocalizedMessage());
@@ -598,20 +591,17 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
             logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start of run", new Object[0]});
 
-            JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,job,execType);
-            jobExecutor.run();
+            JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,rep,job,execType);
+            Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getMonitorSchedule().getId());
+            tr.start();
 
-            //log write
-            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Finished!", new Object[0]});
-            stop = new Date();
-            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start="+ StringUtil.DateToString(start, "yyyy/MM/dd HH:mm:ss")+", Stop="+ StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
-            long millis=stop.getTime()-start.getTime();
-            logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
-
-            Method getResult = jobClass.getDeclaredMethod("getResult");
-            result = getResult.invoke(job);
+            Timer logTimer = new Timer();
+            JobLogTimerTask transTimerTask = new JobLogTimerTask (jobExecutor);
+            logTimer.schedule(transTimerTask, 0,1000);
 
             success = true;
+
+
 
 
         }catch (Exception e) {

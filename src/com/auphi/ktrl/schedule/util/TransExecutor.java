@@ -137,6 +137,9 @@ public class TransExecutor implements Runnable{
         }catch (Exception e){
             throw e;
 
+        }finally {
+
+            finished = true;
         }
 
 
@@ -161,11 +164,13 @@ public class TransExecutor implements Runnable{
     public static void remove(String executionId) {
         executors.remove(executionId);
     }
-
     @Override
     public void run() {
 
+
         try {
+
+            boolean running = true;
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
                 Method getLastBufferLineNr = kettleLogStoreClass.getMethod("getLastBufferLineNr");
@@ -193,6 +198,15 @@ public class TransExecutor implements Runnable{
                 Method execute =  this.transClass.getDeclaredMethod("execute",String[].class);
                 execute.invoke(this.trans,getArguments.invoke(transMeta));
 
+                Method isFinished  =  transClass.getDeclaredMethod("isFinished");
+                while (running){
+                    Thread.sleep(500);
+                    running = ! (boolean) isFinished.invoke(trans);
+                }
+
+
+
+
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
                 SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
                 Object slaveServer = createSlaveServer(slaveServerBean);
@@ -218,9 +232,8 @@ public class TransExecutor implements Runnable{
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String)  sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
             }
-            Timer logTimer = new Timer();
-            TransLogTimerTask transTimerTask = new TransLogTimerTask(this);
-            logTimer.schedule(transTimerTask, 0,1000);
+
+
             finished = true;
         } catch (Exception  e) {
 
@@ -317,9 +330,7 @@ public class TransExecutor implements Runnable{
     }
 
     public boolean isFinished() throws Exception {
-        Method  isFinished  =  transClass.getDeclaredMethod("isFinished");
-
-        return (boolean) isFinished.invoke(trans);
+        return finished;
 
     }
     public int getErrors() throws Exception {
@@ -399,5 +410,37 @@ public class TransExecutor implements Runnable{
         }
 
 
+    }
+
+    public Class<?> getRepositoryClass() {
+        return repositoryClass;
+    }
+
+    public void setRepositoryClass(Class<?> repositoryClass) {
+        this.repositoryClass = repositoryClass;
+    }
+
+    public Object getTrans() {
+        return trans;
+    }
+
+    public void setTrans(Object trans) {
+        this.trans = trans;
+    }
+
+    public Class<?> getTransMetaClass() {
+        return transMetaClass;
+    }
+
+    public void setTransMetaClass(Class<?> transMetaClass) {
+        this.transMetaClass = transMetaClass;
+    }
+
+    public Object getRepository() {
+        return repository;
+    }
+
+    public void setRepository(Object repository) {
+        this.repository = repository;
     }
 }

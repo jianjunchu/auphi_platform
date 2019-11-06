@@ -12,6 +12,7 @@ import com.auphi.ktrl.util.ClassLoaderUtil;
 import com.auphi.ktrl.util.StringUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.www.SlaveServerJobStatus;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,13 +35,12 @@ public class JobExecutor implements Runnable{
 
     private Class<?> kettleLogStoreClass;
 
-    private Class<?> repositoryClass;
     private Object repository;
 
     private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil();
 
     private boolean finished = false;
-    private long errCount;
+    private int errCount;
 
     public long getErrCount() {
         return errCount;
@@ -50,13 +50,17 @@ public class JobExecutor implements Runnable{
 
     private String carteObjectId = null;
 
-    public JobExecutor(MonitorScheduleBean monitorSchedule, Object job, int execType) throws Exception {
+    private String jobMetaName;
+
+    public JobExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType) throws Exception {
         this.monitorSchedule = monitorSchedule;
         this.job = job;
         this.execType = execType;
-
+        this.repository = repository;
         try {
             CentralLogStore.init(100000, Const.MAX_NR_LOG_LINES);
+
+
 
             kettleLogStoreClass = Class.forName("org.pentaho.di.core.logging.CentralLogStore");
 
@@ -67,9 +71,7 @@ public class JobExecutor implements Runnable{
 
             this.jobMeta = getJobMeta.invoke(this.job);
 
-            repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-            Method getRep = this.jobClass.getDeclaredMethod("getRep");
-            repository = getRep.invoke(this.job);
+            jobMetaName = (String) jobMeta.getClass().getDeclaredMethod("getName").invoke(jobMeta);
 
             executionConfigurationClass = Class.forName("org.pentaho.di.job.JobExecutionConfiguration", true, classLoaderUtil);
 
@@ -91,6 +93,7 @@ public class JobExecutor implements Runnable{
             }
 
         }catch (Exception e){
+
             throw e;
         }
 
@@ -98,8 +101,8 @@ public class JobExecutor implements Runnable{
 
     private static Hashtable<Integer, JobExecutor> executors = new Hashtable<Integer, JobExecutor>();
 
-    public static synchronized JobExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object job, int execType) throws Exception {
-        JobExecutor transExecutor = new JobExecutor(monitorSchedule,job,execType);
+    public static synchronized JobExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType) throws Exception {
+        JobExecutor transExecutor = new JobExecutor(monitorSchedule,repository,job,execType);
         executors.put(transExecutor.getMonitorSchedule().getId(), transExecutor);
         return transExecutor;
     }
@@ -116,25 +119,40 @@ public class JobExecutor implements Runnable{
         executors.remove(executionId);
     }
 
+
     @Override
     public void run() {
 
         try {
 
+            boolean running = true;
+
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
-
-                //job execute
-                Method beginProcessing = jobClass.getDeclaredMethod("beginProcessing");
-                beginProcessing.invoke(job);
 
 
                 Class<?> threadClass = Class.forName("java.lang.Thread", true, classLoaderUtil);
                 Method start_job = threadClass.getDeclaredMethod("start");
                 start_job.invoke(job);
-                Method waitUntilFinished = jobClass.getDeclaredMethod("waitUntilFinished");
-                waitUntilFinished.invoke(job);
 
+                Method  isFinished  =  job.getClass().getDeclaredMethod("isFinished");
+                while(running) {
+                    Thread.sleep(500);
+                    running = !(Boolean) isFinished.invoke(job);
+                }
+
+                Method getLogChannel = jobClass.getDeclaredMethod("getLogChannel");
+                Object logChannel = getLogChannel.invoke(job);
+
+                Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
+                //log write
+                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Finished!", new Object[0]});
+                Date stop = new Date();
+                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start="+ StringUtil.DateToString(monitorSchedule.getStartTime(), "yyyy/MM/dd HH:mm:ss")+", Stop="+ StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
+                long millis= stop.getTime()-monitorSchedule.getStartTime().getTime();
+                logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
+
+                errCount = (int)job.getClass().getDeclaredMethod("getErrors").invoke(job);
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
 
@@ -144,8 +162,25 @@ public class JobExecutor implements Runnable{
                 Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
                 setRemoteServer.invoke(executionConfiguration, slaveServer);
 
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repositoryClass);
+                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repository.getClass());
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
+
+                Method  getRemoteServer = executionConfigurationClass.getDeclaredMethod("getRemoteServer");
+                Object remoteSlaveServer = getRemoteServer.invoke(executionConfiguration);
+                Method getJobStatus = remoteSlaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
+                Object jobStatus = getJobStatus.invoke(remoteSlaveServer,jobMetaName,carteObjectId,0);
+
+                while(running) {
+
+                    running = (boolean)jobStatus.getClass().getDeclaredMethod("isRunning").invoke(jobStatus);
+
+                    Object result = jobStatus.getClass().getDeclaredMethod("getResult").invoke(jobStatus);
+                    if(!running && result != null) {
+                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                    }
+
+                    Thread.sleep(500);
+                }
 
             }else if(KettleEngine.EXECTYPE_HA == execType){
 
@@ -156,12 +191,12 @@ public class JobExecutor implements Runnable{
                 setRemoteServer.invoke(executionConfiguration, slaveServer);
 
 
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repositoryClass);
+                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repository.getClass());
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
             }
-            Timer logTimer = new Timer();
-            JobLogTimerTask transTimerTask = new JobLogTimerTask (this);
-            logTimer.schedule(transTimerTask, 0,1000);
+
+
+
             finished = true;
         } catch (Exception e) {
             String errMsg = null;
@@ -178,6 +213,8 @@ public class JobExecutor implements Runnable{
             MailUtil.sendMail(user_mails, title, errMsg);
 
             finished = false;
+        }finally {
+            finished = true;
         }
 
 
@@ -243,19 +280,21 @@ public class JobExecutor implements Runnable{
             return loggingText;
         } else {
 
+
+
             Method  getRemoteServer = executionConfigurationClass.getDeclaredMethod("getRemoteServer");
             Object remoteSlaveServer = getRemoteServer.invoke(executionConfiguration);
             Method getJobStatus = remoteSlaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
-            Object jobStatus = getJobStatus.invoke(remoteSlaveServer);
+            Object jobStatus = getJobStatus.invoke(remoteSlaveServer,jobMetaName,carteObjectId,0);
             Method getLoggingString = jobStatus.getClass().getDeclaredMethod("getLoggingString");
             return  (String) getLoggingString.invoke(jobStatus);
         }
     }
 
     public boolean isFinished() throws Exception {
-        Method  isFinished  =  jobClass.getDeclaredMethod("isFinished");
 
-        return (boolean) isFinished.invoke(job);
+
+       return finished;
 
     }
 
@@ -266,10 +305,9 @@ public class JobExecutor implements Runnable{
     }
 
     public int getErrors() throws Exception {
-        Method  isFinished  =  jobClass.getDeclaredMethod("getErrors");
 
-        return (Integer) isFinished.invoke(job);
 
+        return errCount;
     }
     public boolean isStopped() throws Exception {
         Method  isFinishedOrStopped  =  jobClass.getDeclaredMethod("isStopped");
@@ -300,5 +338,32 @@ public class JobExecutor implements Runnable{
 
 
     }
+
+
+    public Object getRepository() {
+        return repository;
+    }
+
+    public void setRepository(Object repository) {
+        this.repository = repository;
+    }
+
+    public Object getJob() {
+        return job;
+    }
+
+    public void setJob(Object job) {
+        this.job = job;
+    }
+
+    public Class<?> getJobMetaClass() {
+        return jobMetaClass;
+    }
+
+    public void setJobMetaClass(Class<?> jobMetaClass) {
+        this.jobMetaClass = jobMetaClass;
+    }
+
+
 
 }

@@ -6,6 +6,7 @@ import com.auphi.ktrl.schedule.util.TransExecutor;
 import com.auphi.ktrl.system.mail.util.MailUtil;
 import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.StringUtil;
+import org.pentaho.reporting.libraries.repository.Repository;
 
 import java.util.Date;
 import java.util.TimerTask;
@@ -53,6 +54,7 @@ public class TransLogTimerTask extends TimerTask {
                     monitorScheduleBean.setLines_error(transExecutor.getErrors());
                     MonitorUtil.updateMonitorAfter(monitorScheduleBean);
                     cancel();
+                    this.transExecutor.getRepository().getClass().getDeclaredMethod("disconnect").invoke(this.transExecutor.getRepository());
                 }
 
             }else{
