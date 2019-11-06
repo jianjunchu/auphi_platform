@@ -17,6 +17,7 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Hashtable;
@@ -193,11 +194,25 @@ public class JobExecutor implements Runnable{
 
                 Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repository.getClass());
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
+
+                Method getJobStatus = slaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
+                while(running) {
+
+                    Object jobStatus = getJobStatus.invoke(slaveServer,jobMetaName,carteObjectId,0);
+
+                    running = (boolean)jobStatus.getClass().getDeclaredMethod("isRunning").invoke(jobStatus);
+
+                    Object result = jobStatus.getClass().getDeclaredMethod("getResult").invoke(jobStatus);
+                    if(!running && result != null) {
+
+                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                    }
+
+                    Thread.sleep(500);
+                }
+
             }
 
-
-
-            finished = true;
         } catch (Exception e) {
             String errMsg = null;
             try {
@@ -212,9 +227,18 @@ public class JobExecutor implements Runnable{
             String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
             MailUtil.sendMail(user_mails, title, errMsg);
 
-            finished = false;
         }finally {
+
+
             finished = true;
+
+            if(repository != null){
+                try {
+                    this.repository.getClass().getDeclaredMethod("disconnect").invoke(this.repository);
+                } catch (Exception e) {
+
+                }
+            }
         }
 
 

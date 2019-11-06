@@ -16,6 +16,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.www.SlaveServerTransStatus;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -47,7 +48,7 @@ public class TransExecutor implements Runnable{
     private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil();
 
     private boolean finished = false;
-    private long errCount;
+    private int errCount;
 
     public long getErrCount() {
         return errCount;
@@ -57,6 +58,7 @@ public class TransExecutor implements Runnable{
 
     private String carteObjectId = null;
 
+    private  String transMetaName;
 
 
     public TransExecutor(MonitorScheduleBean monitorSchedule, Object trans, int execType) throws Exception {
@@ -70,6 +72,8 @@ public class TransExecutor implements Runnable{
             this.transClass= Class.forName("org.pentaho.di.trans.Trans", true, classLoaderUtil);
             Method getJobMeta = this.transClass.getDeclaredMethod("getTransMeta");
             this.transMeta = getJobMeta.invoke(trans);
+
+            this.transMetaName = (String) this.transMeta.getClass().getDeclaredMethod("getName").invoke(this.transMeta);
 
             repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
             Method getRepository = this.transClass.getDeclaredMethod("getRepository");
@@ -136,10 +140,6 @@ public class TransExecutor implements Runnable{
 
         }catch (Exception e){
             throw e;
-
-        }finally {
-
-            finished = true;
         }
 
 
@@ -193,6 +193,11 @@ public class TransExecutor implements Runnable{
                 Method getRepository =  this.executionConfigurationClass.getDeclaredMethod("getRepository");
                 setRepository.invoke(this.trans,getRepository.invoke(this.executionConfiguration));
 
+                //logs
+                Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
+                Object logChannel = getLogChannel.invoke(trans);
+                Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
+
                 //trans execute
                 Method getArguments = transMetaClass.getDeclaredMethod("getArguments");
                 Method execute =  this.transClass.getDeclaredMethod("execute",String[].class);
@@ -206,6 +211,14 @@ public class TransExecutor implements Runnable{
 
 
 
+                //log write
+                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Finished", new Object[0]});
+                Date stop=new Date();
+                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Start="+StringUtil.DateToString(monitorSchedule.getStartTime(), "yyyy/MM/dd HH:mm:ss")+", Stop="+StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
+                long millis=stop.getTime()-monitorSchedule.getStartTime().getTime();
+                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
+
+                errCount = (int)trans.getClass().getDeclaredMethod("getErrors").invoke(trans);
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
                 SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
@@ -217,6 +230,19 @@ public class TransExecutor implements Runnable{
 
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String) sendToSlaveServer.invoke(trans, transMeta, this.executionConfiguration, repository);
+
+
+                Method getTransStatus = slaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class);
+
+                while(running) {
+                    Object transStatus = getTransStatus.invoke(slaveServer,transMetaName,carteObjectId,0);
+                    running = (boolean)transStatus.getClass().getDeclaredMethod("isRunning").invoke(transStatus);
+                    Object result = transStatus.getClass().getDeclaredMethod("getResult").invoke(transStatus);
+                    if(!running && result != null) {
+                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                    }
+                    Thread.sleep(500);
+                }
 
             }else if(KettleEngine.EXECTYPE_CLUSTER == execType){
 
@@ -231,10 +257,21 @@ public class TransExecutor implements Runnable{
 
                 Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String)  sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
+
+                Method getTransStatus = slaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class);
+
+                while(running) {
+                    Object transStatus = getTransStatus.invoke(slaveServer,transMetaName,carteObjectId,0);
+                    running = (boolean)transStatus.getClass().getDeclaredMethod("isRunning").invoke(transStatus);
+                    Object result = transStatus.getClass().getDeclaredMethod("getResult").invoke(transStatus);
+                    if(!running && result != null) {
+                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                    }
+                    Thread.sleep(500);
+                }
             }
 
 
-            finished = true;
         } catch (Exception  e) {
 
             String errMsg = null;
@@ -250,7 +287,14 @@ public class TransExecutor implements Runnable{
             String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
             MailUtil.sendMail(user_mails, title, errMsg);
 
-            finished = false;
+        }finally {
+            finished = true;
+            if(repository != null){
+                try {
+                    this.repository.getClass().getDeclaredMethod("disconnect").invoke(this.repository);
+                } catch (Exception e) {
+                }
+            }
         }
 
 
@@ -316,7 +360,7 @@ public class TransExecutor implements Runnable{
                 } else if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingRemotely").invoke(executionConfiguration)) {
                     Object remoteSlaveServer = executionConfiguration.getClass().getDeclaredMethod("getRemoteServer").invoke(executionConfiguration);
 
-                    String transMetaName = (String) transMeta.getClass().getDeclaredMethod("getName").invoke(transMeta);
+
 
                     Object transStatus = remoteSlaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class).invoke(remoteSlaveServer,transMetaName,carteObjectId,0) ;
                     return (String) transStatus.getClass().getDeclaredMethod("getLoggingString").invoke(transStatus);
@@ -334,9 +378,9 @@ public class TransExecutor implements Runnable{
 
     }
     public int getErrors() throws Exception {
-        Method  isFinished  =  transClass.getDeclaredMethod("getErrors");
 
-        return (Integer) isFinished.invoke(trans);
+
+        return errCount;
 
     }
     public boolean isStopped() throws Exception {

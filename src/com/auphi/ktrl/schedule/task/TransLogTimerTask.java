@@ -54,7 +54,6 @@ public class TransLogTimerTask extends TimerTask {
                     monitorScheduleBean.setLines_error(transExecutor.getErrors());
                     MonitorUtil.updateMonitorAfter(monitorScheduleBean);
                     cancel();
-                    this.transExecutor.getRepository().getClass().getDeclaredMethod("disconnect").invoke(this.transExecutor.getRepository());
                 }
 
             }else{

@@ -55,7 +55,7 @@ public class JobLogTimerTask extends TimerTask {
                     monitorScheduleBean.setLines_error(jobExecutor.getErrors());
                     MonitorUtil.updateMonitorAfter(monitorScheduleBean);
                     cancel();
-                    this.jobExecutor.getRepository().getClass().getDeclaredMethod("disconnect").invoke(this.jobExecutor.getRepository());
+
 
                 }
 
