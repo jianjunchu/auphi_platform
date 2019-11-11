@@ -560,7 +560,7 @@ var editMetadataMappingFromWindow = new Ext.Window({
         text: '保存',
         iconCls: 'acceptIcon',
         handler: function () {
-            submitCreateForm();
+            submitEditForm();
         }
     }, {
         text: '重置',
@@ -588,7 +588,7 @@ function showEditMetadataMappingFromWindow(reload){
 
 
 
-function submitCreateForm(){
+function submitEditForm(){
     if (!editMetadataMappingFromPanel.getForm().isValid())
         return;
 
