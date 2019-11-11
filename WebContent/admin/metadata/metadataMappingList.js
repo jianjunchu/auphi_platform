@@ -455,7 +455,7 @@ Ext.onReady(function(){
     function addItem() {
         Ext.getCmp('newMetadataMappingFromPanel').getForm().reset();
         fromAllowBlank = true;
-        showCreateMetadataMappingFromWindow();
+        showCreateMetadataMappingFromWindow(store_reload);
     }
 
 
