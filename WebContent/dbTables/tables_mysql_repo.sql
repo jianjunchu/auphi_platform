@@ -937,6 +937,7 @@ CREATE TABLE `R_DATABASE` (
   `SERVERNAME` varchar(255) default NULL,
   `DATA_TBS` varchar(255) default NULL,
   `INDEX_TBS` varchar(255) default NULL,
+  `INSTANCE_NAME` varchar(255) default NULL,
   PRIMARY KEY  (`ID_DATABASE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
