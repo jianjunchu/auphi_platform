@@ -276,9 +276,6 @@ var newMetadataMappingFromPanel = new Ext.form.FormPanel( {
             id : 'windowAction',
             name : 'windowAction',
             hidden : true
-        },{
-            name : 'id',
-            hidden : true
         }]
     },{
         xtype:'fieldset',
