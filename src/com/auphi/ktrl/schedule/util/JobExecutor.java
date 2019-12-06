@@ -12,6 +12,7 @@ import com.auphi.ktrl.util.ClassLoaderUtil;
 import com.auphi.ktrl.util.StringUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.www.SlaveServerJobStatus;
 
 import java.io.PrintWriter;
@@ -38,6 +39,8 @@ public class JobExecutor implements Runnable{
 
     private Object repository;
 
+    private Class<?> repositoryClass;
+
     private static ClassLoaderUtil classLoaderUtil = new ClassLoaderUtil();
 
     private boolean finished = false;
@@ -53,6 +56,8 @@ public class JobExecutor implements Runnable{
 
     private String jobMetaName;
 
+    private Object slaveServer;
+
     public JobExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType) throws Exception {
         this.monitorSchedule = monitorSchedule;
         this.job = job;
@@ -67,10 +72,12 @@ public class JobExecutor implements Runnable{
 
             this.jobMetaClass = Class.forName("org.pentaho.di.job.JobMeta", true, classLoaderUtil);
             this.jobClass= Class.forName("org.pentaho.di.job.Job", true, classLoaderUtil);
+            this.repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
 
             Method getJobMeta = this.jobClass.getDeclaredMethod("getJobMeta");
 
             this.jobMeta = getJobMeta.invoke(this.job);
+            this.job.getClass().getDeclaredMethod("setRepository",this.repositoryClass).invoke(this.job,this.repository);
 
             jobMetaName = (String) jobMeta.getClass().getDeclaredMethod("getName").invoke(jobMeta);
 
@@ -81,6 +88,8 @@ public class JobExecutor implements Runnable{
 
             Method setExcutingLocally = executionConfigurationClass.getDeclaredMethod("setExecutingLocally", boolean.class);
             Method setExecutingRemotely = executionConfigurationClass.getDeclaredMethod("setExecutingRemotely", boolean.class);
+
+            executionConfiguration.getClass().getDeclaredMethod("setRepository",this.repositoryClass).invoke(executionConfiguration,this.repository);
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
                 setExcutingLocally.invoke(executionConfiguration, true);
@@ -158,12 +167,12 @@ public class JobExecutor implements Runnable{
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
 
                 SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
-                Object slaveServer = createSlaveServer(slaveServerBean);
+                slaveServer = createSlaveServer(slaveServerBean);
 
                 Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
                 setRemoteServer.invoke(executionConfiguration, slaveServer);
 
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repository.getClass());
+                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
 
                 Method  getRemoteServer = executionConfigurationClass.getDeclaredMethod("getRemoteServer");
@@ -172,31 +181,33 @@ public class JobExecutor implements Runnable{
                 Object jobStatus = getJobStatus.invoke(remoteSlaveServer,jobMetaName,carteObjectId,0);
 
                 while(running) {
-
+                    Thread.sleep(500);
                     running = (boolean)jobStatus.getClass().getDeclaredMethod("isRunning").invoke(jobStatus);
 
                     Object result = jobStatus.getClass().getDeclaredMethod("getResult").invoke(jobStatus);
                     if(!running && result != null) {
-                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                        errCount = ((Long)result.getClass().getDeclaredMethod("getNrErrors").invoke(result)).intValue();
                     }
 
-                    Thread.sleep(500);
+
                 }
 
             }else if(KettleEngine.EXECTYPE_HA == execType){
 
                 SlaveServerBean slaveServerBean = getSlaveServerBean("", monitorSchedule.getHaName());
-                Object slaveServer = createSlaveServer(slaveServerBean);
+                slaveServer = createSlaveServer(slaveServerBean);
 
                 Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
                 setRemoteServer.invoke(executionConfiguration, slaveServer);
 
 
-                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repository.getClass());
+                Method sendToSlaveServer = job.getClass().getDeclaredMethod("sendToSlaveServer", jobMeta.getClass(), executionConfigurationClass, repositoryClass);
                 carteObjectId = (String) sendToSlaveServer.invoke(job, jobMeta, executionConfiguration, repository);
 
                 Method getJobStatus = slaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
                 while(running) {
+
+                    Thread.sleep(500);
 
                     Object jobStatus = getJobStatus.invoke(slaveServer,jobMetaName,carteObjectId,0);
 
@@ -205,20 +216,21 @@ public class JobExecutor implements Runnable{
                     Object result = jobStatus.getClass().getDeclaredMethod("getResult").invoke(jobStatus);
                     if(!running && result != null) {
 
-                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                        errCount = ((Long)result.getClass().getDeclaredMethod("getNrErrors").invoke(result)).intValue();
                     }
 
-                    Thread.sleep(500);
+
                 }
 
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             String errMsg = null;
             try {
                 errMsg = getExecutionLog();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                errMsg = e.getLocalizedMessage();
             }
             MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(), errMsg);
 
@@ -229,8 +241,7 @@ public class JobExecutor implements Runnable{
 
         }finally {
 
-
-            finished = true;
+            setFinished(true);
 
             if(repository != null){
                 try {
@@ -288,7 +299,6 @@ public class JobExecutor implements Runnable{
     public String getExecutionLog() throws Exception {
 
 
-
         Method isExecutingLocally  = executionConfigurationClass.getDeclaredMethod("isExecutingLocally");
 
         if((Boolean) isExecutingLocally.invoke(executionConfiguration)) {
@@ -304,12 +314,8 @@ public class JobExecutor implements Runnable{
             return loggingText;
         } else {
 
-
-
-            Method  getRemoteServer = executionConfigurationClass.getDeclaredMethod("getRemoteServer");
-            Object remoteSlaveServer = getRemoteServer.invoke(executionConfiguration);
-            Method getJobStatus = remoteSlaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
-            Object jobStatus = getJobStatus.invoke(remoteSlaveServer,jobMetaName,carteObjectId,0);
+            Method getJobStatus = slaveServer.getClass().getDeclaredMethod("getJobStatus",String.class,String.class,int.class);
+            Object jobStatus = getJobStatus.invoke(slaveServer,jobMetaName,carteObjectId,0);
             Method getLoggingString = jobStatus.getClass().getDeclaredMethod("getLoggingString");
             return  (String) getLoggingString.invoke(jobStatus);
         }
@@ -320,6 +326,10 @@ public class JobExecutor implements Runnable{
 
        return finished;
 
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 
     public Object getResult() throws Exception {

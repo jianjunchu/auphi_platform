@@ -584,20 +584,21 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Method getLogChannel = jobClass.getDeclaredMethod("getLogChannel");
             Object logChannel = getLogChannel.invoke(job);
 
-            //set log channel ids
-            Method getLogChannelId = jobClass.getDeclaredMethod("getLogChannelId");
-            logChannelId = (String)getLogChannelId.invoke(job);
 
             Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
             logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start of run", new Object[0]});
 
             JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,rep,job,execType);
             Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getMonitorSchedule().getId());
+
             tr.start();
+
 
             Timer logTimer = new Timer();
             JobLogTimerTask transTimerTask = new JobLogTimerTask (jobExecutor);
             logTimer.schedule(transTimerTask, 0,1000);
+
+
 
             success = true;
 

@@ -15,7 +15,6 @@ public class JobLogTimerTask extends TimerTask {
     private JobExecutor jobExecutor;
 
     private boolean first = true;
-
     public JobLogTimerTask(JobExecutor jobExecutor) {
         this.jobExecutor = jobExecutor;
     }

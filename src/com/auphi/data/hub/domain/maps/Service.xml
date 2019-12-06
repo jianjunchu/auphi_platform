@@ -186,7 +186,17 @@
 	-->
 	<select id="queryServiceMonitorList" parameterType="map" resultType="dto"><!--resultType="serviceMonitorMap"-->
 	    select * from
-		(select MONITOR_ID as monitorId,tsi.SERVICE_NAME as serviceName,date_format(START_TIME,'%Y-%m-%d %H:%i:%s') as startTime,date_format(END_TIME,'%Y-%m-%d %H:%i:%s') as endTime,STATUS as status,userName,systemName from t_service_monitor tsm,T_SERVICE_INTERFACE tsi
+		(select
+			 MONITOR_ID as monitorId
+			,tsi.SERVICE_NAME as serviceName
+			,date_format(START_TIME,'%Y-%m-%d %H:%i:%s') as startTime
+			,date_format(END_TIME,'%Y-%m-%d %H:%i:%s') as endTime
+			,STATUS as status
+			,userName
+			,systemName
+			,PARAMS AS params
+			,LINES_OUTPUT AS linesOutput
+		from t_service_monitor tsm,T_SERVICE_INTERFACE tsi
 		  where tsm.SERVICE_ID = tsi.SERVICE_ID
 		  <if test="queryParam != null and queryParam != ''">
 		  		AND tsi.SERVICE_NAME like '%${queryParam}%' 
