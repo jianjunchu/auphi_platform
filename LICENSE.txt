@@ -1,6 +1,6 @@
 Auphi Data Integration Platform(Auphi Kettle Platform)
 Version£ºV3.2
-Copyright (C) 2012-2017 by Auphi BI : http://www.doetl.com
+Copyright (C) 2012-2020 by Auphi BI : http://www.doetl.com
 Support£ºsupport@pentahochina.com
 
 License£º
