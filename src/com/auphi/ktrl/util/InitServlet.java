@@ -104,6 +104,8 @@ public class InitServlet extends HttpServlet {
 			String querySQL = "SELECT * FROM QRTZ_TRIGGERS";
 			
 			stmt = conn.createStatement();
+			if (stmt==null)
+				throw new Exception("Statement is null");
 			rs = stmt.executeQuery(querySQL);
 		}catch(Exception e){
 			try{

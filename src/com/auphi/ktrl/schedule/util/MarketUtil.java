@@ -150,7 +150,9 @@ public static String getSchemaNames(String schemaNamejson)
 		Connection connection=null;
 		PreparedStatement smt=null;
 		ResultSet rs= null;
-       connection = ConnectionPool.getConnection();
+        connection = ConnectionPool.getConnection();
+       if(connection==null)
+       		return null;
 		List<Map<String,String>> attributes = new ArrayList<>();
        try {
 

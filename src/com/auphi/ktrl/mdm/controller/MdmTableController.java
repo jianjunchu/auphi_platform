@@ -155,6 +155,8 @@ public class MdmTableController extends BaseMultiActionController {
 			Integer id_database = ServletRequestUtils.getIntParameter(req,"id_database");
 			
 			List<TextValue> list = new ArrayList<TextValue>();
+			if(id_database==null)
+				return null;
 			database = MarketUtil.getDatabase(id_database);
 			if(database != null){
 
@@ -221,6 +223,8 @@ public class MdmTableController extends BaseMultiActionController {
 			String id_database = req.getParameter("id_database");
 			String schema_name = req.getParameter("schema_name");
 			List<TextValue> list = new ArrayList<TextValue>();
+			if(id_database==null)
+				return null;
 			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
 			if(database != null){
 				database.connect();
