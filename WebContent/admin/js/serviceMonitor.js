@@ -8,17 +8,17 @@ Ext.onReady(function(){
 		id:"serviceName",
 		header:'服务接口名称',
 		dataIndex:'serviceName',
-		width:200
+		width:180
 	},{
 		id:"status",
 		header:'运行状态',
 		dataIndex:'status',
-		width:140
+		width:100
 	},{
 		id:"userName",
 		header:'用户名称',
 		dataIndex:'userName',
-		width:160
+		width:100
 	},{
 		id:"systemName",
 		header:'系统名称',
@@ -28,11 +28,21 @@ Ext.onReady(function(){
 		id:"startTime",
 		header:'开始时间',
 		dataIndex:'startTime',
-		width:180
+		width:160
 	},{
 		id:"endTime",
 		header:'结束时间',
 		dataIndex:'endTime',
+		width:160
+	},{
+		id:"params",
+		header:'参数',
+		dataIndex:'params',
+		width:220
+	},{
+		id:"linesOutput",
+		header:'返回数据条数',
+		dataIndex:'linesOutput',
 		width:180
 	}]);
 	
@@ -60,6 +70,10 @@ Ext.onReady(function(){
 			name : 'startTime'
 		},{
 			name : 'endTime'
+		},{
+			name : 'params'
+		},{
+			name : 'linesOutput'
 		}])
 	});
 	
