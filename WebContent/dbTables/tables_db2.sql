@@ -63,7 +63,7 @@ create table qrtz_simple_triggers(
   repeat_interval bigint not null,
   times_triggered bigint not null,
     primary key (trigger_name,trigger_group),
-    foreign key (trigger_name,trigger_group) references qrtz_triggers(trigger_name,trigger_group)
+    foreign key (trigger_name,trigger_group) references QRTZ_TRIGGERS(trigger_name,trigger_group)
 );
 
 create table qrtz_cron_triggers(

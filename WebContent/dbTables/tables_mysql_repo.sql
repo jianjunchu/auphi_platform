@@ -1,17 +1,17 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
---  Table structure for `kdi_t_user_resource`
+--  Table structure for `KDI_T_USER_RESOURCE`
 -- ----------------------------
-DROP TABLE IF EXISTS `kdi_t_user_resource`;
-CREATE TABLE `kdi_t_user_resource` (
+DROP TABLE IF EXISTS `KDI_T_USER_RESOURCE`;
+CREATE TABLE `KDI_T_USER_RESOURCE` (
   `C_USER_ID` int(11) DEFAULT NULL,
   `C_RESOURCE_ID` int(11) DEFAULT NULL,
   `C_RESOURCE_TYPE_ID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO kdi_t_user_resource (C_USER_ID, C_RESOURCE_ID, C_RESOURCE_TYPE_ID) 
+INSERT INTO KDI_T_USER_RESOURCE (C_USER_ID, C_RESOURCE_ID, C_RESOURCE_TYPE_ID)
 VALUES (0, 1, 3)
 ,(0, 1, 3)
 ,(0, 2, 3)

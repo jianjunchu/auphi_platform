@@ -6,14 +6,14 @@
 
 
 	<insert id="insert">
-		insert into kdi_t_organizer(organizer_name,organizer_contact,organizer_email,organizer_telphone
+		insert into KDI_T_ORGANIZER(organizer_name,organizer_contact,organizer_email,organizer_telphone
 		,organizer_mobile,organizer_address,organizer_verify_code,organizer_status) values
 		 (#{organizer_name},#{organizer_contact},#{organizer_email},#{organizer_telphone}
 		 ,#{organizer_mobile},#{organizer_address},#{organizer_verify_code},#{organizer_status})
 	</insert>
 
 	<update id="update">
-		update kdi_t_organizer
+		update KDI_T_ORGANIZER
 		<set>
 			<if test="organizer_name != null">
 				organizer_name=#{organizer_name}
@@ -41,7 +41,7 @@
 	</update>
 	
 	<update id="active">
-		update kdi_t_organizer
+		update KDI_T_ORGANIZER
 		<set>
 			<if test="organizer_status != null">
 				organizer_status=#{organizer_status}
@@ -64,22 +64,22 @@
 
 
 	<select id="query" parameterType="map"  resultMap="organizerMap">
-		select * from kdi_t_organizer limit ${start},${end}
+		select * from KDI_T_ORGANIZER limit ${start},${end}
 	</select>
 
 	<select id="queryAll" resultMap="organizerMap">
-		select * from kdi_t_organizer
+		select * from KDI_T_ORGANIZER
 	</select>
 
 	<select id="queryById" resultMap="organizerMap">
-		select * from kdi_t_organizer where organizer_id=#{organizer_id}
+		select * from KDI_T_ORGANIZER where organizer_id=#{organizer_id}
 	</select>
 
 	<select id="queryListCount" parameterType="map" resultType="java.lang.Integer">
-		select count(1) from kdi_t_organizer
+		select count(1) from KDI_T_ORGANIZER
 	</select>
 	
 	<delete id="delete">
-		delete from kdi_t_organizer WHERE organizer_id in (${ids}) 
+		delete from KDI_T_ORGANIZER WHERE organizer_id in (${ids})
 	</delete>
 </mapper>

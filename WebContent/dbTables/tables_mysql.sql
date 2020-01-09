@@ -1307,8 +1307,8 @@ create table `KDI_T_JOB_DEPENDENCIES`(
 PRIMARY KEY (ID)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `kdi_t_organizer`;
-CREATE TABLE `kdi_t_organizer` (
+DROP TABLE IF EXISTS `KDI_T_ORGANIZER`;
+CREATE TABLE `KDI_T_ORGANIZER` (
   `organizer_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `organizer_name` varchar(500) DEFAULT NULL,
   `organizer_contact` varchar(255) DEFAULT NULL,
@@ -1321,7 +1321,7 @@ CREATE TABLE `kdi_t_organizer` (
   PRIMARY KEY (`organizer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into kdi_t_organizer values(1,'Default','admin','','','','','',1);
+insert into KDI_T_ORGANIZER values(1,'Default','admin','','','','','',1);
 
 DROP TABLE IF EXISTS `MDM_MODEL`;
 CREATE TABLE `MDM_MODEL` (
