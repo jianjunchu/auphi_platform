@@ -17,32 +17,14 @@
   </properties>  
   
   <repositories>
-
-
     <repository>
       <id>auphi</id>
       <url>http://101.37.17.102:8081/nexus/content/groups/public/</url>
     </repository>
-
     <repository>
-      <id>pentaho-public</id>
-      <name>Pentaho Public</name>
-      <url>http://nexus.pentaho.org/content/groups/omni</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
+      <id>mvnrepository</id>
+      <url>http://mvnrepository.com/</url>
     </repository>
-    <repository>
-      <id>artifacts.alfresco.com</id>
-      <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-    </repository>
-
-
   </repositories>
 
   <dependencies>
@@ -465,11 +447,7 @@
       <artifactId>jettison</artifactId>
       <version>1.0-RC1</version>
     </dependency>
-    <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>rhino</artifactId>
-      <version>1.5R4.1</version>
-    </dependency>
+
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
@@ -1066,12 +1044,12 @@
       <version>2.1</version>
     </dependency>
 
+
     <dependency>
       <groupId>org.mozilla.javascript</groupId>
       <artifactId>javascript</artifactId>
       <version>1.0</version>
     </dependency>
-
 
 
   </dependencies>
