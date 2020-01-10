@@ -1066,6 +1066,11 @@
       <version>2.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.mozilla.javascript</groupId>
+      <artifactId>javascript</artifactId>
+      <version>1.0</version>
+    </dependency>
 
 
 
