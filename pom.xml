@@ -795,6 +795,12 @@
       <groupId>net.sf.scannotation</groupId>
       <artifactId>scannotation</artifactId>
       <version>1.0.2</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>javassist</artifactId>
+          <groupId>javassist</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.wcohen</groupId>
@@ -1049,6 +1055,7 @@
       <groupId>org.mozilla.javascript</groupId>
       <artifactId>javascript</artifactId>
       <version>1.0</version>
+      <classifier>auphi</classifier>
     </dependency>
 
 
