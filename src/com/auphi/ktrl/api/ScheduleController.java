@@ -78,6 +78,5 @@ public class ScheduleController extends BaseMultiActionController {
         }else{
             this.setFailTipMsg("username or password error",response);
         }
-
     }
 }

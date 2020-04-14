@@ -70,7 +70,7 @@ public class UserUtil
             PreparedStatement ps = null ;
             ResultSet rs = null;
             conn = ConnectionPool.getConnection() ;
-            
+
             //  1. Check if nick name exist
             ps = conn.prepareStatement(query_sql) ;
             ps.setString(1, userBean.getNick_name()) ;
@@ -140,6 +140,7 @@ public class UserUtil
         try
         {
             conn = ConnectionPool.getConnection() ;
+
             if(conn==null)
                 return UMStatus.DB_NOT_CONNECTED ;
 

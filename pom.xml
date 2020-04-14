@@ -505,35 +505,35 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>3.4.1.20191106</version>
+      <version>3.4.0.20204071019</version>
       <classifier>auphi</classifier>
     </dependency>
 
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-db</artifactId>
-        <version>3.4.1.20191106</version>
+        <version>3.4.0.20204071019</version>
       <classifier>auphi</classifier>
     </dependency>
 
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-dbdialog</artifactId>
-      <version>3.4.1.20191106</version>
+      <version>3.4.0.20204071019</version>
       <classifier>auphi</classifier>
     </dependency>
 
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>3.4.1.20191106</version>
+      <version>3.4.0.20204071019</version>
       <classifier>auphi</classifier>
     </dependency>
 
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>3.4.1.20191106</version>
+      <version>3.4.0.20204071019</version>
       <classifier>auphi</classifier>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.alibaba/QLExpress -->
@@ -639,7 +639,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.41</version>
+      <version>5.1.46</version>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
@@ -1069,7 +1069,10 @@
         <excludes>
           <exclude>**/*.java</exclude>
         </excludes>
-
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+        <filtering>true</filtering>
       </resource>
     </resources>
     <plugins>

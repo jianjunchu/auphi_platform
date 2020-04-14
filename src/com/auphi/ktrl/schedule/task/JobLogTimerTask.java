@@ -25,7 +25,7 @@ public class JobLogTimerTask extends TimerTask {
 
 
             if(jobExecutor!=null){
-                MonitorUtil.updateMonitorExecutionLog(jobExecutor.getMonitorSchedule().getId(),jobExecutor.getExecutionLog());
+                 MonitorUtil.updateMonitorExecutionLog(jobExecutor.getMonitorSchedule().getId(),jobExecutor.getExecutionLog());
 
                 if(jobExecutor.isFinished() || jobExecutor.isStopped()){
 
