@@ -34,8 +34,14 @@ import com.auphi.data.hub.domain.UserInfo;
 import com.auphi.data.hub.service.OrganizationService;
 import com.auphi.data.hub.service.ResourceService;
 import com.auphi.data.hub.service.UserService;
+import com.auphi.ktrl.system.user.bean.LoginResponse;
+import com.auphi.ktrl.system.user.bean.UserBean;
+import com.auphi.ktrl.system.user.util.UserUtil;
+import com.auphi.ktrl.util.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -160,5 +166,33 @@ public class IndexController extends BaseMultiActionController {
 		write(jsonString, resp);
 		return null;
 	}
-	
+
+	/**
+	 * 保存样式
+	 * @param req
+	 * @param resp
+	 * @return
+	 * @throws Exception
+	 */
+	public ModelAndView login(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		String username = ServletRequestUtils.getStringParameter(req,"username",null);
+		String passwd = ServletRequestUtils.getStringParameter(req,"passwd",null);
+		if(StringUtils.isEmpty(username)){
+			this.setFailTipMsg("用户名不能为空", resp);
+		}
+		if(StringUtils.isEmpty(passwd)){
+			this.setFailTipMsg("密码不能为空", resp);
+		}
+
+		LoginResponse lrp = new LoginResponse() ;
+		UserUtil.login(username,passwd,lrp) ;
+		req.getSession().setAttribute("user_id", lrp.getUser_id());
+		UserBean userBean = UserUtil.getUserById(lrp.getUser_id());
+		req.getSession().setAttribute("userBean", userBean);
+		req.getSession().setMaxInactiveInterval(3600*2);
+
+		this.setOkTipMsg("SUCCESS",req.getSession().getId(), resp);
+
+		return null;
+	}
 }

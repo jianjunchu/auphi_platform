@@ -60,7 +60,10 @@ public class SessionFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest)request;
 			String servletPath = httpRequest.getServletPath();
 			String user_id = httpRequest.getSession().getAttribute("user_id")==null?"":httpRequest.getSession().getAttribute("user_id").toString();
-			if(!"".equals(user_id) || "/login.jsp".equals(servletPath) || "/register.jsp".equals(servletPath) || servletPath.startsWith("/api/")){
+			if(!"".equals(user_id)
+					|| "/login.jsp".equals(servletPath)
+					|| "/register.jsp".equals(servletPath)
+					|| servletPath.startsWith("/api/") || "/index/login.shtml".equalsIgnoreCase(servletPath)){
 				// pass the request along the filter chain
 				chain.doFilter(request, response);
 			}else {
