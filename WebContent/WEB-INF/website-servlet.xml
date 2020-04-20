@@ -101,6 +101,9 @@
 	<context:component-scan base-package="com.auphi.ktrl.schedule.controller" />
 	<context:component-scan base-package="com.auphi.ktrl.metadata.controller" />
 	<context:component-scan base-package="com.auphi.ktrl.monitor.controller" />
+	<context:component-scan base-package="com.auphi.ktrl.system.repository.controller" />
+	<context:component-scan base-package="com.auphi.ktrl.system.user.controller" />
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<mvc:annotation-driven />
 

@@ -23,9 +23,9 @@ import java.io.IOException;
  * @create 2018-05-24 17:23
  */
 @Api(value = "/api", description = "调度接口API文档")
-@RestController
+@RestController("")
 @RequestMapping(value = "/api", produces = {"application/json;charset=UTF-8"})
-public class ScheduleController extends BaseMultiActionController {
+public class ApiScheduleController extends BaseMultiActionController {
 
 
     /**
@@ -79,4 +79,6 @@ public class ScheduleController extends BaseMultiActionController {
             this.setFailTipMsg("username or password error",response);
         }
     }
+
+
 }
