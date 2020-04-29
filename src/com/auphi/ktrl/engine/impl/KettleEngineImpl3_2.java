@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class KettleEngineImpl3_2 implements KettleEngine {
 	private static Logger logger = Logger.getLogger(KettleEngineImpl3_2.class);
@@ -88,7 +89,7 @@ public class KettleEngineImpl3_2 implements KettleEngine {
 
 
 	@Override
-	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule) throws Exception {
+	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule, Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception {
 		return false;
 	}
 

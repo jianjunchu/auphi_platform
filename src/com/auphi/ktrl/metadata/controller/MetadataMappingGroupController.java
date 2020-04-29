@@ -58,8 +58,8 @@ public class MetadataMappingGroupController extends BaseMultiActionController {
                 UserBean user = (UserBean)req.getSession().getAttribute("userBean");
                 mapping.setCreateUser(user!=null? user.getUser_id():null);
                 mapping.setUpdateUser(mapping.getCreateUser());
-                this.metadataMappingGroupService.save(mapping);
-                this.setOkTipMsg("添加成功", resp);
+                mapping =  this.metadataMappingGroupService.save(mapping);
+                this.setOkTipMsg("添加成功", mapping,resp);
             }else{
                 this.metadataMappingGroupService.update(mapping);
                 this.setOkTipMsg("修改成功", resp);

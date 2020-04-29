@@ -311,6 +311,6 @@
     <orderEntry type="library" name="Maven: de.schlichtherle.truelicense:truelicense-xml:1.32" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet.jsp:jsp-api:2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mozilla.javascript:javascript:auphi:1.0" level="project" />
+    <orderEntry type="library" name="Maven: rhino:js:1.5R4.1" level="project" />
   </component>
 </module>

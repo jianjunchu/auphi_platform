@@ -27,6 +27,8 @@ import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.user.bean.UserBean;
 
+import java.util.Map;
+
 
 public interface KettleEngine {
     public static final String TYPE_DIR = "kdir" ;
@@ -79,7 +81,7 @@ public interface KettleEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule) throws Exception;
+	public boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule, Map<String,String> arguments, Map<String,String> params, Map<String,String> variables ) throws Exception;
 
 	/**
 	 * get a repository tree described by a JSON string

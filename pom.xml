@@ -1052,15 +1052,14 @@
 
 
     <dependency>
-      <groupId>org.mozilla.javascript</groupId>
-      <artifactId>javascript</artifactId>
-      <version>1.0</version>
-      <classifier>auphi</classifier>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R4.1</version>
     </dependency>
 
 
   </dependencies>
-  
+
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -1069,10 +1068,7 @@
         <excludes>
           <exclude>**/*.java</exclude>
         </excludes>
-        <includes>
-          <include>**/*.*</include>
-        </includes>
-        <filtering>true</filtering>
+
       </resource>
     </resources>
     <plugins>
@@ -1093,7 +1089,7 @@
             <id>unpack</id>
             <phase>generate-resources</phase>
             <goals>
-                <goal>unpack-dependencies</goal>
+              <goal>unpack-dependencies</goal>
             </goals>
             <!--
             <configuration>

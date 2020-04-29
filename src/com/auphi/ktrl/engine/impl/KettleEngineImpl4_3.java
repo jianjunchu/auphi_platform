@@ -81,7 +81,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
     }
 
     @Override
-    public synchronized boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule) throws Exception{
+    public synchronized boolean execute(String repName, String filePath, String fileName, String fileType, int execType, MonitorScheduleBean monitorSchedule,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception{
         boolean success = false;
         
         Object rep = null;
@@ -101,7 +101,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                             boolean.class, String.class});
                     Object transMeta = loadTransformation.invoke(rep, fileName, directory, null, true, null);
                     
-                    success = executeTrans(transMeta, null, null, execType, monitorSchedule);
+                    success = executeTrans(transMeta, null, execType, monitorSchedule,arguments,params,variables);
                 }else if(fileType.equalsIgnoreCase(TYPE_JOB)){
                     //execute job
                     Method loadJob = rep.getClass().getDeclaredMethod("loadJob", String.class, 
@@ -109,7 +109,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                             Class.forName("org.pentaho.di.core.ProgressMonitorListener", true, classLoaderUtil), String.class);
                     Object jobMeta = loadJob.invoke(rep, fileName, directory, null, null);
                     
-                    success = executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
+                    success = executeJob(jobMeta, rep, null, execType, monitorSchedule,arguments,params,variables);
                 }
             }
 
@@ -479,7 +479,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
      * @return
      * @throws Exception
      */
-    private boolean executeTrans(Object transMeta, String[] params, HashMap<?, ?> prop, int execType, MonitorScheduleBean monitorSchedule) throws Exception{
+    private boolean executeTrans(Object transMeta,  HashMap<?, ?> prop, int execType, MonitorScheduleBean monitorSchedule,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception{
         boolean success = false;
 
         try {
@@ -543,7 +543,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
      * @return
      * @throws Exception
      */
-    public boolean executeJob(Object jobMeta, Object rep, String[] params, HashMap<?, ?> prop, int execType, MonitorScheduleBean monitorSchedule) throws Exception{
+    public boolean executeJob(Object jobMeta, Object rep,  HashMap<?, ?> prop, int execType, MonitorScheduleBean monitorSchedule,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception{
         boolean success = false;
         Date start = new Date();
         Date stop;
@@ -574,7 +574,8 @@ public class KettleEngineImpl4_3 implements KettleEngine {
                 Constructor<?> jobConstructor = jobClass.getConstructor(String.class, String.class, String[].class);
                 Method getName = jobMeta.getClass().getDeclaredMethod("getName");
                 Method getFileName = jobMeta.getClass().getDeclaredMethod("getFileName");
-                job = jobConstructor.newInstance(getName.invoke(jobMeta), getFileName.invoke(jobMeta), params);
+                String[] ss = {};
+                job = jobConstructor.newInstance(getName.invoke(jobMeta), getFileName.invoke(jobMeta),ss);
             }
 
             Method setInteractive = jobClass.getDeclaredMethod("setInteractive", boolean.class);
@@ -588,7 +589,7 @@ public class KettleEngineImpl4_3 implements KettleEngine {
             Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
             logMinimal.invoke(logChannel, new Object[] {"ETL--JOB Start of run", new Object[0]});
 
-            JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,rep,job,execType);
+            JobExecutor jobExecutor = JobExecutor.initExecutor(monitorSchedule,rep,job,execType,arguments,params,variables);
             Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getMonitorSchedule().getId());
 
             tr.start();

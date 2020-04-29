@@ -160,7 +160,7 @@ public class Template411 extends BaseTemplate4 implements Template {
 		boolean success = false;
 
 		KettleEngineImpl4_3 kettleEngine = new KettleEngineImpl4_3();
-		kettleEngine.executeJob(jobMeta, rep, null, null, execType, monitorSchedule);
+		kettleEngine.executeJob(jobMeta, rep, null, execType, monitorSchedule,null,null,null);
 
 		return success;
 	}

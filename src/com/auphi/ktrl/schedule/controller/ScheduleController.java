@@ -2,7 +2,6 @@
  *
  * Auphi Data Integration PlatformKettle Platform
  * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
-
  * Support：support@pentahochina.com
  *
  *******************************************************************************
@@ -12,7 +11,6 @@
  * the License. You may obtain a copy of the License at
  *
  *    https://opensource.org/licenses/LGPL-3.0 
-
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +21,7 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auphi.data.hub.core.BaseMultiActionController;
 import com.auphi.ktrl.schedule.bean.ScheduleBean;
 import com.auphi.ktrl.schedule.util.QuartzUtil;
@@ -32,9 +31,13 @@ import com.auphi.ktrl.system.repository.util.RepositoryUtil;
 import com.auphi.ktrl.system.user.bean.UserBean;
 import com.auphi.ktrl.system.user.util.UMStatus;
 import com.auphi.ktrl.system.user.util.UserUtil;
+import com.auphi.ktrl.util.PageList;
+import com.google.gson.JsonObject;
 import io.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
 import org.checkerframework.common.reflection.qual.GetMethod;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,32 +63,58 @@ public class ScheduleController extends BaseMultiActionController {
 
     private final static String INDEX = "admin/schedule/list";
 
-    public ModelAndView index(HttpServletRequest req, HttpServletResponse resp){
+    public ModelAndView index(HttpServletRequest req, HttpServletResponse resp) {
         return new ModelAndView(INDEX);
     }
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/get" , method = RequestMethod.GET)
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
     public void get(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String jobName =  ServletRequestUtils.getStringParameter(request,"jobName",null);
-        if(!StringUtils.isEmpty(jobName)){
-            UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        String jobName = ServletRequestUtils.getStringParameter(request, "jobName", null);
+        if (!StringUtils.isEmpty(jobName)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 ScheduleBean scheduleBean = ScheduleUtil.getScheduleBeanByJobName(jobName, String.valueOf(userBean.getOrgId()));
-                this.setOkTipMsg("success",scheduleBean,response);
-            }catch (Exception e){
-                this.setFailTipMsg(e.getMessage(),response);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("jobname",scheduleBean.getJobName());
+                jsonObject.put("description",scheduleBean.getDescription());
+                jsonObject.put("version",scheduleBean.getVersion());
+                jsonObject.put("repository",scheduleBean.getRepName());
+                jsonObject.put("file",scheduleBean.getActionRef());
+                jsonObject.put("filepath",scheduleBean.getActionPath());
+                jsonObject.put("filetype",scheduleBean.getFileType());
+                jsonObject.put("errorNoticeUserId",scheduleBean.getErrorNoticeUserId());
+                jsonObject.put("errorNoticeUserName",scheduleBean.getErrorNoticeUserName());
+                jsonObject.put("execType",scheduleBean.getExecType());
+                jsonObject.put("starttime",scheduleBean.getStartTime());
+                jsonObject.put("cycle",scheduleBean.getCycle());
+                jsonObject.put("cyclenum",scheduleBean.getCycleNum());
+                jsonObject.put("startdate",scheduleBean.getStartDate());
+                jsonObject.put("daytype",scheduleBean.getDayType());
+                jsonObject.put("monthtype",scheduleBean.getMonthType());
+                jsonObject.put("weeknum",scheduleBean.getWeekNum());
+                jsonObject.put("daynum",scheduleBean.getDayNum());
+                jsonObject.put("yeartype",scheduleBean.getYearType());
+                jsonObject.put("monthnum",scheduleBean.getMonthNum());
+                jsonObject.put("arguments",scheduleBean.getArguments());
+                jsonObject.put("enddate",scheduleBean.getEndDate());
+
+
+                this.setOkTipMsg("success", jsonObject, response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
             }
-        }else{
-            this.setFailTipMsg("jobname 不能为空！",response);
+        } else {
+            this.setFailTipMsg("jobname 不能为空！", response);
         }
 
     }
 
     /**
      * 获取出库批次号
+     *
      * @return
      */
     @ApiOperation(value = "新增普通调度", notes = "创建一个普通周期调度", httpMethod = "POST", response = Integer.class)
@@ -115,16 +144,16 @@ public class ScheduleController extends BaseMultiActionController {
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/create" , method = RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     public void create(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
         try {
             ScheduleBean scheduleBean = ScheduleUtil.createScheduleBeanFromRequest(request, userBean);
             QuartzUtil.create(scheduleBean);
-            this.setOkTipMsg("success",response);
-        }catch (Exception e){
-            this.setFailTipMsg(e.getMessage(),response);
+            this.setOkTipMsg("success", response);
+        } catch (Exception e) {
+            this.setFailTipMsg(e.getMessage(), response);
         }
 
     }
@@ -132,6 +161,7 @@ public class ScheduleController extends BaseMultiActionController {
 
     /**
      * 获取出库批次号
+     *
      * @return
      */
     @ApiOperation(value = "新增普通调度", notes = "创建一个普通周期调度", httpMethod = "POST", response = Integer.class)
@@ -161,108 +191,159 @@ public class ScheduleController extends BaseMultiActionController {
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/update" , method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     public void update(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String oriJobName =  ServletRequestUtils.getStringParameter(request,"oriJobName",null);
-        if(StringUtils.isEmpty(oriJobName)){
-            this.setFailTipMsg("原调度名称不能为空！",response);
+        String oriJobName = ServletRequestUtils.getStringParameter(request, "oriJobName", null);
+        if (StringUtils.isEmpty(oriJobName)) {
+            this.setFailTipMsg("原调度名称不能为空！", response);
         }
-        UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
         try {
             ScheduleBean scheduleBean = ScheduleUtil.createScheduleBeanFromRequest(request, userBean);
             QuartzUtil.update(scheduleBean, oriJobName, userBean);
-            this.setOkTipMsg("success",response);
-        }catch (Exception e){
-            this.setFailTipMsg(e.getMessage(),response);
+            this.setOkTipMsg("success", response);
+        } catch (Exception e) {
+            this.setFailTipMsg(e.getMessage(), response);
         }
     }
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/delete" , method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public void delete(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String jobNames =  ServletRequestUtils.getStringParameter(request,"jobNames",null);
-        if(!StringUtils.isEmpty(jobNames)){
-            UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        String jobNames = ServletRequestUtils.getStringParameter(request, "jobNames", null);
+        if (!StringUtils.isEmpty(jobNames)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.delete(jobNames.split(","), userBean);
-                this.setOkTipMsg("success",response);
-            }catch (Exception e){
-                this.setFailTipMsg(e.getMessage(),response);
+                this.setOkTipMsg("success", response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
             }
-        }else{
-            this.setFailTipMsg("jobname 不能为空！",response);
+        } else {
+            this.setFailTipMsg("jobname 不能为空！", response);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success")})
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public void list(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+
+            int page = ServletRequestUtils.getIntParameter(request, "page", 1);
+
+            String orderby = ServletRequestUtils.getStringParameter(request, "orderby", "NEXT_FIRE_TIME");
+
+            String order = ServletRequestUtils.getStringParameter(request, "order", "DESC");
+
+            String trigger_state = ServletRequestUtils.getStringParameter(request, "trigger_state", "");
+
+            String search_text = ServletRequestUtils.getStringParameter(request, "search_text", "");
+
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
+
+            PageList pageList = QuartzUtil.findAllSchedule(page, userBean, order, orderby, search_text, trigger_state);
+
+
+            this.setOkTipMsg("success",pageList, response);
+        } catch (Exception e) {
+            this.setFailTipMsg(e.getMessage(), response);
+        }
+    }
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/run" , method = RequestMethod.POST)
+    @RequestMapping(value = "/execute", method = RequestMethod.POST)
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String jobName = ServletRequestUtils.getStringParameter(request, "jobName", null);
+        String arguments = ServletRequestUtils.getStringParameter(request, "arguments", null);
+
+        if (!StringUtils.isEmpty(jobName)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
+            try {
+                JobDetail jobDetail = QuartzUtil.getJobDetail(jobName, userBean);
+                JobDataMap data = jobDetail.getJobDataMap();
+                ScheduleUtil.executeNormal(data, jobDetail.getName(), jobDetail.getGroup(), arguments);
+                this.setOkTipMsg("success", response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
+            }
+        } else {
+            this.setFailTipMsg("jobNames 不能为空！", response);
+        }
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success")})
+    @RequestMapping(value = "/run", method = RequestMethod.POST)
     public void run(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String jobNames =  ServletRequestUtils.getStringParameter(request,"jobNames",null);
-        if(!StringUtils.isEmpty(jobNames)){
-            UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        String jobNames = ServletRequestUtils.getStringParameter(request, "jobNames", null);
+        if (!StringUtils.isEmpty(jobNames)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.execute(jobNames.split(","), userBean);
-                this.setOkTipMsg("success",response);
-            }catch (Exception e){
-                this.setFailTipMsg(e.getMessage(),response);
+                this.setOkTipMsg("success", response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
             }
-        }else{
-            this.setFailTipMsg("jobNames 不能为空！",response);
+        } else {
+            this.setFailTipMsg("jobNames 不能为空！", response);
         }
     }
 
     /**
      * 暂停
+     *
      * @param request
      * @param response
      * @throws IOException
      */
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/pause" , method = RequestMethod.POST)
+    @RequestMapping(value = "/pause", method = RequestMethod.POST)
     public void pause(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String jobNames =  ServletRequestUtils.getStringParameter(request,"jobNames",null);
-        if(!StringUtils.isEmpty(jobNames)){
-            UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        String jobNames = ServletRequestUtils.getStringParameter(request, "jobNames", null);
+        if (!StringUtils.isEmpty(jobNames)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.pause(jobNames.split(","), userBean);
-                this.setOkTipMsg("success",response);
-            }catch (Exception e){
-                this.setFailTipMsg(e.getMessage(),response);
+                this.setOkTipMsg("success", response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
             }
-        }else{
-            this.setFailTipMsg("jobNames 不能为空！",response);
+        } else {
+            this.setFailTipMsg("jobNames 不能为空！", response);
         }
     }
 
     /**
      * 恢复
+     *
      * @param request
      * @param response
      * @throws IOException
      */
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
-    @RequestMapping(value = "/resume" , method = RequestMethod.POST)
+    @RequestMapping(value = "/resume", method = RequestMethod.POST)
     public void resume(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String jobNames =  ServletRequestUtils.getStringParameter(request,"jobNames",null);
-        if(!StringUtils.isEmpty(jobNames)){
-            UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+        String jobNames = ServletRequestUtils.getStringParameter(request, "jobNames", null);
+        if (!StringUtils.isEmpty(jobNames)) {
+            UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.resume(jobNames.split(","), userBean);
-                this.setOkTipMsg("success",response);
-            }catch (Exception e){
-                this.setFailTipMsg(e.getMessage(),response);
+                this.setOkTipMsg("success", response);
+            } catch (Exception e) {
+                this.setFailTipMsg(e.getMessage(), response);
             }
-        }else{
-            this.setFailTipMsg("jobNames 不能为空！",response);
+        } else {
+            this.setFailTipMsg("jobNames 不能为空！", response);
         }
     }
 }

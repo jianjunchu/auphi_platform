@@ -23,18 +23,24 @@
  ******************************************************************************/
 package com.auphi.ktrl.schedule.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.auphi.ktrl.engine.impl.KettleEngineImpl2_3;
+import com.auphi.ktrl.engine.impl.KettleEngineImpl4_3;
+import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
+import com.auphi.ktrl.monitor.util.MonitorUtil;
+import com.auphi.ktrl.system.mail.util.MailUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.pentaho.di.core.KettleEnvironment;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
@@ -50,6 +56,7 @@ import com.auphi.ktrl.util.StringUtil;
 
 import com.auphi.data.hub.domain.FTP;
 import com.auphi.data.hub.domain.Hadoop;
+import org.springframework.web.bind.ServletRequestUtils;
 
 public class ScheduleUtil {
 	private static Logger logger = Logger.getLogger(ScheduleUtil.class);
@@ -86,6 +93,8 @@ public class ScheduleUtil {
 			scheduleBean.setErrorNoticeUserName(request.getParameter("errorNoticeUserName")==null?"":new String(request.getParameter("errorNoticeUserName").getBytes("ISO8859-1"), "UTF-8"));
 			scheduleBean.setErrorNoticeUserId(request.getParameter("errorNoticeUserId")==null?"":new String(request.getParameter("errorNoticeUserId").getBytes("ISO8859-1"), "UTF-8"));
 			scheduleBean.setBeforeSell(request.getParameter("beforeSell")==null?"":new String(request.getParameter("beforeSell").getBytes("ISO8859-1"), "UTF-8"));
+			scheduleBean.setArguments(ServletRequestUtils.getStringParameter(request,"arguments",""));
+
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage(),e);
@@ -408,5 +417,74 @@ public class ScheduleUtil {
 		}
 		
 		return ftpConfig;
+	}
+
+	/**
+	 * run as normal
+	 * @param data jobDataMap
+	 * @param jobDetailName
+	 */
+	public static void executeNormal(JobDataMap data, String jobDetailName, String jobGroup,String arguments){
+		String version = data.getString("version");
+		String actionRef = data.getString("actionRef");
+		String actionPath = data.getString("actionPath");
+		String fileType = data.getString("fileType");
+		String repName = data.getString("repName");
+		int execType = Integer.parseInt(data.getString("execType")==null?"1":data.getString("execType"));
+		String remoteServer = data.getString("remoteServer");
+		String ha = data.getString("ha");
+		if(StringUtils.isEmpty(arguments) ){
+			arguments = data.getString("arguments");
+		}
+
+		KettleEngine kettleEngine = null;
+
+		MonitorScheduleBean monitorSchedule = new MonitorScheduleBean();
+		monitorSchedule.setId(Integer.parseInt(StringUtil.createNumberString(9)));
+		monitorSchedule.setErrorNoticeUserId(data.getString("errorNoticeUserId"));
+		//run kettle engine for different version
+		if(KettleEngine.VERSION_2_3.equals(version)){
+			kettleEngine = new KettleEngineImpl2_3();
+		}else if(KettleEngine.VERSION_4_3.equals(version)){
+			kettleEngine = new KettleEngineImpl4_3();
+		}
+
+
+		try{
+			ScheduleBean scheduleBean = ScheduleUtil.getScheduleBeanByJobName(jobDetailName, jobGroup);
+
+			monitorSchedule.setJobStatus(MonitorUtil.STATUS_RUNNING);
+			monitorSchedule.setStartTime(new Date());
+			monitorSchedule.setJobGroup(scheduleBean.getJobGroup());
+			monitorSchedule.setJobName(scheduleBean.getJobName());
+
+			String path = "/".equals(scheduleBean.getActionPath())?scheduleBean.getActionPath():scheduleBean.getActionPath() + "/";
+			monitorSchedule.setJobFile(path + scheduleBean.getActionRef() + "." + scheduleBean.getFileType());
+			monitorSchedule.setServerName(remoteServer);
+			monitorSchedule.setHaName(ha);
+
+			MonitorUtil.saveMonitorBefore(monitorSchedule);
+
+			if(ProcessUtil.runProcess(monitorSchedule.getId(),data.getString("beforeSell"))){
+				KettleEnvironment.init();
+				Map<String,String> map = new HashMap<String, String>();
+				Map<String,String> argumentsMap = QuartzUtil.getInfoArguments(arguments);
+				kettleEngine.execute(repName, actionPath, actionRef, fileType, execType,monitorSchedule,argumentsMap,map,map);
+			}
+
+
+		}catch(Exception e){
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String errMsg = sw.toString();
+			MonitorUtil.updateMonitorAfterError(monitorSchedule.getId(),errMsg);
+
+			String title = "[ScheduleError][" + StringUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss") + "][" + monitorSchedule.getJobName() + "]";
+			String errorNoticeUserId = monitorSchedule.getErrorNoticeUserId();
+			String[] user_mails = UserUtil.getUserEmails(errorNoticeUserId);
+			MailUtil.sendMail(user_mails, title, monitorSchedule.getLogMsg());
+
+		}
 	}
 }

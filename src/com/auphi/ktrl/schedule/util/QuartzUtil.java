@@ -38,7 +38,9 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.pentaho.di.core.Const;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -378,6 +380,7 @@ public class QuartzUtil {
 		JobDataMap data = jobDetail.getJobDataMap();
 
 		data.put("isFastConfig", false);
+		data.put("arguments",scheduleBean.getArguments());
 		data.put("actionRef", scheduleBean.getActionRef());
 		data.put("actionPath", scheduleBean.getActionPath());
 		data.put("repeat-time-millisecs", scheduleBean.getRepeatInterval());
@@ -472,6 +475,38 @@ public class QuartzUtil {
 			logger.error(e.getMessage(),e);
 		}
 	}
+
+	public static Map<String,String> getInfoArguments(String arguments) {
+		String[] varNames = {"01","02","03","04","05","06","07","08","09","10"};
+		String[] argumentArray = {};
+		if(!StringUtils.isEmpty(arguments)){
+			argumentArray = arguments.split(",");
+		}
+		Map<String,String> map = new HashMap<String, String>();
+
+		for (int i=0 ; i<varNames.length; i++) {
+			String varName = varNames[i];
+			String varValue = null;
+			if(i < argumentArray.length){
+				varValue = argumentArray[i];
+			}
+			if (!Const.isEmpty(varName)) {
+				map.put(varName, varValue);
+			}
+		}
+		return map;
+	}
+
+	public static JobDetail getJobDetail(String jobName, UserBean userBean){
+		try {
+			JobDetail jobDetail = sched.getJobDetail(jobName, String.valueOf(userBean.getOrgId()));
+			return jobDetail;
+		}catch (Exception e){
+
+			return null;
+		}
+
+	}
 	
 	/**
 	 * 更新调度
@@ -564,6 +599,19 @@ public class QuartzUtil {
 			for(int i=0;i<names.length;i++){
 				sched.triggerJob(names[i], String.valueOf(userBean.getOrgId()));
 			}
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}
+	}
+
+	/**
+	 * 执行调度
+	 * @param jobname 调度名称数组
+	 */
+	public static void execute(String jobname, UserBean userBean){
+		System.out.println("============QuartzUtil");
+		try{
+			sched.triggerJob(jobname, String.valueOf(userBean.getOrgId()));
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}

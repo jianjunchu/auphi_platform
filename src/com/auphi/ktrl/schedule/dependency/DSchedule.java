@@ -601,8 +601,9 @@ public class DSchedule implements Job{
 			monitorSchedule.setHaName(ha);
 			monitorSchedule.setServerName(remoteServer);
 			monitorSchedule.setId(monitorid);
+			Map<String,String> map = new HashMap<String, String>();
 
-			return kettleEngine.execute(repName, actionPath, actionRef, fileType, execType, monitorSchedule) ;
+			return kettleEngine.execute(repName, actionPath, actionRef, fileType, execType, monitorSchedule,map,map,map) ;
 			
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();

@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Timer;
 
 public class JobExecutor implements Runnable{
@@ -34,6 +35,8 @@ public class JobExecutor implements Runnable{
     private Object job = null;
     private Class<?> jobMetaClass;
     private Class<?> jobClass;
+
+    private java.util.Map<String,String> arguments,  params,  variables;
 
     private Class<?> kettleLogStoreClass;
 
@@ -58,7 +61,7 @@ public class JobExecutor implements Runnable{
 
     private Object slaveServer;
 
-    public JobExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType) throws Exception {
+    public JobExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception {
         this.monitorSchedule = monitorSchedule;
         this.job = job;
         this.execType = execType;
@@ -77,8 +80,6 @@ public class JobExecutor implements Runnable{
             Method getJobMeta = this.jobClass.getDeclaredMethod("getJobMeta");
 
             this.jobMeta = getJobMeta.invoke(this.job);
-            this.job.getClass().getDeclaredMethod("setRepository",this.repositoryClass).invoke(this.job,this.repository);
-
             jobMetaName = (String) jobMeta.getClass().getDeclaredMethod("getName").invoke(jobMeta);
 
             executionConfigurationClass = Class.forName("org.pentaho.di.job.JobExecutionConfiguration", true, classLoaderUtil);
@@ -86,10 +87,24 @@ public class JobExecutor implements Runnable{
             Constructor<?> consJobExcutionConfig = executionConfigurationClass.getConstructor();
             executionConfiguration = consJobExcutionConfig.newInstance();
 
+
             Method setExcutingLocally = executionConfigurationClass.getDeclaredMethod("setExecutingLocally", boolean.class);
             Method setExecutingRemotely = executionConfigurationClass.getDeclaredMethod("setExecutingRemotely", boolean.class);
 
             executionConfiguration.getClass().getDeclaredMethod("setRepository",this.repositoryClass).invoke(executionConfiguration,this.repository);
+
+
+            if(arguments !=null){
+                executionConfiguration.getClass().getDeclaredMethod("setArguments",Map.class).invoke(executionConfiguration,arguments);
+                Object argumentStrings = executionConfiguration.getClass().getDeclaredMethod("getArgumentStrings").invoke(executionConfiguration);
+                this.jobMeta.getClass().getDeclaredMethod("setArguments",String[].class).invoke(jobMeta,argumentStrings);
+            }
+            if(params!=null){
+                executionConfiguration.getClass().getDeclaredMethod("setParams",Map.class).invoke(executionConfiguration,params);
+            }
+            if(variables!=null){
+                executionConfiguration.getClass().getDeclaredMethod("setVariables",Map.class).invoke(executionConfiguration,variables);
+            }
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
                 setExcutingLocally.invoke(executionConfiguration, true);
@@ -102,6 +117,8 @@ public class JobExecutor implements Runnable{
 
             }
 
+            this.job.getClass().getDeclaredMethod("setRepository",this.repositoryClass).invoke(this.job,this.repository);
+
         }catch (Exception e){
 
             throw e;
@@ -111,10 +128,10 @@ public class JobExecutor implements Runnable{
 
     private static Hashtable<Integer, JobExecutor> executors = new Hashtable<Integer, JobExecutor>();
 
-    public static synchronized JobExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType) throws Exception {
-        JobExecutor transExecutor = new JobExecutor(monitorSchedule,repository,job,execType);
-        executors.put(transExecutor.getMonitorSchedule().getId(), transExecutor);
-        return transExecutor;
+    public static synchronized JobExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception {
+        JobExecutor jobExecutor = new JobExecutor(monitorSchedule,repository,job,execType,arguments,params,variables);
+        executors.put(jobExecutor.getMonitorSchedule().getId(), jobExecutor);
+        return jobExecutor;
     }
 
     public static JobExecutor getExecutor(Long executionId) {
@@ -136,6 +153,9 @@ public class JobExecutor implements Runnable{
         try {
 
             boolean running = true;
+
+
+
 
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
@@ -399,5 +419,27 @@ public class JobExecutor implements Runnable{
     }
 
 
+    public Map<String, String> getArguments() {
+        return arguments;
+    }
 
+    public void setArguments(Map<String, String> arguments) {
+        this.arguments = arguments;
+    }
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
+
+    public Map<String, String> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, String> variables) {
+        this.variables = variables;
+    }
 }

@@ -30,12 +30,14 @@ public class MetadataMappingGroupServiceImpl implements MetadataMappingGroupServ
     }
 
     @Override
-    public void save(MetadataMappingGroup object) {
+    public MetadataMappingGroup save(MetadataMappingGroup object) {
         object.setId(ConnectionPool.nextId());
         object.setCreateTime(new Date());
         object.setUpdateTime(object.getCreateTime());
 
         this.systemDao.save("metadataMappingGroup.insert",object);
+
+        return object;
     }
 
 

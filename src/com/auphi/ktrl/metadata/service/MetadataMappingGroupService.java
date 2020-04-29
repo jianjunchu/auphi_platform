@@ -11,7 +11,7 @@ public interface MetadataMappingGroupService {
 
     PaginationSupport<MetadataMappingGroup> getPage(MetadataMappingGroup dto) throws SQLException;
 
-    void save(MetadataMappingGroup mapping);
+    MetadataMappingGroup save(MetadataMappingGroup mapping);
 
     int update(MetadataMappingGroup mapping);
 
