@@ -1093,13 +1093,15 @@ CREATE TABLE `T_SERVICE_JOB_LOG` (
 -- ----------------------------
 DROP TABLE IF EXISTS `T_SERVICE_MONITOR`;
 CREATE TABLE `T_SERVICE_MONITOR` (
-  `MONITOR_ID` int(11) NOT NULL auto_increment,
-  `SERVICE_ID` int(11) default NULL,
-  `START_TIME` datetime default NULL,
-  `END_TIME` datetime default NULL,
-  `STATUS` varchar(20) default NULL,
-  `userName` varchar(50) default NULL,
-  `systemName` varchar(100) default NULL,
+  `MONITOR_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `SERVICE_ID` int(11) DEFAULT NULL,
+  `START_TIME` datetime DEFAULT NULL,
+  `END_TIME` datetime DEFAULT NULL,
+  `STATUS` varchar(20) DEFAULT NULL,
+  `userName` varchar(50) DEFAULT NULL,
+  `systemName` varchar(100) DEFAULT NULL,
+  `PARAMS` varchar(1000) DEFAULT NULL ,
+  `LINES_OUTPUT` bigint(20) DEFAULT NULL ,
   PRIMARY KEY  (`MONITOR_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1299,7 +1301,7 @@ INSERT INTO `EAPARAM` VALUES ('10000029', 'TITLE_ICON', 'kettle.ico', '显示在
 
 DROP TABLE IF EXISTS `KDI_T_JOB_DEPENDENCIES`;
 create table `KDI_T_JOB_DEPENDENCIES`(
-`ID`             int(11)  not null AUTO_INCREMENT  
+`ID`             int(11)  not null AUTO_INCREMENT
 ,`JOB_NAME`       varchar(80)
 ,`JOB_GROUP`      varchar(80)
 ,`JOB_FULLNAME`   varchar(160)
