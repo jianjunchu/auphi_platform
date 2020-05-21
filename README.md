@@ -18,7 +18,7 @@ ETL management platform based on Kettle
 
 
 # 下载地址\:
-官网 : http://www.doetl.com/download/aofei_platform_3.4.4.tar
+官网 : http://www.doetl.com/download/aofei_platform_3.4.4.zip
 
 
 # 官方网站\:
