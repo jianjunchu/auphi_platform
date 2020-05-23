@@ -17,7 +17,7 @@
 <%@ include file="common/extjs.jsp" %>
 <link rel="stylesheet" type="text/css" href="common/css/mystyle.css" />
 <title><%=Messages.getString("Default.Jsp.Title") %></title>
- 
+
 <script type="text/javascript">
 
 
@@ -126,10 +126,10 @@ var menu = new Ext.Panel({
               root: {
               	expanded: true,
                 children: [
-                    { iconCls:'icon_database',text: "<span class='menu_text' >本地数据库管理</span>", leaf: true, href: 'javascript:toLoadurl(\'datasource/index.shtml\',\'datasource_main\',\'本地数据库管理\');'},
-					{iconCls:'icon_ftp', text: "<span class='menu_text' >本地FTP管理</span>", leaf: true, href: 'javascript:toLoadurl(\'ftpMrg/index.shtml\',\'ftpMrg_main\',\'本地FTP管理\');'},
+                    { iconCls:'icon_database',text: "<span class='menu_text' >本地数据库管理</span>", leaf: true, href: 'javascript:toLoadurl(\'datasource/index.shtml\',\'datasource_main\',\'本地数据库管理\');'}
+					/*{iconCls:'icon_ftp', text: "<span class='menu_text' >本地FTP管理</span>", leaf: true, href: 'javascript:toLoadurl(\'ftpMrg/index.shtml\',\'ftpMrg_main\',\'本地FTP管理\');'},
 					{ iconCls:'icon_shujujishi',text: "<span class='menu_text' >远程数据库管理</span>", leaf: true, href: 'javascript:toLoadurl(\'oracleDatasource/index.shtml\',\'oracleDatasource_main\',\'远程数据库管理\');'},
-       		    	{ iconCls:'icon_hadoop',text: "<span class='menu_text' >Hadoop集群管理</span>", leaf: true, href: 'javascript:toLoadurl(\'hadoopMrg/index.shtml\',\'hadoopMrg_main\',\'Hadoop集群管理\');'}
+       		    	{ iconCls:'icon_hadoop',text: "<span class='menu_text' >Hadoop集群管理</span>", leaf: true, href: 'javascript:toLoadurl(\'hadoopMrg/index.shtml\',\'hadoopMrg_main\',\'Hadoop集群管理\');'}*/
                 ]
                }
            }
@@ -184,7 +184,7 @@ var menu = new Ext.Panel({
                }
            }
      	]}
-     	
+
      	<%
 		boolean isAdmin = UserUtil.isAdmin(Integer.parseInt("".endsWith(user_id)?"0":user_id));
         if(isAdmin){
@@ -200,7 +200,7 @@ var menu = new Ext.Panel({
               root: {
               	expanded: true,
                 children: [
-                	
+
                 	{ iconCls:'icon_youxiangfuwuqi',text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Mail") %></span>", leaf: true, href: 'javascript:toLoadurl(\'mail?action=manage\',\'mail_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Mail") %>\');'},
                 	{ iconCls:'icon_yonghuguanli',text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.User") %></span>", leaf: true, href: 'javascript:toLoadurl(\'usermanager?action=list\',\'userManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.User") %>\');'},
                 	{ iconCls:'icon_jiaoseguanli',text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Role") %></span>", leaf: true, href: 'javascript:toLoadurl(\'rolemanager?action=list\',\'roleManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Role") %>\');'},
@@ -213,7 +213,7 @@ var menu = new Ext.Panel({
 <%
         }
 %>
-    ]}); 
+    ]});
 
 var tabs;
 var ie = /*@cc_on!@*/!1;
@@ -259,37 +259,37 @@ Ext.onReady(function(){
                 region:'south',
                 contentEl: 'south',
                 height: 20
-            }, menu, 
+            }, menu,
 			tabs = Ext.createWidget('tabpanel', {
                	region: 'center', // a center region is ALWAYS required for border layout
                	deferredRender: false,
                	monitorResize:true,
-        		minTabWidth: 115, 
-        		tabWidth:135, 
+        		minTabWidth: 115,
+        		tabWidth:135,
         		tabMargin:0,
-        		enableTabScroll:true, 
-               	activeTab: 0, 
+        		enableTabScroll:true,
+               	activeTab: 0,
                	height:document.body.clientHeight,
                	defaults: {autoScroll:true},
                	items: []
             })
 		]
 	});
-	
+
 	initWelcome();
-	
-	
+
+
 });
 
 function initWelcome(){
 	var id = "mainTab";
 	var h = tabs.getHeight() - tabs.tabBar.getHeight()-2;
-	
+
 	var html = '<iframe id="welcome" name="welcome" frameborder="0" width="100%" height="'+h+'" src="welcome.jsp"></iframe>';
-	
+
 	var name = '<%=Messages.getString("Default.Jsp.Tab.Welcome") %>';
-	addTab(id, name, html,false); 
-    
+	addTab(id, name, html,false);
+
 	myMask = new Ext.LoadMask(Ext.getBody(), {
         msg: '<%=Messages.getString("Default.Jsp.Openning") %>',
         removeMask: true
@@ -302,11 +302,11 @@ function initWelcome(){
 function toLoadurl(url,id,name){
 	var iframeid = "frame" + id;
 	var h = tabs.getHeight() - tabs.tabBar.getHeight()-2;
-	
+
 	var html = "<iframe frameborder='0'  id='" + iframeid + "' name='" + iframeid + "' width='100%' src='' height="+h+"px></iframe>";
 	var iframe_old = document.getElementById(iframeid);
 	if(iframe_old==null){//if do not have ,create a new iframe
-		addTab(id, name, html,true); 
+		addTab(id, name, html,true);
 	    document.getElementById(iframeid).src = url;
 	}else {//if have ,make it active
 		tabs.setActiveTab(id);
@@ -322,12 +322,12 @@ function toLoadurl(url,id,name){
 }
 
 function addTab(id,name,html,closable){
-	var newtab = tabs.add({ 
+	var newtab = tabs.add({
 		id: id,
-		title: name, 
+		title: name,
 		html: html,
-		closable:closable,  
-       	autoScroll: true  
+		closable:closable,
+       	autoScroll: true
 	});
 	newtab.setHeight(tabs.getHeight() - tabs.tabBar.getHeight());
 	newtab.show();
@@ -403,10 +403,10 @@ function setTimeTD(){
 <%
 	}else {
 %>
-				&nbsp;		
+				&nbsp;
 <%
 	}
-%>				
+%>
 			</div>
 		</div>
 	</div>
