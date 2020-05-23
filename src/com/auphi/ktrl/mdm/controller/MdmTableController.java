@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -39,6 +39,8 @@ import com.auphi.ktrl.mdm.service.DataBaseTypeService;
 import com.auphi.ktrl.mdm.service.MdmModelAttributeService;
 import com.auphi.ktrl.mdm.service.MdmTableService;
 import com.auphi.ktrl.schedule.util.MarketUtil;
+import com.auphi.ktrl.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
@@ -69,45 +71,45 @@ import java.util.*;
 public class MdmTableController extends BaseMultiActionController {
 
 	private final static String INDEX = "admin/mdmTable";
-	
+
 	@Autowired
 	private MdmTableService mdmTableService;
-	
+
 	@Autowired
 	private DatasourceService datasourceService;
-	
+
 	@Autowired
 	private DataBaseTypeService dataBaseTypeService;
-	
+
 	@Autowired
 	private MdmModelAttributeService mdmModelAttributeService;
-	
+
 	private Map<Integer,Datasource> dataSourceMap = new HashMap<Integer,Datasource>();
-	
+
 	private Map<Integer,DataBaseType> dataBaseTypeMap = new HashMap<Integer,DataBaseType>();
-	
+
 	public ModelAndView index(HttpServletRequest req,HttpServletResponse resp){
 		return new ModelAndView(INDEX);
 	}
-	
-	
-	public ModelAndView query(HttpServletRequest req,HttpServletResponse resp) throws IOException{		
+
+
+	public ModelAndView query(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Dto<String,Object> dto = new BaseDto();
 		try {
 //			String queryFTPName = req.getParameter("queryFTPName");
 //			dto.put("queryFTPName", queryFTPName);
 			this.setPageParam(dto, req);
 			PaginationSupport<MdmTable> page = mdmTableService.query(dto);
-			String jsonString = JsonHelper.encodeObject2Json(page);	
+			String jsonString = JsonHelper.encodeObject2Json(page);
 			write(jsonString, resp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
 
-	public ModelAndView save(HttpServletRequest req,HttpServletResponse resp,MdmTable mdmTable) throws IOException{	
+
+	public ModelAndView save(HttpServletRequest req,HttpServletResponse resp,MdmTable mdmTable) throws IOException{
 		try{
 			Integer id = this.mdmTableService.queryMaxId(null);
 	        if(id == null) id = 1;
@@ -122,8 +124,8 @@ public class MdmTableController extends BaseMultiActionController {
 		return null;
 	}
 
-	
-	public ModelAndView update(HttpServletRequest req,HttpServletResponse resp,MdmTable mdmTable) throws IOException{	
+
+	public ModelAndView update(HttpServletRequest req,HttpServletResponse resp,MdmTable mdmTable) throws IOException{
 		try{
 			this.mdmTableService.update(mdmTable);
 			this.setOkTipMsg("编辑成功", resp);
@@ -133,8 +135,8 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
-	
+
+
 
 	public ModelAndView delete(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		try{
@@ -148,12 +150,12 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
-	public ModelAndView getSchemaName(HttpServletRequest req,HttpServletResponse resp) throws IOException{	
+
+	public ModelAndView getSchemaName(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
 			Integer id_database = ServletRequestUtils.getIntParameter(req,"id_database");
-			
+
 			List<TextValue> list = new ArrayList<TextValue>();
 			if(id_database==null)
 				return null;
@@ -205,7 +207,7 @@ public class MdmTableController extends BaseMultiActionController {
 				textValue.setValue("");
 				list.add(textValue);
 			}
-			String jsonString = JsonHelper.encodeObject2Json(list);	
+			String jsonString = JsonHelper.encodeObject2Json(list);
 			write(jsonString, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -216,8 +218,8 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
-	public ModelAndView getTableName(HttpServletRequest req,HttpServletResponse resp) throws IOException{	
+
+	public ModelAndView getTableName(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
 			String id_database = req.getParameter("id_database");
@@ -229,7 +231,7 @@ public class MdmTableController extends BaseMultiActionController {
 			if(database != null){
 				database.connect();
 				String[] tableNames = null;
-							
+
 				if(schema_name!=null && !"".equals(schema_name)){
 					tableNames = database.getTablenames(schema_name, false);
 				}else{
@@ -263,7 +265,7 @@ public class MdmTableController extends BaseMultiActionController {
 					}
 				});
 			}
-			String jsonString = JsonHelper.encodeObject2Json(list);	
+			String jsonString = JsonHelper.encodeObject2Json(list);
 			write(jsonString, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -274,7 +276,7 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
+
 	public ModelAndView check(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try{
@@ -290,25 +292,25 @@ public class MdmTableController extends BaseMultiActionController {
 				database.connect();
 
 				//获取主键
-				DatabaseMetaData dbMeta = database.getConnection().getMetaData(); 
-				ResultSet pkRSet = dbMeta.getPrimaryKeys(null, null, table_name); 
+				DatabaseMetaData dbMeta = database.getConnection().getMetaData();
+				ResultSet pkRSet = dbMeta.getPrimaryKeys(null, null, table_name);
 				List<Object> pkList = new ArrayList<Object>();
-				while( pkRSet.next() ) { 
-					pkList.add(pkRSet.getObject(4)); 
+				while( pkRSet.next() ) {
+					pkList.add(pkRSet.getObject(4));
 				}
 				pkRSet.close();
 
 				ResultSet rs = dbMeta.getColumns(null, null, table_name.toUpperCase(), null);
-				
+
 				while(rs.next()){
 					String colName = rs.getString("COLUMN_NAME");//列名
 					String typeName = rs.getString("TYPE_NAME");//类型名称
 					int length = rs.getInt("COLUMN_SIZE");//精度
 					int precision = rs.getInt("DECIMAL_DIGITS");// 小数的位数
-					
+
 					for(MdmModelAttribute bean : list){
 						int valtype = ValueMeta.getType(typeName);
-						if(!(colName.equals(bean.getField_name()) && 
+						if(!(colName.equals(bean.getField_name()) &&
 								bean.getField_type() == valtype &&
 								bean.getField_length() == length &&
 								bean.getField_precision() == precision)){
@@ -342,7 +344,7 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
+
 	public ModelAndView createSQL(HttpServletRequest req,HttpServletResponse resp) throws IOException, KettleDatabaseException{
 		Database database = null;
 		try{
@@ -396,7 +398,7 @@ public class MdmTableController extends BaseMultiActionController {
 					this.setOkTipMsg(createSQL, resp);
 				}
 			}
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 			this.setFailTipMsg(e.getMessage(), resp);
@@ -410,7 +412,7 @@ public class MdmTableController extends BaseMultiActionController {
 
 
 
-	
+
 	public ModelAndView runSQL(HttpServletRequest req,HttpServletResponse resp) throws IOException, KettleDatabaseException{
 		Database database = null;
 		try{
@@ -426,7 +428,7 @@ public class MdmTableController extends BaseMultiActionController {
 
 			}
 			//this.mdmTableService.delete(dto);s
-			
+
 			this.setOkTipMsg("运行成功", resp);
 		}catch(Exception e){
 			this.setOkTipMsg("运行失败:"+e.getMessage(), resp);
@@ -437,9 +439,9 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
 
-	
+
+
 	private List<MdmModelAttribute> getMdmModelAttributeList(String id_model){
 		List<MdmModelAttribute> list = null;
 		try{
@@ -451,30 +453,36 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return list;
 	}
-	
-	public ModelAndView getTableColumn(HttpServletRequest req,HttpServletResponse resp) throws IOException{	
+
+	public ModelAndView getTableColumn(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
-			String id_database = req.getParameter("id_database");
-			String tableName = req.getParameter("tableName");
+			int id_database = ServletRequestUtils.getIntParameter(req,"id_database",-1);
+			String tableName = ServletRequestUtils.getStringParameter(req,"tableName",null);
 			List<TextValue> list = new ArrayList<TextValue>();
-			database = MarketUtil.getDatabase(Integer.valueOf(id_database));
-			database.connect();
+			if(id_database > 0 && !StringUtils.isEmpty(tableName)){
 
-			List<ValueMetaInterface> ls = database.getTableFields(tableName).getValueMetaList();
-			for(ValueMetaInterface vm:ls){
-				TextValue textValue = new TextValue();
-				textValue.setText(vm.getName());
-				textValue.setValue(vm.getName());
-				list.add(textValue);
+				database = MarketUtil.getDatabase(Integer.valueOf(id_database));
+				if(database!=null){
+					database.connect();
+
+					List<ValueMetaInterface> ls = database.getTableFields(tableName).getValueMetaList();
+					for(ValueMetaInterface vm:ls){
+						TextValue textValue = new TextValue();
+						textValue.setText(vm.getName());
+						textValue.setValue(vm.getName());
+						list.add(textValue);
+					}
+					if(list.size() == 0){
+						TextValue textValue = new TextValue();
+						textValue.setText("");
+						textValue.setValue("");
+						list.add(textValue);
+					}
+				}
 			}
-			if(list.size() == 0){
-				TextValue textValue = new TextValue();
-				textValue.setText("");
-				textValue.setValue("");
-				list.add(textValue);
-			}
-			String jsonString = JsonHelper.encodeObject2Json(list);	
+
+			String jsonString = JsonHelper.encodeObject2Json(list);
 			write(jsonString, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -483,7 +491,7 @@ public class MdmTableController extends BaseMultiActionController {
 				database.disconnect();
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -492,7 +500,7 @@ public class MdmTableController extends BaseMultiActionController {
 
 
 	private String getPrimaryKey(List<MdmModelAttribute> attributes) throws SQLException{
-		
+
 		String primary_key = "";
 		for(MdmModelAttribute attribute:attributes){
 			if("Y".equals(attribute.getIs_primary())){
@@ -502,8 +510,8 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return primary_key;
 	}
-	
-	public ModelAndView getTableData(HttpServletRequest req,HttpServletResponse resp) throws IOException{	
+
+	public ModelAndView getTableData(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
 			Map<String,Object> jsonMap = new HashMap<String, Object>();
@@ -512,7 +520,7 @@ public class MdmTableController extends BaseMultiActionController {
 			Dto<String,Object> dto = new BaseDto();
 			dto.put("id_table", id_table);
 			MdmTable mdmTable = mdmTableService.queryById(dto);
-			
+
 			dto.put("id_model", mdmTable.getId_model());
 			List<MdmModelAttribute> attributes = mdmModelAttributeService.query4ComboBox(dto);
 			List<Map<String,Object>> colums = getColums(attributes);
@@ -568,7 +576,7 @@ public class MdmTableController extends BaseMultiActionController {
 		}
 		return null;
 	}
-	
+
 	public ModelAndView addOrUpdateTableData(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
@@ -593,20 +601,20 @@ public class MdmTableController extends BaseMultiActionController {
 					columns.append(""+attribute.getField_name()+"").append(",");
 					values.append("'"+req.getParameter(attribute.getField_name())+"'").append(",");
 				}
-				columns.deleteCharAt(columns.length()-1);  
-				values.deleteCharAt(values.length()-1); 
+				columns.deleteCharAt(columns.length()-1);
+				values.deleteCharAt(values.length()-1);
 				columns.append(")");
 				values.append(")");
 				sql.append(columns).append(" values ").append(values);
 				System.out.println(sql);
 				Result result = database.execStatement(sql.toString());
 				this.setOkTipMsg("添加成功", resp);
-				
+
 			}else if("edit".equals(action)){
 				String condition = req.getParameter("condition");
 
 				if(!"".equals(condition) && null != condition){
-					
+
 					StringBuffer sql = new StringBuffer("update ");
 					if(mdmTable.getSchema_name()!=null && !"".equals(mdmTable.getSchema_name())){
 						sql.append(mdmTable.getSchema_name()).append(".");
@@ -616,16 +624,16 @@ public class MdmTableController extends BaseMultiActionController {
 					for (MdmModelAttribute attribute:attributes){
 						sql.append(attribute.getField_name()).append("=").append("'").append(req.getParameter(attribute.getField_name())).append("'").append(",");
 					}
-					sql.deleteCharAt(sql.length()-1);  
+					sql.deleteCharAt(sql.length()-1);
 					sql.append(" where ").append(condition);
 					System.out.println(sql);
 					database.execStatement(sql.toString());
 					this.setOkTipMsg("修改成功", resp);
 				}
 			}
-			
-			
-			
+
+
+
 		} catch (Exception e) {
 			this.setFailTipMsg(e.getMessage(), resp);
 			e.printStackTrace();
@@ -634,11 +642,11 @@ public class MdmTableController extends BaseMultiActionController {
 				database.disconnect();
 			}
 		}
-		
-		
+
+
 		return null;
 	}
-	
+
 	public ModelAndView deleteTableData(HttpServletRequest req,HttpServletResponse resp) throws IOException{
 		Database database = null;
 		try {
@@ -670,8 +678,8 @@ public class MdmTableController extends BaseMultiActionController {
 			}else{
 				this.setFailTipMsg("操作失败", resp);
 			}
-			
-			
+
+
 		} catch (Exception e) {
 			this.setFailTipMsg(e.getMessage(), resp);
 		}finally{
@@ -695,9 +703,9 @@ public class MdmTableController extends BaseMultiActionController {
 				list.add(map);
 			}
 		}
-		
+
 		return list;
 	}
-	
-	
+
+
 }
