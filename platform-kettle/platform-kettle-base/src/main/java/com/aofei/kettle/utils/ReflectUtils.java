@@ -82,7 +82,13 @@ public class ReflectUtils {
 		Method[] methods = clazz.getDeclaredMethods();
 		for (Method m : methods) {
 			if(method.equals(m.getName())) {
-				return m.invoke(obj, value);
+				boolean flag = m.isAccessible();
+				try {
+					m.setAccessible(true);
+					return m.invoke(obj, value);
+				} finally {
+					m.setAccessible(flag);
+				}
 			}
 			
 		}
@@ -94,7 +100,7 @@ public class ReflectUtils {
 		
 		Method[] methods = clazz.getDeclaredMethods();
 		for (Method m : methods) {
-			if(method.equals(m.getName())) {
+			if(method.equals(m.getName()) && m.getParameterCount() == value.length) {
 				return m.invoke(null, value);
 			}
 			
@@ -152,14 +158,21 @@ public class ReflectUtils {
 		nameField.setAccessible(flag);
 	}
 	
-	public static Object callInternalEnumMethod(Class parent, String name, String method, Object... value) throws Exception {
+	public static Class getInnerClazz(Class parent, String name) {
 		for (Class clazz : parent.getClasses()) {
 			if(clazz.getSimpleName().equals(name)) {
-				for (Method m : clazz.getMethods()) {
-					if(m.getName().equals(method)) {
-						return m.invoke(null, value);
-					}
-				}
+				return clazz;
+			}
+		}
+		return null;
+	}
+	
+	public static Object callInternalEnumMethod(Class parent, String name, String method, Object... value) throws Exception {
+		Class clazz = getInnerClazz(parent, name);
+		
+		for (Method m : clazz.getMethods()) {
+			if(m.getName().equals(method)) {
+				return m.invoke(null, value);
 			}
 		}
 		

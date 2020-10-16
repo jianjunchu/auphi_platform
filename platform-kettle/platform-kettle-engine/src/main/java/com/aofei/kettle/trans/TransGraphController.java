@@ -125,8 +125,13 @@ public class TransGraphController {
 		} else {
 			versionComment = "no comment";
 		}
-		
-		repository.save( transMeta, versionComment, null);
+		try {
+			repository.save( transMeta, versionComment, null);
+		} catch(Exception e) {
+			e.printStackTrace();
+			
+			throw e;
+		}
 		
 		JsonUtils.success("转换保存成功！");
 	}

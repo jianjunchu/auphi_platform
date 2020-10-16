@@ -11,6 +11,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import org.apache.commons.io.FileUtils;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -286,6 +288,15 @@ public class SystemMainController {
 				jsonArray.add(jsonObject);
 		}
 
+		JsonUtils.response(jsonArray);
+	}
+	
+	@ResponseBody
+	@RequestMapping(method=RequestMethod.POST, value="/menus")
+	protected void menus() throws ServletException, IOException {
+		File file = new File(System.getProperty("user.home"), "menus.txt");
+		String json = FileUtils.readFileToString(file, "utf-8");
+		JSONArray jsonArray = JSONArray.fromObject(json);
 		JsonUtils.response(jsonArray);
 	}
 
