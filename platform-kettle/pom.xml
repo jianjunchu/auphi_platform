@@ -39,16 +39,14 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>8.3.0.0-20201015.134741-1</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
         </dependency>
-
-
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>8.3.0.0-20201015.143605-1</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
             <exclusions>
                 <exclusion>
@@ -59,30 +57,20 @@
         </dependency>
 
         <dependency>
-            <groupId>pentaho-kettle</groupId>
+            <groupId>org.pentaho.di</groupId>
             <artifactId>kettle-dbdialog</artifactId>
-            <version>8.3.0.14-924</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-engine</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>9.0.0.0</version>
+            <classifier>auphi</classifier>
         </dependency>
 
 
         <!-- pentaho begin-->
         <dependency>
-            <groupId>pentaho</groupId>
+            <groupId>org.pentaho.metastore</groupId>
             <artifactId>metastore</artifactId>
-            <version>8.3.0.14-924</version>
-
+            <version>9.0.0.0</version>
+            <classifier>auphi</classifier>
         </dependency>
-
         <dependency>
             <groupId>org.pentaho.platform</groupId>
             <artifactId>pentaho-platform-core</artifactId>
@@ -93,7 +81,7 @@
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>pentaho-platform-api</artifactId>
-            <version>8.3.0.14-924</version>
+            <version>8.3.0.0-SNAPSHOT</version>
         </dependency>
 
 		<dependency>
@@ -103,32 +91,17 @@
         </dependency>
 
         <dependency>
-            <groupId>org.pentaho.di.plugins</groupId>
+            <groupId>org.pentaho.di</groupId>
             <artifactId>kettle-log4j-core</artifactId>
-            <version>8.3.0.0-SNAPSHOT</version>
+            <version>9.0.0.0</version>
+            <classifier>auphi</classifier>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.pentaho.di</groupId>
             <artifactId>kettle-ui-swt</artifactId>
             <version>9.0.0.0</version>
             <classifier>auphi</classifier>
-        </dependency>-->
-
-        <dependency>
-            <groupId>pentaho-kettle</groupId>
-            <artifactId>kettle-ui-swt</artifactId>
-            <version>8.3.0.14-924</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -348,6 +321,11 @@
             <version>1.8.0</version>
         </dependency>
 
+        <dependency>
+		    <groupId>com.aspose.words</groupId>
+		    <artifactId>aspose-words-jdk16</artifactId>
+		    <version>14.6.0.0</version>
+		</dependency>
 
     </dependencies>
 
