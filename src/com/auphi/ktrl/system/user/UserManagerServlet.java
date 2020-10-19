@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -46,9 +46,10 @@ public class UserManagerServlet extends HttpServlet
 {
 
     private static final long serialVersionUID = 6858380063564549328L;
-    
+
     public static String parameter_action = "action" ;
     public static String parameter_user_id = "user_id" ;
+    public static String parameter_user_type = "user_type" ;
     public static String parameter_user_name = "user_name" ;
     public static String parameter_password = "password" ;
     public static String parameter_nick_name = "nick_name" ;
@@ -58,32 +59,32 @@ public class UserManagerServlet extends HttpServlet
     public static String parameter_page = "page" ;
     public static String parameter_role_id = "role_id" ;
     public static String parameter_org_id = "org_id" ;
-    
+
     public static String attribute_page_list = "pageList" ;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         doPost(request,response) ;
     }
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String action = request.getParameter(parameter_action) ;
         UserBean loginUserBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
 
         int page = request.getParameter(parameter_page)==null?1:Integer.parseInt(request.getParameter("page"));
-        
+
         if("list".equals(action))
         {//list
             PageList pageList = getUserPageList(page, loginUserBean) ;
             request.setAttribute(attribute_page_list, pageList);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("modules/system/userlist.jsp"); 
-            dispatcher.forward(request, response); 
+            RequestDispatcher dispatcher = request.getRequestDispatcher("modules/system/userlist.jsp");
+            dispatcher.forward(request, response);
         }
         else if("create".equals(action))
         {//create user
             UserBean userBean = getUserBean(request, loginUserBean);
             UMStatus status = UserUtil.createUser(userBean);
-            
+
             XStream xstream = new XStream(new JettisonMappedXmlDriver());
             xstream.alias("item", UMStatus.class) ;
             response.setHeader("Pragma", "No-cache");
@@ -93,15 +94,15 @@ public class UserManagerServlet extends HttpServlet
             response.getWriter().write(status.toJsonString());
 //            System.out.println(status.toJsonString());
 //            System.out.println(xstream.toXML(userBean));
-            response.getWriter().close();        
+            response.getWriter().close();
             //response.sendRedirect("usermanager?action=list");
         }else if("beforeUpdate".equals(action)){//get data before update
             String user_id = request.getParameter("user_id");
             UserBean userBean = UserUtil.getUserById(user_id) ;
-            
+
             XStream xstream = new XStream(new JettisonMappedXmlDriver());
             xstream.alias("item", UserBean.class);
-            
+
             response.setHeader("Pragma", "No-cache");
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expires", 0L);
@@ -112,7 +113,7 @@ public class UserManagerServlet extends HttpServlet
         }else if("update".equals(action)){//update
             UserBean userBean = getUserBean(request, loginUserBean) ;
             UMStatus ums = UserUtil.updateUser(userBean) ;
-            
+
             response.setHeader("Pragma", "No-cache");
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expires", 0L);
@@ -123,7 +124,7 @@ public class UserManagerServlet extends HttpServlet
         }else if("delete".equals(action)){//delete
             String user_ids = request.getParameter(parameter_user_id) ;
             UserUtil.deleteUsers(user_ids) ;
-            
+
             response.sendRedirect("usermanager?action=list");
         }else if ("getRolesOfUser".equals(action)){
             String user_id = request.getParameter(parameter_user_id) ;
@@ -162,13 +163,18 @@ public class UserManagerServlet extends HttpServlet
         PageInfo pageInfo = new PageInfo(pageNo,count) ;
         pageList.setList(userList) ;
         pageList.setPageInfo(pageInfo) ;
-        
+
         return pageList ;
     }
     private UserBean getUserBean(HttpServletRequest request, UserBean loginUserBean)
     {
         UserBean userBean = new UserBean() ;
         userBean.setUser_id(request.getParameter(parameter_user_id)) ;
+        String user_type = request.getParameter(parameter_user_type);
+        if(user_type!=null){
+            userBean.setIsSystemUser(Integer.parseInt(user_type)); ;
+        }
+
         userBean.setUser_name(request.getParameter(parameter_user_name)) ;
         userBean.setPassword(request.getParameter(parameter_password)) ;
         userBean.setNick_name(request.getParameter(parameter_nick_name)) ;

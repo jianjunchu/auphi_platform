@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -38,7 +38,7 @@ import com.auphi.data.hub.service.InterfaceServiceAuth;
 
 /**
  * 服务授权管理接口
- * 
+ *
  * @author yiyabo
  *
  */
@@ -47,8 +47,8 @@ public class InterfaceServiceAuthImpl implements InterfaceServiceAuth{
 
 	@Autowired
     SystemDao systemDao;
-	
-	
+
+
 	public PaginationSupport<Object> queryServiceAuths(Dto dto)
 			throws SQLException {
 		List<Object> items = systemDao.queryForPage("ServiceAuth.queryServiceAuthList", dto);
@@ -58,21 +58,22 @@ public class InterfaceServiceAuthImpl implements InterfaceServiceAuth{
 	}
 
 	public void saveServiceAuth(ServiceAuth serviceAuth) {
+
 		systemDao.save("ServiceAuth.insertServiceAuth",serviceAuth);
 	}
 
 	public void updateServiceAuth(ServiceAuth serviceAuth) {
 		systemDao.update("ServiceAuth.updateServiceAuth",serviceAuth);
 	}
-	
+
 	public void deleteServiceAuth(String serviceAuthIds) {
 		Dto dto = new BaseDto();
 		dto.put("serviceAuthIds",serviceAuthIds);
 		systemDao.delete("ServiceAuth.deleteServiceAuthByIds",dto);
 	}
 
-	
-	public Dto getServiceAuth(Dto dto) {	
+
+	public Dto getServiceAuth(Dto dto) {
 		return (Dto)systemDao.queryForObject("ServiceAuth.getServiceAuth",dto);
 	}
 

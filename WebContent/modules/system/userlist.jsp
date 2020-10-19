@@ -28,7 +28,7 @@ Ext.onReady(function(){
 	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.Refresh") %>',iconCls: 'refresh',handler: onRefreshClick});
 	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.RoleSetting") %>',iconCls: 'refresh',handler: onPriviledgeClick});
 	tb.doLayout();
-	
+
 	if(!win){
         win =  Ext.create('Ext.window.Window', {
         	contentEl: 'dlg',
@@ -40,14 +40,14 @@ Ext.onReady(function(){
         	closeAction:'hide',
 	        buttons: [
 	        	{text:'<%=Messages.getString("UserManager.Dialog.Button.Submit") %>',handler: function(){
-	        			valiDataForm();	        			
+	        			valiDataForm();
 	    	    	}
 	        	},
 	        	{text:'<%=Messages.getString("UserManager.Dialog.Button.Cancel") %>',handler: function(){win.hide();}}
 	        ]
         });
     }
-    
+
     if (!winPriviledge){
     	winPriviledge = Ext.create('Ext.window.Window',{
     		contentEl: 'dlgPriviledge',
@@ -57,10 +57,10 @@ Ext.onReady(function(){
     		closeAction:'hide',
     		buttons:[
 	        	{text:'<%=Messages.getString("UserManager.Dialog.Button.Submit") %>',handler: function(){
-	        			assginRolesToUser();	        			
+	        			assginRolesToUser();
 	    	    	}
 	        	},
-	        	{text:'<%=Messages.getString("UserManager.Dialog.Button.Cancel") %>',handler: function(){winPriviledge.hide();}}    		
+	        	{text:'<%=Messages.getString("UserManager.Dialog.Button.Cancel") %>',handler: function(){winPriviledge.hide();}}
     		]
     	});
 
@@ -71,9 +71,9 @@ Ext.onReady(function(){
 		    		type: 'json'
 		    	},
 		    	url: 'rolemanager?action=allroles'
-		    }		
+		    }
 		});
-		
+
 		role_tree = Ext.create('Ext.tree.Panel',{
 				renderTo:'role_tree',
 				border:false,
@@ -89,7 +89,7 @@ Ext.onReady(function(){
 		role_tree_store.load();
 		role_tree.expand() ;
     }
-});	
+});
 function onCreateClick(){
     document.getElementById('dataForm').reset();
     document.getElementById('description').innerHTML = '';
@@ -136,7 +136,7 @@ function onUpdateClick(){
 	}
 	document.getElementById('user_id').value = user_id;
 
-	
+
 	Ext.Ajax.request(
 	{
 		url: 'usermanager',
@@ -145,13 +145,14 @@ function onUpdateClick(){
 	        'action': 'beforeUpdate',
 	        'user_id': user_id
 	    },
-		success: function(transport) 
+		success: function(transport)
 		{
 			var data = eval('('+transport.responseText+')');
 			document.getElementById('user_id').value = data.item.user__id;
 	       	document.getElementById('user_name').value = data.item.user__name;
 	       	document.getElementById('password').value = data.item.password;
 	       	document.getElementById('password_confirm').value=data.item.password;
+			document.getElementById('user_type').value=data.item.isSystemUser;
 	       	document.getElementById('nick_name').value=data.item.nick__name;
 	       	document.getElementById('email').value = data.item.email;
 	       	document.getElementById('mobilephone').value = data.item.mobilephone;
@@ -160,7 +161,7 @@ function onUpdateClick(){
 		}
 	}
 	);
-	
+
 	closeMessageDiv() ;
 	win.setTitle('<%=Messages.getString("UserManager.Dialog.Update.Title") %>');
     win.show();
@@ -189,7 +190,7 @@ function onDeleteClick(){
 		Ext.MessageBox.alert('<%=Messages.getString("UserManager.Warnning.Warn") %>','<%=Messages.getString("UserManager.Warnning.Delete.Choose") %>');
 		return false;
 	}
-	
+
 	Ext.MessageBox.confirm('<%=Messages.getString("UserManager.Confirm.Delete.Title") %>', '<%=Messages.getString("UserManager.Confirm.Delete.Message") %>', function (btn){
 		if(btn=="yes"){
 			document.getElementById('user_id').value = user_id;
@@ -202,7 +203,7 @@ function onDeleteClick(){
 function onRefreshClick(){
 	window.location.href = 'usermanager?action=list';
 }
-   
+
    function onPriviledgeClick(){
    	var success = true ;
    	var checks = document.getElementsByName('check');
@@ -237,16 +238,16 @@ function onRefreshClick(){
 	        'action': 'getRolesOfUser',
 	        'user_id': user_id
 	    },
-		success: function(transport) 
+		success: function(transport)
 		{
 		    var data = eval('('+transport.responseText+')');
 			var role_ids = transport.responseText.split(',');
-			
+
 			//unchecked all
 			var nodes = role_tree.getChecked();
 			for (var i = 0 ; i < nodes.length ; i ++)
 				nodes[i].set('checked',false);
-			
+
 			// get specific roles checked
 			for (var i =0 ; i < role_ids.length; i++)
 			{
@@ -255,8 +256,8 @@ function onRefreshClick(){
 			}
 		}
 	}
-	);		
-   
+	);
+
    	closeMessageDiv() ;
    	winPriviledge.show() ;
    }
@@ -272,7 +273,7 @@ function getRoleIds()
 	{
 		role_ids = role_ids + ',' + checked[i].get('id');
 	}
-	role_ids = checked[0].get('id')+role_ids; 
+	role_ids = checked[0].get('id')+role_ids;
 
 	return role_ids;
 }
@@ -280,13 +281,13 @@ function assginRolesToUser()
 {
 	var role_ids = getRoleIds() ;
 	var user_id = document.getElementById('user_id').value;
-	
+
 	if (role_ids == '')
 	{
 		document.getElementById('role_empty').style.display='' ;
 		return false ;
 	}
-	
+
 	Ext.Ajax.request({
 		url: 'usermanager',
 		method: 'POST',
@@ -295,7 +296,7 @@ function assginRolesToUser()
 	        'user_id': user_id,
 	        'role_id': role_ids
 	    },
-		success: function(transport) 
+		success: function(transport)
 		{
 			winPriviledge.close() ;
 		}
@@ -311,10 +312,11 @@ function valiDataForm()
 	var nick_name = document.getElementById('nick_name').value.replace(/(^\s*)|(\s*$)/g, "") ;
 	var email = document.getElementById('email').value.replace(/(^\s*)|(\s*$)/g, "") ;
 	var mobilephone = document.getElementById('mobilephone').value ;
-	var description = document.getElementById('description').value.replace(/(^\s*)|(\s*$)/g, ""); 
-	
+	var description = document.getElementById('description').value.replace(/(^\s*)|(\s*$)/g, "");
+	var user_type = document.getElementById('user_type').value ;
+
 	var success = true;
-	
+
 	if(user_name == '')
 	{
 		document.getElementById('user_name_empty').style.display = '';
@@ -322,15 +324,23 @@ function valiDataForm()
 	}
 	else
 		document.getElementById('user_name_empty').style.display = 'none';
-	
+
 	if(!valiUserName(user_name))
 	{
 		document.getElementById('user_name_invalid').style.display = '';
 		success = false;
 	}
-	else 
+	else
 		document.getElementById('user_name_invalid').style.display = 'none';
-	
+
+	if(user_type!='' || user_type!=null || user_type!=0) {
+		document.getElementById('user_type_invalid').style.display = 'none';
+	} else {
+		document.getElementById('user_type_invalid').style.display = '';
+		success = false;
+	}
+
+
 	if (!valiPassword(password))
 	{
 		document.getElementById('password_invalid').style.display='';
@@ -338,36 +348,36 @@ function valiDataForm()
 	}
 	else
 		document.getElementById('password_invalid').style.display='none';
-			
+
 	if (password != password_confirm)
 	{	document.getElementById('password_confirm_mismatch').style.display='';
 		success = false ;
 	}
 	else
 		document.getElementById('password_confirm_mismatch').style.display='none';
-	
-	
+
+
 	if (email == ''){
 		document.getElementById('email_empty').style.display = '';
 		success = false;
 	} else {
 		document.getElementById('email_empty').style.display = 'none';
 	}
-	
+
 	if (!valiEmail(email)){
 		document.getElementById('email_invalid').style.display = '' ;
 		success = false ;
 	} else {
 		document.getElementById('email_invalid').style.display = 'none' ;
 	}
-	
+
 	if(description == ''){
 		document.getElementById('description_empty').style.display = '';
 		success = false;
 	}else {
 		document.getElementById('description_empty').style.display = 'none';
 	}
-	
+
 	if(success)
 	{
 		// If user_id is not set, send create request
@@ -379,6 +389,7 @@ function valiDataForm()
 				params: {
 			        'action' : 'create',
 			        'user_name' : user_name,
+					'user_type' : user_type,
 			        'password': password,
 			        'nick_name': nick_name,
 			        'email': email,
@@ -420,13 +431,14 @@ function valiDataForm()
 			        'action' : 'update',
 			        'user_id': user_id,
 			        'user_name' : user_name,
+					'user_type' : user_type,
 			        'password': password,
 			        'nick_name': nick_name,
 			        'email': email,
 			        'mobilephone': mobilephone,
 			        'description': description
 			    },
-				success: function(transport) 
+				success: function(transport)
 				{
 				    var data = eval('('+transport.responseText+')');
 				    if(data.statusCode == '<%=UMStatus.SUCCESS.getStatusCode()%>')
@@ -467,7 +479,7 @@ function valiUserName(user_name){
 }
 
 function valiPassword(password){
-	var re = /^[0-9a-zA-Z_]{5,16}$/;
+	var re = /^.*(?=.{8,32})(?=.*\d)(?=.*[A-Z]{1,16})(?=.*[a-z]{1,16})(?=.*[!@#$%^&*?\(\)]{0,16}).*$/;
 	if (re.test(password))
 		return true ;
 	else
@@ -513,13 +525,13 @@ function closeMessageDiv()
 	}
 }
 
-function countlen(){ 
+function countlen(){
 	var description = document.getElementById('description');
-    if(description.value.length > 120){ 
+    if(description.value.length > 120){
     	description.value = description.value.substring(0,120);
     	Ext.MessageBox.alert('<%=Messages.getString("UserManager.Warnning.Warn") %>','<%=Messages.getString("UserManager.Dialog.Title.Description.Warn.Long") %>');
-    } 
-    return true; 
+    }
+    return true;
 }
 </script>
 </head>
@@ -537,7 +549,7 @@ function countlen(){
 		</tr>
 		</table>
 		</form>
-	</div>	
+	</div>
 	<form id="listForm" name="listForm" action="" method="post">
 	<%=pageList.getPageInfo().getHtml("usermanager?action=list") %>
 	<br />
@@ -568,8 +580,8 @@ function countlen(){
 		}else if(userBean.getStatus() == 2){
 			user_status = "已停用";
 		}
-		
-%>	
+
+%>
 		<tr>
 			<td align="center" nowrap="nowrap"><input type="checkbox" name="check"   value="<%=userBean.getUser_id() %>" class="ainput"></td>
 			<td nowrap="nowrap"><%=userBean.getNick_name() %></td>
@@ -579,7 +591,7 @@ function countlen(){
 		</tr>
 <%
 	}
-%>		
+%>
 	</table>
 	</form>
 	<div id="dlg" class="x-hidden">
@@ -620,6 +632,18 @@ function countlen(){
 					</td>
 				</tr>
 				<tr height="30">
+					<td width="100"><%=Messages.getString("UserManager.Dialog.Title.UserType") %></td>
+					<td>
+
+						<select id="user_type" name="user_type"  style="width: 195px;">
+							<option value="1">系统管理员</option>
+							<option value="2">安全管理员</option>
+							<option value="3">审计员</option>
+						</select>
+						<div id="user_type_invalid" style="display:none;" divType="message"><font color="red">请选择用户类型</font></div>
+					</td>
+				</tr>
+				<tr height="30">
 					<td width="100"><%=Messages.getString("UserManager.Dialog.Title.Mobilephone") %></td>
 					<td>
 						<input type="text" id="mobilephone" name="mobilephone" style="width: 195px" maxlength="50">
@@ -632,7 +656,7 @@ function countlen(){
 						<div id="email_empty" style="display:none;" divType="message"><font color="red"><%=Messages.getString("UserManager.Dialog.Title.Email.Warn.Empty") %></font></div>
 						<div id="email_invalid" style="display:none;" divType="message"><font color="red"><%=Messages.getString("UserManager.Dialog.Title.Email.Warn.Invalid") %></font></div>
 					</td>
-				</tr>					
+				</tr>
 				<tr height="30">
 					<td><%=Messages.getString("UserManager.Dialog.Title.Description") %></td>
 					<td>
@@ -640,7 +664,7 @@ function countlen(){
 						<div id="description_empty" style="display:none;" divType="message"><font color="red"><%=Messages.getString("UserManager.Dialog.Title.Description.Warn.Empty") %></font></div>
 						<div id="unknown_error" style="display:none;" divType="message"><font color="red"><%=Messages.getString("UserManager.Dialog.Title.Warn.UnknownError") %></font></div>
 					</td>
-				</tr>			
+				</tr>
 			</table>
 		</form>
 	</div>

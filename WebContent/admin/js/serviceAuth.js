@@ -42,23 +42,23 @@ Ext.onReady(function(){
 
 		}
 	}]);
-	
+
 	/**
 	 * 数据存储
 	 */
 	var store = new Ext.data.Store({
 		proxy : new Ext.data.HttpProxy({
-			url:'../serviceAuth/list.shtml'	
+			url:'../serviceAuth/list.shtml'
 		}),
 		reader: new Ext.data.JsonReader({
 			totalProperty : 'total',
 			root : 'rows'
 		},[{
-			name : 'authId' 
+			name : 'authId'
 		},{
-			name : 'userId' 
+			name : 'userId'
 		},{
-			name : 'serviceId' 
+			name : 'serviceId'
 		},{
 			name : 'service_name'
 		},{
@@ -77,14 +77,14 @@ Ext.onReady(function(){
 			name : 'timeLimit'
 		}])
 	});
-	
+
 	// 翻页排序时带上查询条件
 	store.on('beforeload', function() {
 		this.baseParams = {
 
 		};
 	});
-	
+
 	var pagesize_combo = new Ext.form.ComboBox({
 		name : 'pagesize',
 		hiddenName : 'pagesize',
@@ -114,7 +114,7 @@ Ext.onReady(function(){
 			}
 		});
 	});
-	
+
 	var bbar = new Ext.PagingToolbar({
 		pageSize : number,
 		store : store,
@@ -124,7 +124,7 @@ Ext.onReady(function(){
 		emptyMsg : "没有符合条件的记录",
 		items : [ '-', '&nbsp;&nbsp;', pagesize_combo ]
 	});
-	
+
 	var grid = new Ext.grid.GridPanel({
 		title : '<span class="commoncss">服务授权管理</span>',
 		iconCls : 'configIcon',
@@ -162,7 +162,7 @@ Ext.onReady(function(){
 		        		id : 'queryServiceUserName',
 		        		name : 'queryServiceUserName',
 		        		emptyText : '请输入授权用户名',
-		        		enableKeyEvents : true,	
+		        		enableKeyEvents : true,
 		        		listeners : {
 		        			specialkey : function(field,e){
 		        				if(e.getKey() == Ext.EventObject.ENTER){
@@ -185,16 +185,16 @@ Ext.onReady(function(){
 		        		store.reload();
 					}
 		        }],
-		bbar : bbar      
+		bbar : bbar
 	});
-	
+
 	store.load({
 		params : {
 			start : 0,
 			limit : bbar.pageSize
 		}
 	});
-	
+
 	/**
 	 * 布局
 	 */
@@ -202,7 +202,7 @@ Ext.onReady(function(){
 		layout : 'border',
 		items : [grid]
 	})
-	
+
 	/**
 	 * 服务接口多选框数据源
 	 */
@@ -213,7 +213,7 @@ Ext.onReady(function(){
 		autoLoad : true,
 		reader : new Ext.data.JsonReader({}, ['serviceId', 'serviceName'])
 	});
-	
+
 	/**
 	 * 服务接口多选框
 	 */
@@ -234,9 +234,9 @@ Ext.onReady(function(){
 			autoShow : true,
 			selectOnFocus : true,
 			name : "serviceId",
-			id: "service_id"	
+			id: "service_id"
 	 });
-	
+
 	 /**
 	  * 服务用户多选框数据源
 	  */
@@ -247,7 +247,7 @@ Ext.onReady(function(){
 			autoLoad : true,
 			reader : new Ext.data.JsonReader({},['userId', 'userName'])
 	 });
-	 
+
 	 /**
 	  * 服务用户多选框
 	  */
@@ -267,8 +267,8 @@ Ext.onReady(function(){
 		 hiddenName : "userId",
 		 autoShow : true,
 		 selectOnFocus : true,
-		 name : "userId", 
-		 id: 'user_Id'	 
+		 name : "userId",
+		 id: 'user_Id'
 	});
 
 
@@ -293,8 +293,8 @@ Ext.onReady(function(){
 		displayField : "cycleLimitName",
 		mode : 'local',
 		forceSelection : true,
+		allowBlank : false,
 		hiddenName : 'cycleLimit',
-		emptyText : '选择限制周期',
 		editable : false,
 		value : 1,
 		triggerAction : 'all',
@@ -307,8 +307,7 @@ Ext.onReady(function(){
 		id:'timeLimit',
 		fieldLabel : '限制时间',
 		name : 'timeLimit',
-		emptyText : '请输入数据限制的时间',
-		allowBlank : true,
+		allowBlank : false,
 		width:'100%',
 		anchor : '100%'
 	}
@@ -351,10 +350,9 @@ Ext.onReady(function(){
 					fieldLabel : '数据限制',
 					name : 'linesLimit',
 					id : 'linesLimit',
-					allowBlank : true,
+					allowBlank : false,
 					anchor : '70%',
-					xtype : 'numberfield',
-					emptyText:'限制周期内返回的数据条数'
+					xtype : 'numberfield'
 				},{
 					layout : 'column',
 					border : false,
@@ -376,8 +374,8 @@ Ext.onReady(function(){
 					id : 'use_desc',
 					allowBlank : true,
 					xtype : 'textarea',
-					width : 500, 
-					height : 80, 
+					width : 500,
+					height : 80,
 			    },{
 			    	id : 'authId',
 					name : 'authId',
@@ -390,7 +388,7 @@ Ext.onReady(function(){
 					hidden : true
 			    }]
 	});
-	
+
 	var serviceAuthWindow = new Ext.Window({
 			layout : 'fit',
 			width : 650,
@@ -444,9 +442,9 @@ Ext.onReady(function(){
 		}
 		serviceAuthWindow.show();
 		serviceAuthWindow.setTitle('<span class="commoncss">服务接口授权</span>');
-		Ext.getCmp('windowmode').setValue('add');	
+		Ext.getCmp('windowmode').setValue('add');
 	}
-	
+
 	/**
 	 * 保存授权信息
 	 */
@@ -467,10 +465,10 @@ Ext.onReady(function(){
 			failure : function(form, action) {
 				var msg = action.result.msg;
 				Ext.MessageBox.alert('提示', '数据保存失败:<br>' + msg);
-			}	
+			}
 		});
 	}
-	
+
 	/**
 	 * 修改参数初始化
 	 */
@@ -488,8 +486,8 @@ Ext.onReady(function(){
 		serviceAuthPanel.getForm().setValues(record)
 		Ext.getCmp('btnReset').hide();
 	}
-	
-	
+
+
 	/**
 	 * 修改用户权限
 	 */
@@ -510,10 +508,10 @@ Ext.onReady(function(){
 			failure : function(form, action) {
 				var msg = action.result.msg;
 				Ext.MessageBox.alert('提示', '数据保存失败:<br>' + msg);
-			}	
-		});			
+			}
+		});
 	}
-	
+
 	/**
 	 * 根据条件查询服务用户
 	 */
@@ -526,7 +524,7 @@ Ext.onReady(function(){
 			}
 		});
 	}
-	
+
 	/**
 	 * 删除服务权限
 	 */
@@ -557,5 +555,5 @@ Ext.onReady(function(){
 			}
 		});
 	}
-	
+
 });

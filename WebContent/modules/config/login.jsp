@@ -47,7 +47,7 @@ function toLogin(){
 	}
 }
 function toConfig(){
-	window.location.href="config.jsp"; 
+	window.location.href="config.jsp";
 }
 </script>
 <title>管理员配置</title>

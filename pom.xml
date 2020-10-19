@@ -5,21 +5,21 @@
   <version>3.4.0</version>
   <packaging>war</packaging>
   <name>auphi_platform</name>
-  <properties>  
-    <!-- 文件拷贝时的编码 -->  
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>  
-    <!-- 编译时的编码 -->  
+  <properties>
+    <!-- 文件拷贝时的编码 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- 编译时的编码 -->
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     <java.version>1.8</java.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-  </properties>  
-  
+  </properties>
+
   <repositories>
     <repository>
       <id>auphi</id>
-      <url>http://101.37.17.102:8081/nexus/content/groups/public/</url>
+      <url>http://123.206.52.213:8081/repository/maven-public/</url>
     </repository>
     <repository>
       <id>mvnrepository</id>
@@ -555,7 +555,7 @@
     <dependency>
       <groupId>org.pentaho.di</groupId>
       <artifactId>kettle-test</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.0</version>
       <classifier>auphi</classifier>
     </dependency>
 
@@ -630,7 +630,7 @@
       <version>3.4.0</version>
       <classifier>SNAPSHOT</classifier>
     </dependency>
-    
+
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis-spring</artifactId>

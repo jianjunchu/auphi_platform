@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -41,7 +41,11 @@ public class UserBean
     private int orgId;
     private boolean isAdmin ;
     private boolean isSuperAdmin ;
-    
+
+    private long passwordExpiryTime;
+
+    private long loginLockTime;
+
 	public UserBean()
     {
         isSystemUser = 0 ;
@@ -61,8 +65,8 @@ public class UserBean
         this.isSystemUser = isSystemUser;
         this.status = status;
         this.lastLogin = lastLogin;
-    }    
-    
+    }
+
     public int getUser_id()
     {
         return user_id;
@@ -185,5 +189,20 @@ public class UserBean
 	public void setSuperAdmin(boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
 	}
-	
+
+    public long getPasswordExpiryTime() {
+        return passwordExpiryTime;
+    }
+
+    public void setPasswordExpiryTime(long passwordExpiryTime) {
+        this.passwordExpiryTime = passwordExpiryTime;
+    }
+
+    public long getLoginLockTime() {
+        return loginLockTime;
+    }
+
+    public void setLoginLockTime(long loginLockTime) {
+        this.loginLockTime = loginLockTime;
+    }
 }

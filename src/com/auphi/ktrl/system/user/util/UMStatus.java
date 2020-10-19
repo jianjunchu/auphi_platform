@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -36,22 +36,24 @@ public enum UMStatus
     WRONG_PASSWORD(ROLE_NAME_EXIST.statusCode+1,"UserManager.Status.WrongPassword"),
     NICK_NAME_EXIST(WRONG_PASSWORD.statusCode+1,"UserManager.Status.NickNameExist"),
 	USER_NOT_ACTIVE(NICK_NAME_EXIST.statusCode+1,"UserManager.Status.UserNotActive"),
-    DB_NOT_CONNECTED(USER_NOT_ACTIVE.statusCode+1,"UserManager.Status.DBNotConnected");
+    DB_NOT_CONNECTED(USER_NOT_ACTIVE.statusCode+1,"UserManager.Status.DBNotConnected"),
+    PASSWORD_EXPIRY(DB_NOT_CONNECTED.statusCode+1,"UserManager.Status.PasswordExpiry"),
+    LOCK_LOGIN(PASSWORD_EXPIRY.statusCode+1,"UserManager.Status.DBNotConnected");
 
     final int statusCode ;
-    final String statusMessage ; 
-    
+    final String statusMessage ;
+
     UMStatus(int statusCode, String messageProperty)
     {
         this.statusCode = statusCode ;
         this.statusMessage = Messages.getString(messageProperty)  ;
     }
-    
+
     public int getStatusCode()
     {
         return this.statusCode ;
     }
-    
+
     public String getStatusMessage()
     {
         return statusMessage ;

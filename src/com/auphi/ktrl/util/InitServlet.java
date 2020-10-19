@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -54,9 +54,9 @@ import org.pentaho.di.core.KettleEnvironment;
  */
 public class InitServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Logger logger = Logger.getLogger(InitServlet.class);
-	
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -71,7 +71,7 @@ public class InitServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		try{
 			VerifyLicense g = new VerifyLicense();
-			g.install(null);
+			//g.install(null);
 		}catch (Exception e){
 			e.printStackTrace();
 			logger.error("您的 License 已过期", e);
@@ -81,7 +81,7 @@ public class InitServlet extends HttpServlet {
 
 		System.out.println(InitServlet.class.getResource("/log4j.properties"));
 		PropertyConfigurator.configure(InitServlet.class.getResource("/log4j_auphi.properties"));
-		
+
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -96,13 +96,13 @@ public class InitServlet extends HttpServlet {
 			//System.out.println("Kettle 3.2 Engine initialized successfully!");
 			KettleEngineImpl4_3.init();
 			logger.info("AKettle Engine initialized successfully!");
-			
+
 			//init connection pool
-			ConnectionPool.init();			
+			ConnectionPool.init();
 			conn = ConnectionPool.getConnection();
 			System.out.println("conn--------"+conn);
 			String querySQL = "SELECT * FROM QRTZ_TRIGGERS";
-			
+
 			stmt = conn.createStatement();
 			if (stmt==null)
 				throw new Exception("Statement is null");
@@ -116,7 +116,7 @@ public class InitServlet extends HttpServlet {
 				logger.info("Execute sql file start:" + filePath);
 				DataBaseUtil.executeSQLScript(stmt, filePath);
 				logger.info("Execute sql file end:" + filePath);
-				
+
 				RepositoryBean repBean = new RepositoryBean();
 				repBean.setRepositoryID(0) ;
 		        repBean.setUserName(connConfig.getUsername()) ;
@@ -129,43 +129,43 @@ public class InitServlet extends HttpServlet {
 		        repBean.setRepositoryName("Default") ;
 		        repBean.setVersion(KettleEngine.VERSION_4_3) ;
 		        repBean.setOrgId(1);
-		        
+
 		        CreateRepositoryThread createRepThread = new CreateRepositoryThread(repBean);
 		        createRepThread.run();
-				
+
 			}catch(Exception e1){
 				logger.error(e1.getMessage(), e1);
 			}
 		}finally{
 			ConnectionPool.freeConn(rs, stmt, null, conn);
 		}
-		
+
 		try{
 			//init repository
 			RepositoryUtil.initDefaultRepository();
-			
+
 			//init metadata engine
 			MetadataUtil.init();
 			//Thread.currentThread().setContextClassLoader(classLoader_servlet);
-			
+
 			//init quartz engine
 			QuartzUtil.init();
-			
+
 //			FastConfigScheduleUtil.init();
 			//start ha server monitor
 			ServerStatusThreadMain.start_minitor();
 			logger.info("AKettle HA server monitor started!");
-			
+
 			//set monitor status running to stopped
 			MonitorUtil.updateRunningToStoppedInStartUp();
 		}catch(Exception e){
 			logger.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private String getFilePath(String dbms){
 		String filePath = "dbTables/";
-		
+
 		if(DataBaseUtil.MYSQL.equals(dbms)){
 			filePath = filePath + "tables_mysql.sql";
 		}else if(DataBaseUtil.ORACLE.equals(dbms)){
@@ -181,7 +181,7 @@ public class InitServlet extends HttpServlet {
 		}else {
 			filePath = filePath + "tables_normal.sql";
 		}
-		
+
 		return filePath;
 	}
 }
