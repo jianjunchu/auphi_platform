@@ -54,7 +54,7 @@ public class TransExecutor implements Runnable {
 		this.executionConfiguration = transExecutionConfiguration;
 		this.transMeta = transMeta;
 	}
-	
+
 	private static Hashtable<String, TransExecutor> executors = new Hashtable<String, TransExecutor>();
 	
 	public static synchronized TransExecutor initExecutor(TransExecutionConfiguration transExecutionConfiguration, TransMeta transMeta) {
@@ -153,7 +153,9 @@ public class TransExecutor implements Runnable {
 					while(running) {
 						SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transMeta.getName(), carteObjectId, 0);
 						running = transStatus.isRunning();
-						if(!running) errCount = transStatus.getResult().getNrErrors();
+						if(!running){
+							errCount = transStatus.getResult().getNrErrors();
+						}
 						Thread.sleep(500);
 					}
 				} catch(Exception e) {
