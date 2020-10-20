@@ -119,6 +119,12 @@
             <groupId>com.aofei</groupId>
             <artifactId>platform-kettle-engine</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>kettle-engine</artifactId>
+                    <groupId>pentaho-kettle</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- spring begin-->

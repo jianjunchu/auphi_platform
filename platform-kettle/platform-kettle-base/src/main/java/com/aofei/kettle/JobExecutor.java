@@ -276,11 +276,11 @@ public class JobExecutor implements Runnable {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("stepName", jobEntryResult.getJobEntryName());
 				
-				if(jobEntryResult.getResult().getResult())
+				if(jobEntryResult.getResult().getResult()) {
 					jsonObject.put("stepStatus", 0);
-				else
+				}else {
 					jsonObject.put("stepStatus", 1);
-				
+				}
 				finishEntries.add(jobEntryResult.getJobEntryName());
 				jsonArray.add(jsonObject);
 			}
