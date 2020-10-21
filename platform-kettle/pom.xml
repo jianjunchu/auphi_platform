@@ -57,51 +57,108 @@
         </dependency>
 
         <dependency>
-            <groupId>org.pentaho.di</groupId>
+            <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
-            <version>9.0.0.0</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 
         <!-- pentaho begin-->
         <dependency>
-            <groupId>org.pentaho.metastore</groupId>
+            <groupId>pentaho</groupId>
             <artifactId>metastore</artifactId>
-            <version>9.0.0.0</version>
-            <classifier>auphi</classifier>
+            <version>8.3.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.pentaho.platform</groupId>
-            <artifactId>pentaho-platform-core</artifactId>
-            <version>9.0.0.0</version>
-            <classifier>auphi</classifier>
-        </dependency>
+
 
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>pentaho-platform-api</artifactId>
             <version>8.3.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 		<dependency>
             <groupId>pentaho</groupId>
             <artifactId>pentaho-metaverse-api</artifactId>
             <version>8.3.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>org.pentaho.di</groupId>
+            <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>kettle-log4j-core</artifactId>
-            <version>9.0.0.0</version>
-            <classifier>auphi</classifier>
+            <version>8.3.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-ui-swt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>org.pentaho.di</groupId>
+            <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-ui-swt</artifactId>
-            <version>9.0.0.0</version>
+            <version>8.3.0.0-SNAPSHOT</version>
             <classifier>auphi</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
