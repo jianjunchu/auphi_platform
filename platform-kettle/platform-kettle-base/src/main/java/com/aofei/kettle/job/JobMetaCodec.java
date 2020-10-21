@@ -5,12 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.aofei.base.model.response.CurrentUserResponse;
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.StringEscapeHelper;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.JobLogTable;
-import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.*;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -19,6 +21,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.trans.step.StepMeta;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -91,6 +94,64 @@ public class JobMetaCodec extends BaseGraphCodec {
 					style = "error";
 				graph.insertEdge(parent, null, JobHopMetaCodec.encode(jobHopMeta), source, target, style);
 			}
+
+			JobLogTable jobLogTable = jobMeta.getJobLogTable();
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put( "connection", jobLogTable.getConnectionName() );
+			jsonObject.put( "schema", jobLogTable.getSchemaName() );
+			jsonObject.put( "table", jobLogTable.getTableName() );
+			jsonObject.put( "size_limit_lines", jobLogTable.getLogSizeLimit() );
+			jsonObject.put( "interval", jobLogTable.getLogInterval() );
+			jsonObject.put( "timeout_days", jobLogTable.getTimeoutInDays() );
+			JSONArray fields = new JSONArray();
+			for ( LogTableField field : jobLogTable.getFields() ) {
+				JSONObject jsonField = new JSONObject();
+				jsonField.put("id", field.getId());
+				jsonField.put("enabled", field.isEnabled());
+				jsonField.put("name", field.getFieldName());
+				jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+				fields.add(jsonField);
+			}
+			jsonObject.put("fields", fields);
+			e.setAttribute("jobLogTable", jsonObject.toString());
+
+
+			JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+			jsonObject = new JSONObject();
+			jsonObject.put( "connection", jobEntryLogTable.getConnectionName() );
+			jsonObject.put( "schema", jobEntryLogTable.getSchemaName() );
+			jsonObject.put( "table", jobEntryLogTable.getTableName() );
+			jsonObject.put( "timeout_days", jobEntryLogTable.getTimeoutInDays() );
+			fields = new JSONArray();
+			for ( LogTableField field : jobEntryLogTable.getFields() ) {
+				JSONObject jsonField = new JSONObject();
+				jsonField.put("id", field.getId());
+				jsonField.put("enabled", field.isEnabled());
+				jsonField.put("name", field.getFieldName());
+				jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+				fields.add(jsonField);
+			}
+			jsonObject.put("fields", fields);
+			e.setAttribute("jobEntryLogTable", jsonObject.toString());
+
+
+			ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+			jsonObject = new JSONObject();
+			jsonObject.put( "connection", channelLogTable.getConnectionName() );
+			jsonObject.put( "schema", channelLogTable.getSchemaName() );
+			jsonObject.put( "table", channelLogTable.getTableName() );
+			jsonObject.put( "timeout_days", channelLogTable.getTimeoutInDays() );
+			fields = new JSONArray();
+			for ( LogTableField field : channelLogTable.getFields() ) {
+				JSONObject jsonField = new JSONObject();
+				jsonField.put("id", field.getId());
+				jsonField.put("enabled", field.isEnabled());
+				jsonField.put("name", field.getFieldName());
+				jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+				fields.add(jsonField);
+			}
+			jsonObject.put("fields", fields);
+			e.setAttribute("channelLogTable", jsonObject.toString());
 		} finally {
 			graph.getModel().endUpdate();
 		}
@@ -162,6 +223,74 @@ public class JobMetaCodec extends BaseGraphCodec {
 //						hopinf.setToEntry(jobEntry);
 //				}
 				jobMeta.addJobHop(hopinf);
+			}
+		}
+
+		JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("jobLogTable"));
+		JobLogTable jobLogTable = jobMeta.getJobLogTable();
+		jobLogTable.setConnectionName(jsonObject.optString("connection"));
+		jobLogTable.setSchemaName(jsonObject.optString("schema"));
+		jobLogTable.setTableName(jsonObject.optString("table"));
+		jobLogTable.setLogSizeLimit(jsonObject.optString("size_limit_lines"));
+		jobLogTable.setLogInterval(jsonObject.optString("interval"));
+		jobLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		JSONArray jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+				JSONObject fieldJson = jsonArray.getJSONObject(i);
+				String id = fieldJson.optString("id");
+				LogTableField field = jobLogTable.findField( id );
+				if ( field == null ) {
+					field = jobLogTable.getFields().get(i);
+				}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
+
+		jsonObject = JSONObject.fromObject(root.getAttribute("jobEntryLogTable"));
+		JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+		jobEntryLogTable.setConnectionName(jsonObject.optString("connection"));
+		jobEntryLogTable.setSchemaName(jsonObject.optString("schema"));
+		jobEntryLogTable.setTableName(jsonObject.optString("table"));
+		jobEntryLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+				JSONObject fieldJson = jsonArray.getJSONObject(i);
+				String id = fieldJson.optString("id");
+				LogTableField field = jobEntryLogTable.findField( id );
+				if ( field == null && i<jobEntryLogTable.getFields().size()) {
+					field = jobEntryLogTable.getFields().get(i);
+				}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
+
+		jsonObject = JSONObject.fromObject(root.getAttribute("channelLogTable"));
+		ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+		channelLogTable.setConnectionName(jsonObject.optString("connection"));
+		channelLogTable.setSchemaName(jsonObject.optString("schema"));
+		channelLogTable.setTableName(jsonObject.optString("table"));
+		channelLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+				JSONObject fieldJson = jsonArray.getJSONObject(i);
+				String id = fieldJson.optString("id");
+				LogTableField field = channelLogTable.findField( id );
+				if ( field == null && i<channelLogTable.getFields().size()) {
+					field = channelLogTable.getFields().get(i);
+				}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
 			}
 		}
 		
