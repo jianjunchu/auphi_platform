@@ -31,6 +31,7 @@ public class OpenAPIClient extends AbstractStep {
         openAPIClientMeta.setuid( cell.getAttribute("wuid") );
         openAPIClientMeta.setbindId( cell.getAttribute("wBindId") );
         openAPIClientMeta.setBoName(cell.getAttribute("wBoName"));
+        openAPIClientMeta.setBatchNumber(cell.getAttribute("wBatchNumber"));
     }
 
     @Override
@@ -45,6 +46,7 @@ public class OpenAPIClient extends AbstractStep {
         e.setAttribute("wuid", openAPIClientMeta.getuid());
         e.setAttribute("wBindId", openAPIClientMeta.getbindId());
         e.setAttribute("wBoName", openAPIClientMeta.getBoName());
+        e.setAttribute("wBatchNumber", openAPIClientMeta.getBatchNumber());
         return e;
     }
 
