@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Properties;
 
 import com.aofei.base.model.response.CurrentUserResponse;
+import com.aofei.kettle.utils.StringEscapeHelper;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.TransLogTable;
+import org.pentaho.di.core.logging.*;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -105,96 +106,106 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    }
 		    e.setAttribute("variables", jsonArray.toString());
 			
-//		    TransLogTable transLogTable = transMeta.getTransLogTable();
-//		    JSONObject jsonObject = new JSONObject();
-//		    jsonObject.put( "connection", transLogTable.getConnectionName() );
-//		    jsonObject.put( "schema", transLogTable.getSchemaName() );
-//		    jsonObject.put( "table", transLogTable.getTableName() );
-//		    jsonObject.put( "size_limit_lines", transLogTable.getLogSizeLimit() );
-//		    jsonObject.put( "interval", transLogTable.getLogInterval() );
-//		    jsonObject.put( "timeout_days", transLogTable.getTimeoutInDays() );
-//		    JSONArray fields = new JSONArray();
-//		    for ( LogTableField field : transLogTable.getFields() ) {
-//		    	JSONObject jsonField = new JSONObject();
-//		    	jsonField.put("id", field.getId());
-//		    	jsonField.put("enabled", field.isEnabled());
-//		    	jsonField.put("name", field.getFieldName());
-//		    	jsonField.put("subjectAllowed", field.isSubjectAllowed());
-//				if (field.isSubjectAllowed()) {
-//					jsonField.put("subject", field.getSubject() == null ? "" : field.getSubject().toString());
-//				} else {
-//					jsonField.put("subject", "-");
-//				}
-//		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
-//		    	fields.add(jsonField);
-//		    }
-//		    jsonObject.put("fields", fields);
-//		    e.setAttribute("transLogTable", jsonObject.toString());
-		    
-		    
-		    
-		    
-//		    StepLogTable stepLogTable = transMeta.getStepLogTable();
-//		    jsonObject = new JSONObject();
-//		    jsonObject.put( "connection", stepLogTable.getConnectionName() );
-//		    jsonObject.put( "schema", stepLogTable.getSchemaName() );
-//		    jsonObject.put( "table", stepLogTable.getTableName() );
-//		    jsonObject.put( "timeout_days", stepLogTable.getTimeoutInDays() );
-//		    fields = new JSONArray();
-//		    for ( LogTableField field : stepLogTable.getFields() ) {
-//		    	JSONObject jsonField = new JSONObject();
-//		    	jsonField.put("id", field.getId());
-//		    	jsonField.put("enabled", field.isEnabled());
-//		    	jsonField.put("name", field.getFieldName());
-//		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
-//		    	fields.add(jsonField);
-//		    }
-//		    jsonObject.put("fields", fields);
-//		    e.setAttribute("stepLogTable", jsonObject.toString());
-		    
-		    
-		    
-		    
-		    
-//		    PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
-//		    jsonObject = new JSONObject();
-//		    jsonObject.put( "connection", performanceLogTable.getConnectionName() );
-//		    jsonObject.put( "schema", performanceLogTable.getSchemaName() );
-//		    jsonObject.put( "table", performanceLogTable.getTableName() );
-//		    jsonObject.put( "interval", performanceLogTable.getLogInterval() );
-//		    jsonObject.put( "timeout_days", performanceLogTable.getTimeoutInDays() );
-//		    fields = new JSONArray();
-//		    for ( LogTableField field : performanceLogTable.getFields() ) {
-//		    	JSONObject jsonField = new JSONObject();
-//		    	jsonField.put("id", field.getId());
-//		    	jsonField.put("enabled", field.isEnabled());
-//		    	jsonField.put("name", field.getFieldName());
-//		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
-//		    	fields.add(jsonField);
-//		    }
-//		    jsonObject.put("fields", fields);
-//		    e.setAttribute("performanceLogTable", jsonObject.toString());
-		    
-		    
-//		    MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
-//		    jsonObject = new JSONObject();
-//		    jsonObject.put( "connection", metricsLogTable.getConnectionName() );
-//		    jsonObject.put( "schema", metricsLogTable.getSchemaName() );
-//		    jsonObject.put( "table", metricsLogTable.getTableName() );
-//		    jsonObject.put( "timeout_days", metricsLogTable.getTimeoutInDays() );
-//		    fields = new JSONArray();
-//		    for ( LogTableField field : metricsLogTable.getFields() ) {
-//		    	JSONObject jsonField = new JSONObject();
-//		    	jsonField.put("id", field.getId());
-//		    	jsonField.put("enabled", field.isEnabled());
-//		    	jsonField.put("name", field.getFieldName());
-//		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
-//		    	fields.add(jsonField);
-//		    }
-//		    jsonObject.put("fields", fields);
-//		    e.setAttribute("metricsLogTable", jsonObject.toString());
-		    
+		    TransLogTable transLogTable = transMeta.getTransLogTable();
 		    JSONObject jsonObject = new JSONObject();
+		    jsonObject.put( "connection", transLogTable.getConnectionName() );
+		    jsonObject.put( "schema", transLogTable.getSchemaName() );
+		    jsonObject.put( "table", transLogTable.getTableName() );
+		    jsonObject.put( "size_limit_lines", transLogTable.getLogSizeLimit() );
+		    jsonObject.put( "interval", transLogTable.getLogInterval() );
+		    jsonObject.put( "timeout_days", transLogTable.getTimeoutInDays() );
+		    JSONArray fields = new JSONArray();
+		    for ( LogTableField field : transLogTable.getFields() ) {
+		    	JSONObject jsonField = new JSONObject();
+		    	jsonField.put("id", field.getId());
+		    	jsonField.put("enabled", field.isEnabled());
+		    	jsonField.put("name", field.getFieldName());
+		    	jsonField.put("subjectAllowed", field.isSubjectAllowed());
+				if (field.isSubjectAllowed()) {
+					jsonField.put("subject", field.getSubject() == null ? "" : field.getSubject().toString());
+				} else {
+					jsonField.put("subject", "-");
+				}
+		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+		    	fields.add(jsonField);
+		    }
+		    jsonObject.put("fields", fields);
+		    e.setAttribute("transLogTable", jsonObject.toString());
+		    
+		    StepLogTable stepLogTable = transMeta.getStepLogTable();
+		    jsonObject = new JSONObject();
+		    jsonObject.put( "connection", stepLogTable.getConnectionName() );
+		    jsonObject.put( "schema", stepLogTable.getSchemaName() );
+		    jsonObject.put( "table", stepLogTable.getTableName() );
+		    jsonObject.put( "timeout_days", stepLogTable.getTimeoutInDays() );
+		    fields = new JSONArray();
+		    for ( LogTableField field : stepLogTable.getFields() ) {
+		    	JSONObject jsonField = new JSONObject();
+		    	jsonField.put("id", field.getId());
+		    	jsonField.put("enabled", field.isEnabled());
+		    	jsonField.put("name", field.getFieldName());
+		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+		    	fields.add(jsonField);
+		    }
+		    jsonObject.put("fields", fields);
+		    e.setAttribute("stepLogTable", jsonObject.toString());
+		    
+		    PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
+		    jsonObject = new JSONObject();
+		    jsonObject.put( "connection", performanceLogTable.getConnectionName() );
+		    jsonObject.put( "schema", performanceLogTable.getSchemaName() );
+		    jsonObject.put( "table", performanceLogTable.getTableName() );
+		    jsonObject.put( "interval", performanceLogTable.getLogInterval() );
+		    jsonObject.put( "timeout_days", performanceLogTable.getTimeoutInDays() );
+		    fields = new JSONArray();
+		    for ( LogTableField field : performanceLogTable.getFields() ) {
+		    	JSONObject jsonField = new JSONObject();
+		    	jsonField.put("id", field.getId());
+		    	jsonField.put("enabled", field.isEnabled());
+		    	jsonField.put("name", field.getFieldName());
+		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+		    	fields.add(jsonField);
+		    }
+		    jsonObject.put("fields", fields);
+		    e.setAttribute("performanceLogTable", jsonObject.toString());
+
+			ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+			jsonObject = new JSONObject();
+			jsonObject.put( "connection", channelLogTable.getConnectionName() );
+			jsonObject.put( "schema", channelLogTable.getSchemaName() );
+			jsonObject.put( "table", channelLogTable.getTableName() );
+			jsonObject.put( "timeout_days", channelLogTable.getTimeoutInDays() );
+			fields = new JSONArray();
+			for ( LogTableField field : channelLogTable.getFields() ) {
+				JSONObject jsonField = new JSONObject();
+				jsonField.put("id", field.getId());
+				jsonField.put("enabled", field.isEnabled());
+				jsonField.put("name", field.getFieldName());
+				jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+				fields.add(jsonField);
+			}
+			jsonObject.put("fields", fields);
+			e.setAttribute("channelLogTable", jsonObject.toString());
+
+			MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
+		    jsonObject = new JSONObject();
+		    jsonObject.put( "connection", metricsLogTable.getConnectionName() );
+		    jsonObject.put( "schema", metricsLogTable.getSchemaName() );
+		    jsonObject.put( "table", metricsLogTable.getTableName() );
+		    jsonObject.put( "timeout_days", metricsLogTable.getTimeoutInDays() );
+		    fields = new JSONArray();
+		    for ( LogTableField field : metricsLogTable.getFields() ) {
+		    	JSONObject jsonField = new JSONObject();
+		    	jsonField.put("id", field.getId());
+		    	jsonField.put("enabled", field.isEnabled());
+		    	jsonField.put("name", field.getFieldName());
+		    	jsonField.put("description", StringEscapeHelper.encode(field.getDescription()));
+		    	fields.add(jsonField);
+		    }
+		    jsonObject.put("fields", fields);
+		    e.setAttribute("metricsLogTable", jsonObject.toString());
+		    
+			jsonObject = new JSONObject();
 		    jsonObject.put("connection", transMeta.getMaxDateConnection() == null ? "" : transMeta.getMaxDateConnection().getName());
 		    jsonObject.put("table", transMeta.getMaxDateTable());
 		    jsonObject.put("field", transMeta.getMaxDateField());
@@ -385,100 +396,121 @@ public class TransMetaCodec extends BaseGraphCodec {
 			}
 		}
 		
-//		JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("transLogTable"));
-//		TransLogTable transLogTable = transMeta.getTransLogTable();
-//		transLogTable.setConnectionName(jsonObject.optString("connection"));
-//		transLogTable.setSchemaName(jsonObject.optString("schema"));
-//		transLogTable.setTableName(jsonObject.optString("table"));
-//		transLogTable.setLogSizeLimit(jsonObject.optString("size_limit_lines"));
-//		transLogTable.setLogInterval(jsonObject.optString("interval"));
-//		transLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
-//		JSONArray jsonArray = jsonObject.optJSONArray("fields");
-//		if(jsonArray != null) {
-//			for ( int i = 0; i < jsonArray.size(); i++ ) {
-//		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
-//		    	String id = fieldJson.optString("id");
-//		    	LogTableField field = transLogTable.findField( id );
-//		    	if ( field == null ) {
-//		    		field = transLogTable.getFields().get(i);
-//		    	}
-//				if (field != null) {
-//					field.setFieldName(fieldJson.optString("name"));
-//					field.setEnabled(fieldJson.optBoolean("enabled"));
-//					field.setSubject(StepMeta.findStep(transMeta.getSteps(), fieldJson.optString("subject")));
-//				}
-//			}
-//		}
+		JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("transLogTable"));
+		TransLogTable transLogTable = transMeta.getTransLogTable();
+		transLogTable.setConnectionName(jsonObject.optString("connection"));
+		transLogTable.setSchemaName(jsonObject.optString("schema"));
+		transLogTable.setTableName(jsonObject.optString("table"));
+		transLogTable.setLogSizeLimit(jsonObject.optString("size_limit_lines"));
+		transLogTable.setLogInterval(jsonObject.optString("interval"));
+		transLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		JSONArray jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
+		    	String id = fieldJson.optString("id");
+		    	LogTableField field = transLogTable.findField( id );
+		    	if ( field == null ) {
+		    		field = transLogTable.getFields().get(i);
+		    	}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+					field.setSubject(StepMeta.findStep(transMeta.getSteps(), fieldJson.optString("subject")));
+				}
+			}
+		}
 	    
-//	    jsonObject = JSONObject.fromObject(root.getAttribute("stepLogTable"));
-//		StepLogTable stepLogTable = transMeta.getStepLogTable();
-//		stepLogTable.setConnectionName(jsonObject.optString("connection"));
-//		stepLogTable.setSchemaName(jsonObject.optString("schema"));
-//		stepLogTable.setTableName(jsonObject.optString("table"));
-//		stepLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
-//		jsonArray = jsonObject.optJSONArray("fields");
-//		if(jsonArray != null) {
-//			for ( int i = 0; i < jsonArray.size(); i++ ) {
-//		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
-//		    	String id = fieldJson.optString("id");
-//		    	LogTableField field = stepLogTable.findField( id );
-//		    	if ( field == null && i<stepLogTable.getFields().size()) {
-//		    		field = stepLogTable.getFields().get(i);
-//		    	}
-//				if (field != null) {
-//					field.setFieldName(fieldJson.optString("name"));
-//					field.setEnabled(fieldJson.optBoolean("enabled"));
-//				}
-//			}
-//		}
+	    jsonObject = JSONObject.fromObject(root.getAttribute("stepLogTable"));
+		StepLogTable stepLogTable = transMeta.getStepLogTable();
+		stepLogTable.setConnectionName(jsonObject.optString("connection"));
+		stepLogTable.setSchemaName(jsonObject.optString("schema"));
+		stepLogTable.setTableName(jsonObject.optString("table"));
+		stepLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
+		    	String id = fieldJson.optString("id");
+		    	LogTableField field = stepLogTable.findField( id );
+		    	if ( field == null && i<stepLogTable.getFields().size()) {
+		    		field = stepLogTable.getFields().get(i);
+		    	}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
 	    
-//	    jsonObject = JSONObject.fromObject(root.getAttribute("performanceLogTable"));
-//		PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
-//		performanceLogTable.setConnectionName(jsonObject.optString("connection"));
-//		performanceLogTable.setSchemaName(jsonObject.optString("schema"));
-//		performanceLogTable.setTableName(jsonObject.optString("table"));
-//		performanceLogTable.setLogInterval(jsonObject.optString("interval"));
-//		performanceLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
-//		jsonArray = jsonObject.optJSONArray("fields");
-//		if(jsonArray != null) {
-//			for ( int i = 0; i < jsonArray.size(); i++ ) {
-//		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
-//		    	String id = fieldJson.optString("id");
-//		    	LogTableField field = performanceLogTable.findField( id );
-//		    	if ( field == null && i<performanceLogTable.getFields().size()) {
-//		    		field = performanceLogTable.getFields().get(i);
-//		    	}
-//				if (field != null) {
-//					field.setFieldName(fieldJson.optString("name"));
-//					field.setEnabled(fieldJson.optBoolean("enabled"));
-//				}
-//			}
-//		}
+	    jsonObject = JSONObject.fromObject(root.getAttribute("channelLogTable"));
+		ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+		channelLogTable.setConnectionName(jsonObject.optString("connection"));
+		channelLogTable.setSchemaName(jsonObject.optString("schema"));
+		channelLogTable.setTableName(jsonObject.optString("table"));
+		channelLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
+		    	String id = fieldJson.optString("id");
+		    	LogTableField field = channelLogTable.findField( id );
+		    	if ( field == null && i<channelLogTable.getFields().size()) {
+		    		field = channelLogTable.getFields().get(i);
+		    	}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
+
+		jsonObject = JSONObject.fromObject(root.getAttribute("performanceLogTable"));
+		PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
+		performanceLogTable.setConnectionName(jsonObject.optString("connection"));
+		performanceLogTable.setSchemaName(jsonObject.optString("schema"));
+		performanceLogTable.setTableName(jsonObject.optString("table"));
+		performanceLogTable.setLogInterval(jsonObject.optString("interval"));
+		performanceLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+				JSONObject fieldJson = jsonArray.getJSONObject(i);
+				String id = fieldJson.optString("id");
+				LogTableField field = performanceLogTable.findField( id );
+				if ( field == null && i<performanceLogTable.getFields().size()) {
+					field = performanceLogTable.getFields().get(i);
+				}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
 	    
-//	    jsonObject = JSONObject.fromObject(root.getAttribute("metricsLogTable"));
-//	    MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
-//	    metricsLogTable.setConnectionName(jsonObject.optString("connection"));
-//	    metricsLogTable.setSchemaName(jsonObject.optString("schema"));
-//	    metricsLogTable.setTableName(jsonObject.optString("table"));
-//	    metricsLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
-//		jsonArray = jsonObject.optJSONArray("fields");
-//		if(jsonArray != null) {
-//			for ( int i = 0; i < jsonArray.size(); i++ ) {
-//		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
-//		    	String id = fieldJson.optString("id");
-//		    	LogTableField field = metricsLogTable.findField( id );
-//		    	if ( field == null && i<metricsLogTable.getFields().size()) {
-//		    		field = metricsLogTable.getFields().get(i);
-//		    	}
-//				if (field != null) {
-//					field.setFieldName(fieldJson.optString("name"));
-//					field.setEnabled(fieldJson.optBoolean("enabled"));
-//				}
-//			}
-//		}
+	    jsonObject = JSONObject.fromObject(root.getAttribute("metricsLogTable"));
+	    MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
+	    metricsLogTable.setConnectionName(jsonObject.optString("connection"));
+	    metricsLogTable.setSchemaName(jsonObject.optString("schema"));
+	    metricsLogTable.setTableName(jsonObject.optString("table"));
+	    metricsLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+		jsonArray = jsonObject.optJSONArray("fields");
+		if(jsonArray != null) {
+			for ( int i = 0; i < jsonArray.size(); i++ ) {
+		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
+		    	String id = fieldJson.optString("id");
+		    	LogTableField field = metricsLogTable.findField( id );
+		    	if ( field == null && i<metricsLogTable.getFields().size()) {
+		    		field = metricsLogTable.getFields().get(i);
+		    	}
+				if (field != null) {
+					field.setFieldName(fieldJson.optString("name"));
+					field.setEnabled(fieldJson.optBoolean("enabled"));
+				}
+			}
+		}
 	    
-		JSONObject jsonObject = null;
-		JSONArray jsonArray = JSONArray.fromObject(root.getAttribute("partitionSchemas"));
+		jsonArray = JSONArray.fromObject(root.getAttribute("partitionSchemas"));
 		for (int i = 0; i < jsonArray.size(); i++) {
 			jsonObject = jsonArray.getJSONObject(i);
 			PartitionSchema partitionSchema = decodePartitionSchema(jsonObject);
