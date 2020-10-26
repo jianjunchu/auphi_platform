@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.hsqldb.lib.AppendableException;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -73,7 +74,7 @@ public class KettleRepositoryController extends BaseController {
 		RepositoryDirectoryInterface path = repository.findDirectory(dir);
 		if(path == null)
 			path = repository.getUserHomeDirectory();
-		
+
 		RepositoryDirectoryInterface child = path.findChild(name);
 		if(child == null) {
 			repository.createRepositoryDirectory(path, name.trim());
@@ -83,7 +84,7 @@ public class KettleRepositoryController extends BaseController {
 		}
 		JsonUtils.success("目录创建成功！");
 	}
-	
+
 	@ApiOperation(value = "在资源库中创建一个转换")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "dir", value = "父目录，如果不存在父目录就使用根目录", paramType="query", dataType = "string"),
@@ -99,28 +100,28 @@ public class KettleRepositoryController extends BaseController {
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
-		
+
 		if(repository.exists(transName, directory, RepositoryObjectType.TRANSFORMATION)) {
 			JsonUtils.fail("该转换已经存在，请重新输入！");
 			return;
 		}
-		
+
 		TransMeta transMeta = new TransMeta();
 		transMeta.setRepository(App.getInstance().getRepository());
 		transMeta.setMetaStore(App.getInstance().getMetaStore());
 		transMeta.setName(transName);
 		transMeta.setRepositoryDirectory(directory);
-		
+
 		repository.save(transMeta, "创建转换", null);
-		
+
 		String transPath = directory.getPath();
 		if(!transPath.endsWith("/"))
 			transPath = transPath + '/';
 		transPath = transPath + transName;
 		JsonUtils.success(transPath);
-		
+
 	}
-	
+
 	@ApiOperation(value = "在资源库中创建一个作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "dir", value = "父目录，如果不存在父目录就使用根目录", paramType="query", dataType = "string"),
@@ -134,33 +135,33 @@ public class KettleRepositoryController extends BaseController {
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
-		
+
 		if(repository.exists(jobName, directory, RepositoryObjectType.JOB)) {
 			JsonUtils.fail("该转换已经存在，请重新输入！");
 			return;
 		}
-		
+
 		JobMeta jobMeta = new JobMeta();
 		jobMeta.setRepository(App.getInstance().getRepository());
 		jobMeta.setMetaStore(App.getInstance().getMetaStore());
 		jobMeta.setName(jobName);
 		jobMeta.setRepositoryDirectory(directory);
-		
+
 		repository.save(jobMeta, "创建作业", null);
-		
+
 		String jobPath = directory.getPath();
 		if(!jobPath.endsWith("/"))
 			jobPath = jobPath + '/';
 		jobPath = jobPath + jobName;
-		
+
 		JsonUtils.success(jobPath);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/drop")
 	protected void drop(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
@@ -168,7 +169,7 @@ public class KettleRepositoryController extends BaseController {
 			JsonUtils.fail("删除失败，定位不到目录.");
 			return;
 		}
-		
+
 		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			ObjectId id_transformation = repository.getTransformationID(name, directory);
@@ -185,10 +186,10 @@ public class KettleRepositoryController extends BaseController {
 			directory = repository.findDirectory(path);
 			dropDirectory(repository, directory);
 		}
-		
+
 		JsonUtils.success("操作成功");
 	}
-	
+
 	private void dropDirectory(Repository repository, RepositoryDirectoryInterface directory) throws KettleException, IOException {
 		List<RepositoryElementMetaInterface> jobAndTransformationObjects = repository.getJobAndTransformationObjects(directory.getObjectId(), true);
 		for(RepositoryElementMetaInterface jobAndTransformationObject : jobAndTransformationObjects) {
@@ -198,67 +199,67 @@ public class KettleRepositoryController extends BaseController {
 				repository.deleteJob(jobAndTransformationObject.getObjectId());
 			}
 		}
-		
-		
+
+
 		for( RepositoryDirectoryInterface subDirectory : directory.getChildren()) {
 			dropDirectory(repository, subDirectory);
 		}
-		
+
 		repository.deleteRepositoryDirectory(directory);
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/dropVerify")
 	protected void dropVerify(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null) {
 			JsonUtils.fail("校验失败，定位不到目录.");
 			return;
 		}
-		
+
 		if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
 			directory = repository.findDirectory(path);
 			if(repository.getJobAndTransformationObjects(directory.getObjectId(), true).size() > 0) {
 				JsonUtils.fail("该目录下存在子元素，您确定要移除该目录吗?");
 				return;
 			}
-			
+
 			if(repository.getDirectoryNames(directory.getObjectId()).length > 0) {
 				JsonUtils.fail("该目录下存在子目录，您确定要移除该目录吗?");
 				return;
 			}
-			
+
 		} else {
 			JsonUtils.success("操作成功");
 		}
-		
+
 		JsonUtils.success("操作成功");
 	}
-	
-	
-	
+
+
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/rename")
 	protected void rename(@RequestParam String path, String newName, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
-		
+
 		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			ObjectId id_transformation = repository.getTransformationID(name, directory);
-			
+
 			//TODO 直接调用rename死锁！为什么
 			if(id_transformation != null) {
 				TransMeta transMeta = repository.loadTransformation(id_transformation, null);
@@ -266,7 +267,7 @@ public class KettleRepositoryController extends BaseController {
 				transMeta.setModifiedDate(new Date());
 				transMeta.setModifiedUser(user.getUsername());
 				repository.save(transMeta, "重命名：oldname=" + name, null);
-				
+
 				if(repository instanceof KettleFileRepository) {
 					repository.deleteTransformation(id_transformation);
 				}
@@ -281,7 +282,7 @@ public class KettleRepositoryController extends BaseController {
 				jobMeta.setModifiedDate(new Date());
 				jobMeta.setModifiedUser(user.getUsername());
 				repository.save(jobMeta, "重命名：oldname=" + name, null);
-				
+
 				if(repository instanceof KettleFileRepository) {
 					repository.deleteJob(id_job);
 				}
@@ -290,40 +291,40 @@ public class KettleRepositoryController extends BaseController {
 			directory = repository.findDirectory(path);
 			repository.renameRepositoryDirectory(directory.getObjectId(), null, newName);
 		}
-		
+
 		JsonUtils.success("操作成功");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/open")
 	protected void open(@RequestParam String path, @RequestParam String type,@CurrentUser CurrentUserResponse user) throws Exception {
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
-		
+
 		Repository repository = App.getInstance().getRepository();
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
-		
+
 		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)) {
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 			transMeta.setRepositoryDirectory(directory);
-	    	
+
 			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
 			String graphXml = codec.encode(transMeta,user);
-			
+
 			JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
 		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)) {
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 	    	jobMeta.setRepositoryDirectory(directory);
-	    	
+
 	    	GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 			String graphXml = codec.encode(jobMeta,user);
-			
+
 			JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
 		}
 	}
-	
+
 	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
@@ -334,32 +335,32 @@ public class KettleRepositoryController extends BaseController {
 	protected void open2(@RequestParam String path, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws Exception {
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
-		
+
 		Repository repository = App.getInstance().getRepository();
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
-		
+
 		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)) {
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 			transMeta.setRepositoryDirectory(directory);
-	    	
+
 			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
 			String graphXml = codec.encode(transMeta, user);
-			
+
 			JsonUtils.success(StringEscapeHelper.encode(graphXml));
 		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)) {
-			
+
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 	    	jobMeta.setRepositoryDirectory(directory);
-	    	
+
 	    	GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 			String graphXml = codec.encode(jobMeta, user);
-			
+
 			JsonUtils.success(StringEscapeHelper.encode(graphXml));
 		}
 	}
-	
+
 	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
@@ -370,31 +371,31 @@ public class KettleRepositoryController extends BaseController {
 	protected void clone(String path, String type, String newname, @CurrentUser CurrentUserResponse user) throws Exception {
 		String dir = path.substring(0, path.lastIndexOf("/"));
 		String name = path.substring(path.lastIndexOf("/") + 1);
-		
+
 		Repository repository = App.getInstance().getRepository();
 		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
 		if(directory == null) {
 			JsonUtils.fail("克隆失败，目录：" + dir + "不存在！");
 			return;
 		}
-		
+
 		if(RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 			transMeta.setRepositoryDirectory(directory);
 			transMeta.setObjectId(null);
 			transMeta.setName(newname);
-			
+
 			repository.save(transMeta, null, null);
-	    	
+
 		} else if(RepositoryObjectType.JOB.getExtension().equals(type)) {
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 	    	jobMeta.setRepositoryDirectory(directory);
 	    	jobMeta.setObjectId(null);
 	    	jobMeta.setName(newname);
-	    	
+
 	    	repository.save(jobMeta, null, null);
 		}
-		
+
 		JsonUtils.success("克隆成功！");
 	}
 
@@ -412,13 +413,13 @@ public class KettleRepositoryController extends BaseController {
 		else{
 			dir = repository.findDirectory(root);
 		}
-		
+
 		List<RepositoryDirectoryInterface> directorys = dir.getChildren();
 		for(RepositoryDirectoryInterface child : directorys) {
 			DirectoryVO directory = new DirectoryVO(child,root);
 			list.add(directory);
 		}
-		
+
 		String transPath = dir.getPath();
 		List<RepositoryElementMetaInterface> elements = repository.getTransformationObjects(dir.getObjectId(), false);
 		if(elements != null) {
@@ -427,7 +428,7 @@ public class KettleRepositoryController extends BaseController {
 				list.add(ro);
 			}
 		}
-	
+
 		elements = repository.getJobObjects(dir.getObjectId(), false);
 		if(elements != null) {
 			for(RepositoryElementMetaInterface e : elements) {
@@ -435,53 +436,53 @@ public class KettleRepositoryController extends BaseController {
 				list.add(ro);
 			}
 		}
-		
+
 		Collections.sort(list, new Comparator<Object>() {
 			@Override
 			public int compare(Object o1, Object o2) {
 				if(o1 instanceof RepositoryObjectVO && o2 instanceof RepositoryObjectVO) {
 					RepositoryObjectVO r1 = (RepositoryObjectVO) o1;
 					RepositoryObjectVO r2 = (RepositoryObjectVO) o2;
-					
+
 					int value = r1.getModifiedDate().compareTo(r2.getModifiedDate());
-					
+
 					if(value > 0)
 						return value - value * 2;
 					else if(value < 0)
 						return Math.abs(value);
 					else
 						return value;
-						
+
 				}
 				return 0;
 			}
 		});
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * 资源库浏览，生成树结构
-	 * 
-	 * @throws KettleException 
-	 * @throws IOException 
+	 *
+	 * @throws KettleException
+	 * @throws IOException
 	 */
 	@RequestMapping(method=RequestMethod.POST, value="/explorer")
 	protected @ResponseBody List explorer(@RequestParam String path, @RequestParam int loadElement) throws KettleException, IOException {
 		ArrayList list = new ArrayList();
-		
+
 		Repository repository = App.getInstance().getRepository();
 		RepositoryDirectoryInterface dir = null;
 		if(StringUtils.hasText(path))
 			dir = repository.findDirectory(path);
 		else
 			dir = repository.getUserHomeDirectory();
-		
+
 		List<RepositoryDirectoryInterface> directorys = dir.getChildren();
 		for(RepositoryDirectoryInterface child : directorys) {
 			list.add(RepositoryNode.initNode(child.getName(), child.getPath()));
 		}
-		
+
 		if(RepositoryNodeType.includeTrans(loadElement)) {
 			List<RepositoryElementMetaInterface> elements = repository.getTransformationObjects(dir.getObjectId(), false);
 			if(elements != null) {
@@ -490,12 +491,12 @@ public class KettleRepositoryController extends BaseController {
 					if(!transPath.endsWith("/"))
 						transPath = transPath + '/';
 					transPath = transPath + e.getName();
-					
+
 					list.add(RepositoryNode.initNode(e.getName(),  transPath, e.getObjectType()));
 				}
 			}
 		}
-		
+
 		if(RepositoryNodeType.includeJob(loadElement)) {
 			List<RepositoryElementMetaInterface> elements = repository.getJobObjects(dir.getObjectId(), false);
 			if(elements != null) {
@@ -504,60 +505,78 @@ public class KettleRepositoryController extends BaseController {
 					if(!transPath.endsWith("/"))
 						transPath = transPath + '/';
 					transPath = transPath + e.getName();
-					
+
 					list.add(RepositoryNode.initNode(e.getName(),  transPath, e.getObjectType()));
 				}
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value="/exp")
-	protected @ResponseBody void exp(@RequestParam String data) throws KettleException, IOException {
-		JSONArray jsonArray = JSONArray.fromObject(data);
-		
-		Repository repository = App.getInstance().getRepository();
-		
-		File file = new File("exp_" + repository.getName() +"_" + String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS", new Date()) + ".zip");
-		FileOutputStream fos = new FileOutputStream(file);
-		ZipOutputStream out = new ZipOutputStream( fos );
-		
-		for(int i=0; i<jsonArray.size(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
-			String path = jsonObject.optString("path");
-			String entryPath = path.substring(1);
-			String dir = path.substring(0, path.lastIndexOf("/"));
-			String name = path.substring(path.lastIndexOf("/") + 1);
-			
-			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-			if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(jsonObject.optString("type"))) {
-				TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
-				String xml = XMLHandler.getXMLHeader() + "\n" + transMeta.getXML();
-				out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.TRANSFORMATION.getExtension()));	
-				out.write(xml.getBytes(Const.XML_ENCODING));
-			} else if(RepositoryObjectType.JOB.getTypeDescription().equals(jsonObject.optString("type"))) {
-				JobMeta jobMeta = repository.loadJob(name, directory, null, null);
-				String xml = XMLHandler.getXMLHeader() + "\n" + jobMeta.getXML();
-				out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.JOB.getExtension()));	
-				out.write(xml.getBytes(Const.XML_ENCODING));
+	protected @ResponseBody void exp(@RequestParam String data) throws KettleException, IOException, AppendableException {
+		Repository repository = null;
+		FileOutputStream fos = null;
+		ZipOutputStream out = null;
+		try {
+			repository = App.getInstance().getRepository();
+
+			JSONArray jsonArray = JSONArray.fromObject(data);
+			String  tmp = new StringBuffer(System.getProperty("etl_platform.root")).append(File.separator).append("tmp").append(File.separator).toString();
+			File file = new File(tmp+"exp_" + repository.getName() +"_" + String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS", new Date()) + ".zip");
+
+			fos = new FileOutputStream(file);
+			out = new ZipOutputStream( fos );
+			for(int i=0; i<jsonArray.size(); i++) {
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+				String path = jsonObject.optString("path");
+				String entryPath = path.substring(1);
+				String dir = path.substring(0, path.lastIndexOf("/"));
+				String name = path.substring(path.lastIndexOf("/") + 1);
+
+				RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+				if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(jsonObject.optString("type"))) {
+					TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
+					String xml = XMLHandler.getXMLHeader() + "\n" + transMeta.getXML();
+					out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.TRANSFORMATION.getExtension()));
+					out.write(xml.getBytes(Const.XML_ENCODING));
+				} else if(RepositoryObjectType.JOB.getTypeDescription().equals(jsonObject.optString("type"))) {
+					JobMeta jobMeta = repository.loadJob(name, directory, null, null);
+					String xml = XMLHandler.getXMLHeader() + "\n" + jobMeta.getXML();
+					out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.JOB.getExtension()));
+					out.write(xml.getBytes(Const.XML_ENCODING));
+				}
+
 			}
-			
+
+			JsonUtils.success(StringEscapeHelper.encode(file.getAbsolutePath()));
+
+		}catch (Exception e){
+			throw new AppendableException(e);
+		}finally {
+			if(out!=null){
+				out.close();
+			}
+			if(fos !=null){
+				fos.close();
+			}
+			if(repository != null){
+				repository.disconnect();
+			}
+
 		}
-		
-		out.close();
-		fos.close();
-		
-		JsonUtils.success(StringEscapeHelper.encode(file.getAbsolutePath()));
+
+
 	}
-	
+
 	private boolean singleImport(Repository repository, RepositoryDirectoryInterface parent, String fileName, InputStream is) {
 		try {
 			Document doc = XMLHandler.loadXMLFile(is);
 			Element root = doc.getDocumentElement();
-			
+
 			if(fileName.endsWith(RepositoryObjectType.TRANSFORMATION.getExtension())) {
-				
+
 				TransMeta transMeta = new TransMeta();
 				transMeta.loadXML(root, null, App.getInstance().getMetaStore(), repository, true, new Variables(), null);
 				for(StepMeta stepMeta : transMeta.getSteps()) {
@@ -566,124 +585,139 @@ public class KettleRepositoryController extends BaseController {
 						return false;
 					}
 				}
-				
-				
+
+
 				boolean flag = repository.exists(transMeta.getName(), parent, RepositoryObjectType.TRANSFORMATION);
 			    if(flag) return false;
-				
+
 				transMeta.setRepositoryDirectory( parent );
 			    transMeta.setTransstatus(-1);
 			    transMeta.setModifiedDate(new Date());
-			    
+
 			    repository.save(transMeta, "初次导入", null);
 			} else if(fileName.endsWith(RepositoryObjectType.JOB.getExtension())) {
 				JobMeta jobMeta = new JobMeta();
 				jobMeta.loadXML(root, repository, null);
-				
+
 				for(JobEntryCopy jobEntryCopy : jobMeta.getJobCopies()) {
 					if(jobEntryCopy.getEntry() instanceof MissingEntry) {
 						System.out.println("......导入失败" + fileName + "，无法识别的作业组件：" + jobEntryCopy.getName());
 						return false;
 					}
 				}
-				
+
 				boolean flag = repository.exists(jobMeta.getName(), parent, RepositoryObjectType.JOB);
 			    if(flag) return false;
-				
-				
+
+
 				jobMeta.setRepositoryDirectory(parent);
 				jobMeta.setJobstatus(-1);
 				jobMeta.setModifiedDate(new Date());
-				
+
 				repository.save(jobMeta, "初次导入", null);
 			}
-		    
+
 			return true;
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
-		
+
 		return false;
 	}
-	
+
 	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "repositoryCurrentDir", value = "当前资源库目录", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "filesPath", value = "文件路径，可以是多个，文件需要先调用上传接口", paramType="query", dataType = "string")
 	})
 	@RequestMapping("/multiImport")
-	protected @ResponseBody void multiImport(@RequestParam String repositoryCurrentDir, @RequestParam String filesPath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
+	protected @ResponseBody void multiImport(@RequestParam String repositoryCurrentDir, @RequestParam String filesPath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws AppendableException {
 		ArrayList list = new ArrayList();
-		
-		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
-		if(StringUtils.hasText(repositoryCurrentDir)) {
-			if(!repositoryCurrentDir.startsWith(root)) {
-				repositoryCurrentDir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(), repositoryCurrentDir);
-			}
-		} else {
-			repositoryCurrentDir = root;
-		}
-		
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface dir = repository.findDirectory(repositoryCurrentDir);
-		if(dir == null) {
-			JsonUtils.fail("目录【" + repositoryCurrentDir + "】加载失败！");
-			return;
-		}
-		
-		JSONArray jsonArray = JSONArray.fromObject(filesPath);
-		for(int i=0; i<jsonArray.size(); i++) {
-			String filePath = jsonArray.getString(i);
-			
-			File file = new File(filePath);
-			if(file.isFile()) {
-				RepositoryDirectoryInterface parent = repository.findDirectory(repositoryCurrentDir);
-				if(parent != null) {
-					if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file))) {
-						list.add(file.getName() + " 导入失败！请检查本目录下是否已存在该对象！");
-					}
+
+		try {
+			String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
+			if(StringUtils.hasText(repositoryCurrentDir)) {
+				if(!repositoryCurrentDir.startsWith(root)) {
+					repositoryCurrentDir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(), repositoryCurrentDir);
 				}
-				
-				file.delete();
+			} else {
+				repositoryCurrentDir = root;
+			}
+
+
+
+			RepositoryDirectoryInterface dir = repository.findDirectory(repositoryCurrentDir);
+			if(dir == null) {
+				JsonUtils.fail("目录【" + repositoryCurrentDir + "】加载失败！");
+				return;
+			}
+
+			JSONArray jsonArray = JSONArray.fromObject(filesPath);
+			for(int i=0; i<jsonArray.size(); i++) {
+				String filePath = jsonArray.getString(i);
+
+				File file = new File(filePath);
+				if(file.isFile()) {
+					RepositoryDirectoryInterface parent = repository.findDirectory(repositoryCurrentDir);
+					if(parent != null) {
+						if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file))) {
+							list.add(file.getName() + " 导入失败！请检查本目录下是否已存在该对象！");
+						}
+					}
+
+					file.delete();
+				}
+			}
+
+
+			if(list.size() > 0) {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("success", false);
+				jsonObject.put("files", list);
+				JsonUtils.response(jsonObject);
+			} else {
+				JsonUtils.success("导入成功！");
+			}
+		}catch (Exception e){
+			throw new AppendableException(e);
+		}finally {
+			if(repository !=null){
+				repository.disconnect();
 			}
 		}
-		
-		if(list.size() > 0) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("success", false);
-			jsonObject.put("files", list);
-			JsonUtils.response(jsonObject);
-		} else {
-			JsonUtils.success("导入成功！");
-		}
-		
+
+
+
+
+
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value="/imp")
 	protected @ResponseBody void imp(@RequestParam String filePath) throws KettleException, IOException {
 		File file = new File(filePath);
 		ZipFile zip = new ZipFile(file);
-		
+
 		ArrayList list = new ArrayList();
 		Repository repository = App.getInstance().getRepository();
-		
+
 		try {
 			Enumeration<? extends ZipEntry> enumeration = zip.entries();
 			while(enumeration.hasMoreElements()) {
 				ZipEntry entry = enumeration.nextElement();
-			
+
             	if(entry.isDirectory())
             		continue;
-            	
+
                 String entryFileName = entry.getName();
                 String fileName = entryFileName;
                 RepositoryDirectoryInterface parent = repository.getUserHomeDirectory();
                 if(entryFileName.indexOf("/") > 0) {
                 	List<String> paths = Lists.newArrayList(entryFileName.split("/"));
                 	fileName = paths.remove(paths.size() - 1);
-                	
+
                 	for(String dir : paths) {
                 		RepositoryDirectoryInterface child = parent.findChild(dir);
                 		if(child == null) {
@@ -691,19 +725,19 @@ public class KettleRepositoryController extends BaseController {
                 		}
                 		parent = child;
                 	}
-                	
+
                 }
-                
+
     			if(!singleImport(repository, parent, fileName, zip.getInputStream(entry))) {
 					list.add(entryFileName + " 导入失败！请检查资源库中是否已存在该对象！");
-				}    
-                
+				}
+
             }
 		} finally {
 			zip.close();
 		}
-		
-		
+
+
 		if(list.size() > 0) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("success", false);
@@ -713,29 +747,29 @@ public class KettleRepositoryController extends BaseController {
 			JsonUtils.success("导入成功！");
 		}
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value="/imptree")
 	protected @ResponseBody List imptree(@RequestParam String filePath) throws KettleException, IOException {
 		FileInputStream fis = new FileInputStream(new File(filePath));
 		ZipInputStream is = new ZipInputStream(fis);
-		
+
 		Repository repository = App.getInstance().getRepository();
-		
+
 		ArrayList<RepositoryCheckNode> list = new ArrayList<RepositoryCheckNode>();
 		ZipFile zip = new ZipFile(new File(filePath));
 		Enumeration<ZipEntry> iter = (Enumeration<ZipEntry>) zip.entries();
 		while(iter.hasMoreElements()) {
 			List<RepositoryCheckNode> temp = list;
 			ZipEntry entry = iter.nextElement();
-			
+
 			if(entry.isDirectory())
 				continue;
-			
+
 			String[] strings = entry.getName().split("/");
 			String currentDir = "";
 			for(int i=0; i<strings.length; i++) {
 				currentDir += "/" + strings[i];
-				
+
 				boolean found = false;
 				for(RepositoryCheckNode node : temp) {
 					if(node.getText().equals(strings[i])) {
@@ -744,13 +778,13 @@ public class KettleRepositoryController extends BaseController {
 						break;
 					}
 				}
-				
+
 				if(!found) {
 					RepositoryCheckNode node = null;
 					if(i == (strings.length - 1)) {
 						if(strings[i].endsWith(RepositoryObjectType.TRANSFORMATION.getExtension())) {
 							node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.TRANSFORMATION, true);
-							
+
 							String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
 							RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
 							String name = strings[i].substring(0, strings[i].lastIndexOf("."));
@@ -760,10 +794,10 @@ public class KettleRepositoryController extends BaseController {
 							} else {
 								node.setRepoExist(false);
 							}
-							
+
 						} else if(strings[i].endsWith(RepositoryObjectType.JOB.getExtension())) {
 							node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.JOB, true);
-							
+
 							String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
 							RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
 							String name = strings[i].substring(0, strings[i].lastIndexOf("."));
@@ -780,12 +814,12 @@ public class KettleRepositoryController extends BaseController {
 					temp = node.getChildren();
 				}
 			}
-			
+
 		}
-		
+
 		is.close();
 		fis.close();
-		
+
 		return list;
 	}
 
@@ -842,7 +876,7 @@ public class KettleRepositoryController extends BaseController {
 
 	}
 
-	
+
 	@RequestMapping(method=RequestMethod.POST, value="/exptree")
 	protected @ResponseBody List exptree(@RequestParam int loadElement,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
@@ -851,10 +885,10 @@ public class KettleRepositoryController extends BaseController {
 		List list = browser(repository, dir, loadElement);
 		return list;
 	}
-	
+
 	private List browser(Repository repository, RepositoryDirectoryInterface dir, int loadElement) throws KettleException {
 		ArrayList list = new ArrayList();
-		
+
 		List<RepositoryDirectoryInterface> directorys = dir.getChildren();
 		for(RepositoryDirectoryInterface child : directorys) {
 //			RepositoryCheckNode node = new RepositoryCheckNode(child.getName());
@@ -862,7 +896,7 @@ public class KettleRepositoryController extends BaseController {
 //			node.setPath(child.getPath());
 			list.add(RepositoryCheckNode.initNode(child.getName(), child.getPath(), browser(repository, child, loadElement)));
 		}
-		
+
 		if(RepositoryNodeType.includeTrans(loadElement)) {
 			List<RepositoryElementMetaInterface> elements = repository.getTransformationObjects(dir.getObjectId(), false);
 			if(elements != null) {
@@ -871,13 +905,13 @@ public class KettleRepositoryController extends BaseController {
 					if(!transPath.endsWith("/"))
 						transPath = transPath + '/';
 					transPath = transPath + e.getName();
-					
+
 					list.add(RepositoryCheckNode.initNode(e.getName(), transPath, e.getObjectType()));
-					
+
 				}
 			}
 		}
-		
+
 		if(RepositoryNodeType.includeJob(loadElement)) {
 			List<RepositoryElementMetaInterface> elements = repository.getJobObjects(dir.getObjectId(), false);
 			if(elements != null) {
@@ -886,36 +920,36 @@ public class KettleRepositoryController extends BaseController {
 					if(!transPath.endsWith("/"))
 						transPath = transPath + '/';
 					transPath = transPath + e.getName();
-					
+
 					list.add(RepositoryCheckNode.initNode(e.getName(), transPath, e.getObjectType()));
 				}
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 	@ApiOperation(value = "返回资源库中所有的子服务器信息", httpMethod = "POST")
 	@ResponseBody
 	@RequestMapping("/slaveservers")
 	protected void slaveservers() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		ObjectId[] slaveIDs = repository.getSlaveIDs(false);
 		JSONArray jsonArray = new JSONArray();
 		for(ObjectId id_slave: slaveIDs) {
 			SlaveServer slaveServer = repository.loadSlaveServer(id_slave, null);
 			jsonArray.add(SlaveServerCodec.encode(slaveServer));
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "返回资源库中所有的数据库连接信息", httpMethod = "POST")
 	@RequestMapping("/databases")
 	protected @ResponseBody void databases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
 		JSONArray jsonArray = new JSONArray();
 		for(ObjectId databaseId: databaseIds) {
@@ -924,64 +958,64 @@ public class KettleRepositoryController extends BaseController {
 			jsonObject.put("changedDate", XMLHandler.date2string(databaseMeta.getChangedDate()));
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息", httpMethod = "POST")
 	@RequestMapping("/partitionDatabases")
 	protected @ResponseBody void partitionDatabases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
 		JSONArray jsonArray = new JSONArray();
 		for(ObjectId databaseId: databaseIds) {
 			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
-			
+
 			if(databaseMeta.isPartitioned()) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("name", databaseMeta.getName());
 				jsonArray.add(jsonObject);
 			}
-			
+
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态", httpMethod = "POST")
 	@RequestMapping("/databaseStatus")
 	protected @ResponseBody Collection databaseStatus() throws IOException, KettleException, InterruptedException, ExecutionException {
 		Repository repository = App.getInstance().getRepository();
-		
+
 		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
 		ExecutorService executor = Executors.newCachedThreadPool();
-		
+
 		HashMap<String, JSONObject> result = new HashMap<String, JSONObject>();
 		HashMap<String, Future<Integer>> dbStatus = new HashMap<String, Future<Integer>>();
 		for(ObjectId databaseId: databaseIds) {
 			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
 			JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
 			result.put(databaseMeta.getName(), jsonObject);
-			
+
 			String port = databaseMeta.getDatabasePortNumberString();
 			Future<Integer> f = executor.submit(new ServerChecker(databaseMeta.getHostname(), Integer.parseInt(port)));
 			dbStatus.put(databaseMeta.getName(), f);
 		}
-		
+
 		for(Map.Entry<String, Future<Integer>> entry : dbStatus.entrySet()) {
 			Integer status = entry.getValue().get();
 			result.get(entry.getKey()).put("status", status);
 		}
-		
+
 		return result.values();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param loginInfo
-	 * @throws IOException 
-	 * @throws KettleException 
+	 * @throws IOException
+	 * @throws KettleException
 	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/changeStatus")
@@ -990,25 +1024,25 @@ public class KettleRepositoryController extends BaseController {
 			TransMeta transMeta = RepositoryUtils.readTrans(path);
 			transMeta.setTransstatus(status);
 			App.getInstance().getRepository().save(transMeta, "更新转换状态：" + status, null);
-			
+
 			JsonUtils.success("操作成功！");
 		} else if(path.endsWith(RepositoryObjectType.JOB.getExtension())) {
 			JobMeta jobMeta = RepositoryUtils.readJob(path);
 			jobMeta.setJobstatus(status);
 			App.getInstance().getRepository().save(jobMeta, "更新作业状态：" + status, null);
-			
+
 			JsonUtils.success("操作成功！");
 		}
-		
-		
+
+
 		JsonUtils.fail("无法识别的类型！");
 	}
-	
+
 	/**
 	 * 断开资源库
-	 * 
+	 *
 	 * @param loginInfo
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/logout")
@@ -1017,5 +1051,5 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.session().invalidate();
 		JsonUtils.success("操作成功！");
 	}
-	
+
 }

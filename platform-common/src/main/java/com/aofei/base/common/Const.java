@@ -67,18 +67,18 @@ public class Const {
 
 
     public static String getUserDir(Long organizerId){
+        String base = loader.getProperty("disk.root.dir");
 
-        String path = System.getProperty("catalina.home")+File.separator +"disk"+ File.separator +organizerId;
+        base = StringUtils.isEmpty(base) ? System.getProperty("etl_platform.root") : base;
+
+        String path = base + File.separator +"disk"+ File.separator +organizerId;
+
         File file = new File(path);
         if(!file.exists()){
             file.mkdir();
         }
-
-        System.out.println(file.getAbsolutePath());
-
        return  file.getAbsolutePath();
 
-        //return getConfig("disk.root.dir")+ File.separator +organizerId;
     }
 
 
@@ -92,9 +92,5 @@ public class Const {
 
 
 
-    public static void main(String[] args) {
-        String s1 = "/Users/Tony/1068523747487088641/傲飞数据整合平台_V3.4.0下载地址.txt";
-        String s2 = "/Users/Tony/1068523747487088641";
-        System.out.println();
-    }
+
 }

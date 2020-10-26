@@ -64,7 +64,10 @@ public class AttachmentController {
 	@ApiOperation(value = "文件上传 ", httpMethod = "POST")
 	@RequestMapping("/upload")
 	protected @ResponseBody void upload(@RequestParam(value="file") MultipartFile file) throws KettleException, IOException {
-		File dir = new File("upload");
+
+		String  tmp = new StringBuffer(System.getProperty("etl_platform.root")).append(File.separator).append("upload").toString();
+
+		File dir = new File(tmp);
 		dir.mkdirs();
 		dir = new File(dir, String.format("%1$tY%1$tm%1$td", new Date()));
 		dir.mkdirs();
