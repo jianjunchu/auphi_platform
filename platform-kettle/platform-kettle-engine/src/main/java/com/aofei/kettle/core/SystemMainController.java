@@ -50,6 +50,7 @@ import org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta;
 import org.pentaho.di.trans.steps.randomvalue.RandomValueMeta;
 import org.pentaho.di.trans.steps.randomvalue.RandomValueMetaFunction;
 import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
+import org.pentaho.di.trans.steps.stringoperations.StringOperationsMeta;
 import org.pentaho.di.trans.steps.systemdata.SystemDataTypes;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -1207,6 +1208,21 @@ public class SystemMainController {
 			jsonArray.add(jsonObject);
 		}
 		
+		JsonUtils.response(jsonArray);
+	}
+
+	@ResponseBody
+	@RequestMapping(method=RequestMethod.POST, value="/removeSpecialCharacters")
+	protected void removeSpecialCharacters() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.removeSpecialCharactersCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.removeSpecialCharactersCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.removeSpecialCharactersDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
 		JsonUtils.response(jsonArray);
 	}
 }
