@@ -346,7 +346,7 @@ public class TransGraphController {
 				jsonObject.put("errCount", transExecutor.getErrCount());
 				jsonObject.put("stepStatus", transExecutor.getStepStatus());
 				jsonObject.put("previewData", transExecutor.getPreviewData());
-				System.out.println("return preview data: " + transExecutor.getPreviewData().optJSONArray("firstRecords"));
+//				System.out.println("return preview data: " + transExecutor.getPreviewData().optJSONArray("firstRecords"));
 				
 				if(transExecutor.isFinished()) 
 					TransDebugExecutor.remove(executionId);

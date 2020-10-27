@@ -158,6 +158,10 @@
                     <groupId>pentaho-kettle</groupId>
                     <artifactId>kettle-engine</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-dbdialog</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 

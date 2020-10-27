@@ -8,8 +8,11 @@
 
     <context-param>
         <param-name>webAppRootKey</param-name>
-        <param-value>web.platform.admin.root</param-value>
+        <param-value>etl_platform.root</param-value>
     </context-param>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>

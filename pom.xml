@@ -152,12 +152,8 @@
     </repository>
 
     <repository>
-      <id>my-deploy-release</id>
-      <url>http://123.206.52.213:8081/repository/maven-releases/</url>
-    </repository>
-    <repository>
-      <id>my-deploy-snapshot</id>
-      <url>http://123.206.52.213:8081/repository/maven-snapshots/</url>
+      <id>3rd-party</id>
+      <url>http://123.206.52.213:8081/repository/3rd-party/</url>
     </repository>
 
   </repositories>
