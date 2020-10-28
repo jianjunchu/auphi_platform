@@ -42,6 +42,9 @@ public class JsonInput extends AbstractStep {
 		ReflectUtils.set(stepMetaInterface, "filenameField", cell.getAttribute("include_field"));
 		ReflectUtils.set(stepMetaInterface, "addResultFile", "Y".equalsIgnoreCase(cell.getAttribute("addresultfile")));
 		ReflectUtils.set(stepMetaInterface, "readUrl", "Y".equalsIgnoreCase(cell.getAttribute("readurl")));
+		ReflectUtils.set(stepMetaInterface, "removeSourceField", "Y".equalsIgnoreCase(cell.getAttribute("removeSourceField")));
+
+		
 		ReflectUtils.set(stepMetaInterface, "ignoreEmptyFile", "Y".equalsIgnoreCase(cell.getAttribute("IsIgnoreEmptyFile")));
 		ReflectUtils.set(stepMetaInterface, "ignoreMissingPath", "Y".equalsIgnoreCase(cell.getAttribute("ignoreMissingPath")));
 		
@@ -161,7 +164,9 @@ public class JsonInput extends AbstractStep {
 		e.setAttribute("rownum", ReflectUtils.getFieldBoolean(stepMetaInterface, "includeRowNumber") ? "Y" : "N");
 		e.setAttribute("addresultfile", ReflectUtils.getFieldBoolean(stepMetaInterface, "addResultFile") ? "Y" : "N");
 		e.setAttribute("readurl", ReflectUtils.getFieldBoolean(stepMetaInterface, "readurl") ? "Y" : "N");
-		
+		e.setAttribute("removeSourceField", ReflectUtils.getFieldBoolean(stepMetaInterface, "removeSourceField") ? "Y" : "N");
+
+
 		String[] fileName = (String[]) ReflectUtils.get(stepMetaInterface, "fileName");
 		String[] fileMask = (String[]) ReflectUtils.get(stepMetaInterface, "fileMask");
 		String[] exludeFileMask = (String[]) ReflectUtils.get(stepMetaInterface, "exludeFileMask");
