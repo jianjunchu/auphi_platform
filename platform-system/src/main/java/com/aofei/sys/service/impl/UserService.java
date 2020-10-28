@@ -101,6 +101,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
     @Override
     public UserResponse get(String username) {
         User existing = baseMapper.findByUsername(username);
+
         if(existing!=null){
             return BeanCopier.copy(existing, UserResponse.class);
         }else{
@@ -145,7 +146,11 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
 
         User existing = selectById(request.getUserId());
         if (existing != null) {
+            existing.setMobilephone(request.getMobilephone());
             existing.setEmail(request.getEmail());
+            if(StringUtils.isEmpty(request.getPassword())){
+                existing.setPassword(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
+            }
             existing.setDescription(request.getDescription());
             existing.setUserStatus(request.getUserStatus());
             existing.preUpdate();

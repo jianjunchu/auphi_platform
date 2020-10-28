@@ -91,4 +91,6 @@ public interface IUserService extends IService<User> {
     Integer modifyPassword(Long userId, String originalPassword, String newPassword);
 
     Integer register(PhoneRegisterRequest request) throws KettleException;
+
+
 }

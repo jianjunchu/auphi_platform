@@ -59,8 +59,11 @@
         <include refid="Base_Joins"/>
         <where>
             a.DEL_FLAG = 0
-            <if test="deptId !=null ">
-                AND  a.ID_DEPT  = #{deptId}
+            <if test="username !=null and username!='' ">
+                AND  a.C_USER_NAME  = #{username}
+            </if>
+            <if test="organizerId !=null ">
+                AND  a.C_ORGANIZER_ID  = #{organizerId}
             </if>
         </where>
     </select>

@@ -1,5 +1,7 @@
 package com.aofei.kettle;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -286,7 +288,7 @@ public class TransExecutor implements Runnable {
 		});
 	}
 	
-	int previewSize = 200;
+	int previewSize = 10;
 	protected Map<StepMeta, RowMetaInterface> previewMetaMap = new HashMap<StepMeta, RowMetaInterface>();
 	
 	protected Map<StepMeta, List<Object[]>> lastPreviewDataMap = new HashMap<StepMeta, List<Object[]>>();
@@ -618,6 +620,11 @@ public class TransExecutor implements Runnable {
 						} catch (Exception e) {
 							string = "Conversion error: " + e.getMessage();
 						}
+
+						// 超过512KB
+						if(string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
+							string = "该值过大，已优化显示";
+						}
 						
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 						row.put(valueMeta.getName(), string);
@@ -631,7 +638,7 @@ public class TransExecutor implements Runnable {
 				for (Object[] rowData : lastRowData) {
 					JSONObject row = new JSONObject();
 					for (int colNr = 0; colNr < rowMeta.size(); colNr++) {
-						String string;
+						String string = "";
 						ValueMetaInterface valueMetaInterface;
 						try {
 							valueMetaInterface = rowMeta.getValueMeta(colNr);
@@ -644,7 +651,12 @@ public class TransExecutor implements Runnable {
 						} catch (Exception e) {
 							string = "Conversion error: " + e.getMessage();
 						}
-						
+
+						// 超过512KB
+						if(string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
+							string = "该值过大，已优化显示";
+						}
+
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 						row.put(valueMeta.getName(), string);
 						
