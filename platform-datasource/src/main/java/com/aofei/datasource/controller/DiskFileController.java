@@ -138,6 +138,10 @@ public class DiskFileController extends BaseController {
             }
         }
 
+        File dir=new File(path);
+        if(!dir.exists()){//如果文件夹不存在
+            dir.mkdirs();//创建文件夹
+        }
 
         //将当前上下文初始化给  CommonsMutipartResolver （多部分解析器）
         CommonsMultipartResolver multipartResolver=new CommonsMultipartResolver(request.getSession().getServletContext());
@@ -156,6 +160,7 @@ public class DiskFileController extends BaseController {
                 }
                 if(file!=null) {
                     File filepath = new File(path,file.getOriginalFilename());
+
                     //上传
                     file.transferTo(filepath);
                 }
