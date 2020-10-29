@@ -70,6 +70,8 @@ public class UserRequest<User> extends BaseRequest<User> {
     @ApiModelProperty(hidden = true)
     private String lastLoginIp;
 
+    public UserRequest() {
+    }
 
     public UserRequest(Long userId) {
        setUserId(userId);

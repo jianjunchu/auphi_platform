@@ -68,7 +68,7 @@ public class App {
 
 	private Repository repository;
 
-	private List<Repository> connects = new ArrayList<>();
+	private static List<Repository> connects = new ArrayList<>();
 
 
 	public Repository getRepository()  {
@@ -83,7 +83,8 @@ public class App {
 
 			if(connects.size() > 50){
 				Repository first = connects.get(0);
-				first.disconnect();
+				if(first!=null)
+					first.disconnect();
 				connects.remove(0);
 			}
 			connects.add(databaseRepository);

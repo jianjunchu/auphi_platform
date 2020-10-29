@@ -8,15 +8,23 @@ package com.aofei.sys.controller;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
+import com.aofei.base.exception.ApplicationException;
+import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.request.PageRequest;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
 import com.aofei.log.annotation.Log;
+import com.aofei.sys.entity.User;
+import com.aofei.sys.exception.SystemError;
+import com.aofei.sys.model.request.EditUserPasswordRequest;
 import com.aofei.sys.model.request.UserRequest;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IUserRoleService;
 import com.aofei.sys.service.IUserService;
+import com.aofei.utils.MD5Utils;
+import com.aofei.utils.StringUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
 import lombok.extern.log4j.Log4j;
@@ -82,8 +90,22 @@ public class UserController extends BaseController {
     @ApiOperation(value = "新建用户", notes = "新建用户", httpMethod = "POST")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<UserResponse> add(
-            @RequestBody UserRequest request)  {
+            @RequestBody UserRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
 
+        int usernameCount = userService.selectCount(new EntityWrapper<User>()
+                .eq("C_USER_NAME",request.getMobilephone())
+                .eq("DEL_FLAG",User.DEL_FLAG_NORMAL));
+        if(usernameCount>0){
+            throw new ApplicationException(SystemError.USERNAME_EXIST.getCode(),"用户名已存在");
+        }
+        int mobilephoneCount = userService.selectCount(new EntityWrapper<User>()
+                .eq("C_MOBILEPHONE",request.getMobilephone())
+                .eq("C_COUNTRY_CODE","86")
+                .eq("DEL_FLAG",User.DEL_FLAG_NORMAL));
+        if(mobilephoneCount>0){
+            throw new ApplicationException(SystemError.PHONE_NUMBER_EXIST.getCode(),"手机号已存在");
+        }
+        request.setOrganizerId(user.getOrganizerId());
         userService.save(request);
 
         return Response.ok() ;
@@ -100,6 +122,38 @@ public class UserController extends BaseController {
             @RequestBody UserRequest request)  {
 
         userService.update(request);
+
+        return Response.ok() ;
+    }
+
+    /**
+     * 编辑用户
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "修改用户密码", notes = "修改用户密码", httpMethod = "POST")
+    @RequestMapping(value = "/edit_password", method = RequestMethod.POST)
+    public Response<UserResponse> edit_password(
+            @RequestBody EditUserPasswordRequest request)  {
+
+
+        if(StringUtils.isEmpty(request.getNewPassword())){
+            throw new ApplicationException(StatusCode.BAD_REQUEST.getCode(),"密码不能为空");
+        }
+
+        if(!request.getNewPassword().equals(request.getRenewPassword())){
+            throw new ApplicationException(StatusCode.BAD_REQUEST.getCode(),"两次输入密码不一致");
+        }
+
+        User existing = userService.selectById(request.getUserId());
+        if(existing!=null){
+            existing.setPassword(MD5Utils.getStringMD5(request.getNewPassword()));//密码进行MD5加密
+            existing.preUpdate();
+            userService.updateById(existing);
+        }else{
+            //用户不存在
+            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), "更新失败.用户不存在");
+        }
 
         return Response.ok() ;
     }

@@ -56,7 +56,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value="/job")
 @Api(tags = "Job作业接口api")
 public class JobGraphController {
-	
+
 	@ApiOperation(value = "查看该任务的引擎文件", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -67,10 +67,10 @@ public class JobGraphController {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
 		String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
-		
+
 		JsonUtils.responseXml(xml);
 	}
-	
+
 	@ApiOperation(value = "获取作业中的私有数据库连接，不常用", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -81,15 +81,15 @@ public class JobGraphController {
 	protected void database(@RequestParam String graphXml, String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		DatabaseMeta databaseMeta = jobMeta.findDatabase(name);
 		if(databaseMeta == null)
 			databaseMeta = new DatabaseMeta();
-		
+
 		JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
 		JsonUtils.response(jsonObject);
 	}
-	
+
 	@ApiOperation(value = "获取该作业所有的环节", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -110,7 +110,7 @@ public class JobGraphController {
 
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "生成这个作业所需要的SQL脚本", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -120,16 +120,16 @@ public class JobGraphController {
 	protected void getSQL(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		GetJobSQLProgress getJobSQLProgress = new GetJobSQLProgress(jobMeta);
 		List<SQLStatement> stats = getJobSQLProgress.run();
 		JSONArray jsonArray = new JSONArray();
 		if(stats != null && stats.size() > 0) {
-			
+
 		} else {
 			 for ( int i = 0; i < stats.size(); i++ ) {
 			      SQLStatement stat = stats.get( i );
-			      
+
 			      JSONObject jsonObject = new JSONObject();
 			      jsonObject.put("name", stat.getStepname());
 			      if(stat.getDatabase() != null)
@@ -139,10 +139,10 @@ public class JobGraphController {
 			      jsonArray.add(jsonObject);
 			 }
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "作业保存", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -160,10 +160,10 @@ public class JobGraphController {
 			jobMeta.setObjectId(existingId);
 		jobMeta.setModifiedDate(new Date());
 		jobMeta.setModifiedUser(user.getUsername());
-		
+
 		 boolean versioningEnabled = true;
          boolean versionCommentsEnabled = true;
-         String fullPath = jobMeta.getRepositoryDirectory() + "/" + jobMeta.getName() + jobMeta.getRepositoryElementType().getExtension(); 
+         String fullPath = jobMeta.getRepositoryDirectory() + "/" + jobMeta.getName() + jobMeta.getRepositoryElementType().getExtension();
          RepositorySecurityProvider repositorySecurityProvider = repository.getSecurityProvider() != null ? repository.getSecurityProvider() : null;
          if ( repositorySecurityProvider != null ) {
         	 versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
@@ -175,12 +175,12 @@ public class JobGraphController {
 		} else {
 			versionComment = "no comment";
 		}
-		
+
 		repository.save( jobMeta, versionComment, null);
-		
+		repository.disconnect();
 		JsonUtils.success("作业保存成功！");
 	}
-	
+
 	@ApiOperation(value = "新建作业环节", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -192,7 +192,7 @@ public class JobGraphController {
 	protected void newJobEntry(@RequestParam String graphXml, @RequestParam String pluginId, @RequestParam String name, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		PluginRegistry registry = PluginRegistry.getInstance();
 		PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, pluginId);
 
@@ -230,18 +230,18 @@ public class JobGraphController {
 					// overwrite the name
 				}
 			}
-			
+
 			JobEntryCopy jge = new JobEntryCopy();
 			jge.setEntry(jei);
 			jge.setNr(0);
 			jge.setDrawn();
-			
+
 			JobEntryEncoder encoder = (JobEntryEncoder) PluginFactory.getBean(jei.getPluginId());
 			Element e = encoder.encodeStep(jge);
 			JsonUtils.responseXml(XMLHandler.getXMLHeader() + mxUtils.getXml(e));
 		}
 	}
-	
+
 	@ApiOperation(value = "新建作业连线", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -253,20 +253,20 @@ public class JobGraphController {
 	protected void newHop(@RequestParam String graphXml, @RequestParam String fromLabel, @RequestParam String toLabel, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		JobEntryCopy fr = jobMeta.findJobEntry(URLDecoder.decode(fromLabel, "utf-8"));
 		JobEntryCopy to = jobMeta.findJobEntry(URLDecoder.decode(toLabel, "utf-8"));
-		
+
 		System.out.println(fr);
 		System.out.println(to);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/ftptest")
 	protected void ftpputtest(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		String info = "";
 		String servername = "";
@@ -318,26 +318,26 @@ public class JobGraphController {
 					 proxyPass = jobMeta.environmentSubstitute(ftpsput.getProxyPassword());
 					 remoteDirectory=jobMeta.environmentSubstitute(ftpsput.getRemoteDirectory());
 			 }
-			
+
 			ftpputClient = new FTPClient(servername, Integer.parseInt(serverport) );
-		
+
 			ftpputClient.login(username, password);
 			if("FTP 上传".equals(stepName)){
-			JsonUtils.success(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.Connected.Title.Ok" ), 
+			JsonUtils.success(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.Connected.Title.Ok" ),
 					BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.Connected.OK", servername ) + Const.CR);
 			return;
 			}
 			if("FTP 删除".equals(stepName)){
-				JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.Connected.Title.Ok" ), 
+				JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.Connected.Title.Ok" ),
 						BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.Connected.OK", servername ) + Const.CR);
 				return;
 			}
 			if("FTPS 上传".equals(stepName)){
-				JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPSPUT.Connected.Title.Ok" ), 
+				JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPSPUT.Connected.Title.Ok" ),
 						BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPSPUT.Connected.OK", servername ) + Const.CR);
 				return;
 			}
-			
+
 		} catch (Exception e) {
 			if (ftpputClient != null) {
 				try {
@@ -349,26 +349,26 @@ public class JobGraphController {
 			info = e.getMessage();
 		}
 		if("FTP 上传".equals(stepName)){
-		JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.ErrorConnect.Title.Bad" ), 
+		JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.ErrorConnect.Title.Bad" ),
 				 BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.ErrorConnect.NOK", servername, info) + Const.CR);
 		}
 		if("FTP 删除".equals(stepName)){
-			JsonUtils.fail(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.ErrorConnect.Title.Bad" ), 
+			JsonUtils.fail(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.ErrorConnect.Title.Bad" ),
 					 BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.ErrorConnect.NOK", servername, info) + Const.CR);
 		}
 		if("FTPS 上传".equals(stepName)){
-		JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPSPUT.ErrorConnect.Title.Bad" ), 
+		JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPSPUT.ErrorConnect.Title.Bad" ),
 				 BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPSPUT.ErrorConnect.NOK", servername, info) + Const.CR);
 		}
 	}
-	
-	
+
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/ftpdirtest")
 	protected void ftpputtestremotedir(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		JobEntryCopy jobEntryCopy = jobMeta.findJobEntry(stepName);
 		String servername = "";
 		String serverport = "";
@@ -379,7 +379,7 @@ public class JobGraphController {
 		String proxyUsername = "";
 		String proxyPass = "";
 		String remoteDirectory="";
-		
+
 
 		String info = "";
 		FTPClient ftpputClient = null;
@@ -412,24 +412,24 @@ public class JobGraphController {
 
 //			String keyFilename = jobMeta.environmentSubstitute(ftpput.getKeyFilename());
 //			String keyFilePass = jobMeta.environmentSubstitute(ftpput.getKeyPassPhrase());
-			
+
 			ftpputClient = new FTPClient(servername, Integer.parseInt(serverport) );
 //			ftpputClient=new FTPClient(remoteAddr, controlPort);
 //			ftpputClient = new FTPClient(InetAddress.getByName(servername), Const.toInt(serverport, 21), 30, ftpput.getControlEncoding());
 //			ftpputClient = new FTPClient  (InetAddress.getByName(servername), Const.toInt(serverport, 22), username);
-	
+
 			ftpputClient.login(username, password);
 			if("FTP 上传".equals(stepName)){
 			   if(ftpputClient.exists(remoteDirectory)) {
-				JsonUtils.success(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.OK" ), 
+				JsonUtils.success(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.OK" ),
 						BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.OK", remoteDirectory) + Const.CR);
 				return;
 			  }
 			}
-			
+
 			if("FTP 删除".equals(stepName)){
 				   if(ftpputClient.exists(remoteDirectory)) {
-					JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.OK" ), 
+					JsonUtils.success(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.OK" ),
 							BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.Ok", remoteDirectory) + Const.CR);
 					return;
 				  }
@@ -445,15 +445,15 @@ public class JobGraphController {
 			info = e.getMessage();
 		}
 		if("FTP 上传".equals(stepName)){
-		     JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.Title.Bad" ), 
+		     JsonUtils.fail(BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.Title.Bad" ),
 				 BaseMessages.getString( JobEntryFTPPUT.class, "JobFTPPUT.FolderExists.NOK", remoteDirectory, info) + Const.CR);
 		}
 		if("FTP 删除".equals(stepName)){
-		     JsonUtils.fail(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.Title.Bad" ), 
+		     JsonUtils.fail(BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.Title.Bad" ),
 				 BaseMessages.getString( JobEntryFTPDelete.class, "JobFTPDelete.FolderExists.NOK", remoteDirectory, info) + Const.CR);
 		}
 	}
-	
+
 	@ApiOperation(value = "初始化执行", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -463,9 +463,9 @@ public class JobGraphController {
 	protected void initRun(@RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		JobExecutionConfiguration executionConfiguration = App.getInstance().getJobExecutionConfiguration();
-		
+
 		 // Remember the variables set previously
 	    //
 		RowMetaAndData variables = App.getInstance().getVariables();
@@ -485,7 +485,7 @@ public class JobGraphController {
 	    executionConfiguration.setStartCopyNr( 0 );
 
 	    executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
-		
+
 	    // Fill the parameters, maybe do this in another place?
 		Map<String, String> params = executionConfiguration.getParams();
 		params.clear();
@@ -493,10 +493,10 @@ public class JobGraphController {
 		for (String name : paramNames) {
 			params.put(name, "");
 		}
-		
+
 		JsonUtils.response(JobExecutionConfigurationCodec.encode(executionConfiguration));
 	}
-	
+
 	@ApiOperation(value = "开始执行作业", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -507,18 +507,18 @@ public class JobGraphController {
 	protected void run(@RequestParam String graphXml, @RequestParam String executionConfiguration, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
 		JobMeta jobMeta = (JobMeta) codec.decode(graphXml, user);
-		
+
 		JSONObject jsonObject = JSONObject.fromObject(executionConfiguration);
 		JobExecutionConfiguration jobExecutionConfiguration = JobExecutionConfigurationCodec.decode(jsonObject, jobMeta);
-		
+
 	    JobExecutor jobExecutor = JobExecutor.initExecutor(jobExecutionConfiguration, jobMeta);
 	    Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getExecutionId());
 	    tr.start();
         executions.put(jobExecutor.getExecutionId(), jobExecutor);
-		
+
         JsonUtils.success(jobExecutor.getExecutionId());
 	}
-	
+
 	@ApiOperation(value = "获取作业执行结果", httpMethod = "POST")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "executionId", value = "执行句柄ID", paramType="query", dataType = "string")
@@ -527,12 +527,12 @@ public class JobGraphController {
 	@RequestMapping(method=RequestMethod.POST, value="/result")
 	protected void result(@RequestParam String executionId) throws Exception {
 		JSONObject jsonObject = new JSONObject();
-		
+
 		JobExecutor jobExecutor = executions.get(executionId);
 		jsonObject.put("finished", jobExecutor.isFinished());
 		if(jobExecutor.isFinished()) {
 			executions.remove(executionId);
-			
+
 			jsonObject.put("jobMeasure", jobExecutor.getJobMeasure());
 			jsonObject.put("log", StringEscapeHelper.encode(jobExecutor.getExecutionLog()));
 			jsonObject.put("stepStatus", jobExecutor.getStepStatus());
@@ -543,9 +543,9 @@ public class JobGraphController {
 			jsonObject.put("stepStatus", jobExecutor.getStepStatus());
 //			jsonObject.put("previewData", transExecutor.getPreviewData());
 		}
-		
+
 		JsonUtils.response(jsonObject);
 	}
-	
+
 	private static HashMap<String, JobExecutor> executions = new HashMap<String, JobExecutor>();
 }

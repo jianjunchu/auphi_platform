@@ -9,3 +9,4 @@
 /WebContent/plugins
 platform-generator/
 platform-admin/src/main/resources/config
+platform-admin/src/main/webapp/plugins
