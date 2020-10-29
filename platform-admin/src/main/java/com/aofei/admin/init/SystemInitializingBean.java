@@ -76,6 +76,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         long start = System.currentTimeMillis();
         System.setProperty("org.osjava.sj.root",System.getProperty("etl_platform.root")+ File.separator+"simple-jndi");
         System.setProperty("KETTLE_JNDI_ROOT",System.getProperty("etl_platform.root")+ File.separator+"simple-jndi");
+        System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",System.getProperty("etl_platform.root")+ File.separator+"plugins");
         logger.info("********************************************");
         logger.info("********北京傲飞商智软件有限公司****************");
         logger.info("********傲飞数据整合平台***********************");

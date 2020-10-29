@@ -1,5 +1,7 @@
 package com.aofei.schedule.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
@@ -14,7 +16,10 @@ import com.aofei.schedule.model.response.JobDetailsResponse;
 import com.aofei.schedule.model.response.MonitorResponse;
 import com.aofei.schedule.service.IMonitorService;
 import com.aofei.translog.entity.LogTrans;
+import com.aofei.translog.entity.LogTransStep;
 import com.aofei.translog.service.ILogTransService;
+import com.aofei.translog.service.ILogTransStepService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -28,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 @Api(tags = { "调度管理-监控(调度执行日志)" })
 @Authorization
@@ -45,6 +52,9 @@ public class MonitorController extends BaseController {
 
     @Autowired
     private ILogTransService logTransService;
+
+    @Autowired
+    private ILogTransStepService logTransStepService;
     /**
      * 资源库列表(分页查询)
      * @param request
@@ -76,18 +86,46 @@ public class MonitorController extends BaseController {
     @ApiOperation(value = "", notes = "调度执行日志日志", httpMethod = "GET")
 
     @RequestMapping(value = "/info/{id}/type/{type}", method = RequestMethod.GET)
-    public Response<String> info(@PathVariable Long id, @PathVariable String type)  {
-        String str = "";
+    public Response<JSONObject> info(@PathVariable Long id, @PathVariable String type)  {
+        JSONObject jsonObject = new JSONObject();
 
         if("JOB".equalsIgnoreCase(type)){
             LogJob logJob = logJobService.selectById(id);
-            str = logJob.getJobLog();
+            jsonObject.put("msg",logJob.getJobLog());
+            JSONArray jsonArray = new JSONArray();
+            jsonObject.put("list",jsonArray);
 
         }else if("TRANSFORMATION".equalsIgnoreCase(type)){
             LogTrans logTrans = logTransService.selectById(id);
-            str = logTrans.getLoginfo();
+            jsonObject.put("msg",logTrans.getLoginfo());
+            List<LogTransStep> list =  logTransStepService.selectList(new EntityWrapper<LogTransStep>().eq("LOG_TRANS_ID",logTrans.getLogTransId()));
+            JSONArray jsonArray = new JSONArray();
+            for (LogTransStep logTransStep : list){
+                JSONObject item = new JSONObject();
+                item.put("name",logTransStep.getStepname()+"("+logTransStep.getStepCopy()+")");
+
+                item.put("step_copy",logTransStep.getStepCopy());
+                item.put("lines_read",logTransStep.getLinesRead());
+                item.put("lines_written",logTransStep.getLinesWritten());
+                item.put("lines_updated",logTransStep.getLinesUpdated());
+                item.put("lines_input",logTransStep.getLinesInput());
+                item.put("lines_output",logTransStep.getLinesOutput());
+                item.put("lines_rejected",logTransStep.getLinesRejected());
+                item.put("errors",logTransStep.getErrors());
+                item.put("status",logTransStep.getStatus());
+                item.put("costtime",logTransStep.getCosttime());
+                item.put("speed",logTransStep.getSpeed());
+                jsonArray.add(item);
+            }
+
+            jsonObject.put("list",jsonArray);
+
+
         }
-        return Response.ok(str);
+
+
+
+        return Response.ok(jsonObject);
     }
 
 }

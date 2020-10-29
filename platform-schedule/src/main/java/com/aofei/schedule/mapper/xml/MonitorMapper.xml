@@ -54,6 +54,15 @@
             <if test="qrtzJobName != null and qrtzJobName!='' ">
                 AND  a.QRTZ_JOB_NAME  like '%${qrtzJobName}%'
             </if>
+
+			<if test="searchtime == 'start' ">
+				AND  (a.STARTDATE between #{startTime} and #{endTime})
+			</if>
+
+			<if test="searchtime == 'end' ">
+				AND  (a.ENDDATE between #{startTime} and #{endTime})
+			</if>
+
         </where>
     </select>
 

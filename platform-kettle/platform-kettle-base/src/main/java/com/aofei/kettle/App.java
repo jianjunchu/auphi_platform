@@ -68,7 +68,7 @@ public class App {
 
 	private Repository repository;
 
-	private List<Repository> connects = new ArrayList<>();
+	private static List<Repository> connects = new ArrayList<>();
 
 
 	public Repository getRepository()  {

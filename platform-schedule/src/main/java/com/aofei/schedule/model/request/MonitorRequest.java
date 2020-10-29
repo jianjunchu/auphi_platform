@@ -20,6 +20,10 @@ public class MonitorRequest extends BaseRequest {
     private String qrtzJobName;
 
     private String qrtzJobGroup;
+    private String  searchtime;
+    private String  startTime;
+    private String  endTime;
+    private String  status;
 
 
 
