@@ -16,9 +16,9 @@
     <module>platfrom-quality</module>
     <module>platform-datasource</module>
     <module>platfrom-cluster</module>
-    <module>platform-system-priviledge</module>
     <module>platform-mdm</module>
     <module>platform-dataservice</module>
+    <module>platform-dataquality</module>
   </modules>
   <packaging>pom</packaging>
   <name>auphi_platform_v3.9.0</name>
@@ -137,24 +137,26 @@
   <repositories>
 
     <repository>
-      <id>maven-aliyun</id>
-      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+      <id>3rd-party</id>
+      <url>http://123.206.52.213:8081/repository/3rd-party/</url>
     </repository>
 
+
+
     <repository>
-      <id>repoRepository</id>
-      <url>http://mvnrepository.com/</url>
+      <id>pentaho-public</id>
+      <name>Pentaho Public</name>
+      <url>http://nexus.pentaho.org/content/groups/omni/</url>
     </repository>
+
+
 
     <repository>
       <id>auphi</id>
       <url>http://123.206.52.213:8081/repository/maven-public/</url>
     </repository>
 
-    <repository>
-      <id>3rd-party</id>
-      <url>http://123.206.52.213:8081/repository/3rd-party/</url>
-    </repository>
+
 
   </repositories>
 

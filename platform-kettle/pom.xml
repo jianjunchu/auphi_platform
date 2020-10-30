@@ -53,6 +53,10 @@
                     <groupId>pentaho-kettle</groupId>
                     <artifactId>kettle-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.actionsoft</groupId>
+                    <artifactId>openapi</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -162,7 +166,17 @@
                     <groupId>pentaho-kettle</groupId>
                     <artifactId>kettle-dbdialog</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.actionsoft</groupId>
+                    <artifactId>openapi</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.actionsoft</groupId>
+            <artifactId>openapi</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

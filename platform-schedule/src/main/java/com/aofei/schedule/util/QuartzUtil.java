@@ -54,7 +54,9 @@ public class QuartzUtil {
 
         switch (request.getCycle()) {
             case MODE_ONCE:
+
                 long repeatInterval = ca.getTime().getTime() - new Date().getTime();
+
                 if(repeatInterval>0){
                     // 创建一个触发器
                      trigger = TriggerBuilder.newTrigger()

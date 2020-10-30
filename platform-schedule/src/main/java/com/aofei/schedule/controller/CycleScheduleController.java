@@ -5,6 +5,8 @@ import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.common.Const;
 import com.aofei.base.controller.BaseController;
+import com.aofei.base.exception.ApplicationException;
+import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * @auther Tony
@@ -110,6 +113,26 @@ public class CycleScheduleController extends BaseController {
     public Response<Boolean> add(
             @RequestBody GeneralScheduleRequest request,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
+
+
+        Date satrtDate = request.getStartTime();
+        Date endDate = request.getEndTime();
+
+        if(satrtDate==null){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择开始时间");
+        }
+        if(endDate==null){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择结束时间");
+        }
+
+
+        if(satrtDate.getTime() - new Date().getTime() < 0){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"开始时间必须大于当前时间");
+        }
+        if(satrtDate.getTime() - endDate.getTime() > 0){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
+        }
+
         Class quartzExecuteClass = null;
         if("JOB".equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = JobRunner.class;
@@ -164,6 +187,25 @@ public class CycleScheduleController extends BaseController {
     public Response<Boolean> edit(
             @RequestBody GeneralScheduleRequest request,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
+
+        Date satrtDate = request.getStartTime();
+        Date endDate = request.getEndTime();
+
+        if(satrtDate==null){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择开始时间");
+        }
+        if(endDate==null){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择结束时间");
+        }
+
+
+        if(satrtDate.getTime() - new Date().getTime() < 0){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"开始时间必须大于当前时间");
+        }
+        if(satrtDate.getTime() - endDate.getTime() > 0){
+            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
+        }
+
         Class quartzExecuteClass = null;
         if("JOB".equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = JobRunner.class;

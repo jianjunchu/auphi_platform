@@ -74,6 +74,9 @@ public class QuartzService implements IQuartzService {
             request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
         }
 
+
+
+
         if(!checkJobExist(jobName,group)){
             // 获取调度器
             Scheduler sched = quartzScheduler;
@@ -162,6 +165,7 @@ public class QuartzService implements IQuartzService {
      * @param params
      * @return
      */
+    @Log(module = "执行调度",description = "手动执行调度")
     @Override
     public  boolean execute(String jobName, String jobGroup, ParamRequest[] params) throws SchedulerException {
 
