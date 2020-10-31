@@ -1,17 +1,17 @@
-package com.aofei.dataquality.entity;
-
-import java.io.Serializable;
+package com.aofei.dataquality.model.request;
 
 import com.aofei.base.entity.DataEntity;
-import com.baomidou.mybatisplus.annotations.TableId;
+import com.aofei.base.model.request.BaseRequest;
 import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-
-
+import com.baomidou.mybatisplus.enums.IdType;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -22,39 +22,30 @@ import lombok.experimental.Accessors;
  * @since 2020-10-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
-@TableName("DATA_QUALITY_RULE_GROUP")
-public class RuleGroup extends DataEntity<RuleGroup> {
+public class RuleGroupRequest extends BaseRequest<RuleGroupRequest> {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 分组ID
      */
-    @TableId(value = "GROUP_ID", type = IdType.ID_WORKER)
+    @ApiModelProperty(value = "分组Id")
     private Long groupId;
     /**
      * 组织ID
      */
-    @TableField("ORGANIZER_ID")
+    @ApiModelProperty(hidden = true,value = "组织ID")
     private Long organizerId;
     /**
      * 分组名称
      */
-    @TableField("GROUP_NAME")
+    @ApiModelProperty(value = "分组名称")
     private String groupName;
     /**
      * 分组描述
      */
-    @TableField("DESCRIPTION")
+    @ApiModelProperty(value = "分组描述")
     private String description;
 
-
-
-    @Override
-    protected Serializable pkVal() {
-        return this.groupId;
-    }
 
 }

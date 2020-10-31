@@ -115,7 +115,12 @@
         <!--数据质量管理-->
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platfrom-quality</artifactId>
+            <artifactId>platform-dataquality-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-dataquality-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
