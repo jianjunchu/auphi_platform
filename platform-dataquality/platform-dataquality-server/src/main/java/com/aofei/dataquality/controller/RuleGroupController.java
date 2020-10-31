@@ -35,7 +35,7 @@ import java.util.List;
 @Api(tags = { "数据质量管理-数据质量规则分组" })
 @Authorization
 @RestController
-@RequestMapping("/dataquality/ruleGroup")
+@RequestMapping("/dataQuality/ruleGroup")
 public class RuleGroupController extends BaseController {
 
     @Autowired
