@@ -19,22 +19,11 @@
     <script type="text/javascript">
 
         var user_type = "${userBean.isSystemUser}"
-        var isAdmin = user_type == '1';
-        var isAnQuanYuan = user_type == '2';
-        var isShenJiYuan = user_type == '3';
 
-        var menu = new Ext.Panel({
-            iconCls: 'icon_caidan',
-            region: 'west',
-            collapsible: true,
-            split: true,
-            id: 'MainMenu',
-            title: '<%=Messages.getString("Default.Jsp.Menu") %>',
-            width: 205,
-            minSize: 200,
-            maxSize: 400,
-            layout: 'accordion',
-            items: [{
+        var items = [];
+
+        if(user_type == '1'){
+            items = [{
                 title: "<span class='menu_text' >元数据管理</span>",
                 iconCls: 'ic_menu_root' ,
                 items: [
@@ -179,30 +168,6 @@
                     }
                 ]
             }, {
-                title: "<span class='menu_text' >数据源管理</span>",
-                iconCls: 'icon_shujuyuanguanli',
-                items: [
-                    {
-                        xtype: 'treepanel',
-                        border: 0,
-                        rootVisible: false,
-                        root: {
-                            expanded: true,
-                            children: [
-                                {
-                                    iconCls: 'icon_database',
-                                    text: "<span class='menu_text' >本地数据库管理</span>",
-                                    leaf: true,
-                                    href: 'javascript:toLoadurl(\'datasource/index.shtml\',\'datasource_main\',\'本地数据库管理\');'
-                                }
-                                /*{iconCls:'icon_ftp', text: "<span class='menu_text' >本地FTP管理</span>", leaf: true, href: 'javascript:toLoadurl(\'ftpMrg/index.shtml\',\'ftpMrg_main\',\'本地FTP管理\');'},
-                                { iconCls:'icon_shujujishi',text: "<span class='menu_text' >远程数据库管理</span>", leaf: true, href: 'javascript:toLoadurl(\'oracleDatasource/index.shtml\',\'oracleDatasource_main\',\'远程数据库管理\');'},
-                                   { iconCls:'icon_hadoop',text: "<span class='menu_text' >Hadoop集群管理</span>", leaf: true, href: 'javascript:toLoadurl(\'hadoopMrg/index.shtml\',\'hadoopMrg_main\',\'Hadoop集群管理\');'}*/
-                            ]
-                        }
-                    }
-                ]
-            }, {
                 title: "<span class='menu_text' >主数据管理</span>",
                 iconCls: 'icon_zhushujuguanli',
                 items: [
@@ -302,6 +267,56 @@
                             root: {
                                 expanded: true,
                                 children: [
+                                    {
+
+                                        iconCls: 'icon_ziyuankuguanli',
+                                        text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Repository") %></span>",
+                                        leaf: true,
+                                        href: 'javascript:toLoadurl(\'repositorymanager?action=list\',\'repositoryManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Repository") %>\');'
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }else if(user_type == '2'){
+            items = [{
+                title: "<span class='menu_text' >数据源管理</span>",
+                iconCls: 'icon_shujuyuanguanli',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_database',
+                                    text: "<span class='menu_text' >本地数据库管理</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'datasource/index.shtml\',\'datasource_main\',\'本地数据库管理\');'
+                                }
+                                /*{iconCls:'icon_ftp', text: "<span class='menu_text' >本地FTP管理</span>", leaf: true, href: 'javascript:toLoadurl(\'ftpMrg/index.shtml\',\'ftpMrg_main\',\'本地FTP管理\');'},
+                                { iconCls:'icon_shujujishi',text: "<span class='menu_text' >远程数据库管理</span>", leaf: true, href: 'javascript:toLoadurl(\'oracleDatasource/index.shtml\',\'oracleDatasource_main\',\'远程数据库管理\');'},
+                                   { iconCls:'icon_hadoop',text: "<span class='menu_text' >Hadoop集群管理</span>", leaf: true, href: 'javascript:toLoadurl(\'hadoopMrg/index.shtml\',\'hadoopMrg_main\',\'Hadoop集群管理\');'}*/
+                            ]
+                        }
+                    }
+                ]
+            },{
+                    title: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System") %></span>",
+                    iconCls: 'icon_xitongguanli',
+
+                    items: [
+                        {
+                            xtype: 'treepanel',
+                            border: 0,
+                            rootVisible: false,
+                            root: {
+                                expanded: true,
+                                children: [
 
                                     {
                                         iconCls: 'icon_youxiangfuwuqi',
@@ -316,25 +331,18 @@
                                         href: 'javascript:toLoadurl(\'usermanager?action=list\',\'userManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.User") %>\');'
                                     },
                                     {
-                                        hidden:!isAnQuanYuan,
+
                                         iconCls: 'icon_jiaoseguanli',
                                         text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Role") %></span>",
                                         leaf: true,
                                         href: 'javascript:toLoadurl(\'rolemanager?action=list\',\'roleManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Role") %>\');'
                                     },
                                     {
-                                        hidden:!isAnQuanYuan,
+
                                         iconCls: 'icon_xukeguanli',
                                         text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Permit") %></span>",
                                         leaf: true,
                                         href: 'javascript:toLoadurl(\'resourceauthmanager?action=list\',\'resourceAuth_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Permit") %>\');'
-                                    },
-                                    {
-
-                                        iconCls: 'icon_ziyuankuguanli',
-                                        text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.Repository") %></span>",
-                                        leaf: true,
-                                        href: 'javascript:toLoadurl(\'repositorymanager?action=list\',\'repositoryManager_main\',\'<%=Messages.getString("Default.Jsp.Menu.System.Repository") %>\');'
                                     }
                                 ]
                             }
@@ -342,6 +350,257 @@
                     ]
                 }
             ]
+        } else if(user_type == '3'){
+            items = [{
+                title: "<span class='menu_text' >服务接口监控</span>",
+                iconCls: 'icon_jiekoujiankong',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_jiekoujiankong2',
+                                    text: "<span class='menu_text' >服务接口调用监控</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'serviceMonitor/index.shtml\',\'serviceMonitor_main\',\'服务接口调用监控\');'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                    title: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System") %></span>",
+                    iconCls: 'icon_xitongguanli',
+
+                    items: [
+                        {
+                            xtype: 'treepanel',
+                            border: 0,
+                            rootVisible: false,
+                            root: {
+                                expanded: true,
+                                children: [
+                                    {
+
+                                        iconCls: 'icon_ziyuankuguanli',
+                                        text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.System.SysLog") %></span>",
+                                        leaf: true,
+                                        href: 'javascript:toLoadurl(\'sys_log/index.shtml\',\'sys_log\',\'<%=Messages.getString("Default.Jsp.Menu.System.SysLog") %>\');'
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }else{
+            items = [{
+                title: "<span class='menu_text' >元数据管理</span>",
+                iconCls: 'ic_menu_root' ,
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_influence',
+                                    text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.Influence") %></span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'metadata?action=influence\',\'metadataInfluence_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.Influence") %>\')'
+                                },
+                                {
+                                    iconCls: 'icon_descent',
+                                    text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %></span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'metadata?action=descent\',\'metadataDescent_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.Descent") %>\')'
+                                },
+                                {
+                                    iconCls: 'icon_influence',
+                                    text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMappingGroup") %></span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'metadataMappingGroup/index.shtm\',\'metadataInfluence_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMappingGroup") %>\')'
+                                },
+                                {
+                                    iconCls: 'icon_descent',
+                                    text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMapping") %></span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'metadataMapping/index.shtm\',\'metadataDescent_main\',\'<%=Messages.getString("Default.Jsp.Menu.Meta.MetadataMapping") %>\')'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                title: "<span class='menu_text' >服务接口维护</span>",
+                iconCls: 'icon_fuwujiekou',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_jiekouguanli',
+                                    text: "<span class='menu_text' >服务接口管理</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'service/index.shtml\',\'service_main\',\'服务接口管理\')'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                title: "<span class='menu_text' >任务调度监控</span>",
+                iconCls: 'icon_renwujiankong',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                //{ iconCls:'icon_diaodu',text: "调度", leaf: true, href: 'javascript:toLoadurl(\'schedule?action=index\',\'schedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.Schedule") %>\');'},
+                                {
+                                    iconCls: 'icon_diaodu',
+                                    text: "<span class='menu_text' >周期调度</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'schedule?action=list\',\'schedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.Schedule") %>\');'
+                                },
+                                {
+                                    iconCls: 'icon_diaodu',
+                                    text: "<span class='menu_text' >事件调度</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'dschedule?action=list\',\'dschedule_main\',\'<%=Messages.getString("Default.Jsp.Menu.DSchedule") %>\');'
+                                },
+                                {
+                                    iconCls: 'icon_jiankong',
+                                    text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.Monitor") %>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'monitor/index.shtml?action=list\',\'monitor_main\',\'<%=Messages.getString("Default.Jsp.Menu.Monitor") %>\');'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                title: "<span class='menu_text' >主数据管理</span>",
+                iconCls: 'icon_zhushujuguanli',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_zhushujumoxing',
+                                    text: "<span class='menu_text' >主数据模型</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'mdmModel/index.shtml\',\'mdmModel_main\',\'主数据模型\');'
+                                },
+                                {
+                                    iconCls: 'icon_shujubiao',
+                                    text: "<span class='menu_text' >主数据表</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'mdmTable/index.shtml\',\'mdmTable_main\',\'主数据表\');'
+                                },
+                                {
+                                    iconCls: 'icon_shujuqingxi',
+                                    text: "<span class='menu_text' >数据映射</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'mdmDataClean/index.shtml\',\'dataClear_main\',\'数据清洗\');'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                title: "<span class='menu_text' >数据质量</span>",
+                iconCls: 'icon_zhushujuguanli',
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        border: 0,
+                        rootVisible: false,
+                        root: {
+                            expanded: true,
+                            children: [
+                                {
+                                    iconCls: 'icon_zhushujumoxing',
+                                    text: "<span class='menu_text' >数据剖析</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'profileTableResult/index.shtml\',\'profileTableResult\',\'数据剖析\');'
+                                },
+                                {
+                                    iconCls: 'icon_shujubiao',
+                                    text: "<span class='menu_text' >数据稽核</span>",
+                                    leaf: true,
+                                    href: 'javascript:toLoadurl(\'compareSqlResult/index.shtml\',\'compareSqlResult\',\'数据稽核\');'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+                {
+                    title: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.HA") %></span>",
+                    iconCls: 'icon_HAjiqun',
+                    items: [
+                        {
+                            xtype: 'treepanel',
+                            border: 0,
+                            rootVisible: false,
+                            root: {
+                                expanded: true,
+                                children: [
+                                    {
+                                        iconCls: 'icon_etlfuwuqiguanli',
+                                        text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.HA.ServerManage") %></span>",
+                                        leaf: true,
+                                        href: 'javascript:toLoadurl(\'servermanage?action=list\',\'serverManage_main\',\'<%=Messages.getString("Default.Jsp.Menu.HA.ServerManage") %>\');'
+                                    },
+                                    {
+                                        iconCls: 'icon_hajiqunguanli',
+                                        text: "<span class='menu_text' ><%=Messages.getString("Default.Jsp.Menu.HA.HAManage") %></span>",
+                                        leaf: true,
+                                        href: 'javascript:toLoadurl(\'hamanage?action=list\',\'haManage_main\',\'<%=Messages.getString("Default.Jsp.Menu.HA.HAManage") %>\');'
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+
+
+
+
+
+        var menu = new Ext.Panel({
+            iconCls: 'icon_caidan',
+            region: 'west',
+            collapsible: true,
+            split: true,
+            id: 'MainMenu',
+            title: '<%=Messages.getString("Default.Jsp.Menu") %>',
+            width: 205,
+            minSize: 200,
+            maxSize: 400,
+            layout: 'accordion',
+            items:items
         });
 
         var tabs;

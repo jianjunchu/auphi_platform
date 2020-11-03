@@ -163,7 +163,7 @@
     <orderEntry type="library" name="Maven: org.pentaho.di:kettle-ui-swt:auphi:3.4.0.20204071019" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:QLExpress:3.2.3" level="project" />
     <orderEntry type="library" name="Maven: org.pentaho.di:kettle-jdbc:auphi:3.4.0" level="project" />
-    <orderEntry type="library" name="Maven: org.pentaho.di:kettle-test:auphi:3.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.pentaho.di:kettle-test:auphi:3.4.0" level="project" />
     <orderEntry type="library" name="Maven: com.kingbase:kingbasejdbc4:7.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kylin:kylin-jdbc:1.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.calcite.avatica:avatica:1.8.0" level="project" />

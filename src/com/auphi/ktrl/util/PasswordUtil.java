@@ -40,8 +40,8 @@ public class PasswordUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(encoderByMd5("admin"));
-        System.out.println(checkpassword("admin","ISMvKXpXpadDiUoOSoAfww=="));
+        System.out.println(encoderByMd5("12345678"));
+        System.out.println(checkpassword("12345678","JdVa0oOqQAr0ZMdtcTwHrQ=="));
         System.out.println(System.currentTimeMillis()+(3600*24*30*1000L));
     }
 }

@@ -433,13 +433,17 @@ CREATE TABLE `KDI_T_USER` (
   `C_IS_SYSTEM_USER` int(11) default NULL,
   `ORGANIZER_ID` bigint(20) DEFAULT NULL,
   `C_USER_STATUS` int(11) DEFAULT NULL,
+    `C_PASSWORD_EXPIRY_TIME` bigint(20) DEFAULT NULL COMMENT '密码失效时间',
+  `C_LOGIN_LOCK_TIME` bigint(20) DEFAULT NULL COMMENT '登录锁定到期时间（该时间之前用户不能登录）',
   PRIMARY KEY  (`C_USER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of KDI_T_USER
 -- ----------------------------
-INSERT INTO `KDI_T_USER` VALUES ('0', 'admin', 'admin', '管理员', '', '', '系统管理员用户,拥有所有资源授权和所有操作权限', '1',1,1);
+INSERT INTO `KDI_T_USER` VALUES (0, 'admin', 'JdVa0oOqQAr0ZMdtcTwHrQ==', '系统管理员', '', '', '系统管理员用户,拥有所有资源授权和所有操作权限', 1, 1, 1, 0, 0);
+INSERT INTO `KDI_T_USER` VALUES (1, 'safety', 'JdVa0oOqQAr0ZMdtcTwHrQ==', '安全员', '', '', '安全员', 2, 1, 1, 0, 0);
+INSERT INTO `KDI_T_USER` VALUES (2, 'comptroller', 'JdVa0oOqQAr0ZMdtcTwHrQ==', '审计员', '', '', '审计员', 3, 1, 1, 0, 0);
 
 -- ----------------------------
 -- Table structure for `kdi_t_user_role`
@@ -1571,3 +1575,20 @@ CREATE TABLE `METADATA_MAPPING_GROUP` (
   `UPDATE_USER` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `KDI_T_SYSTEM_LOG`;
+CREATE TABLE `KDI_T_SYSTEM_LOG` (
+  `LOG_ID` bigint(64) NOT NULL AUTO_INCREMENT,
+  `USERNAME` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '用户名',
+  `MODULE` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '模块',
+  `OPERATION` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '用户操作',
+  `METHOD` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '请求方法',
+  `PARAMS` varchar(5000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '请求参数',
+  `IP` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'IP地址',
+  `CREATE_DATE` datetime DEFAULT NULL COMMENT '创建时间',
+  `DEL_FLAG` tinyint(4) DEFAULT '0' COMMENT '是否删除  1：已删除  0：正常',
+  PRIMARY KEY (`LOG_ID`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 ;
+
+

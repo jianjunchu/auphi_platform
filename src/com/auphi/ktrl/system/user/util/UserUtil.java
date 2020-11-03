@@ -543,10 +543,12 @@ public class UserUtil
                       "      ( select " + DBColumns.COLUMN_USER_ID + ", max(" + DBColumns.COLUMN_LOGIN_TIME+") "+ DBColumns.COLUMN_LOGIN_TIME +
                       "          from "+ DBColumns.TABLE_LOGIN_LOG +
                       "         group by " + DBColumns.COLUMN_USER_ID +") A " +
-                      "            on A." + DBColumns.COLUMN_USER_ID + " = B." + DBColumns.COLUMN_USER_ID;
+                      "            on A." + DBColumns.COLUMN_USER_ID + " = B." + DBColumns.COLUMN_USER_ID +" where 1 = 1";
         if(!loginUserBean.isSuperAdmin()){
-        	sql = sql + " where B." + DBColumns.COLUMN_USER_ORGANIZERID + "=" + loginUserBean.getOrgId();
+        	sql = sql + " and  B." + DBColumns.COLUMN_USER_ORGANIZERID + "=" + loginUserBean.getOrgId();
         }
+
+
 
         Connection conn = null ;
         try
