@@ -8,22 +8,31 @@
         <version>v3.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>platform-system</artifactId>
+    <packaging>pom</packaging>
+    <artifactId>platform-dataquality</artifactId>
+    <name>数据质量管理模块</name>
 
     <modules>
-        <module>platform-system-priviledge</module>
-        <module>platform-system-core</module>
-        <module>platform-system-server</module>
+        <module>platform-dataquality-core</module>
+        <module>platform-dataquality-server</module>
     </modules>
-    <packaging>pom</packaging>
-
 
     <dependencies>
-
-
-
-
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-kettle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-sys</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -48,7 +57,6 @@
         </plugins>
 
         <resources>
-
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -65,6 +73,4 @@
             </resource>
         </resources>
     </build>
-
-
 </project>

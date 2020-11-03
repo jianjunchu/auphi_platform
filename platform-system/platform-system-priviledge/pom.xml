@@ -3,32 +3,57 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>etl_platform</artifactId>
+        <artifactId>platform-system</artifactId>
         <groupId>com.aofei</groupId>
         <version>v3.9.0</version>
     </parent>
+
+    <version>v3.9.0</version>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>platform-system</artifactId>
-
-    <modules>
-        <module>platform-system-priviledge</module>
-        <module>platform-system-core</module>
-        <module>platform-system-server</module>
-    </modules>
-    <packaging>pom</packaging>
-
+    <packaging>jar</packaging>
+    <artifactId>platform-system-priviledge</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-kettle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
 
-
-
-
+        <!-- log begin -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- log end -->
     </dependencies>
 
     <build>
         <plugins>
-
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <classifier>auphi</classifier>
+                </configuration>
+            </plugin>
             <!-- maven compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -43,12 +68,8 @@
                     <maxmem>2048m</maxmem>
                 </configuration>
             </plugin>
-
-
         </plugins>
-
         <resources>
-
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -65,6 +86,4 @@
             </resource>
         </resources>
     </build>
-
-
 </project>

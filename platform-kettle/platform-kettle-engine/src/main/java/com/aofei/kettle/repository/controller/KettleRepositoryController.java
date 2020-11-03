@@ -570,7 +570,7 @@ public class KettleRepositoryController extends BaseController {
 
 	}
 
-	private boolean singleImport(Repository repository, RepositoryDirectoryInterface parent, String fileName, InputStream is) {
+	private boolean singleImport(Repository repository, RepositoryDirectoryInterface parent, String fileName, InputStream is,@ApiIgnore @CurrentUser CurrentUserResponse user) {
 		try {
 			Document doc = XMLHandler.loadXMLFile(is);
 			Element root = doc.getDocumentElement();
@@ -593,6 +593,12 @@ public class KettleRepositoryController extends BaseController {
 				transMeta.setRepositoryDirectory( parent );
 			    transMeta.setTransstatus(-1);
 			    transMeta.setModifiedDate(new Date());
+				List<DatabaseMeta> list = transMeta.getDatabases();
+				for(DatabaseMeta meta : list){
+					meta.setCreateUser(user.getUsername());
+					meta.setUpdateUser(user.getUsername());
+					meta.setOrganizerId(user.getOrganizerId());
+				}
 
 			    repository.save(transMeta, "初次导入", null);
 			} else if(fileName.endsWith(RepositoryObjectType.JOB.getExtension())) {
@@ -663,7 +669,7 @@ public class KettleRepositoryController extends BaseController {
 				if(file.isFile()) {
 					RepositoryDirectoryInterface parent = repository.findDirectory(repositoryCurrentDir);
 					if(parent != null) {
-						if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file))) {
+						if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file),user)) {
 							list.add(file.getName() + " 导入失败！请检查本目录下是否已存在该对象！");
 						}
 					}
@@ -696,7 +702,7 @@ public class KettleRepositoryController extends BaseController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST, value="/imp")
-	protected @ResponseBody void imp(@RequestParam String filePath) throws KettleException, IOException {
+	protected @ResponseBody void imp(@RequestParam String filePath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		File file = new File(filePath);
 		ZipFile zip = new ZipFile(file);
 
@@ -728,7 +734,7 @@ public class KettleRepositoryController extends BaseController {
 
                 }
 
-    			if(!singleImport(repository, parent, fileName, zip.getInputStream(entry))) {
+    			if(!singleImport(repository, parent, fileName, zip.getInputStream(entry),user)) {
 					list.add(entryFileName + " 导入失败！请检查资源库中是否已存在该对象！");
 				}
 
@@ -1013,7 +1019,6 @@ public class KettleRepositoryController extends BaseController {
 
 	/**
 	 *
-	 * @param loginInfo
 	 * @throws IOException
 	 * @throws KettleException
 	 */
@@ -1041,7 +1046,6 @@ public class KettleRepositoryController extends BaseController {
 	/**
 	 * 断开资源库
 	 *
-	 * @param loginInfo
 	 * @throws IOException
 	 */
 	@ResponseBody
