@@ -621,9 +621,13 @@ public class TransExecutor implements Runnable {
 							string = "Conversion error: " + e.getMessage();
 						}
 
-						// 超过512KB
-						if(string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
-							string = "该值过大，已优化显示";
+						if(string != null) {
+							// 超过512KB
+							if (string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
+								string = "该值过大，已优化显示";
+							}
+						} else {
+							string = "NULL";
 						}
 						
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
@@ -652,9 +656,13 @@ public class TransExecutor implements Runnable {
 							string = "Conversion error: " + e.getMessage();
 						}
 
-						// 超过512KB
-						if(string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
-							string = "该值过大，已优化显示";
+						if(string != null) {
+							// 超过512KB
+							if (string.getBytes(StandardCharsets.UTF_8).length > 1024 * 512) {
+								string = "该值过大，已优化显示";
+							}
+						} else {
+							string = "NULL";
 						}
 
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );

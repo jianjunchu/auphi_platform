@@ -43,6 +43,7 @@ import org.pentaho.di.trans.steps.denormaliser.DenormaliserTargetField;
 import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
 import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
 import org.pentaho.di.trans.steps.excelwriter.ExcelWriterStepMeta;
+import org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchMeta;
 import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.multimerge.MultiMergeJoinMeta;
 import org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta;
@@ -1220,6 +1221,90 @@ public class SystemMainController {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", StringOperationsMeta.removeSpecialCharactersCode[i]);
 			jsonObject.put("desc", StringOperationsMeta.removeSpecialCharactersDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/lowerUpper")
+	protected @ResponseBody void lowerUpper() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.lowerUpperCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.lowerUpperCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.lowerUpperDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/padding")
+	protected @ResponseBody void padding() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.paddingCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.paddingCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.paddingDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/initCap")
+	protected @ResponseBody void initCap() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.initCapCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.initCapCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.initCapDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/maskXml")
+	protected @ResponseBody void maskXml() throws Exception{
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.maskXMLCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.maskXMLCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.maskXMLDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/digits")
+	protected @ResponseBody void digits() throws Exception {
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<StringOperationsMeta.digitsCode.length;i++) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", StringOperationsMeta.digitsCode[i]);
+			jsonObject.put("desc", StringOperationsMeta.digitsDesc[i]);
+			jsonArray.add(jsonObject);
+		}
+
+		JsonUtils.response(jsonArray);
+	}
+
+	@RequestMapping(method=RequestMethod.POST, value="/fuzzyAlgorithm")
+	protected @ResponseBody void fuzzyAlgorithm() throws Exception {
+		JSONArray jsonArray = new JSONArray();
+
+		for(int i=0;i<FuzzyMatchMeta.algorithmCode.length;i++){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code", FuzzyMatchMeta.algorithmCode[i]);
+			jsonObject.put("desc", FuzzyMatchMeta.algorithmDesc[i]);
 			jsonArray.add(jsonObject);
 		}
 
