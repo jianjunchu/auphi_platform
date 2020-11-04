@@ -35,7 +35,7 @@ import java.util.Locale;
 @Api(tags = "Transformation转换 - 文本文件 - 接口api")
 public class TextFileInputController {
 
-	@ApiOperation(value = "获取所有国际化名称", httpMethod = "POST")
+	@ApiOperation(value = "获取所有国际化名称")
 	@RequestMapping(method = RequestMethod.POST, value = "/locale")
 	protected @ResponseBody List locale() throws Exception {
 		ArrayList list = new ArrayList();
@@ -51,7 +51,7 @@ public class TextFileInputController {
 		return list;
 	}
 
-	@ApiOperation(value = "获取字段信息", httpMethod = "POST")
+	@ApiOperation(value = "获取字段信息")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "环节名称", paramType="query", dataType = "string")

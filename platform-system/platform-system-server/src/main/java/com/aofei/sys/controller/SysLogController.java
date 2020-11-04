@@ -41,7 +41,7 @@ public class SysLogController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "系统日志列表(分页查询)", notes = "系统日志列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "系统日志列表(分页查询)", notes = "系统日志列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),

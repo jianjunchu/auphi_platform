@@ -94,7 +94,7 @@ public class AccountController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "用户名登录", notes = "用户登录返回Token,后期访问接口在head中添加Authorization={Token}", httpMethod = "POST")
+    @ApiOperation(value = "用户名登录", notes = "用户登录返回Token,后期访问接口在head中添加Authorization={Token}")
     @ApiResponses(value = {
             @ApiResponse(code = 200001, message = "invalid username or password"),
             @ApiResponse(code = 200002, message = "captcha error"),
@@ -151,7 +151,7 @@ public class AccountController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "手机号验证码登录", notes = "用户登录返回Token,后期访问接口在head中添加Authorization={Token}", httpMethod = "POST")
+    @ApiOperation(value = "手机号验证码登录", notes = "用户登录返回Token,后期访问接口在head中添加Authorization={Token}")
     @ApiResponses(value = {
             @ApiResponse(code = 200001, message = "invalid username or password"),
             @ApiResponse(code = 200002, message = "captcha error"),
@@ -232,7 +232,7 @@ public class AccountController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "检查用户名是否存在", notes = "检查用户名是否存在 0:不存在 1:存在 ", httpMethod = "POST")
+    @ApiOperation(value = "检查用户名是否存在", notes = "检查用户名是否存在 0:不存在 1:存在 ")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
     @RequestMapping(value = "/{username}/exist", method = RequestMethod.POST)
@@ -248,7 +248,7 @@ public class AccountController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "手机号注册", notes = "手机号注册", httpMethod = "POST")
+    @ApiOperation(value = "手机号注册", notes = "手机号注册")
     @ApiResponses(value = {
             @ApiResponse(code = 200005, message = "the username is exist"),
             @ApiResponse(code = 200013, message = "the phone number is exist"),
@@ -285,7 +285,7 @@ public class AccountController extends BaseController {
      * @return
      */
 
-    @ApiOperation(value = "邮箱用户注册", notes = "邮箱用户注册(该接口只发送邮件，用户在邮件点击列表完成注册)", httpMethod = "POST")
+    @ApiOperation(value = "邮箱用户注册", notes = "邮箱用户注册(该接口只发送邮件，用户在邮件点击列表完成注册)")
     @ApiResponses(value = {
             @ApiResponse(code = 200005, message = "username is exist"),
             @ApiResponse(code = 200011, message = "email is exist"),
@@ -320,7 +320,7 @@ public class AccountController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "邮箱验证", notes = "邮箱验证", httpMethod = "POST")
+    @ApiOperation(value = "邮箱验证", notes = "邮箱验证")
     @ApiResponses(value = {
             @ApiResponse(code = 200012, message = "mail overdue"),
             @ApiResponse(code = 200, message = "success")})

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aofei.base.exception.ApplicationException;
+import com.aofei.base.exception.StatusCode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
@@ -57,7 +59,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "Job作业接口api")
 public class JobGraphController {
 
-	@ApiOperation(value = "查看该任务的引擎文件", httpMethod = "POST")
+	@ApiOperation(value = "查看该任务的引擎文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
 	})
@@ -71,7 +73,7 @@ public class JobGraphController {
 		JsonUtils.responseXml(xml);
 	}
 
-	@ApiOperation(value = "获取作业中的私有数据库连接，不常用", httpMethod = "POST")
+	@ApiOperation(value = "获取作业中的私有数据库连接，不常用")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "name", value = "数据库连接名称", paramType="query", dataType = "string")
@@ -90,7 +92,7 @@ public class JobGraphController {
 		JsonUtils.response(jsonObject);
 	}
 
-	@ApiOperation(value = "获取该作业所有的环节", httpMethod = "POST")
+	@ApiOperation(value = "获取该作业所有的环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
 	})
@@ -111,7 +113,7 @@ public class JobGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "生成这个作业所需要的SQL脚本", httpMethod = "POST")
+	@ApiOperation(value = "生成这个作业所需要的SQL脚本")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
 	})
@@ -143,7 +145,7 @@ public class JobGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "作业保存", httpMethod = "POST")
+	@ApiOperation(value = "作业保存")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
 	})
@@ -181,7 +183,7 @@ public class JobGraphController {
 		JsonUtils.success("作业保存成功！");
 	}
 
-	@ApiOperation(value = "新建作业环节", httpMethod = "POST")
+	@ApiOperation(value = "新建作业环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "pluginId", value = "环节插件ID", paramType="query", dataType = "string"),
@@ -242,7 +244,7 @@ public class JobGraphController {
 		}
 	}
 
-	@ApiOperation(value = "新建作业连线", httpMethod = "POST")
+	@ApiOperation(value = "新建作业连线")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "fromLabel", value = "起始环节名", paramType="query", dataType = "string"),
@@ -454,7 +456,7 @@ public class JobGraphController {
 		}
 	}
 
-	@ApiOperation(value = "初始化执行", httpMethod = "POST")
+	@ApiOperation(value = "初始化执行")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
 	})
@@ -497,7 +499,7 @@ public class JobGraphController {
 		JsonUtils.response(JobExecutionConfigurationCodec.encode(executionConfiguration));
 	}
 
-	@ApiOperation(value = "开始执行作业", httpMethod = "POST")
+	@ApiOperation(value = "开始执行作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "executionConfiguration", value = "执行信息", paramType="query", dataType = "string")
@@ -519,32 +521,41 @@ public class JobGraphController {
         JsonUtils.success(jobExecutor.getExecutionId());
 	}
 
-	@ApiOperation(value = "获取作业执行结果", httpMethod = "POST")
+	@ApiOperation(value = "获取作业执行结果")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "executionId", value = "执行句柄ID", paramType="query", dataType = "string")
 	})
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/result")
 	protected void result(@RequestParam String executionId) throws Exception {
-		JSONObject jsonObject = new JSONObject();
 
-		JobExecutor jobExecutor = executions.get(executionId);
-		jsonObject.put("finished", jobExecutor.isFinished());
-		if(jobExecutor.isFinished()) {
-			executions.remove(executionId);
+		try {
+			JSONObject jsonObject = new JSONObject();
 
-			jsonObject.put("jobMeasure", jobExecutor.getJobMeasure());
-			jsonObject.put("log", StringEscapeHelper.encode(jobExecutor.getExecutionLog()));
-			jsonObject.put("stepStatus", jobExecutor.getStepStatus());
+			JobExecutor jobExecutor = executions.get(executionId);
+			jsonObject.put("finished", jobExecutor.isFinished());
+			if(jobExecutor.isFinished()) {
+				executions.remove(executionId);
+
+				jsonObject.put("jobMeasure", jobExecutor.getJobMeasure());
+				jsonObject.put("log", StringEscapeHelper.encode(jobExecutor.getExecutionLog()));
+				jsonObject.put("stepStatus", jobExecutor.getStepStatus());
 //			jsonObject.put("previewData", transExecutor.getPreviewData());
-		} else {
-			jsonObject.put("jobMeasure", jobExecutor.getJobMeasure());
-			jsonObject.put("log", StringEscapeHelper.encode(jobExecutor.getExecutionLog()));
-			jsonObject.put("stepStatus", jobExecutor.getStepStatus());
+			} else {
+				jsonObject.put("jobMeasure", jobExecutor.getJobMeasure());
+				jsonObject.put("log", StringEscapeHelper.encode(jobExecutor.getExecutionLog()));
+				jsonObject.put("stepStatus", jobExecutor.getStepStatus());
 //			jsonObject.put("previewData", transExecutor.getPreviewData());
+			}
+
+			JsonUtils.response(jsonObject);
+		}catch (Exception e){
+			e.printStackTrace();
+			throw new ApplicationException(StatusCode.SERVER_ERROR.getCode(),e.getMessage());
 		}
 
-		JsonUtils.response(jsonObject);
+
+
 	}
 
 	private static HashMap<String, JobExecutor> executions = new HashMap<String, JobExecutor>();

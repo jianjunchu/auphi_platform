@@ -40,7 +40,7 @@ import java.util.Map;
 @Api(tags = "Kettle图标获取接口")
 public class KettleUIController {
 
-	@ApiOperation(value = "获取文本图片", httpMethod = "POST")
+	@ApiOperation(value = "获取文本图片")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "text", value = "文本信息", paramType="query", dataType = "string")
 	})
@@ -65,7 +65,7 @@ public class KettleUIController {
 		ImageIO.write(image, "PNG", response.getOutputStream());
 	}
 
-	@ApiOperation(value = "获取文本宽度", httpMethod = "POST")
+	@ApiOperation(value = "获取文本宽度")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "text", value = "文本信息", paramType="query", dataType = "string")
 	})
@@ -107,7 +107,7 @@ public class KettleUIController {
 		ImageIO.write(image, "PNG", response.getOutputStream());
 	}
 
-	@ApiOperation(value = "加载组件的图片", httpMethod = "POST")
+	@ApiOperation(value = "加载组件的图片")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "组件的pluginId", paramType="path", dataType = "string"),
         @ApiImplicitParam(name = "scale", value = "图片尺寸，长宽一致", paramType="query", dataType = "string")
@@ -125,24 +125,24 @@ public class KettleUIController {
 		if(sp != null) {
 			StepMetaInterface stepMetaInterface = PluginRegistry.getInstance().loadClass(sp, StepMetaInterface.class);
 			cl = stepMetaInterface.getClass().getClassLoader();
-			
+
 			BufferedImage image = StepImageManager.getUniversalImage(cl, sp.getImageFile(), scale);
-			
+
 			response.setContentType("image/png");
 			ImageIO.write(image, "PNG", response.getOutputStream());
 			response.getOutputStream().flush();
 		} else {
 			BufferedImage image = StepImageManager.getUniversalImage(cl, "ui/images/" + name + ".svg", scale);
-			
+
 			response.setContentType("image/png");
 			ImageIO.write(image, "PNG", response.getOutputStream());
 			response.getOutputStream().flush();
-			
+
 		}
-		
+
 	}
 
-	@ApiOperation(value = "将kettle的图片转成css", httpMethod = "POST")
+	@ApiOperation(value = "将kettle的图片转成css")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "值为global", paramType="path", dataType = "string")
 	})
@@ -159,7 +159,7 @@ public class KettleUIController {
 		response.getWriter().write(sb.toString());
 	}
 
-	@ApiOperation(value = "设置kettle国际化", httpMethod = "POST")
+	@ApiOperation(value = "设置kettle国际化")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "locale", value = "国际化值", paramType="query", dataType = "string")
 	})
@@ -172,7 +172,7 @@ public class KettleUIController {
 	    JsonUtils.success("语言切换成功，重启后生效！");
 	}
 
-	@ApiOperation(value = "获取默认图形风格", httpMethod = "POST")
+	@ApiOperation(value = "获取默认图形风格")
 	@ResponseBody
 	@RequestMapping(method={RequestMethod.GET}, value="/defaultStyle")
 	protected void defaultStyle() throws Exception {
@@ -185,7 +185,7 @@ public class KettleUIController {
 
 	}
 
-	@ApiOperation(value = "EXTJS3版本环节JS加载接口", httpMethod = "POST")
+	@ApiOperation(value = "EXTJS3版本环节JS加载接口")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "pluginId", value = "组件pluginId", paramType="path", dataType = "string")
 	})
@@ -234,7 +234,7 @@ public class KettleUIController {
 
 	}
 
-	@ApiOperation(value = "获取全局系统变量", httpMethod = "POST")
+	@ApiOperation(value = "获取全局系统变量")
 	@ResponseBody
 	@RequestMapping(method={RequestMethod.POST, RequestMethod.GET}, value="/global")
 	protected void global(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -249,7 +249,7 @@ public class KettleUIController {
 		response.getWriter().write(sb.toString());
 	}
 
-	@ApiOperation(value = "获取kettle定义的步骤图标大小", httpMethod = "POST")
+	@ApiOperation(value = "获取kettle定义的步骤图标大小")
 	@ResponseBody
 	@RequestMapping("/kettle")
 	protected void kettle() throws Exception {

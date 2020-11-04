@@ -61,7 +61,7 @@ public class AttachmentController {
 		}
 	}
 
-	@ApiOperation(value = "文件上传 ", httpMethod = "POST")
+	@ApiOperation(value = "文件上传 ")
 	@RequestMapping("/upload")
 	protected @ResponseBody void upload(@RequestParam(value="file") MultipartFile file) throws KettleException, IOException {
 

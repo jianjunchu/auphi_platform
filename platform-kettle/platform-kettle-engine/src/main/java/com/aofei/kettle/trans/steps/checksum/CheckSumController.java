@@ -18,7 +18,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - 添加校验列 - 接口api")
 public class CheckSumController {
 
-	@ApiOperation(value = "获取支持的校验算法", httpMethod = "POST")
+	@ApiOperation(value = "获取支持的校验算法")
 	@RequestMapping(method=RequestMethod.POST, value="/types")
 	protected @ResponseBody List types() throws IOException {
 		ArrayList list = new ArrayList();
@@ -32,7 +32,7 @@ public class CheckSumController {
 		return list;
 	}
 
-	@ApiOperation(value = "校验结果类型", httpMethod = "POST")
+	@ApiOperation(value = "校验结果类型")
 	@RequestMapping(method=RequestMethod.POST, value="/resulttype")
 	protected @ResponseBody List resulttype() throws IOException {
 		ArrayList list = new ArrayList();

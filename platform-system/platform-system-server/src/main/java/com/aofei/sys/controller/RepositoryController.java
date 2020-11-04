@@ -50,7 +50,7 @@ public class RepositoryController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "资源库列表(分页查询)", notes = "资源库列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "资源库列表(分页查询)", notes = "资源库列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -68,7 +68,7 @@ public class RepositoryController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "资源库列表", notes = "资源库列表", httpMethod = "GET")
+    @ApiOperation(value = "资源库列表", notes = "资源库列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "repositoryName", value = "资源库名称(模糊查询)", paramType = "query", dataType = "String")
     })
@@ -87,7 +87,7 @@ public class RepositoryController extends BaseController {
     @ApiResponses(value = {
             @ApiResponse(code = 200009, message = "数据库连接验证失败"),
             @ApiResponse(code = 200, message = "success")})
-    @ApiOperation(value = "新建资源库", notes = "新建资源库", httpMethod = "POST")
+    @ApiOperation(value = "新建资源库", notes = "新建资源库")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<RepositoryResponse> add(
             @RequestBody RepositoryRequest request) throws KettleException {
@@ -103,7 +103,7 @@ public class RepositoryController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑资源库", notes = "编辑资源库", httpMethod = "POST")
+    @ApiOperation(value = "编辑资源库", notes = "编辑资源库")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<RepositoryResponse> edit(
             @RequestBody RepositoryRequest request)  {
@@ -128,7 +128,7 @@ public class RepositoryController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询资源库", notes = "根据Id查询资源库", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询资源库", notes = "根据Id查询资源库")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<RepositoryResponse> get(
             @ApiParam(value = "资源库ID", required = true)   @PathVariable Long id)  {
@@ -141,7 +141,7 @@ public class RepositoryController extends BaseController {
      * @param repositoryName
      * @return
      */
-    @ApiOperation(value = "获取资源库文件", notes = "获取资源库作业和转换", httpMethod = "GET")
+    @ApiOperation(value = "获取资源库文件", notes = "获取资源库作业和转换")
     @RequestMapping(value = "/{repositoryName}/explorer", method = RequestMethod.GET)
     public Response<List<RepositoryExplorerTreeResponse> > execute(
             @ApiParam(value = "资源库名称", required = true)@PathVariable String repositoryName) throws KettleException {

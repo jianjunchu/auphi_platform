@@ -55,7 +55,7 @@ public class CycleScheduleController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "周期调度列表(分页查询)", notes = "周期调度列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "周期调度列表(分页查询)", notes = "周期调度列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -227,7 +227,7 @@ public class CycleScheduleController extends BaseController {
         return Response.ok(quartzService.removeJob(jobName,jobGroup,user.getOrganizerId())) ;
     }
 
-    @ApiOperation(value = "暂停调度", notes = "暂停调度", httpMethod = "GET")
+    @ApiOperation(value = "暂停调度", notes = "暂停调度")
     @RequestMapping(value = "/pause/{jobName}/group/{jobGroup}", method = RequestMethod.GET)
     public Response<Boolean> pause(
             @ApiParam(value = "调度名称", required = true)@PathVariable String jobName,
@@ -237,7 +237,7 @@ public class CycleScheduleController extends BaseController {
         return Response.ok(quartzService.pause(jobName,jobGroup)) ;
     }
 
-    @ApiOperation(value = "还原调度", notes = "还原暂停的调度", httpMethod = "GET")
+    @ApiOperation(value = "还原调度", notes = "还原暂停的调度")
     @RequestMapping(value = "/resume/{jobName}/group/{jobGroup}", method = RequestMethod.GET)
     public Response<Integer> resume(
             @ApiParam(value = "调度名称", required = true)@PathVariable String jobName,
@@ -247,7 +247,7 @@ public class CycleScheduleController extends BaseController {
         return Response.ok(quartzService.resume(jobName,jobGroup)) ;
     }
 
-    @ApiOperation(value = "手动执行调度", notes = "手动执行调度", httpMethod = "GET")
+    @ApiOperation(value = "手动执行调度", notes = "手动执行调度")
     @RequestMapping(value = "/execute/{jobName}/group/{jobGroup}", method = RequestMethod.GET)
     public Response<Integer> execute(
             @ApiParam(value = "调度名称", required = true)@PathVariable String jobName,
@@ -258,7 +258,7 @@ public class CycleScheduleController extends BaseController {
     }
 
 
-    @ApiOperation(value = "获取调度详情", notes = "获取调度详情", httpMethod = "GET")
+    @ApiOperation(value = "获取调度详情", notes = "获取调度详情")
     @RequestMapping(value = "/{jobName}/group/{jobGroup}", method = RequestMethod.GET)
     public Response<GeneralScheduleResponse> get(
             @ApiParam(value = "调度名称", required = true)@PathVariable String jobName,

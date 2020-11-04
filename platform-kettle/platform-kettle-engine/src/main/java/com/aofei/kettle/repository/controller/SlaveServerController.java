@@ -32,7 +32,7 @@ import java.util.List;
 @Api(tags = "子服务器接口api")
 public class SlaveServerController {
 
-	@ApiOperation(value = "获取子服务器监控信息，", httpMethod = "POST")
+	@ApiOperation(value = "获取子服务器监控信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
 	})
@@ -63,7 +63,7 @@ public class SlaveServerController {
 
 	}
 
-	@ApiOperation(value = "获取所有子服务器名称，注意只返回名称", httpMethod = "POST")
+	@ApiOperation(value = "获取所有子服务器名称，注意只返回名称")
 	@ResponseBody
 	@RequestMapping("/names")
 	protected void slavenames() throws IOException, KettleException {
@@ -78,7 +78,7 @@ public class SlaveServerController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取子服务器信息，", httpMethod = "POST")
+	@ApiOperation(value = "获取子服务器信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
 	})
@@ -98,7 +98,7 @@ public class SlaveServerController {
 		JsonUtils.response(SlaveServerCodec.encode(slaveServer));
 	}
 
-	@ApiOperation(value = "持久化子服务器信息", httpMethod = "POST")
+	@ApiOperation(value = "持久化子服务器信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "slaveInfo", value = "子服务器信息，JSON串", paramType="query", dataType = "string")
 	})
@@ -113,7 +113,7 @@ public class SlaveServerController {
 		JsonUtils.success("执行器保存成功！");
 	}
 
-	@ApiOperation(value = "移除子服务器信息，", httpMethod = "POST")
+	@ApiOperation(value = "移除子服务器信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
 	})
@@ -136,7 +136,7 @@ public class SlaveServerController {
 		}
 	}
 
-	@ApiOperation(value = "测试子服务器是否可用，", httpMethod = "POST")
+	@ApiOperation(value = "测试子服务器是否可用，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
 	})

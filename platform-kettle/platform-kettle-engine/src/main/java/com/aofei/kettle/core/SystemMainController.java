@@ -71,9 +71,9 @@ import java.util.*;
 @RequestMapping(value="/system")
 @Api(tags = "Kettle字典接口api")
 public class SystemMainController {
-	
+
 	private static Properties locales = new Properties();
-	
+
 	static {
 		locales.put("输入", "Input");
 		locales.put("输出", "Output");
@@ -87,16 +87,16 @@ public class SystemMainController {
 		locales.put("统计", "Statistics");
 		locales.put("作业", "Job");
 		locales.put("批量加载", "Bulk loading");
-		
+
 		locales.put("通用", "General");
 		locales.put("邮件", "Mail");
 		locales.put("文件管理", "File management");
 		locales.put("条件", "Conditions");
 		locales.put("文件传输", "File transfer");
-		
+
 		locales.put("表输入", "Table input");
 	}
-	
+
 	private static String i18n(String locale, String key) {
 		if(!"zh".equalsIgnoreCase(locale)) {
 			return locales.getProperty(key, key);
@@ -104,7 +104,7 @@ public class SystemMainController {
 		return key;
 	}
 
-	@ApiOperation(value = "返回已实现的所有的转换步骤", httpMethod = "POST")
+	@ApiOperation(value = "返回已实现的所有的转换步骤")
 	@ResponseBody
 	@RequestMapping("/steps2")
 	protected void steps2(String locale) throws ServletException, IOException {
@@ -157,7 +157,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回已实现的所有的作业步骤", httpMethod = "POST")
+	@ApiOperation(value = "返回已实现的所有的作业步骤")
 	@ResponseBody
 	@RequestMapping("/jobentrys2")
 	protected void jobentrys2(String locale) throws ServletException, IOException {
@@ -197,7 +197,7 @@ public class SystemMainController {
 			for (PluginInterface baseJobEntry : baseJobEntries) {
 				if ( baseJobEntry.getIds()[ 0 ].equals( JobMeta.STRING_SPECIAL ) )
 					continue;
-				
+
 				String category2 = i18n(locale, baseJobEntry.getCategory());
 				if (category2.equalsIgnoreCase(category)) {
 					sortedCat.add(baseJobEntry);
@@ -233,7 +233,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "原EXTJS版本获取转换所有的组件步骤", httpMethod = "POST")
+	@ApiOperation(value = "原EXTJS版本获取转换所有的组件步骤")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/steps")
 	protected void steps() throws ServletException, IOException {
@@ -292,7 +292,7 @@ public class SystemMainController {
 
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/menus")
 	protected void menus() throws ServletException, IOException {
@@ -302,7 +302,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "原EXTJS版本获取作业所有的环节", httpMethod = "POST")
+	@ApiOperation(value = "原EXTJS版本获取作业所有的环节")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/jobentrys")
 	protected void jobentrys() throws ServletException, IOException {
@@ -391,7 +391,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取kettle支持的所有的系统参数", httpMethod = "POST")
+	@ApiOperation(value = "获取kettle支持的所有的系统参数")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/systemDataTypes")
 	protected void systemDataTypes() throws IOException {
@@ -408,7 +408,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取kettle支持的随机值", httpMethod = "POST")
+	@ApiOperation(value = "获取kettle支持的随机值")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/randomValueFunc")
 	protected void randomValueFunc() throws IOException {
@@ -427,7 +427,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取kettle支持的所有的数据类型", httpMethod = "POST")
+	@ApiOperation(value = "获取kettle支持的所有的数据类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/valueMeta")
 	protected void valueMeta() throws IOException {
@@ -448,7 +448,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取kettle支持的所有的数据格式化", httpMethod = "POST")
+	@ApiOperation(value = "获取kettle支持的所有的数据格式化")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "valueType", value = "数据类型，获取所有请传all", paramType="query", dataType = "string")
 	})
@@ -497,7 +497,7 @@ public class SystemMainController {
 		response.getWriter().write(value);
 	}
 
-	@ApiOperation(value = "获取数据过滤组件支持的操作类型", httpMethod = "POST")
+	@ApiOperation(value = "获取数据过滤组件支持的操作类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/func")
 	protected void func() throws Exception {
@@ -512,7 +512,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取Kettle支持的日期时间格式化", httpMethod = "POST")
+	@ApiOperation(value = "获取Kettle支持的日期时间格式化")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/datetimeformat")
 	protected void datetimeformat() throws Exception {
@@ -527,7 +527,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "文本文件输出支持的行终止符", httpMethod = "POST")
+	@ApiOperation(value = "文本文件输出支持的行终止符")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/formatMapperLineTerminator")
 	protected void formatMapperLineTerminator() throws Exception {
@@ -542,7 +542,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取Kettle支持的压缩格式", httpMethod = "POST")
+	@ApiOperation(value = "获取Kettle支持的压缩格式")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/compressionProviderNames")
 	protected void compressionProviderNames() throws Exception {
@@ -557,7 +557,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取系统支持的字符集", httpMethod = "POST")
+	@ApiOperation(value = "获取系统支持的字符集")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/availableCharsets")
 	protected void availableCharsets() throws Exception {
@@ -572,7 +572,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取支持的国际化", httpMethod = "POST")
+	@ApiOperation(value = "获取支持的国际化")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/locale")
 	protected void locale() throws Exception {
@@ -587,7 +587,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "FTPS支持的连接类型", httpMethod = "POST")
+	@ApiOperation(value = "FTPS支持的连接类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/connectiontype")
 	protected void connectiontype() throws Exception {
@@ -601,7 +601,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "SFTP支持的代理类型", httpMethod = "POST")
+	@ApiOperation(value = "SFTP支持的代理类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/proxyType")
 	protected void proxyType() throws Exception {
@@ -615,7 +615,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "多合并支持的连接类型", httpMethod = "POST")
+	@ApiOperation(value = "多合并支持的连接类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/multijointype")
 	protected void multijointype() throws Exception {
@@ -629,7 +629,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取时间单位", httpMethod = "POST")
+	@ApiOperation(value = "获取时间单位")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/timeunit")
 	protected void timeunit() throws Exception {
@@ -644,7 +644,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取时间单位2", httpMethod = "POST")
+	@ApiOperation(value = "获取时间单位2")
 	@RequestMapping(method=RequestMethod.POST, value="/timeunit2")
 	protected @ResponseBody List timeunit2() throws Exception {
 		ArrayList list = new ArrayList();
@@ -681,7 +681,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取系统支持的所有日志级别", httpMethod = "POST")
+	@ApiOperation(value = "获取系统支持的所有日志级别")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/logLevel")
 	protected void logLevel() throws Exception {
@@ -699,7 +699,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取变量支持的所有作用域", httpMethod = "POST")
+	@ApiOperation(value = "获取变量支持的所有作用域")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/variableType")
 	protected void variableType() throws Exception {
@@ -717,7 +717,7 @@ public class SystemMainController {
 	}
 
 
-	@ApiOperation(value = "支持的分区方式", httpMethod = "POST")
+	@ApiOperation(value = "支持的分区方式")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/partitionMethod")
 	protected void partitionMethod() throws Exception {
@@ -742,14 +742,14 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取支持的文件扩展名", httpMethod = "POST")
+	@ApiOperation(value = "获取支持的文件扩展名")
 	@RequestMapping(method=RequestMethod.POST, value="/filextension")
 	protected @ResponseBody List filextension(@RequestParam int extension) throws Exception {
 		return FileNodeType.toList(extension);
 	}
 
 	@Authorization
-	@ApiOperation(value = "浏览文件系统文件", httpMethod = "POST")
+	@ApiOperation(value = "浏览文件系统文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "文件系统路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "extension", value = "扩展名集合", paramType="query", dataType = "string")
@@ -845,7 +845,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "EXCEL输出支持的字体", httpMethod = "POST")
+	@ApiOperation(value = "EXCEL输出支持的字体")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/fontname")
 	protected void fontname() throws Exception{
@@ -859,7 +859,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "EXCEL输出支持的字体朝向", httpMethod = "POST")
+	@ApiOperation(value = "EXCEL输出支持的字体朝向")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/fontoriention")
 	protected void fontoriention() throws Exception{
@@ -873,7 +873,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "EXCEL输出支持的字体对齐方式", httpMethod = "POST")
+	@ApiOperation(value = "EXCEL输出支持的字体对齐方式")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/fontalignment")
 	protected void fontalignment() throws Exception{
@@ -887,7 +887,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "EXCEL输出支持的字体颜色", httpMethod = "POST")
+	@ApiOperation(value = "EXCEL输出支持的字体颜色")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/fontcolor")
 	protected void fontcolor() throws Exception{
@@ -901,7 +901,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "EXCEL输出支持的下划线类型", httpMethod = "POST")
+	@ApiOperation(value = "EXCEL输出支持的下划线类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/fontunderline")
 	protected void fontunderline() throws Exception{
@@ -915,7 +915,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取EXCEL文档写入模式", httpMethod = "POST")
+	@ApiOperation(value = "获取EXCEL文档写入模式")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/excelwritemethod")
 	protected void excelwritemethod() throws Exception{
@@ -934,7 +934,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取EXCEL行写入模式", httpMethod = "POST")
+	@ApiOperation(value = "获取EXCEL行写入模式")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/excelrowwritemethod")
 	protected void excelrowwritemethod() throws Exception{
@@ -953,7 +953,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取系统支持的EXCEL的sheet页类型", httpMethod = "POST")
+	@ApiOperation(value = "获取系统支持的EXCEL的sheet页类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/excelSheetType")
 	protected void excelSheetType() throws Exception{
@@ -967,7 +967,7 @@ public class SystemMainController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "获取系统支持的EXCEL类型", httpMethod = "POST")
+	@ApiOperation(value = "获取系统支持的EXCEL类型")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/excelType")
 	protected void excelType() throws Exception{
@@ -1138,77 +1138,77 @@ public class SystemMainController {
 
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/filetypes")
 	protected void filetypes() throws Exception{
 		JSONArray jsonArray = new JSONArray();
-		
+
 		for(int i=0;i<ResultFile.fileTypeCode.length;i++){
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("value", ResultFile.fileTypeCode[i]);
 			jsonObject.put("text", ResultFile.fileTypeDesc[i]);
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/dateLocales")
 	protected void dateLocales() throws Exception{
 		JSONArray jsonArray = new JSONArray();
-		
+
 		for (String locale : EnvUtil.getLocaleList()) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("name", locale);
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/timeZones")
 	protected void timeZones() throws Exception{
 		JSONArray jsonArray = new JSONArray();
-		
+
 		for (String timeZone : EnvUtil.getTimeZones()) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("name", timeZone);
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/calcFunctions")
 	protected void calcFunctions() throws Exception{
 		JSONArray jsonArray = new JSONArray();
-		
+
 		for(int i=0;i<CalculatorMetaFunction.calc_desc.length;i++){
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", CalculatorMetaFunction.calc_desc[i]);
 			jsonObject.put("desc", CalculatorMetaFunction.calcLongDesc[i]);
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/groupByType")
 	protected void groupByType() throws Exception{
 		JSONArray jsonArray = new JSONArray();
-		
+
 		for(int i=0;i<GroupByMeta.typeGroupCode.length;i++){
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("code", GroupByMeta.typeGroupCode[i]);
 			jsonObject.put("desc", GroupByMeta.typeGroupLongDesc[i]);
 			jsonArray.add(jsonObject);
 		}
-		
+
 		JsonUtils.response(jsonArray);
 	}
 

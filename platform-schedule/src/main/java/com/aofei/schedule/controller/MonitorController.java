@@ -60,7 +60,7 @@ public class MonitorController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "调度执行日志列表(分页查询)", notes = "调度执行日志列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "调度执行日志列表(分页查询)", notes = "调度执行日志列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -83,7 +83,7 @@ public class MonitorController extends BaseController {
      * @param type
      * @return
      */
-    @ApiOperation(value = "", notes = "调度执行日志日志", httpMethod = "GET")
+    @ApiOperation(value = "", notes = "调度执行日志日志")
 
     @RequestMapping(value = "/info/{id}/type/{type}", method = RequestMethod.GET)
     public Response<JSONObject> info(@PathVariable Long id, @PathVariable String type)  {

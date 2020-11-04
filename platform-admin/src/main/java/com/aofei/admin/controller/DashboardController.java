@@ -37,7 +37,7 @@ public class DashboardController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "首页-仪表盘", notes = "首页-仪表盘", httpMethod = "GET")
+    @ApiOperation(value = "首页-仪表盘", notes = "首页-仪表盘")
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public Response<DashboardResponse> index(@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException {
         DashboardResponse response = monitorService.getDashboardCount(user);

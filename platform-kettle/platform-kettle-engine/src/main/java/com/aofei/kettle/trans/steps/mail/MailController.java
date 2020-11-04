@@ -19,7 +19,7 @@ import java.util.Random;
 @Api(tags = "Transformation转换 - 发送邮件 - 接口api")
 public class MailController {
 
-	@ApiOperation(value = "加载邮件消息优先级", httpMethod = "POST")
+	@ApiOperation(value = "加载邮件消息优先级")
 	@RequestMapping("/priorityAndImportance")
 	protected @ResponseBody List priorityAndImportance() throws Exception{
 		ArrayList list = new ArrayList();
@@ -43,7 +43,7 @@ public class MailController {
 		return list;
 	}
 
-	@ApiOperation(value = "加载邮件敏感级别", httpMethod = "POST")
+	@ApiOperation(value = "加载邮件敏感级别")
 	@RequestMapping("/sensitivities")
 	protected @ResponseBody List sensitivities() throws Exception{
 		ArrayList list = new ArrayList();
@@ -72,7 +72,7 @@ public class MailController {
 		return list;
 	}
 
-	@ApiOperation(value = "内嵌图片自动生成的内容ID", httpMethod = "POST")
+	@ApiOperation(value = "内嵌图片自动生成的内容ID")
 	@RequestMapping("/contentId")
 	protected @ResponseBody void contentId() throws Exception {
 		Random randomgen = new Random();

@@ -59,7 +59,7 @@ public class DataCompareController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据稽核列表(分页查询)", notes = "数据稽核列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据稽核列表(分页查询)", notes = "数据稽核列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -78,7 +78,7 @@ public class DataCompareController extends BaseController {
      * @param ids
      * @return
      */
-    @ApiOperation(value = "执行数据稽核", notes = "执行数据稽核", httpMethod = "POST")
+    @ApiOperation(value = "执行数据稽核", notes = "执行数据稽核")
     @RequestMapping(value = "/exec", method = RequestMethod.POST)
     public Response<Integer> exec(
             @ApiParam(value = "id数组", required = true) @RequestBody Long[] ids) throws Exception {
@@ -217,7 +217,7 @@ public class DataCompareController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据稽核-获取字段", notes = "数据稽核-获取字段", httpMethod = "POST")
+    @ApiOperation(value = "数据稽核-获取字段", notes = "数据稽核-获取字段")
     @ApiResponses(value = {
             @ApiResponse(code = 210001, message = "字段类型不一致"),
             @ApiResponse(code = 210002, message = "字段数量不一致"),
@@ -312,7 +312,7 @@ public class DataCompareController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "新建数据稽核", notes = "新建数据稽核", httpMethod = "POST")
+    @ApiOperation(value = "新建数据稽核", notes = "新建数据稽核")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -328,7 +328,7 @@ public class DataCompareController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询数据稽核信息", notes = "根据Id查询数据稽核信息", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询数据稽核信息", notes = "根据Id查询数据稽核信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<CompareSqlResponse> get(
             @ApiParam(value = "数据稽核信息ID", required = true)  @PathVariable Long id)  {
@@ -340,7 +340,7 @@ public class DataCompareController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑数据稽核信息", notes = "编辑数据稽核信息", httpMethod = "POST")
+    @ApiOperation(value = "编辑数据稽核信息", notes = "编辑数据稽核信息")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<CompareSqlResponse> edit(
             @RequestBody CompareSqlRequest request)  {

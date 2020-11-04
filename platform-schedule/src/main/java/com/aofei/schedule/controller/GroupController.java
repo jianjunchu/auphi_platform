@@ -44,7 +44,7 @@ public class GroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "调度分组列表(分页查询)", notes = "调度分组列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "调度分组列表(分页查询)", notes = "调度分组列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -64,7 +64,7 @@ public class GroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "所有调度分组列表", notes = "所有调度分组列表", httpMethod = "GET")
+    @ApiOperation(value = "所有调度分组列表", notes = "所有调度分组列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "groupName", value = "名称(模糊查询)", paramType = "query", dataType = "Long")
     })
@@ -95,7 +95,7 @@ public class GroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑调度分组", notes = "编辑调度分组", httpMethod = "POST")
+    @ApiOperation(value = "编辑调度分组", notes = "编辑调度分组")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<GroupResponse> edit(
             @RequestBody GroupRequest request)  {
@@ -119,7 +119,7 @@ public class GroupController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询调度分组", notes = "根据Id查询调度分组", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询调度分组", notes = "根据Id查询调度分组")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<GroupResponse> get(
             @PathVariable Long id)  {

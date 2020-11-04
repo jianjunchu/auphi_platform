@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - 合并连接 - 接口api")
 public class MergeJoinController {
 
-	@ApiOperation(value = "获取合并连接类型，左连接、右连接", httpMethod = "POST")
+	@ApiOperation(value = "获取合并连接类型，左连接、右连接")
 	@RequestMapping(method=RequestMethod.POST, value="/types")
 	protected @ResponseBody List types() throws Exception{
 		ArrayList list = new ArrayList();

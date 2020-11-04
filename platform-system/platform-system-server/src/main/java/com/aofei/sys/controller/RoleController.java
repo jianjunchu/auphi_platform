@@ -43,7 +43,7 @@ public class RoleController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "角色列表(分页查询)", notes = "角色列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "角色列表(分页查询)", notes = "角色列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -60,7 +60,7 @@ public class RoleController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "角色列表", notes = "角色列表", httpMethod = "GET")
+    @ApiOperation(value = "角色列表", notes = "角色列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleName", value = "名称(模糊查询)", paramType = "query", dataType = "String")
     })
@@ -77,7 +77,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @Log(module = "角色管理",description = "新建角色")
-    @ApiOperation(value = "新建角色", notes = "新建角色", httpMethod = "POST")
+    @ApiOperation(value = "新建角色", notes = "新建角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<RoleResponse> add(
             @RequestBody RoleRequest request)  {
@@ -90,7 +90,7 @@ public class RoleController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑角色", notes = "编辑角色", httpMethod = "POST")
+    @ApiOperation(value = "编辑角色", notes = "编辑角色")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<RoleResponse> edit(
             @RequestBody RoleRequest request)  {
@@ -114,7 +114,7 @@ public class RoleController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询角色", notes = "根据Id查询角色", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询角色", notes = "根据Id查询角色")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<RoleResponse> get(
             @ApiParam(value = "角色ID", required = true) @PathVariable Long id)  {
@@ -140,7 +140,7 @@ public class RoleController extends BaseController {
      * @param userId
      * @return
      */
-    @ApiOperation(value = "删除角色下的用户", notes = "删除角色下的用户", httpMethod = "POST")
+    @ApiOperation(value = "删除角色下的用户", notes = "删除角色下的用户")
     @RequestMapping(value = "{roleId}/user/{userId}/delete", method = RequestMethod.POST)
     public Response<Integer> deleteUserRole(
             @ApiParam(value = "角色ID", required = true)  @PathVariable("roleId") Long roleId,
@@ -153,7 +153,7 @@ public class RoleController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "修改角色拥有的权限", notes = "修改角色拥有的权限", httpMethod = "POST")
+    @ApiOperation(value = "修改角色拥有的权限", notes = "修改角色拥有的权限")
     @RequestMapping(value = "{id}/resource/modify", method = RequestMethod.POST)
     public Response<Integer> changeUserRole(
             @ApiParam(value = "角色ID", required = true)@PathVariable("id") Long roleId,

@@ -58,7 +58,7 @@ public class UserController extends BaseController {
      * 用户列表(分页查询)
      * @return
      */
-    @ApiOperation(value = "当前登录用户信息", notes = "当前登录用户信息", httpMethod = "GET")
+    @ApiOperation(value = "当前登录用户信息", notes = "当前登录用户信息")
     @RequestMapping(value = "/my", method = RequestMethod.GET)
     public Response<UserResponse> my(
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -70,7 +70,7 @@ public class UserController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "用户列表(分页查询)", notes = "用户列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "用户列表(分页查询)", notes = "用户列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")})
@@ -87,7 +87,7 @@ public class UserController extends BaseController {
      * @return
      */
     @Log(module = "用户管理",description = "新建用户")
-    @ApiOperation(value = "新建用户", notes = "新建用户", httpMethod = "POST")
+    @ApiOperation(value = "新建用户", notes = "新建用户")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<UserResponse> add(
             @RequestBody UserRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -116,7 +116,7 @@ public class UserController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑用户", notes = "编辑用户", httpMethod = "POST")
+    @ApiOperation(value = "编辑用户", notes = "编辑用户")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<UserResponse> edit(
             @RequestBody UserRequest request)  {
@@ -131,7 +131,7 @@ public class UserController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "修改用户密码", notes = "修改用户密码", httpMethod = "POST")
+    @ApiOperation(value = "修改用户密码", notes = "修改用户密码")
     @RequestMapping(value = "/edit_password", method = RequestMethod.POST)
     public Response<UserResponse> edit_password(
             @RequestBody EditUserPasswordRequest request)  {
@@ -176,7 +176,7 @@ public class UserController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询用户", notes = "根据Id查询用户", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询用户", notes = "根据Id查询用户")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<UserResponse> get(
             @PathVariable Long id)  {
@@ -189,7 +189,7 @@ public class UserController extends BaseController {
      *
      * @return
      */
-    @ApiOperation(value = "修改用户拥有的角色", notes = "修改用户拥有的角色", httpMethod = "POST")
+    @ApiOperation(value = "修改用户拥有的角色", notes = "修改用户拥有的角色")
     @RequestMapping(value = "{id}/role/modify", method = RequestMethod.POST)
     public Response<Integer> changeUserRole(
             @ApiParam(value = "用户Id", required = true) @PathVariable("id") Long userId,
@@ -202,7 +202,7 @@ public class UserController extends BaseController {
      * @param roleId
      * @return
      */
-    @ApiOperation(value = "查询角色下的用户列表", notes = "查询角色下的用户列表", httpMethod = "GET")
+    @ApiOperation(value = "查询角色下的用户列表", notes = "查询角色下的用户列表")
     @RequestMapping(value = "/role/{roleId}", method = RequestMethod.GET)
     public Response<DataGrid<UserResponse>> getUserByRoleCode(@PathVariable("roleId") Long roleId, PageRequest pageRequest) {
         Page<UserResponse> page = userService.getUsers(getPagination(pageRequest), roleId);
@@ -216,7 +216,7 @@ public class UserController extends BaseController {
      * @param newPassword
      * @return
      */
-    @ApiOperation(value = "修改用户密码", notes = "修改用户密码", httpMethod = "POST")
+    @ApiOperation(value = "修改用户密码", notes = "修改用户密码")
     @RequestMapping(value = "{id}/modifypwd", method = RequestMethod.POST)
     public Integer modifyPassword(
             @ApiParam(value = "用户Id", required = true)  @PathVariable("id") Long id,

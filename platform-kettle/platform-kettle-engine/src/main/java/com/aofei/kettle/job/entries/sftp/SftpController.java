@@ -24,7 +24,7 @@ import java.net.InetAddress;
 @Api(tags = "Job作业 - SFTP - 接口api")
 public class SftpController {
 
-	@ApiOperation(value = "测试该SFTP是否可用", httpMethod = "POST")
+	@ApiOperation(value = "测试该SFTP是否可用")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "stepName", value = "SFTP环节名称", paramType="query", dataType = "string")
@@ -77,7 +77,7 @@ public class SftpController {
 				 BaseMessages.getString( JobEntrySFTP.class, "JobSFTP.ErrorConnect.NOK", sftp.getServerName(), info) + Const.CR);
 	}
 
-	@ApiOperation(value = "测试SFTP目录是否存在", httpMethod = "POST")
+	@ApiOperation(value = "测试SFTP目录是否存在")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "stepName", value = "SFTP环节名称", paramType="query", dataType = "string")

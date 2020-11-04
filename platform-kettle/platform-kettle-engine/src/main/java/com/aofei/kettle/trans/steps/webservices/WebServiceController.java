@@ -29,7 +29,7 @@ import java.util.*;
 @Api(tags = "Transformation转换 - Web服务 - 接口api")
 public class WebServiceController {
 
-	@ApiOperation(value = "加载WSDL地址或文件", httpMethod = "POST")
+	@ApiOperation(value = "加载WSDL地址或文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "转换的图形数据", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "stepName", value = "组件名称", paramType="query", dataType = "string")
@@ -81,7 +81,7 @@ public class WebServiceController {
 		return list;
 	}
 
-	@ApiOperation(value = "加载WebService中的方法", httpMethod = "POST")
+	@ApiOperation(value = "加载WebService中的方法")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "转换的图形数据", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "stepName", value = "组件名称", paramType="query", dataType = "string")

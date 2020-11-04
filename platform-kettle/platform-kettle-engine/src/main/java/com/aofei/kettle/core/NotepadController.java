@@ -19,7 +19,7 @@ public class NotepadController {
 
 	@ResponseBody
 	@RequestMapping("/newNote")
-	@ApiOperation(value = "新建备注", httpMethod = "POST")
+	@ApiOperation(value = "新建备注")
 	protected void newNote() throws Exception {
 
 		Document doc = mxUtils.createDocument();

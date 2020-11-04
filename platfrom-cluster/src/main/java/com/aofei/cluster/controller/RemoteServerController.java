@@ -30,7 +30,7 @@ public class RemoteServerController extends BaseController {
      * 列表(分页查询)
      * @return
      */
-    @ApiOperation(value = "服务器列表(分页查询)", notes = "服务器列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "服务器列表(分页查询)", notes = "服务器列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")})

@@ -325,7 +325,7 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
+	@ApiOperation(value = "加载资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
@@ -361,7 +361,7 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
+	@ApiOperation(value = "加载资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
@@ -633,7 +633,7 @@ public class KettleRepositoryController extends BaseController {
 		return false;
 	}
 
-	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件", httpMethod = "POST")
+	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "repositoryCurrentDir", value = "当前资源库目录", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "filesPath", value = "文件路径，可以是多个，文件需要先调用上传接口", paramType="query", dataType = "string")
@@ -935,7 +935,7 @@ public class KettleRepositoryController extends BaseController {
 		return list;
 	}
 
-	@ApiOperation(value = "返回资源库中所有的子服务器信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的子服务器信息")
 	@ResponseBody
 	@RequestMapping("/slaveservers")
 	protected void slaveservers() throws IOException, KettleException {
@@ -951,7 +951,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的数据库连接信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的数据库连接信息")
 	@RequestMapping("/databases")
 	protected @ResponseBody void databases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
@@ -968,7 +968,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息")
 	@RequestMapping("/partitionDatabases")
 	protected @ResponseBody void partitionDatabases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
@@ -989,7 +989,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态")
 	@RequestMapping("/databaseStatus")
 	protected @ResponseBody Collection databaseStatus() throws IOException, KettleException, InterruptedException, ExecutionException {
 		Repository repository = App.getInstance().getRepository();
