@@ -55,7 +55,7 @@ public class RepositoryDatabaseController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "资源库连接列表", notes = "资源库连接列表", httpMethod = "GET")
+    @ApiOperation(value = "资源库连接列表", notes = "资源库连接列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "repositoryName", value = "资源库连接名称(模糊查询)", paramType = "query", dataType = "String")
     })
@@ -71,7 +71,7 @@ public class RepositoryDatabaseController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "新建资源库数据库链接", notes = "新建资源库数据库链接", httpMethod = "POST")
+    @ApiOperation(value = "新建资源库数据库链接", notes = "新建资源库数据库链接")
     @ApiResponses(value = {
             @ApiResponse(code = 200009, message = "数据库连接验证失败"),
             @ApiResponse(code = 200, message = "success")})
@@ -100,7 +100,7 @@ public class RepositoryDatabaseController extends BaseController {
      * @throws IOException
      * @throws KettleException
      */
-    @ApiOperation(value = "生成数据库初始化数据库脚本", notes = "生成数据库初始化数据库脚本", httpMethod = "POST")
+    @ApiOperation(value = "生成数据库初始化数据库脚本", notes = "生成数据库初始化数据库脚本")
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, value = "/initSQL")
     protected Response<String> initSQL(@RequestBody JSONObject request) throws IOException, KettleException {
@@ -156,7 +156,7 @@ public class RepositoryDatabaseController extends BaseController {
      * @param connectionName
      * @return
      */
-    @ApiOperation(value = "根据连接名获取详情", notes = "根据连接名获取详情", httpMethod = "GET")
+    @ApiOperation(value = "根据连接名获取详情", notes = "根据连接名获取详情")
     @RequestMapping(value = "get/{connectionName}/", method = RequestMethod.GET)
     public Response<DatabaseMeta> get(
             @ApiParam(value = "数据库连接名称", required = true)  @PathVariable String connectionName) throws KettleDatabaseException {
@@ -172,7 +172,7 @@ public class RepositoryDatabaseController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "新建资源库", notes = "新建资源库", httpMethod = "POST")
+    @ApiOperation(value = "新建资源库", notes = "新建资源库")
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     public Response<String> test(
             @RequestBody JSONObject request) throws KettleDatabaseException {

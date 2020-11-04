@@ -31,7 +31,7 @@ public class ModelAttributeController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "所有数据模型属性列表", notes = "所有数据模型属性列表", httpMethod = "GET")
+    @ApiOperation(value = "所有数据模型属性列表", notes = "所有数据模型属性列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<ModelAttributeResponse>> list(@ApiIgnore ModelAttributeRequest request)  {
         List<ModelAttributeResponse> list = modelAttributeService.getModelAttributes(request);

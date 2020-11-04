@@ -48,7 +48,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - JS脚本 - 接口api")
 public class JavaScriptController {
 
-	@ApiOperation(value = "获取左侧树结构", httpMethod = "POST")
+	@ApiOperation(value = "获取左侧树结构")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string")
@@ -164,7 +164,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "获取所有的JavaScript变量", httpMethod = "POST")
+	@ApiOperation(value = "获取所有的JavaScript变量")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string"),
@@ -342,7 +342,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "生成测试数据", httpMethod = "POST")
+	@ApiOperation(value = "生成测试数据")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string")
@@ -419,7 +419,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "测试JavaScript脚本", httpMethod = "POST")
+	@ApiOperation(value = "测试JavaScript脚本")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string"),

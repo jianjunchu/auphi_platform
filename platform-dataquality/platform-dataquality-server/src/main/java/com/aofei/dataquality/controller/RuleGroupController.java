@@ -46,7 +46,7 @@ public class RuleGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据质量规则分组(分页查询)", notes = "数据质量规则分组(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据质量规则分组(分页查询)", notes = "数据质量规则分组(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -66,7 +66,7 @@ public class RuleGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "所有数据质量规则分组", notes = "所有数据质量规则分组", httpMethod = "GET")
+    @ApiOperation(value = "所有数据质量规则分组", notes = "所有数据质量规则分组")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "groupName", value = "名称(模糊查询)", paramType = "query", dataType = "Long")
     })
@@ -85,7 +85,7 @@ public class RuleGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "新建数据质量规则分组", notes = "新建数据质量规则分组", httpMethod = "POST")
+    @ApiOperation(value = "新建数据质量规则分组", notes = "新建数据质量规则分组")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<RuleGroupResponse> add(
             @RequestBody RuleGroupRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -98,7 +98,7 @@ public class RuleGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑数据质量规则分组", notes = "编辑数据质量规则分组", httpMethod = "POST")
+    @ApiOperation(value = "编辑数据质量规则分组", notes = "编辑数据质量规则分组")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<RuleGroupResponse> edit(
             @RequestBody RuleGroupRequest request)  {
@@ -122,7 +122,7 @@ public class RuleGroupController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询数据质量规则分组", notes = "根据Id查询数据质量规则分组", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询数据质量规则分组", notes = "根据Id查询数据质量规则分组")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<RuleGroupResponse> get(
             @PathVariable Long id)  {

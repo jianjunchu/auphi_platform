@@ -46,7 +46,7 @@ public class AuthController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "服务用户权限-分页列表", notes = "服务用户权限列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "服务用户权限-分页列表", notes = "服务用户权限列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")
@@ -67,7 +67,7 @@ public class AuthController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "服务用户权限-全部列表", notes = "所有服务用户权限的列表", httpMethod = "GET")
+    @ApiOperation(value = "服务用户权限-全部列表", notes = "所有服务用户权限的列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<ServiceAuthResponse>> list(@ApiIgnore ServiceAuthRequest request)  {
         List<ServiceAuthResponse> list = serviceAuthService.getServiceAuths(request);
@@ -97,7 +97,7 @@ public class AuthController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "服务用户权限-编辑", notes = "编辑服务用户权限", httpMethod = "POST")
+    @ApiOperation(value = "服务用户权限-编辑", notes = "编辑服务用户权限")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<ServiceAuthResponse> edit(
             @RequestBody ServiceAuthRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -123,7 +123,7 @@ public class AuthController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "服务用户权限-根据Id查询", notes = "根据Id查询服务用户权限", httpMethod = "GET")
+    @ApiOperation(value = "服务用户权限-根据Id查询", notes = "根据Id查询服务用户权限")
     @RequestMapping(value = "/{id}/get", method = RequestMethod.GET)
     public Response<ServiceAuthResponse> get(
             @PathVariable Long id)  {

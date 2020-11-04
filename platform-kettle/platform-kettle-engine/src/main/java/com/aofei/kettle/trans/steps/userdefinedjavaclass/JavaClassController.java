@@ -30,7 +30,7 @@ import java.util.*;
 @Api(tags = "Transformation转换 - Java类 - 接口api")
 public class JavaClassController {
 
-	@ApiOperation(value = "获取左侧树结构", httpMethod = "POST")
+	@ApiOperation(value = "获取左侧树结构")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "Java环节名称", paramType="query", dataType = "string")

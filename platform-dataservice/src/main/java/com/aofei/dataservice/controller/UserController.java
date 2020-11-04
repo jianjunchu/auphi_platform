@@ -46,7 +46,7 @@ public class UserController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据发布访问用户-分页列表", notes = "数据发布访问用户列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据发布访问用户-分页列表", notes = "数据发布访问用户列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")
@@ -66,7 +66,7 @@ public class UserController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据发布访问用户-全部列表", notes = "所有数据发布访问用户的列表", httpMethod = "GET")
+    @ApiOperation(value = "数据发布访问用户-全部列表", notes = "所有数据发布访问用户的列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<ServiceUserResponse>> list(@ApiIgnore ServiceUserRequest request)  {
         List<ServiceUserResponse> list = serviceUserService.getServiceUsers(request);
@@ -96,7 +96,7 @@ public class UserController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据发布访问用户-编辑", notes = "编辑数据发布访问用户", httpMethod = "POST")
+    @ApiOperation(value = "数据发布访问用户-编辑", notes = "编辑数据发布访问用户")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<ServiceUserResponse> edit(
             @RequestBody ServiceUserRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -122,7 +122,7 @@ public class UserController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据发布访问用户-根据Id查询", notes = "根据Id查询数据发布访问用户", httpMethod = "GET")
+    @ApiOperation(value = "数据发布访问用户-根据Id查询", notes = "根据Id查询数据发布访问用户")
     @RequestMapping(value = "/{id}/get", method = RequestMethod.GET)
     public Response<ServiceUserResponse> get(
             @PathVariable Long id)  {

@@ -35,10 +35,10 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value="/tableoutput")
 @Api(tags = "Transformation转换 - 表输出 - 接口api")
 public class TableOutputController {
-	
+
 	private static final Class PKG = TableOutputMeta.class;
 
-	@ApiOperation(value = "生成表输出组件的SQL脚本", httpMethod = "POST")
+	@ApiOperation(value = "生成表输出组件的SQL脚本")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "stepName", value = "环节名称", paramType="query", dataType = "string")
@@ -48,10 +48,10 @@ public class TableOutputController {
 	protected void generateSQL(@RequestParam String graphXml, @RequestParam String stepName, @CurrentUser CurrentUserResponse user) throws Exception {
 		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
 		TransMeta transMeta = (TransMeta) codec.decode(graphXml, user);
-		
+
 		StepMeta stepMeta = transMeta.findStep( URLDecoder.decode(stepName, "utf-8") );
 		TableOutputMeta info = (TableOutputMeta) stepMeta.getStepMetaInterface();
-		
+
 		RowMetaInterface prev = transMeta.getPrevStepFields(stepName);
 		if (info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length() > 0) {
 			int idx = prev.indexOfValue(info.getTableNameField());
@@ -59,7 +59,7 @@ public class TableOutputController {
 				prev.removeValueMeta(idx);
 			}
 		}
-		
+
 		if (info.specifyFields()) {
 			// Only use the fields that were specified.
 			RowMetaInterface prevNew = new RowMeta();
@@ -77,7 +77,7 @@ public class TableOutputController {
 			}
 			prev = prevNew;
 		}
-		
+
 		boolean autoInc = false;
 		String pk = null;
 
@@ -88,7 +88,7 @@ public class TableOutputController {
 			autoInc = true;
 			pk = info.getGeneratedKeyField();
 		}
-		
+
 		if (isValidRowMeta(prev)) {
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, pk, autoInc, pk);
 			if (!sql.hasError()) {
@@ -101,9 +101,9 @@ public class TableOutputController {
 				JsonUtils.fail(sql.getError());
 			}
 		}
-		
+
 	}
-	
+
 	private static boolean isValidRowMeta(RowMetaInterface rowMeta) {
 		for (ValueMetaInterface value : rowMeta.getValueMetaList()) {
 			String name = value.getName();
@@ -113,5 +113,5 @@ public class TableOutputController {
 		}
 		return true;
 	}
-	
+
 }

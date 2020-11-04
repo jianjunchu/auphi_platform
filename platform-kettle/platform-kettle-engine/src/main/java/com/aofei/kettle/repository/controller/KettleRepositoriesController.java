@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "资源库维护接口api")
 public class KettleRepositoriesController {
 
-	@ApiOperation(value = "返回所有的资源库信息", httpMethod = "POST")
+	@ApiOperation(value = "返回所有的资源库信息")
 	@RequestMapping(method = RequestMethod.POST, value = "/list")
 	protected @ResponseBody List list() throws KettleException, IOException {
 		RepositoriesMeta input = new RepositoriesMeta();
@@ -56,7 +56,7 @@ public class KettleRepositoriesController {
 		}
 		return list;
 	}
-	
+
 	@ApiOperation(value = "获取一个全局数据库连接，注意该接口并非返回资源库中的数据库连接，如果该连接不存在就会创建一个默认的")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "连接名称", paramType="query", dataType = "string")
@@ -64,7 +64,7 @@ public class KettleRepositoriesController {
 	@RequestMapping(method = RequestMethod.POST, value = "/database")
 	protected @ResponseBody void database(@RequestParam(required=false) String name) throws Exception {
 		RepositoriesMeta input = new RepositoriesMeta();
-		
+
 		DatabaseMeta databaseMeta = null;
 		if(StringUtils.hasText(name) && input.readData()) {
 			for (int i = 0; i < input.nrDatabases(); i++) {
@@ -74,27 +74,27 @@ public class KettleRepositoriesController {
 				}
 			}
 		}
-		
+
 		if(databaseMeta == null)
 			databaseMeta = new DatabaseMeta();
-		
+
 		JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
 		JsonUtils.response(jsonObject);
 	}
-	
+
 	@ApiOperation(value = "获取资源库类型，目前支持文件资源库和数据库资源库")
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/types")
 	protected void types() throws IOException {
 		JSONArray jsonArray = new JSONArray();
-		
+
 		PluginRegistry registry = PluginRegistry.getInstance();
 	    Class<? extends PluginTypeInterface> pluginType = RepositoryPluginType.class;
 	    List<PluginInterface> plugins = registry.getPlugins( pluginType );
 
 	    for ( int i = 0; i < plugins.size(); i++ ) {
 	      PluginInterface plugin = plugins.get( i );
-	      
+
 	      JSONObject jsonObject = new JSONObject();
 	      jsonObject.put("type", plugin.getIds()[0]);
 	      jsonObject.put("name", plugin.getName());
@@ -103,7 +103,7 @@ public class KettleRepositoriesController {
 
 	    JsonUtils.response(jsonArray);
 	}
-	
+
 	@ApiOperation(value = "获取资源库信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "reposityId", value = "资源库ID", paramType="path", dataType = "string")
@@ -118,35 +118,35 @@ public class KettleRepositoriesController {
 			}
 		}
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/add")
 	protected void add(@RequestParam String reposityInfo, @RequestParam boolean add) throws IOException, KettleException {
 		JSONObject jsonObject = JSONObject.fromObject(reposityInfo);
-		
+
 		RepositoryMeta repositoryMeta = RepositoryCodec.decode(jsonObject);
 		Repository reposity = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class,  repositoryMeta, Repository.class );
 		reposity.init( repositoryMeta );
-	        
+
 		if ( repositoryMeta instanceof KettleDatabaseRepositoryMeta && !StringUtils.hasText(jsonObject.optJSONObject("extraOptions").optString("database")) ) {
-			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ), 
+			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ),
 					BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.ErrorNoConnection.Message" ));
 			return;
 		} else if(!StringUtils.hasText(repositoryMeta.getName())) {
-			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ), 
+			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ),
 					BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.ErrorNoId.Message" ));
 			return;
 		} else if(!StringUtils.hasText(repositoryMeta.getDescription())) {
-			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ), 
+			JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ),
 					BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.ErrorNoName.Message" ));
 			return;
 		} else {
 			RepositoriesMeta input = new RepositoriesMeta();
 			input.readData();
-			
+
 			if(add) {
 				if(input.searchRepository(repositoryMeta.getName()) != null) {
-					JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ), 
+					JsonUtils.fail(BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.Error.Title" ),
 							BaseMessages.getString( KettleDatabaseRepositoryDialog.class, "RepositoryDialog.Dialog.ErrorIdExist.Message", repositoryMeta.getName()));
 					return;
 				} else {
@@ -160,34 +160,34 @@ public class KettleRepositoriesController {
 				input.writeData();
 			}
 		}
-		
+
 		JsonUtils.success("操作成功！");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/remove")
 	protected void remove(@RequestParam String repositoryName) throws KettleException, IOException {
 		RepositoriesMeta input = new RepositoriesMeta();
 		input.readData();
-		
+
 		RepositoryMeta previous = input.searchRepository(repositoryName);
 		input.removeRepository(input.indexOfRepository(previous));
 		input.writeData();
-		
+
 		JsonUtils.success("操作成功！");
 	}
-	
-	@ApiOperation(value = "系统登录", httpMethod = "POST")
+
+	@ApiOperation(value = "系统登录")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "loginInfo", value = "登录信息", paramType="query", dataType = "string")
 	})
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/login")
 	protected void login(@RequestParam String loginInfo) throws IOException, KettleException {
-		
-		
+
+
 		JSONObject jsonObject = JSONObject.fromObject(loginInfo);
-		
+
 		RepositoriesMeta input = new RepositoriesMeta();
 		if (input.readData()) {
 			RepositoryMeta repositoryMeta = input.searchRepository( jsonObject.optString("reposityId") );
@@ -195,23 +195,23 @@ public class KettleRepositoriesController {
 				Repository repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
 			    repository.init( repositoryMeta );
 			    repository.connect( jsonObject.optString("username"), jsonObject.optString("password") );
-			    
-			    
-			    
+
+
+
 			    Props.getInstance().setLastRepository( repositoryMeta.getName() );
 			    Props.getInstance().setLastRepositoryLogin( jsonObject.optString("username") );
 			    Props.getInstance().setProperty( PropsUI.STRING_START_SHOW_REPOSITORIES, jsonObject.optBoolean("atStartupShown") ? "Y" : "N");
-			    
+
 			    Props.getInstance().saveProps();
-			    
+
 			    App.getInstance().selectRepository(repository);
 			}
 		}
-		
+
 		JsonUtils.success("登录成功！");
 	}
-	
-	@ApiOperation(value = "资源库登录", httpMethod = "POST")
+
+	@ApiOperation(value = "资源库登录")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "username", value = "用户名", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "password", value = "密码", paramType="query", dataType = "string")
@@ -222,7 +222,7 @@ public class KettleRepositoriesController {
 		try {
 			Repository repository = App.getInstance().getRepository();
 			repository.connect(username, password);
-			
+
 			JsonUtils.success("登录成功！");
 		} catch(Exception e) {
 			e.printStackTrace();

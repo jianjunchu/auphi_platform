@@ -40,7 +40,7 @@ public class MenuController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "菜单列表", notes = "菜单列表", httpMethod = "GET")
+    @ApiOperation(value = "菜单列表", notes = "菜单列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "parentId", value = "父菜单ID", paramType = "query", dataType = "Long"),
             @ApiImplicitParam(name = "name", value = "菜单名称(模糊查询)", paramType = "query", dataType = "String")
@@ -57,7 +57,7 @@ public class MenuController extends BaseController {
      * @return
      */
     @Log(module = "菜单管理",description = "新建菜单")
-    @ApiOperation(value = "新建菜单", notes = "新建菜单", httpMethod = "POST")
+    @ApiOperation(value = "新建菜单", notes = "新建菜单")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<MenuResponse> add(
             @RequestBody MenuRequest request)  {
@@ -71,7 +71,7 @@ public class MenuController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑菜单", notes = "编辑菜单", httpMethod = "POST")
+    @ApiOperation(value = "编辑菜单", notes = "编辑菜单")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<MenuResponse> edit(
             @RequestBody MenuRequest request)  {
@@ -98,7 +98,7 @@ public class MenuController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询菜单", notes = "根据Id查询菜单", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询菜单", notes = "根据Id查询菜单")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<MenuResponse> get(
             @ApiParam(value = "菜单ID", required = true)  @PathVariable Long id)  {
@@ -108,7 +108,7 @@ public class MenuController extends BaseController {
     /**
      * 查询菜单列表
      */
-    @ApiOperation(value = "当前登录用户的菜单列表", notes = "当前登录用户的菜单列表", httpMethod = "GET")
+    @ApiOperation(value = "当前登录用户的菜单列表", notes = "当前登录用户的菜单列表")
     @RequestMapping(value = "/menus/my", method = RequestMethod.GET)
     public Response<List<MenuResponse>> getMenus(
             @ApiIgnore @CurrentUser CurrentUserResponse user) {
@@ -127,7 +127,7 @@ public class MenuController extends BaseController {
     /**
      * 查询菜单列表
      */
-    @ApiOperation(value = "指定用户ID的菜单", notes = "指定用户ID的菜单", httpMethod = "GET")
+    @ApiOperation(value = "指定用户ID的菜单", notes = "指定用户ID的菜单")
     @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
     public Response<List<MenuResponse>> getMenus(
             @ApiParam(value = "用户ID", required = true)  @PathVariable("userId") String userId) {

@@ -38,7 +38,7 @@ public class MdmTableController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "主数据表列表(分页查询)", notes = "主数据表列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "主数据表列表(分页查询)", notes = "主数据表列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -55,7 +55,7 @@ public class MdmTableController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "所有主数据表列表", notes = "所有主数据表列表", httpMethod = "GET")
+    @ApiOperation(value = "所有主数据表列表", notes = "所有主数据表列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<TableResponse>> list(@ApiIgnore TableRequest request)  {
         List<TableResponse> list = tableService.getTables(request);
@@ -80,7 +80,7 @@ public class MdmTableController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑主数据表", notes = "编辑主数据表", httpMethod = "POST")
+    @ApiOperation(value = "编辑主数据表", notes = "编辑主数据表")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<TableResponse> edit(
             @RequestBody TableRequest request)  {
@@ -104,7 +104,7 @@ public class MdmTableController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询主数据表", notes = "根据Id查询主数据表", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询主数据表", notes = "根据Id查询主数据表")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<TableResponse> get(
             @PathVariable Long id)  {

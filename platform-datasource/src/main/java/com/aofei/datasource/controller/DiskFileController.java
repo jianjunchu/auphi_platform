@@ -50,7 +50,7 @@ public class DiskFileController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "服务器文件列表", notes = "服务器文件列表", httpMethod = "POST")
+    @ApiOperation(value = "服务器文件列表", notes = "服务器文件列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "path", value = "目录", paramType = "query", dataType = "String"),
     })
@@ -74,7 +74,7 @@ public class DiskFileController extends BaseController {
      * 服务器文件列表
      * @return
      */
-    @ApiOperation(value = "磁盘剩余空间", notes = "磁盘剩余空间", httpMethod = "POST")
+    @ApiOperation(value = "磁盘剩余空间", notes = "磁盘剩余空间")
     @RequestMapping(value = "/residual", method = RequestMethod.POST)
     public Response<ResidualSpaceResponse> residual(
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -98,7 +98,7 @@ public class DiskFileController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "创建文件夹", notes = "创建文件夹", httpMethod = "POST")
+    @ApiOperation(value = "创建文件夹", notes = "创建文件夹")
     @RequestMapping(value = "/mkdir", method = RequestMethod.POST)
     public Response<Boolean> mkdir(
             @RequestBody DiskFileCreateRequest request,
@@ -113,7 +113,7 @@ public class DiskFileController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "上传文件", notes = "上传文件", httpMethod = "POST")
+    @ApiOperation(value = "上传文件", notes = "上传文件")
     @ApiResponses(value = {
             @ApiResponse(code = 300001, message = "Insufficient disk space"),
             @ApiResponse(code = 200, message = "success")})
@@ -177,7 +177,7 @@ public class DiskFileController extends BaseController {
      * @return
      * @throws IOException
      */
-    @ApiOperation(value = "删除文件", notes = "删除文件", httpMethod = "POST")
+    @ApiOperation(value = "删除文件", notes = "删除文件")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public Response<Integer> upload(
                 @RequestBody DiskFileDeleteRequest request,
