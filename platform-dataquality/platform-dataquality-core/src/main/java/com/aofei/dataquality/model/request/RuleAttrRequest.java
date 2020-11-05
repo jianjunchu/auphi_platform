@@ -26,10 +26,6 @@ public class RuleAttrRequest extends BaseRequest<RuleAttrRequest> {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 规则属性值ID
-     */
-    private Long ruleAttrId;
 
     /**
      * 组织ID
@@ -44,6 +40,8 @@ public class RuleAttrRequest extends BaseRequest<RuleAttrRequest> {
 
     private String code;
     private String valueStr;
+
+    private String valueRank;
 
 
 }

@@ -1,7 +1,10 @@
 package com.aofei.dataquality.model.response;
 
+import com.aofei.dataquality.model.request.RuleAttrRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * <p>
@@ -73,10 +76,19 @@ public class RuleResponse {
      */
     @ApiModelProperty(value = "字段名")
     private String fieldName;
+
+    /**
+     * 字段类型
+     */
+    @ApiModelProperty(value = "字段类型")
+    private Integer fieldType;
+
     /**
      * 是否启用
      */
     @ApiModelProperty(value = "是否启用")
     private Integer isEnable;
 
+
+    private List<RuleAttrResponse> attr;
 }

@@ -35,7 +35,7 @@ public class Rule extends DataEntity<Rule> {
     /**
      * 规则id
      */
-    @TableField("RULE_ID")
+    @TableId(value = "RULE_ID", type = IdType.ID_WORKER)
     private Long ruleId;
     /**
      * 组织ID
@@ -90,6 +90,13 @@ public class Rule extends DataEntity<Rule> {
      */
     @TableField("FIELD_NAME")
     private String fieldName;
+
+    /**
+     * 字段类型
+     */
+    @TableField("FIELD_TYPE")
+    private Integer fieldType;
+
     /**
      * 是否启用
      */

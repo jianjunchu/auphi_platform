@@ -4,6 +4,8 @@ import com.aofei.base.model.request.BaseRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * <p>
  * 数据质量管理-规则管理
@@ -62,11 +64,22 @@ public class RuleRequest extends BaseRequest<RuleRequest> {
      */
     @ApiModelProperty(value = "字段名")
     private String fieldName;
+
+    /**
+     * 字段类型
+     */
+    @ApiModelProperty(value = "字段类型")
+    private Integer fieldType;
+
     /**
      * 是否启用
      */
     @ApiModelProperty(value = "是否启用")
     private Integer isEnable;
 
+    /**
+     *
+     */
+    private List<RuleAttrRequest> attr;
 
 }

@@ -11,6 +11,7 @@
         , a.ORGANIZER_ID AS organizerId
         , a.CODE AS code
         , a.VALUE_STR AS valueStr
+        , a.VALUE_RANK AS valueRank
         , a.CREATE_USER AS createUser
         , a.UPDATE_USER AS updateUser
         , a.CREATE_TIME AS createTime
@@ -22,7 +23,7 @@
         select
         <include refid="Base_Column_List"/>
         from DATA_QUALITY_RULE_ATTR a
-        <include refid="Base_Joins"/>
+
         <where>
             a.DEL_FLAG = 0
             <if test="organizerId !=null ">
@@ -36,11 +37,11 @@
     </select>
 
     <update id="deleteById">
-        update DATA_QUALITY_RULE a set a.DEL_FLAG = 1  where a.RULE_ATTR_ID = #{id}
+        update DATA_QUALITY_RULE_ATTR a set a.DEL_FLAG = 1  where a.RULE_ATTR_ID = #{id}
     </update>
 
     <update id="deleteByRuleId">
-        update DATA_QUALITY_RULE a set a.DEL_FLAG = 1  where a.RULE_ID = #{ruleId}
+        DELETE FROM DATA_QUALITY_RULE_ATTR  WHERE  RULE_ID = #{ruleId}
     </update>
 
 

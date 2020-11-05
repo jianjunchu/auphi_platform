@@ -52,6 +52,11 @@ public class RuleAttr extends DataEntity<RuleAttr> {
     @TableField("VALUE_STR")
     private String valueStr;
 
+    @TableField("VALUE_RANK")
+    private String valueRank;
+
+
+
 
 
     @Override

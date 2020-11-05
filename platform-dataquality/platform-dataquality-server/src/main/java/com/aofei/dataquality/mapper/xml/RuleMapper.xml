@@ -17,6 +17,7 @@
         , a.SCHEMA_NAME AS schemaName
         , a.TABLE_NAME AS tableName
         , a.FIELD_NAME AS fieldName
+         , a.FIELD_TYPE AS fieldType
         , a.IS_ENABLE AS isEnable
         , a.CREATE_USER AS createUser
         , a.UPDATE_USER AS updateUser
@@ -69,13 +70,14 @@
     <update id="updateById">
         update DATA_QUALITY_RULE a
         <set>
-              a.RULE_GROUP_ID = #{et.ruleruleId}
+              a.RULE_GROUP_ID = #{et.ruleGroupId}
             , a.DESCRIPTION = #{et.description}
             , a.RULE_TYPE = #{et.ruleType}
             , a.DATABASE_ID = #{et.databaseId}
             , a.SCHEMA_NAME = #{et.schemaName}
             , a.TABLE_NAME = #{et.tableName}
             , a.FIELD_NAME = #{et.fieldName}
+            , a.FIELD_TYPE = #{et.fieldType}
             , a.IS_ENABLE = #{et.isEnable}
             , a.UPDATE_USER = #{et.updateUser}
             , a.UPDATE_TIME = #{et.updateTime}

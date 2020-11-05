@@ -3,9 +3,13 @@ package com.aofei.dataquality.service.impl;
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.dataquality.entity.Rule;
+import com.aofei.dataquality.entity.RuleAttr;
 import com.aofei.dataquality.i18n.Messages;
+import com.aofei.dataquality.mapper.RuleAttrMapper;
 import com.aofei.dataquality.mapper.RuleMapper;
+import com.aofei.dataquality.model.request.RuleAttrRequest;
 import com.aofei.dataquality.model.request.RuleRequest;
+import com.aofei.dataquality.model.response.RuleAttrResponse;
 import com.aofei.dataquality.model.response.RuleResponse;
 import com.aofei.dataquality.service.IRuleService;
 import com.aofei.base.service.impl.BaseService;
@@ -13,6 +17,7 @@ import com.aofei.log.annotation.Log;
 import com.aofei.utils.BeanCopier;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +32,9 @@ import java.util.List;
  */
 @Service
 public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleService {
+
+    @Autowired
+    private RuleAttrMapper ruleAttrMapper;
 
     @Override
     public Page<RuleResponse> getPage(Page<Rule> page, RuleRequest request) {
@@ -67,11 +75,24 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
                 .eq("FIELD_NAME",request.getFieldName())
                 .eq("RULE_TYPE",request.getRuleType())
                 .eq("DEL_FLAG",Rule.DEL_FLAG_NORMAL));
+
+
+
         if(count == 0){
-            Rule Rule = BeanCopier.copy(request, Rule.class);
-            Rule.preInsert();
-            super.insert(Rule);
-            return BeanCopier.copy(Rule, RuleResponse.class);
+            Rule rule = BeanCopier.copy(request, Rule.class);
+            rule.preInsert();
+            super.insert(rule);
+
+            for(RuleAttrRequest ruleAttrRequest: request.getAttr()){
+                RuleAttr ruleAttr = BeanCopier.copy(ruleAttrRequest, RuleAttr.class);
+                ruleAttr.setOrganizerId(request.getOrganizerId());
+                ruleAttr.setRuleId(rule.getRuleId());
+                ruleAttr.preInsert();
+                ruleAttrMapper.insert(ruleAttr);
+            }
+
+
+            return BeanCopier.copy(rule, RuleResponse.class);
         }else{
             throw new ApplicationException(StatusCode.CONFLICT.getCode(), Messages.getString("DataQuality.Error.FieldNameExist ",request.getFieldName()));
         }
@@ -99,12 +120,26 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
                 existing.setRuleType(request.getRuleType());
                 existing.setDatabaseId(request.getDatabaseId());
                 existing.setSchemaName(request.getSchemaName());
+                existing.setFieldName(request.getFieldName());
+                existing.setFieldType(request.getFieldType());
                 existing.setTableName(request.getTableName());
                 existing.setFieldName(request.getFieldName());
                 existing.setDescription(request.getDescription());
                 existing.setIsEnable(request.getIsEnable());
                 existing.preUpdate();
                 super.insertOrUpdate(existing);
+
+                ruleAttrMapper.deleteByRuleId(existing.getRuleId());
+
+                for(RuleAttrRequest ruleAttrRequest: request.getAttr()){
+                    RuleAttr ruleAttr = BeanCopier.copy(ruleAttrRequest, RuleAttr.class);
+                    ruleAttr.setOrganizerId(request.getOrganizerId());
+                    ruleAttr.setRuleId(existing.getRuleId());
+                    ruleAttr.preInsert();
+                    ruleAttr.preUpdate();
+                    ruleAttrMapper.insert(ruleAttr);
+                }
+
                 return BeanCopier.copy(existing, RuleResponse.class);
             } else {
                 //不存在
@@ -123,6 +158,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
         Rule existing = selectById(ruleId);
         if (existing != null) {
             super.deleteById(ruleId);
+            ruleAttrMapper.deleteByRuleId(ruleId);
             return 1;
         } else {
             // 不存在
@@ -133,10 +169,21 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
 
 
     @Override
-    public RuleResponse get(Long deptId) {
-        Rule existing = selectById(deptId);
+    public RuleResponse get(Long ruleId) {
+        Rule existing = selectById(ruleId);
         if(existing!=null){
-            return BeanCopier.copy(existing, RuleResponse.class);
+            RuleResponse ruleResponse =  BeanCopier.copy(existing, RuleResponse.class);
+
+            RuleAttrRequest ruleAttrRequest = new RuleAttrRequest();
+            ruleAttrRequest.setRuleId(ruleId);
+            ruleAttrRequest.setOrder("a.VALUE_RANK");
+            ruleAttrRequest.setSort("asc");
+            List<RuleAttr> ruleAttrs = ruleAttrMapper.findList(ruleAttrRequest);
+
+            ruleResponse.setAttr(BeanCopier.copy(ruleAttrs, RuleAttrResponse.class));
+
+            return ruleResponse;
+
         }else{
             //不存在
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
