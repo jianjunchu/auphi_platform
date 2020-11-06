@@ -7,6 +7,7 @@ import com.aofei.base.model.response.Response;
 import com.aofei.log.annotation.Log;
 import com.aofei.sys.model.request.MenuRequest;
 import com.aofei.sys.model.response.MenuResponse;
+import com.aofei.sys.model.response.MenuTreeResponse;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IMenuService;
 import com.aofei.sys.service.IUserService;
@@ -51,6 +52,20 @@ public class MenuController extends BaseController {
         List<MenuResponse> list = menuService.getMenus(request);
         return Response.ok(list) ;
     }
+
+    /**
+     * 菜单列表
+     * @return
+     */
+    @ApiOperation(value = "菜单列表", notes = "菜单列表")
+    @RequestMapping(value = "/listTree", method = RequestMethod.GET)
+    public Response<List<MenuTreeResponse>> listTree()  {
+
+        List<MenuTreeResponse> list = menuService.getMenuTree();
+        return Response.ok(list) ;
+    }
+
+
     /**
      * 新建菜单
      * @param request

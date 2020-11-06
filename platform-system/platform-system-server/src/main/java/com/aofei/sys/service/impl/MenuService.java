@@ -8,12 +8,15 @@ import com.aofei.sys.entity.Menu;
 import com.aofei.sys.mapper.MenuMapper;
 import com.aofei.sys.model.request.MenuRequest;
 import com.aofei.sys.model.response.MenuResponse;
+import com.aofei.sys.model.response.MenuTreeResponse;
 import com.aofei.sys.service.IMenuService;
 import com.aofei.utils.BeanCopier;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,5 +111,36 @@ public class MenuService extends BaseService<MenuMapper, Menu> implements IMenuS
     public List<MenuResponse> getMenusByUser(Long userId) {
         List<Menu> list = baseMapper.findMenusByUser(userId);
         return BeanCopier.copy(list,MenuResponse.class);
+    }
+
+    @Override
+    public List<MenuTreeResponse> getMenuTree() {
+
+
+        List<MenuTreeResponse>   trees = new ArrayList<>();
+
+        MenuRequest request = new MenuRequest();
+        request.setParentId(0L);
+        request.setOrder("asc");
+        request.setSort("a.ORDER_NUM");
+        List<Menu> list = baseMapper.findList(request);
+
+
+
+        for(Menu root: list){
+            request.setParentId(root.getMenuId());
+            MenuTreeResponse rootResponse = BeanCopier.copy(root,MenuTreeResponse.class);
+
+            List<Menu> childrens = baseMapper.findList(request);
+            for(Menu children :  childrens){
+                MenuTreeResponse child = BeanCopier.copy(children,MenuTreeResponse.class);
+                child.getRoles().add(child.getPerms());
+                rootResponse.getRoles().add(child.getPerms());
+                rootResponse.getChildren().add(child);
+            }
+            trees.add(rootResponse);
+        }
+
+        return trees;
     }
 }

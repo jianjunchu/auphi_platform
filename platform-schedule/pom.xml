@@ -60,7 +60,7 @@
 
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-system</artifactId>
+            <artifactId>platform-system-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

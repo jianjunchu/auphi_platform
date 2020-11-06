@@ -3,6 +3,7 @@ package com.aofei.sys.service;
 import com.aofei.sys.entity.Menu;
 import com.aofei.sys.model.request.MenuRequest;
 import com.aofei.sys.model.response.MenuResponse;
+import com.aofei.sys.model.response.MenuTreeResponse;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 
@@ -65,4 +66,10 @@ public interface IMenuService extends IService<Menu> {
      * @return
      */
     List<MenuResponse> getMenusByUser(Long userId);
+
+    /**
+     * 获取菜单父子结构
+     * @return
+     */
+    List<MenuTreeResponse> getMenuTree();
 }

@@ -7,7 +7,7 @@
         <version>v3.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <artifactId>platform-dataquality-core</artifactId>
     <description>数据质量core</description>
 
