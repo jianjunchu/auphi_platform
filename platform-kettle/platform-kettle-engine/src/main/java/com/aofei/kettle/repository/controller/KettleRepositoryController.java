@@ -325,7 +325,7 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
+	@ApiOperation(value = "加载资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
@@ -361,7 +361,7 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "加载资源库中的一个转换或作业", httpMethod = "POST")
+	@ApiOperation(value = "加载资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
@@ -570,7 +570,7 @@ public class KettleRepositoryController extends BaseController {
 
 	}
 
-	private boolean singleImport(Repository repository, RepositoryDirectoryInterface parent, String fileName, InputStream is) {
+	private boolean singleImport(Repository repository, RepositoryDirectoryInterface parent, String fileName, InputStream is,@ApiIgnore @CurrentUser CurrentUserResponse user) {
 		try {
 			Document doc = XMLHandler.loadXMLFile(is);
 			Element root = doc.getDocumentElement();
@@ -593,6 +593,12 @@ public class KettleRepositoryController extends BaseController {
 				transMeta.setRepositoryDirectory( parent );
 			    transMeta.setTransstatus(-1);
 			    transMeta.setModifiedDate(new Date());
+				List<DatabaseMeta> list = transMeta.getDatabases();
+				for(DatabaseMeta meta : list){
+					meta.setCreateUser(user.getUsername());
+					meta.setUpdateUser(user.getUsername());
+					meta.setOrganizerId(user.getOrganizerId());
+				}
 
 			    repository.save(transMeta, "初次导入", null);
 			} else if(fileName.endsWith(RepositoryObjectType.JOB.getExtension())) {
@@ -627,7 +633,7 @@ public class KettleRepositoryController extends BaseController {
 		return false;
 	}
 
-	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件", httpMethod = "POST")
+	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "repositoryCurrentDir", value = "当前资源库目录", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "filesPath", value = "文件路径，可以是多个，文件需要先调用上传接口", paramType="query", dataType = "string")
@@ -663,7 +669,7 @@ public class KettleRepositoryController extends BaseController {
 				if(file.isFile()) {
 					RepositoryDirectoryInterface parent = repository.findDirectory(repositoryCurrentDir);
 					if(parent != null) {
-						if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file))) {
+						if(!singleImport(repository, parent, file.getName(), FileUtils.openInputStream(file),user)) {
 							list.add(file.getName() + " 导入失败！请检查本目录下是否已存在该对象！");
 						}
 					}
@@ -696,7 +702,7 @@ public class KettleRepositoryController extends BaseController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST, value="/imp")
-	protected @ResponseBody void imp(@RequestParam String filePath) throws KettleException, IOException {
+	protected @ResponseBody void imp(@RequestParam String filePath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		File file = new File(filePath);
 		ZipFile zip = new ZipFile(file);
 
@@ -728,7 +734,7 @@ public class KettleRepositoryController extends BaseController {
 
                 }
 
-    			if(!singleImport(repository, parent, fileName, zip.getInputStream(entry))) {
+    			if(!singleImport(repository, parent, fileName, zip.getInputStream(entry),user)) {
 					list.add(entryFileName + " 导入失败！请检查资源库中是否已存在该对象！");
 				}
 
@@ -929,7 +935,7 @@ public class KettleRepositoryController extends BaseController {
 		return list;
 	}
 
-	@ApiOperation(value = "返回资源库中所有的子服务器信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的子服务器信息")
 	@ResponseBody
 	@RequestMapping("/slaveservers")
 	protected void slaveservers() throws IOException, KettleException {
@@ -945,7 +951,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的数据库连接信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的数据库连接信息")
 	@RequestMapping("/databases")
 	protected @ResponseBody void databases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
@@ -962,7 +968,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息")
 	@RequestMapping("/partitionDatabases")
 	protected @ResponseBody void partitionDatabases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
@@ -983,7 +989,7 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
-	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态", httpMethod = "POST")
+	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态")
 	@RequestMapping("/databaseStatus")
 	protected @ResponseBody Collection databaseStatus() throws IOException, KettleException, InterruptedException, ExecutionException {
 		Repository repository = App.getInstance().getRepository();
@@ -1013,7 +1019,6 @@ public class KettleRepositoryController extends BaseController {
 
 	/**
 	 *
-	 * @param loginInfo
 	 * @throws IOException
 	 * @throws KettleException
 	 */
@@ -1041,7 +1046,6 @@ public class KettleRepositoryController extends BaseController {
 	/**
 	 * 断开资源库
 	 *
-	 * @param loginInfo
 	 * @throws IOException
 	 */
 	@ResponseBody

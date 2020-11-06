@@ -27,7 +27,7 @@ public class ReceiveController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "数据服务接口-根据Id查询数据接收接口", notes = "根据Id查询数据接收接口", httpMethod = "GET")
+    @ApiOperation(value = "数据服务接口-根据Id查询数据接收接口", notes = "根据Id查询数据接收接口")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<ServiceInterfaceResponse> get(
             @PathVariable Long id)  {

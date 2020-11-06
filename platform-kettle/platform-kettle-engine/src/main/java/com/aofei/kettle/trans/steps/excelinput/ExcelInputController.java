@@ -37,7 +37,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - Excel输入 - 接口api")
 public class ExcelInputController {
 
-	@ApiOperation(value = "获取字段信息", httpMethod = "POST")
+	@ApiOperation(value = "获取字段信息")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "EXCEL环节名称", paramType="query", dataType = "string")
@@ -80,7 +80,7 @@ public class ExcelInputController {
 		return list;
 	}
 
-	@ApiOperation(value = "获取EXCEL sheet信息", httpMethod = "POST")
+	@ApiOperation(value = "获取EXCEL sheet信息")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "EXCEL环节名称", paramType="query", dataType = "string")

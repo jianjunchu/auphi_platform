@@ -29,7 +29,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - 添加序列 - 接口api")
 public class AddSequenceController {
 
-	@ApiOperation(value = "校验数据库是否支持序列", httpMethod = "POST")
+	@ApiOperation(value = "校验数据库是否支持序列")
 	@RequestMapping(method = RequestMethod.POST, value = "/support")
 	protected @ResponseBody void support(String name) throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
@@ -46,7 +46,7 @@ public class AddSequenceController {
 		JsonUtils.response(jsonObject);
 	}
 
-	@ApiOperation(value = "加载数据库中的序列", httpMethod = "POST")
+	@ApiOperation(value = "加载数据库中的序列")
 	@RequestMapping(method = RequestMethod.POST, value = "/sequences")
 	protected @ResponseBody List sequences(String name) throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();

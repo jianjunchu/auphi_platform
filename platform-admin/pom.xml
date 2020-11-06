@@ -51,7 +51,18 @@
         <!--系统管理-->
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-system</artifactId>
+            <artifactId>platform-system-core</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>ehcache-core</artifactId>
+                    <groupId>net.sf.ehcache</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-system-server</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -104,7 +115,12 @@
         <!--数据质量管理-->
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platfrom-quality</artifactId>
+            <artifactId>platform-dataquality-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-dataquality-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 

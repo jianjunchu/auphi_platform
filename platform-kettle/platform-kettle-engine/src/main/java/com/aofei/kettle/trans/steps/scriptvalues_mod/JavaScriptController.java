@@ -19,6 +19,7 @@ import org.mozilla.javascript.tools.ToolErrorReporter;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -48,7 +49,7 @@ import java.util.List;
 @Api(tags = "Transformation转换 - JS脚本 - 接口api")
 public class JavaScriptController {
 
-	@ApiOperation(value = "获取左侧树结构", httpMethod = "POST")
+	@ApiOperation(value = "获取左侧树结构")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string")
@@ -164,7 +165,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "获取所有的JavaScript变量", httpMethod = "POST")
+	@ApiOperation(value = "获取所有的JavaScript变量")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string"),
@@ -342,7 +343,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "生成测试数据", httpMethod = "POST")
+	@ApiOperation(value = "生成测试数据")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string")
@@ -419,7 +420,7 @@ public class JavaScriptController {
 		}
 	}
 
-	@ApiOperation(value = "测试JavaScript脚本", httpMethod = "POST")
+	@ApiOperation(value = "测试JavaScript脚本")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
 		@ApiImplicitParam(name = "stepName", value = "JavaScript环节名称", paramType="query", dataType = "string"),
@@ -454,71 +455,80 @@ public class JavaScriptController {
 
 		int rowLimit = Const.toInt( genMeta.getRowLimit(), 10 );
 		TransPreviewProgress tpp = new TransPreviewProgress(newMeta, new String[] { stepName}, new int[] { rowLimit });
-		RowMetaInterface rowMeta = tpp.getPreviewRowsMeta(stepName);
-		List<Object[]> rowsData = tpp.getPreviewRows(stepName);
+		Result result = tpp.getTrans().getResult();
+		if(result.getResult()) {
+			RowMetaInterface rowMeta = tpp.getPreviewRowsMeta(stepName);
+			List<Object[]> rowsData = tpp.getPreviewRows(stepName);
 
-		Font f = new Font("Arial", Font.PLAIN, 12);
-		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(f);
+			Font f = new Font("Arial", Font.PLAIN, 12);
+			FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(f);
 
-		if (rowMeta != null) {
-			JSONObject jsonObject = new JSONObject();
-			List<ValueMetaInterface> valueMetas = rowMeta.getValueMetaList();
+			if (rowMeta != null) {
+				JSONObject jsonObject = new JSONObject();
+				List<ValueMetaInterface> valueMetas = rowMeta.getValueMetaList();
 
-			int width = 0;
-			JSONArray columns = new JSONArray();
-			JSONObject metaData = new JSONObject();
-			JSONArray fields = new JSONArray();
-			for (int i = 0; i < valueMetas.size(); i++) {
-				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-				fields.add(valueMeta.getName());
-				String header = valueMeta.getComments() == null ? valueMeta.getName() : valueMeta.getComments();
+				int width = 0;
+				JSONArray columns = new JSONArray();
+				JSONObject metaData = new JSONObject();
+				JSONArray fields = new JSONArray();
+				for (int i = 0; i < valueMetas.size(); i++) {
+					ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
+					fields.add(valueMeta.getName());
+					String header = valueMeta.getName();
 
-				int hWidth = fm.stringWidth(header) + 10;
-				width += hWidth;
-				JSONObject column = new JSONObject();
-				column.put("dataIndex", valueMeta.getName());
-				column.put("header", header);
-				column.put("width", hWidth);
-				columns.add(column);
-			}
-			metaData.put("fields", fields);
-			metaData.put("root", "firstRecords");
+					int hWidth = fm.stringWidth(header) + 10;
+					width += hWidth;
+					JSONObject column = new JSONObject();
+					column.put("dataIndex", valueMeta.getName());
+					column.put("header", header);
+					column.put("width", hWidth);
+					columns.add(column);
+				}
+				metaData.put("fields", fields);
+				metaData.put("root", "firstRecords");
 
-			JSONArray firstRecords = new JSONArray();
-			for (int rowNr = 0; rowNr < rowsData.size(); rowNr++) {
-				Object[] rowData = rowsData.get(rowNr);
-				JSONObject row = new JSONObject();
-				for (int colNr = 0; colNr < rowMeta.size(); colNr++) {
-					String string = null;
-					ValueMetaInterface valueMetaInterface;
-					try {
-						valueMetaInterface = rowMeta.getValueMeta(colNr);
-						if (valueMetaInterface.isStorageBinaryString()) {
-							Object nativeType = valueMetaInterface.convertBinaryStringToNativeType((byte[]) rowData[colNr]);
-							string = valueMetaInterface.getStorageMetadata().getString(nativeType);
-						} else {
-							string = rowMeta.getString(rowData, colNr);
+				JSONArray firstRecords = new JSONArray();
+				for (int rowNr = 0; rowNr < rowsData.size(); rowNr++) {
+					Object[] rowData = rowsData.get(rowNr);
+					JSONObject row = new JSONObject();
+					for (int colNr = 0; colNr < rowMeta.size(); colNr++) {
+						String string = null;
+						ValueMetaInterface valueMetaInterface;
+						try {
+							valueMetaInterface = rowMeta.getValueMeta(colNr);
+							if (valueMetaInterface.isStorageBinaryString()) {
+								Object nativeType = valueMetaInterface.convertBinaryStringToNativeType((byte[]) rowData[colNr]);
+								string = valueMetaInterface.getStorageMetadata().getString(nativeType);
+							} else {
+								string = rowMeta.getString(rowData, colNr);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+						if(!StringUtils.hasText(string))
+							string = "&lt;null&gt;";
+
+						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
+						row.put(valueMeta.getName(), string);
 					}
-					if(!StringUtils.hasText(string))
-						string = "&lt;null&gt;";
+					if(firstRecords.size() <= rowLimit) {
+						firstRecords.add(row);
+					}
+				}
 
-					ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
-					row.put(valueMeta.getName(), string);
-				}
-				if(firstRecords.size() <= rowLimit) {
-					firstRecords.add(row);
-				}
+				jsonObject.put("metaData", metaData);
+				jsonObject.put("columns", columns);
+				jsonObject.put("firstRecords", firstRecords);
+				jsonObject.put("width", width < 1000 ? width + 100 : 1000);
+				jsonObject.put("success", true);
+
+				JsonUtils.response(jsonObject);
+			} else {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("msg", StringEscapeHelper.encode(tpp.getLoggingText()));
+				jsonObject.put("success", false);
+				JsonUtils.response(jsonObject);
 			}
-
-			jsonObject.put("metaData", metaData);
-			jsonObject.put("columns", columns);
-			jsonObject.put("firstRecords", firstRecords);
-			jsonObject.put("width", width < 1000 ? width + 100 : 1000);
-
-			JsonUtils.response(jsonObject);
 		}
 	}
 

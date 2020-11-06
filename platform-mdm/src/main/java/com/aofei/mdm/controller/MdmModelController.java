@@ -42,7 +42,7 @@ public class MdmModelController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据模型列表(分页查询)", notes = "数据模型列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据模型列表(分页查询)", notes = "数据模型列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -60,7 +60,7 @@ public class MdmModelController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "所有数据模型列表", notes = "所有数据模型列表", httpMethod = "GET")
+    @ApiOperation(value = "所有数据模型列表", notes = "所有数据模型列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<ModelResponse>> list(@ApiIgnore ModelRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
         request.setOrganizerId(user.getOrganizerId());
@@ -86,7 +86,7 @@ public class MdmModelController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑数据模型", notes = "编辑数据模型", httpMethod = "POST")
+    @ApiOperation(value = "编辑数据模型", notes = "编辑数据模型")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<ModelResponse> edit(
             @RequestBody ModelRequest request)  {
@@ -110,7 +110,7 @@ public class MdmModelController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询数据模型", notes = "根据Id查询数据模型", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询数据模型", notes = "根据Id查询数据模型")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<ModelResponse> get(
             @PathVariable Long id)  {

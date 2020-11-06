@@ -86,7 +86,7 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据接口-分页列表", notes = "数据接口列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据接口-分页列表", notes = "数据接口列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")
@@ -106,7 +106,7 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据接口-全部列表", notes = "所有数据接口的列表", httpMethod = "GET")
+    @ApiOperation(value = "数据接口-全部列表", notes = "所有数据接口的列表")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<List<ServiceInterfaceResponse>> list(@ApiIgnore ServiceInterfaceRequest request)  {
         List<ServiceInterfaceResponse> list = serviceInterfaceService.getServiceInterfaces(request);
@@ -136,7 +136,7 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据接口-编辑", notes = "编辑数据接口", httpMethod = "POST")
+    @ApiOperation(value = "数据接口-编辑", notes = "编辑数据接口")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<ServiceInterfaceResponse> edit(
             @RequestBody ServiceInterfaceRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user)  {
@@ -162,7 +162,7 @@ public class InterfaceController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据接口-根据Id查询", notes = "根据Id查询数据接口", httpMethod = "GET")
+    @ApiOperation(value = "数据接口-根据Id查询", notes = "根据Id查询数据接口")
     @RequestMapping(value = "/{id}/get", method = RequestMethod.GET)
     public Response<ServiceInterfaceResponse> get(
             @PathVariable Long id)  {

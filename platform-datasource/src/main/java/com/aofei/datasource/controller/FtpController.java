@@ -38,7 +38,7 @@ public class FtpController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "TFP服务器列表(分页查询)", notes = "TFP服务器列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "TFP服务器列表(分页查询)", notes = "TFP服务器列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -56,7 +56,7 @@ public class FtpController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "TFP服务器列表", notes = "TFP服务器列表", httpMethod = "GET")
+    @ApiOperation(value = "TFP服务器列表", notes = "TFP服务器列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ftpName", value = "TFP服务器名称(模糊查询)", paramType = "query", dataType = "String")
     })
@@ -74,7 +74,7 @@ public class FtpController extends BaseController {
     @ApiResponses(value = {
             @ApiResponse(code = 200009, message = "数据库连接验证失败"),
             @ApiResponse(code = 200, message = "success")})
-    @ApiOperation(value = "新建TFP服务器", notes = "新建TFP服务器", httpMethod = "POST")
+    @ApiOperation(value = "新建TFP服务器", notes = "新建TFP服务器")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<FtpResponse> add(
             @RequestBody FtpRequest request)  {
@@ -88,7 +88,7 @@ public class FtpController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑TFP服务器", notes = "编辑TFP服务器", httpMethod = "POST")
+    @ApiOperation(value = "编辑TFP服务器", notes = "编辑TFP服务器")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<FtpResponse> edit(
             @RequestBody FtpRequest request)  {
@@ -113,7 +113,7 @@ public class FtpController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询TFP服务器", notes = "根据Id查询TFP服务器", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询TFP服务器", notes = "根据Id查询TFP服务器")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<FtpResponse> get(
             @ApiParam(value = "TFP服务器ID", required = true)   @PathVariable Long id)  {

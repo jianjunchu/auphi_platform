@@ -36,7 +36,7 @@ public class MdmDataCleanController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据映射列表(分页查询)", notes = "数据映射列表(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据映射列表(分页查询)", notes = "数据映射列表(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -65,7 +65,7 @@ public class MdmDataCleanController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑数据映射", notes = "编辑数据映射", httpMethod = "POST")
+    @ApiOperation(value = "编辑数据映射", notes = "编辑数据映射")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<DataCleanResponse> edit(
             @RequestBody DataCleanRequest request)  {
@@ -89,7 +89,7 @@ public class MdmDataCleanController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询数据映射", notes = "根据Id查询数据映射", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询数据映射", notes = "根据Id查询数据映射")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<DataCleanResponse> get(
             @PathVariable Long id)  {

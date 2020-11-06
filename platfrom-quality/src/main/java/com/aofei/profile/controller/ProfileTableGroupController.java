@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -36,19 +36,19 @@ public class ProfileTableGroupController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "根据Id查询菜单", notes = "根据Id查询菜单", httpMethod = "GET")
+    @ApiOperation(value = "根据Id查询菜单", notes = "根据Id查询菜单")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<ProfileTableGroupResponse> get(
             @ApiParam(value = "菜单ID", required = true)  @PathVariable Long id)  {
         return Response.ok(profileTableGroupService.get(id)) ;
     }
-    
+
     /**
      * 数据质量分组列表
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据质量分组列表", notes = "数据质量分组列表", httpMethod = "GET")
+    @ApiOperation(value = "数据质量分组列表", notes = "数据质量分组列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "parentId", value = "父数据质量分组ID", paramType = "query", dataType = "Long"),
             @ApiImplicitParam(name = "name", value = "数据质量分组名称(模糊查询)", paramType = "query", dataType = "String")
@@ -64,7 +64,7 @@ public class ProfileTableGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "新建数据质量分组", notes = "新建数据质量分组", httpMethod = "POST")
+    @ApiOperation(value = "新建数据质量分组", notes = "新建数据质量分组")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<ProfileTableGroupResponse> add(
             @RequestBody ProfileTableGroupRequest request)  {
@@ -78,7 +78,7 @@ public class ProfileTableGroupController extends BaseController {
      * @param request
      * @return
      */
-    @ApiOperation(value = "编辑数据质量分组", notes = "编辑数据质量分组", httpMethod = "POST")
+    @ApiOperation(value = "编辑数据质量分组", notes = "编辑数据质量分组")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<ProfileTableGroupResponse> edit(
             @RequestBody ProfileTableGroupRequest request)  {

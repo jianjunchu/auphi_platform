@@ -53,7 +53,7 @@ public class MonitorController extends BaseController {
      * @return
      */
     @Authorization
-    @ApiOperation(value = "数据接口调用监控-分页列表", notes = "数据接口调用监控(分页查询)", httpMethod = "GET")
+    @ApiOperation(value = "数据接口调用监控-分页列表", notes = "数据接口调用监控(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")

@@ -10,30 +10,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>platform-system</artifactId>
-    <packaging>jar</packaging>
+
+    <modules>
+        <module>platform-system-priviledge</module>
+        <module>platform-system-core</module>
+        <module>platform-system-server</module>
+    </modules>
+    <packaging>pom</packaging>
+
 
     <dependencies>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-kettle-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-log-sys</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-auth</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
 
 
