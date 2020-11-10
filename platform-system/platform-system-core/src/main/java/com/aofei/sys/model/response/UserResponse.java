@@ -1,11 +1,11 @@
 package com.aofei.sys.model.response;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @auther Tony
@@ -89,5 +89,13 @@ public class UserResponse {
      */
     @ApiModelProperty(value = "最后一次登录IP")
     private String lastLoginIp;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
+
+    private List<String> roles;
 
 }

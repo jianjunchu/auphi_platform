@@ -10,6 +10,8 @@ import java.util.List;
 public class MenuTreeResponse {
 
 
+    private Long menuId;
+
     @ApiModelProperty(value = "父菜单ID，一级菜单为0")
     private Long parentId;
 

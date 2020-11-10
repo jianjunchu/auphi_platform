@@ -29,7 +29,7 @@ public class UserRoleService extends BaseService<UserRoleMapper, UserRole> imple
     @Log(module = "系统用户", description = "修改用户角色")
     public Integer changeUserRole(Long userId, List<Long> roles) {
         if (!Utils.isEmpty(userId)) {
-            super.delete(new EntityWrapper<UserRole>().eq("user_id", userId));
+            super.delete(new EntityWrapper<UserRole>().eq("C_USER_ID", userId));
 
             if (!Utils.isEmpty(roles)) {
                 List<UserRole> userRoles = new ArrayList<>();
@@ -51,7 +51,7 @@ public class UserRoleService extends BaseService<UserRoleMapper, UserRole> imple
     @Log(module = "系统角色", description = "删除角色下指定的用户")
     public int deleteUserRole(Long userId, Long roleId) {
         if(userId!=null && roleId!=null){
-            super.delete(new EntityWrapper<UserRole>().eq("role_id", roleId).eq("user_id", userId));
+            super.delete(new EntityWrapper<UserRole>().eq("C_ROLE_ID", roleId).eq("C_USER_ID", userId));
             return 1;
         }
         return -1;

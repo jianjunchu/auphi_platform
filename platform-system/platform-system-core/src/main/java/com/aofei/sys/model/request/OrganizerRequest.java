@@ -2,6 +2,8 @@ package com.aofei.sys.model.request;
 
 import com.aofei.base.model.request.BaseRequest;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
 
 /**
@@ -24,24 +26,19 @@ public class OrganizerRequest extends BaseRequest<OrganizerRequest> {
     /**
      * 组织名称
      */
-    private String organizerName;
-
-    private String organizerContact;
-
-    private String organizerEmail;
-
-    private String organizerTelphone;
-    @TableField("ORGANIZER_MOBILE")
-    private String organizerMobile;
-    @TableField("ORGANIZER_ADDRESS")
-    private String organizerAddress;
-    @TableField("ORGANIZER_VERIFY_CODE")
-    private String organizerVerifyCode;
+    private String name;
+    private String contact;
+    private String email;
+    private String telphone;
+    private String mobile;
+    private String address;
+    private String verifyCode;
     /**
      * 0 已注册未验证通过，1已注册并验证通过， 2 注销
      */
-    @TableField("ORGANIZER_STATUS")
-    private Integer organizerStatus;
+    private Integer status;
+
+
 
 
 

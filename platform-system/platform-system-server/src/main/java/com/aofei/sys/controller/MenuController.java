@@ -17,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther Tony
@@ -156,5 +159,29 @@ public class MenuController extends BaseController {
             list =  menuService.getMenusByUser(userResponse.getUserId());
         }
         return Response.ok(list);
+    }
+
+    /**
+     * 菜单tree
+     * @return
+     */
+    @RequestMapping(value = "/role/{id}/menuTree", method = RequestMethod.GET)
+    public Response<Map> getRoleByRole(
+            @ApiParam(value = "角色ID", required = true)@PathVariable("id") Long roleId) {
+
+        List<MenuTreeResponse> menus = menuService.getMenuTree();
+
+        List<MenuResponse> roleMenus = menuService.getMenusByRole(roleId);
+
+        List<Object> roleMenuIds = new ArrayList<>();
+        for(MenuResponse menuResponse : roleMenus){
+            roleMenuIds.add(menuResponse.getMenuId());
+        }
+        Map<String,Object> res = new HashMap<>();
+        res.put("menus",menus);
+        res.put("roleMenus",roleMenus);
+        res.put("roleMenuIds",roleMenuIds);
+        return Response.ok(res);
+
     }
 }

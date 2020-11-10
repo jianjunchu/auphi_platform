@@ -1,6 +1,9 @@
 package com.aofei.sys.model.response;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -41,7 +44,11 @@ public class OrganizerResponse  {
      */
     private Integer status;
 
-
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
 
 }

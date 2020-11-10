@@ -16,7 +16,7 @@
         , a.UPDATE_USER AS updateUser
         , a.CREATE_TIME AS createTime
         , a.UPDATE_TIME AS updateTime
-        , DEL_FLAG AS delFlag
+        , a.DEL_FLAG AS delFlag
     </sql>
 
     <sql id="Base_Joins">
@@ -30,8 +30,8 @@
         <include refid="Base_Joins"/>
         <where>
             a.DEL_FLAG = 0
-            <if test="C_ORGANIZER_ID !=null ">
-                AND (a.C_ORGANIZER_ID  = #{organizerId} or a.C_ORGANIZER_ID = -1)
+            <if test="organizerId !=null ">
+                AND (a.C_ORGANIZER_ID  = #{organizerId} or a.C_ORGANIZER_ID = 0)
             </if>
 
             <if test="roleName !=null and roleName!=''">
@@ -63,7 +63,7 @@
             , a.UPDATE_USER = #{et.updateUser}
             , a.UPDATE_TIME = #{et.updateTime}
         </set>
-        where a.SYS_ROLE = #{et.roleId}
+        where a.C_ROLE_ID = #{et.roleId}
     </update>
 
     <update id="deleteById">

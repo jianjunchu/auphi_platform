@@ -72,4 +72,11 @@ public interface IMenuService extends IService<Menu> {
      * @return
      */
     List<MenuTreeResponse> getMenuTree();
+
+    /**
+     * 获取角色菜单
+     * @param roleId
+     * @return
+     */
+    List<MenuResponse> getMenusByRole(Long roleId);
 }

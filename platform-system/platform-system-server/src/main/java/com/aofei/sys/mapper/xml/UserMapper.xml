@@ -62,7 +62,7 @@
             <if test="username !=null and username!='' ">
                 AND  a.C_USER_NAME  = #{username}
             </if>
-            <if test="organizerId !=null ">
+            <if test="organizerId !=null and organizerId>0">
                 AND  a.C_ORGANIZER_ID  = #{organizerId}
             </if>
         </where>

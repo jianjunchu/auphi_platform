@@ -1,5 +1,6 @@
 package com.aofei.sys.service.impl;
 
+import com.aofei.base.common.Const;
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.base.service.impl.BaseService;
@@ -11,7 +12,6 @@ import com.aofei.sys.model.response.MenuResponse;
 import com.aofei.sys.model.response.MenuTreeResponse;
 import com.aofei.sys.service.IMenuService;
 import com.aofei.utils.BeanCopier;
-import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,6 +121,7 @@ public class MenuService extends BaseService<MenuMapper, Menu> implements IMenuS
 
         MenuRequest request = new MenuRequest();
         request.setParentId(0L);
+        request.setStatus(Const.NO);
         request.setOrder("asc");
         request.setSort("a.ORDER_NUM");
         List<Menu> list = baseMapper.findList(request);
@@ -142,5 +143,11 @@ public class MenuService extends BaseService<MenuMapper, Menu> implements IMenuS
         }
 
         return trees;
+    }
+
+    @Override
+    public List<MenuResponse> getMenusByRole(Long roleId) {
+        List<Menu> list = baseMapper.findMenusByRole(roleId);
+        return BeanCopier.copy(list,MenuResponse.class);
     }
 }

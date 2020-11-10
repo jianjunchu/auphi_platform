@@ -31,6 +31,10 @@
             <if test="parentId !=null ">
                 AND  a.PARENT_ID  = #{parentId}
             </if>
+
+            <if test="status !=null ">
+                AND  a.STATUS  = #{status}
+            </if>
             <if test="name != null and name != ''">
                 AND a.NAME LIKE '%#{name}%'
             </if>
@@ -44,7 +48,16 @@
         from SYS_MENU a
         JOIN SYS_ROLE_MENU rm on rm.MENU_ID = a.MENU_ID
         JOIN SYS_USER_ROLE ur on ur.C_ROLE_ID = rm.ROLE_ID
-        where ur.ID_USER = #{userId} and a.DEL_FLAG = 0
+        where ur.C_USER_ID = #{userId} and a.DEL_FLAG = 0
+    </select>
+
+    <select id="findMenusByRole" resultType="com.aofei.sys.entity.Menu">
+        select
+        <include refid="Base_Column_List"/>
+
+        from SYS_MENU a
+        JOIN SYS_ROLE_MENU rm on rm.MENU_ID = a.MENU_ID
+        where rm.ROLE_ID = #{roleId} and a.DEL_FLAG = 0
     </select>
 
 
@@ -52,14 +65,17 @@
         update SYS_MENU a
         <set>
               a.PARENT_ID = #{et.parentId}
-            , a.NAME = #{et.name}
+            , a.NAME  = #{et.name}
             , a.URL = #{et.url}
-            , a.PERMS = #{et.perms}
+            , a.PERMS= #{et.perms}
             , a.TYPE = #{et.type}
             , a.ICON = #{et.icon}
             , a.ORDER_NUM = #{et.orderNum}
+            , a.STATUS = #{et.status}
             , a.UPDATE_USER = #{et.updateUser}
             , a.UPDATE_TIME = #{et.updateTime}
+            , a.DEL_FLAG = #{et.delFlag}
+
         </set>
         where a.MENU_ID = #{et.menuId}
     </update>

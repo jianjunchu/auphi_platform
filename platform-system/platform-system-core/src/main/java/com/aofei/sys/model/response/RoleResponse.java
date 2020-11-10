@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * @auther Tony
  * @create 2018-09-18 14:23
@@ -43,4 +45,9 @@ public class RoleResponse {
     private Integer isSystemRole;
 
 
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 }

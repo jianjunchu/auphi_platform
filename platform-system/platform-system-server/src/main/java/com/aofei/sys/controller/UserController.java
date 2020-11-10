@@ -19,7 +19,9 @@ import com.aofei.sys.entity.User;
 import com.aofei.sys.exception.SystemError;
 import com.aofei.sys.model.request.EditUserPasswordRequest;
 import com.aofei.sys.model.request.UserRequest;
+import com.aofei.sys.model.response.MenuResponse;
 import com.aofei.sys.model.response.UserResponse;
+import com.aofei.sys.service.IMenuService;
 import com.aofei.sys.service.IUserRoleService;
 import com.aofei.sys.service.IUserService;
 import com.aofei.utils.MD5Utils;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +54,9 @@ public class UserController extends BaseController {
     IUserService userService;
 
     @Autowired
+    IMenuService menuService;
+
+    @Autowired
     IUserRoleService userRoleService;
 
 
@@ -62,7 +68,19 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/my", method = RequestMethod.GET)
     public Response<UserResponse> my(
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
-        return Response.ok(userService.get(user.getUserId()));
+        UserResponse response = userService.get(user.getUserId());
+
+        List<MenuResponse>  list = menuService.getMenusByUser(response.getUserId());
+        List<String> roles = new ArrayList<>();
+
+        for(MenuResponse menuResponse : list){
+            roles.add(menuResponse.getPerms());
+        }
+        if(response.getIsSystemUser() ==1){
+            roles.add("admin");
+        }
+        response.setRoles(roles);
+        return Response.ok(response);
     }
 
     /**
@@ -76,7 +94,10 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer")})
     @RequestMapping(value = "/listPage", method = RequestMethod.GET)
     @RequiresPermissions(logical = Logical.AND, value = {"view", "edit"})
-    public Response<DataGrid<UserResponse>> page(@ApiIgnore UserRequest request)  {
+    public Response<DataGrid<UserResponse>> page(@ApiIgnore UserRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
+        if(user.getOrganizerId()>0){
+            request.setOrganizerId(user.getOrganizerId());
+        }
         Page<UserResponse> page = userService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -105,7 +126,10 @@ public class UserController extends BaseController {
         if(mobilephoneCount>0){
             throw new ApplicationException(SystemError.PHONE_NUMBER_EXIST.getCode(),"手机号已存在");
         }
-        request.setOrganizerId(user.getOrganizerId());
+        if(request.getOrganizerId() == null){
+            request.setOrganizerId(user.getOrganizerId());
+        }
+
         userService.save(request);
 
         return Response.ok() ;

@@ -1,6 +1,7 @@
 package com.aofei.sys.model.request;
 
 import com.aofei.base.model.request.BaseRequest;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class RoleRequest extends BaseRequest {
 
+    private static final long serialVersionUID = 1L;
+
     private Long roleId;
     /**
      * 角色名称
@@ -20,9 +23,17 @@ public class RoleRequest extends BaseRequest {
     /**
      * 备注
      */
-    private String remark;
+    private String description;
+
+    @ApiModelProperty(hidden = true)
+    private Long organizerId;
+
     /**
-     * 部门ID
+     * 设计器权限
      */
-    private Long deptId;
+    private Long priviledges;
+    /**
+     * 是否是系统保留权限
+     */
+    private Integer isSystemRole;
 }

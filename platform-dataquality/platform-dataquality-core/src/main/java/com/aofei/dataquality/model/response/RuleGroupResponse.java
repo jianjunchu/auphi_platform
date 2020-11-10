@@ -4,6 +4,8 @@ package com.aofei.dataquality.model.response;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * <p>
  * 数据质量规则分组
@@ -38,6 +40,11 @@ public class RuleGroupResponse  {
     @ApiModelProperty(value = "分组描述")
     private String description;
 
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
 
 }

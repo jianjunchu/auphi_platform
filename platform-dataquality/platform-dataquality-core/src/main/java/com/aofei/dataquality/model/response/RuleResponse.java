@@ -4,6 +4,7 @@ import com.aofei.dataquality.model.request.RuleAttrRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -89,6 +90,11 @@ public class RuleResponse {
     @ApiModelProperty(value = "是否启用")
     private Integer isEnable;
 
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
     private List<RuleAttrResponse> attr;
 }

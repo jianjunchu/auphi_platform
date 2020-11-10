@@ -1,6 +1,9 @@
 package com.aofei.sys.controller;
 
+import com.aofei.base.annotation.Authorization;
+import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
 import com.aofei.log.annotation.Log;
@@ -16,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther Tony
@@ -25,6 +31,7 @@ import java.util.List;
 @Log4j
 @Api(tags = { "系统管理-角色管理模块接口" })
 @RestController
+@Authorization
 @RequestMapping(value = "/sys/role", produces = {"application/json;charset=UTF-8"})
 public class RoleController extends BaseController {
 
@@ -80,7 +87,11 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "新建角色", notes = "新建角色")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Response<RoleResponse> add(
-            @RequestBody RoleRequest request)  {
+            @RequestBody RoleRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
+
+        if(request.getOrganizerId()==null || request.getOrganizerId()< 1){
+            request.setOrganizerId(user.getOrganizerId());
+        }
 
         return Response.ok(roleService.save(request)) ;
     }
@@ -93,7 +104,8 @@ public class RoleController extends BaseController {
     @ApiOperation(value = "编辑角色", notes = "编辑角色")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<RoleResponse> edit(
-            @RequestBody RoleRequest request)  {
+            @RequestBody RoleRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
+
         return Response.ok(roleService.update(request)) ;
     }
 
@@ -129,11 +141,21 @@ public class RoleController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
-    public List<RoleResponse> getRoleByUsername(
+    public Response<Map> getRoleByUsername(
             @ApiParam(value = "用户ID", required = true) @PathVariable("userId") Long userId) {
         List<RoleResponse> roles = roleService.getRolesByUser(userId);
-        return roles;
+        List<String> list = new ArrayList<>();
+        for(RoleResponse roleResponse : roles){
+            list.add(roleResponse.getRoleId().toString());
+        }
+        Map<String,Object> res = new HashMap<>();
+        res.put("roles",roles);
+        res.put("roleIds",list);
+
+        return Response.ok(res);
     }
+
+
 
     /**
      * 删除角色下的用户
@@ -161,4 +183,9 @@ public class RoleController extends BaseController {
 
         return Response.ok(roleMenuService.changeRolePermission(roleId, resources));
     }
+
+
+
+
+
 }
