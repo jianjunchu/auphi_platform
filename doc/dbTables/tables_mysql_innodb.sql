@@ -3529,8 +3529,6 @@ CREATE TABLE `SYS_MENU`  (
   PRIMARY KEY (`MENU_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '菜单管理' ROW_FORMAT = Dynamic;
 
-
-
 -- ----------------------------
 -- Table structure for SYS_ORGANIZER
 -- ----------------------------
@@ -3574,6 +3572,69 @@ CREATE TABLE `SYS_PLATFORM_LOG`  (
   `DEL_FLAG` tinyint(4) NULL DEFAULT 0 COMMENT '是否删除  1：已删除  0：正常',
   PRIMARY KEY (`PLATFORM_LOG_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '系统日志' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of SYS_PLATFORM_LOG
+-- ----------------------------
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066232457814630402, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543044602092,\"page\":1,\"rows\":15,\"userId\":1}', '0:0:0:0:0:0:0:1', '2018-11-24 15:30:02', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066245853779877890, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 16:23:16', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066246303832891394, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 16:25:03', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066355774844416002, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543074003208,\"page\":1,\"rows\":15,\"userId\":1}', '0:0:0:0:0:0:0:1', '2018-11-24 23:40:03', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066356041077862402, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"11\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"111\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:41:07', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066356260226052098, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"111\",\"file\":\"[\\\"/北京傲飞商智软件有限公司\\\",\\\"DXP\\\",\\\"NEW_DXP.ktr\\\"]\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"111\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:41:59', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066357920360935425, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"1\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"1\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:48:35', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066359004076814338, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"filePath\":\"undefined/北京傲飞商智软件有限公司DXP\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"11\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:52:53', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066359262517243906, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"filePath\":\"undefined/北京傲飞商智软件有限公司DXP/北京傲飞商智软件有限公司TEST\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"11\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:53:55', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066359312400101378, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"filePath\":\"undefined/北京傲飞商智软件有限公司DXP/北京傲飞商智软件有限公司TEST\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"11\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:54:07', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066359793503547393, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"11\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"1\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:56:01', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066360390160068610, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"111\",\"file\":\"作业 1.kjb\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"fileType\":\"JOB\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"11\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-24 23:58:24', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066521885879652354, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543113607077,\"page\":1,\"rows\":15,\"userId\":1}', '0:0:0:0:0:0:0:1', '2018-11-25 10:40:07', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066525412765028354, 'admin', '周期调度', '创建调度信息', 'create', '{\"description\":\"\",\"execType\":1,\"file\":\"NEW_DXP.ktr\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"111\",\"organizerId\":2,\"page\":1,\"rows\":15,\"username\":\"admin\"}', '0:0:0:0:0:0:0:1', '2018-11-25 10:54:08', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066593384539926530, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543130653749,\"page\":1,\"rows\":15,\"userId\":1}', '0:0:0:0:0:0:0:1', '2018-11-25 15:24:14', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1066717345969868801, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543160208496,\"page\":1,\"rows\":15,\"userId\":1}', '0:0:0:0:0:0:0:1', '2018-11-25 23:36:49', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067031581665267714, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"50\",\"dayNum\":1,\"dayType\":1,\"endTime\":1543407907000,\"execType\":1,\"file\":\"作业 1.kjb\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"fileType\":\"JOB\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"测试分组\",\"monthNum\":1,\"monthType\":1,\"organizerId\":2,\"page\":1,\"rows\":15,\"startTime\":1543235105000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 20:25:28', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067033632206065666, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"测试分组\"', '0:0:0:0:0:0:0:1', '2018-11-26 20:33:37', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067035070378381314, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"60\",\"dayNum\":1,\"dayType\":1,\"description\":\"测试\",\"endTime\":1543248000000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":2,\"page\":1,\"rows\":15,\"startTime\":1543235947000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 20:39:20', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067035112971538433, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"60\",\"dayNum\":1,\"dayType\":1,\"description\":\"测试\",\"endTime\":1543248000000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":2,\"page\":1,\"rows\":15,\"startTime\":1543235947000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 20:39:30', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067035996656865282, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"60\",\"dayNum\":1,\"dayType\":1,\"description\":\"test\",\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":2,\"page\":1,\"rows\":15,\"startTime\":1543236168000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 20:43:01', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067045899328917505, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-26 21:22:22', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067046755952594945, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":3,\"cycleNum\":\"1\",\"dayNum\":1,\"dayType\":1,\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":2,\"page\":1,\"rows\":15,\"startTime\":1543238729000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 21:25:46', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067053708493729794, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":6,\"cycleNum\":\"1,7,6,5,4,3,2\",\"dayNum\":1,\"dayType\":1,\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"aaa\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543240391000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 21:53:24', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067058506249117697, 'admin', '周期调度', '更新调度信息', 'update', '{\"cycle\":6,\"cycleNum\":\"2\",\"dayNum\":1,\"dayType\":1,\"description\":\"\",\"endTime\":1543334400000,\"errorNoticeUser\":\"\",\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"aaa\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"repository\":\"\",\"rows\":15,\"startTime\":1543240391000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:12:28', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067058883363184641, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":6,\"cycleNum\":\"2\",\"dayNum\":1,\"dayType\":1,\"description\":\"啊啊\",\"endTime\":1543248000000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"aa\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241627000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:13:57', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067059066541023233, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":1,\"dayNum\":1,\"dayType\":1,\"description\":\"啊啊\",\"endTime\":1543241676000,\"execType\":1,\"file\":\"\",\"filePath\":\"\",\"fileType\":\"\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"啊啊啊\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241675000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:14:41', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067059090771517442, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":1,\"dayNum\":1,\"dayType\":1,\"description\":\"啊啊\",\"endTime\":1543241676000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"啊啊啊\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241675000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:14:47', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067059121037615105, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":1,\"dayNum\":1,\"dayType\":1,\"description\":\"啊啊\",\"endTime\":1543241676000,\"execType\":1,\"file\":\"转换 1\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"啊啊啊\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241675000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:14:54', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067059201262067714, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"5\",\"dayNum\":1,\"dayType\":1,\"description\":\"啊啊\",\"endTime\":1543241676000,\"execType\":1,\"file\":\"转换 1\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065967071038812161\",\"jobName\":\"啊啊啊\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241675000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:15:13', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067059392920788993, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":3,\"cycleNum\":\"2\",\"dayNum\":1,\"dayType\":1,\"description\":\"2\",\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"啊啊啊啊啊\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543241750000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-26 22:15:59', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067245951045398529, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543286237831,\"page\":1,\"rows\":15,\"userId\":\"1\"}', '0:0:0:0:0:0:0:1', '2018-11-27 10:37:18', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067246173939101697, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":6,\"cycleNum\":\"1,7,6,4,3,2\",\"dayNum\":1,\"dayType\":1,\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"BBBB\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543286273000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 10:38:11', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067246654027526146, 'admin', '周期调度', '暂停调度', 'pause', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 10:40:05', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067246709681745921, 'admin', '周期调度', '暂停调度', 'pause', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 10:40:19', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067247140495486977, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":6,\"cycleNum\":\"1,7,6,4,3,2\",\"dayNum\":1,\"dayType\":1,\"description\":\"BBBB\",\"endTime\":1543420800000,\"execType\":1,\"file\":\"转换 1\",\"filePath\":\"/北京傲飞商智软件有限公司/TEST\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"BBBB\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543286700000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 10:42:01', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067247651059724289, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"BBBB\"', '0:0:0:0:0:0:0:1', '2018-11-27 10:44:03', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067247885227716609, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":6,\"cycleNum\":\"1,7,6,4,3,2\",\"dayNum\":1,\"dayType\":1,\"description\":\"BBBBBB\",\"endTime\":1543420800000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"BBBBB\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543287000000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 10:44:59', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067249236988981250, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"BBBBB\"', '0:0:0:0:0:0:0:1', '2018-11-27 10:50:21', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067294508871905281, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"120\",\"dayNum\":1,\"dayType\":1,\"description\":\"120\",\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"CCC\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543297807000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 13:50:15', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067294542803824642, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"120\",\"dayNum\":1,\"dayType\":1,\"description\":\"120\",\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"/北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"CCC\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543297807000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 13:50:23', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301682113212418, 'admin', '周期调度', '暂停调度', 'pause', '\"CCC\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:45', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301692724801538, 'admin', '周期调度', '还原调度', 'resume', '\"CCC\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:48', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301702430420993, 'admin', '周期调度', '还原调度', 'resume', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:50', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301711947296769, 'admin', '周期调度', '还原调度', 'resume', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:52', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301721350926338, 'admin', '周期调度', '暂停调度', 'pause', '\"CCC\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:55', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301729831809026, 'admin', '周期调度', '暂停调度', 'pause', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:18:57', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067301742213394433, 'admin', '周期调度', '暂停调度', 'pause', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:19:00', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067302923165822977, 'admin', '周期调度', '还原调度', 'resume', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:23:41', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067302938252734465, 'admin', '周期调度', '暂停调度', 'pause', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:23:45', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067302948709134337, 'admin', '周期调度', '还原调度', 'resume', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:23:47', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067302968879542273, 'admin', '周期调度', '暂停调度', 'pause', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:23:52', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067308853341224961, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"CCC\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:47:15', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067308859976613889, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:47:17', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067308867530555394, 'admin', '周期调度', '删除调度信息', 'removeJob', '\"啊啊啊啊啊\"', '0:0:0:0:0:0:0:1', '2018-11-27 14:47:18', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067309846070067202, 'admin', '周期调度', '创建调度信息', 'create', '{\"cycle\":2,\"cycleNum\":\"50\",\"dayNum\":1,\"dayType\":1,\"description\":\"50\",\"endTime\":1543334400000,\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"rows\":15,\"startTime\":1543301463000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 14:51:12', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067310171548057601, 'admin', '周期调度', '更新调度信息', 'update', '{\"cycle\":2,\"cycleNum\":\"50\",\"dayNum\":1,\"dayType\":1,\"description\":\"50\",\"endTime\":1543334400000,\"errorNoticeUser\":\"\",\"execType\":1,\"file\":\"NEW_DXP\",\"filePath\":\"北京傲飞商智软件有限公司/DXP\",\"fileType\":\"TRANSFORMATION\",\"jobGroup\":\"1065160967417577473\",\"jobName\":\"test\",\"monthNum\":1,\"monthType\":1,\"organizerId\":\"2\",\"page\":1,\"repository\":\"\",\"rows\":15,\"startTime\":1543301463000,\"username\":\"admin\",\"version\":\"v3.9\",\"weekNum\":\"1\",\"yearType\":1}', '0:0:0:0:0:0:0:1', '2018-11-27 14:52:29', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067321078873358338, 'admin', '周期调度', '暂停调度', 'pause', '\"test\"', '0:0:0:0:0:0:0:1', '2018-11-27 15:35:50', 0);
+INSERT INTO `SYS_PLATFORM_LOG` VALUES (1067446899638378498, 'admin', '系统用户', '用户登录', 'updateLogin', '{\"lastLoginIp\":\"0:0:0:0:0:0:0:1\",\"lastLoginTime\":1543334147650,\"page\":1,\"rows\":15,\"userId\":\"1\"}', '0:0:0:0:0:0:0:1', '2018-11-27 23:55:48', 0);
 
 -- ----------------------------
 -- Table structure for SYS_REPOSITORY
@@ -3659,9 +3720,6 @@ CREATE TABLE `SYS_ROLE`  (
   PRIMARY KEY (`C_ROLE_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色' ROW_FORMAT = Dynamic;
 
-INSERT INTO `SYS_ROLE` VALUES (1, '超级管理员', '系统保留不可修改', 0, NULL, 1, 'admin', 'admin', '2020-11-09 16:19:50', '2020-11-10 10:39:39', 0);
-INSERT INTO `SYS_ROLE` VALUES (1325789439473860609, '服务端用户', '服务端用户', 1068523747487088641, NULL, 0, 'doetl', 'doetl', '2020-11-09 21:16:49', '2020-11-10 18:17:16', 0);
-
 -- ----------------------------
 -- Table structure for SYS_ROLE_MENU
 -- ----------------------------
@@ -3672,66 +3730,6 @@ CREATE TABLE `SYS_ROLE_MENU`  (
   PRIMARY KEY (`ROLE_ID`, `MENU_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色与菜单对应关系' ROW_FORMAT = Dynamic;
 
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 1);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 10000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 13000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 14000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 40000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 41000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 42000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 50000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 51000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 52000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 53000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 54000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 80000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 81000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 82000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 83000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 84000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 85000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 140000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 141000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 142000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 144000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 170000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 171000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 190000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 191000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 192000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 193000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 230000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1, 240000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 1);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 10000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 13000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 14000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 40000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 41000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 42000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 50000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 51000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 52000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 53000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 54000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 80000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 81000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 82000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 83000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 84000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 85000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 140000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 141000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 142000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 144000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 170000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 171000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 190000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 191000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 192000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 193000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 230000);
-INSERT INTO `SYS_ROLE_MENU` VALUES (1325789439473860609, 240000);
 -- ----------------------------
 -- Table structure for SYS_ROLE_OPERATION
 -- ----------------------------
@@ -3828,8 +3826,8 @@ CREATE TABLE `SYS_USER`  (
 -- ----------------------------
 -- Records of SYS_USER
 -- ----------------------------
-INSERT INTO `SYS_USER` VALUES (1, 'admin', '96e79218965eb72c92a549dd5a330112', 'admin', '381906259@qq.com', NULL, '13614019065', '管理员', 1, 0, 0, '2020-11-10 21:07:48', '0:0:0:0:0:0:0:1', 1073741824, NULL, 'doetl', '2020-10-28 16:47:53', '2020-10-28 10:32:23', 0);
-INSERT INTO `SYS_USER` VALUES (1077874329775038466, 'doetl', '96e79218965eb72c92a549dd5a330112', 'doetl', NULL, '86', '13380348067', NULL, 0, 1068523747487088641, 0, '2020-11-12 15:36:34', '117.136.38.135', 1073741824, NULL, NULL, '2020-10-28 16:47:56', '2020-10-28 16:47:41', 0);
+INSERT INTO `SYS_USER` VALUES (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'admin', '381906259@qq.com', '13614019065', NULL, NULL, 2, 0, '2018-11-27 23:55:48', '0:0:0:0:0:0:0:1', NULL, NULL, NULL, NULL, 0);
+
 -- ----------------------------
 -- Table structure for SYS_USER_ROLE
 -- ----------------------------
@@ -3840,7 +3838,6 @@ CREATE TABLE `SYS_USER_ROLE`  (
   PRIMARY KEY (`C_USER_ID`, `C_ROLE_ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `SYS_USER_ROLE` VALUES (1077874329775038466, 1);
 
 -- ----------------------------
 --  Table structure for `DATASERVICE_RECEIVE_INTERFACE`
@@ -3972,4 +3969,23 @@ CREATE TABLE `DATA_QUALITY_RULE_GROUP` (
 
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+--  Table structure for `R_INTERFACE_RESPONSE_MAPPING `
+-- ----------------------------
+DROP TABLE IF EXISTS `R_INTERFACE_RESPONSE_MAPPING`;
+CREATE TABLE `R_INTERFACE_RESPONSE_MAPPING` (
+  `INTERFACE_RESPONSE_MAPPING_ID` bigint(11) NOT NULL,
+  `ORGANIZER_ID` bigint(64) DEFAULT NULL COMMENT '组织 id',
+  `INTERFACE_ID` bigint(11) DEFAULT NULL COMMENT '接口id',
+  `JSON_PATH` varchar(100) DEFAULT NULL COMMENT '要解析的JSON路径',
+  `FIELD_NAME` varchar(200) DEFAULT NULL COMMENT 'JSON路径对应的新的字段名',
+  `FIELD_DESC` varchar(1000) DEFAULT NULL COMMENT '字段说明',
+  `CREATE_USER` varchar(20) DEFAULT NULL COMMENT '创建者',
+  `UPDATE_USER` varchar(20) DEFAULT NULL COMMENT '最后修改用户',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '最后时间更新',
+  `DEL_FLAG` tinyint(4) DEFAULT '0' COMMENT '是否删除  1：已删除  0：正常',
+  PRIMARY KEY (`INTERFACE_RESPONSE_MAPPING_ID`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据接口返回值字段映射';
 
