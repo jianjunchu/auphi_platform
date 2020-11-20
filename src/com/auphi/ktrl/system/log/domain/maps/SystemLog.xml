@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemLog">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.LOG_ID AS logId
+        , a.USERNAME AS username
+        , a.MODULE AS `module`
+        , a.OPERATION AS operation
+        , a.METHOD AS method
+        , a.PARAMS AS params
+        , a.IP AS ip
+        , a.CREATE_DATE AS createDate
+        , a.DEL_FLAG AS delFlag
+
+    </sql>
+
+
+
+
+
+    <select id="selectList" parameterType="map" resultType="com.auphi.ktrl.system.log.domain.SystemLog">
+        select
+        <include refid="Base_Column_List"/>
+        from KDI_T_SYSTEM_LOG a
+
+        <where>
+            <if test="username !=null and username!=''">
+                and a.USERNAME = #{username}
+            </if>
+        </where>
+
+        order by a.CREATE_DATE desc
+    </select>
+
+
+    <select id="selectCount" parameterType="map"  resultType="java.lang.Integer">
+        select
+        count(*)
+        from KDI_T_SYSTEM_LOG a
+        <where>
+            <if test="username !=null and username!=''">
+                and a.USERNAME = #{username}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" parameterType="map" resultType="com.auphi.ktrl.system.log.domain.SystemLog">
+
+        select
+        <include refid="Base_Column_List"/>
+        from KDI_T_SYSTEM_LOG a
+        where  a.LOG_ID = #{id}
+
+    </select>
+
+
+    <update id="deleteById">
+        delete from KDI_T_SYSTEM_LOG where LOG_ID = #{id}
+    </update>
+
+
+    <update id="deleteByIds">
+        delete from KDI_T_SYSTEM_LOG  WHERE LOG_ID in (${ids})
+    </update>
+</mapper>

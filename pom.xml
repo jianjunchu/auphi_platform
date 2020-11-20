@@ -5,6 +5,7 @@
   <version>3.4.0</version>
   <packaging>war</packaging>
   <name>auphi_platform</name>
+
   <properties>
     <!-- 文件拷贝时的编码 -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,14 +19,26 @@
 
   <repositories>
     <repository>
+      <id>maven-aliyun</id>
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+    </repository>
+
+    <repository>
+      <id>repoRepository</id>
+      <url>http://mvnrepository.com/</url>
+    </repository>
+
+    <repository>
       <id>auphi</id>
       <url>http://123.206.52.213:8081/repository/maven-public/</url>
     </repository>
+
     <repository>
-      <id>mvnrepository</id>
-      <url>http://mvnrepository.com/</url>
+      <id>3rd-party</id>
+      <url>http://123.206.52.213:8081/repository/3rd-party/</url>
     </repository>
   </repositories>
+
 
   <dependencies>
     <dependency>
@@ -715,11 +728,11 @@
     </dependency>
 
 
-    <dependency>
+   <!-- <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
       <version>1.18</version>
-    </dependency>
+    </dependency>-->
 
 
     <dependency>

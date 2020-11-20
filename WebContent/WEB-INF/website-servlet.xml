@@ -17,13 +17,13 @@
 		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 		<property name="caseSensitive" value="true" />
 	</bean>
-	
+
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 最大7M -->
 		<property name="maxUploadSize" value="70096000" />
 	</bean>
-	
+
 	<!-- Method Mapping -->
 	<bean id="methodNameResolver"
 		class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
@@ -103,6 +103,7 @@
 	<context:component-scan base-package="com.auphi.ktrl.monitor.controller" />
 	<context:component-scan base-package="com.auphi.ktrl.system.repository.controller" />
 	<context:component-scan base-package="com.auphi.ktrl.system.user.controller" />
+	<context:component-scan base-package="com.auphi.ktrl.system.log.controller" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<mvc:annotation-driven />

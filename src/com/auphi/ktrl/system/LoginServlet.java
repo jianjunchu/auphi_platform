@@ -32,11 +32,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auphi.ktrl.system.log.SystemLogUtil;
+import com.auphi.ktrl.system.log.domain.SystemLog;
 import com.auphi.ktrl.system.user.bean.LoginResponse;
 import com.auphi.ktrl.system.user.bean.UserBean;
 import com.auphi.ktrl.system.user.util.UMStatus;
 import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.Constants;
+import com.auphi.ktrl.util.StringUtil;
 
 /**
  * Servlet implementation class LoginServlet
@@ -99,6 +102,15 @@ public class LoginServlet extends HttpServlet {
            	int sessionTimeOut = Integer.parseInt(Constants.get("SessionTimeOut"));
            	request.getSession().setMaxInactiveInterval(sessionTimeOut);
 
+            SystemLog systemLog = new SystemLog();
+
+            systemLog.setIp(StringUtil.getIpAddr(request));
+            systemLog.setUsername(userBean.getUser_name());
+            systemLog.setModule("LoginServlet");
+            systemLog.setOperation("用户登录");
+            systemLog.setMethod("platformLogin");
+            SystemLogUtil.insertSysLog(systemLog);
+
             response.sendRedirect("index.jsp");
         }
 		else if("checkLogin".equals(action))
@@ -138,6 +150,7 @@ public class LoginServlet extends HttpServlet {
             }
 
 
+
            	response.setHeader("Pragma", "No-cache");
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expires", 0L);
@@ -146,12 +159,31 @@ public class LoginServlet extends HttpServlet {
             response.getWriter().close();
         }
         else if("logOut".equals(action)){
+
+            try {
+                UserBean userBean = request.getSession().getAttribute("userBean")==null?null:(UserBean)request.getSession().getAttribute("userBean");
+                if(userBean!=null){
+                    SystemLog systemLog = new SystemLog();
+
+                    systemLog.setIp(StringUtil.getIpAddr(request));
+                    systemLog.setUsername(userBean.getUser_name());
+                    systemLog.setModule("LoginServlet");
+                    systemLog.setOperation("退出系统");
+                    systemLog.setMethod("logOut");
+                    SystemLogUtil.insertSysLog(systemLog);
+                }
+            }catch (Exception e){
+
+            }
+
         	request.getSession().setAttribute("user_id", "");
         	request.getSession().setAttribute("userBean", null);
         	String errMsg = request.getParameter("errMsg")==null?"":new String(request.getParameter("errMsg").getBytes("ISO8859-1"), "UTF-8");
         	request.setAttribute("errMsg", errMsg);
-        	RequestDispatcher dispatcher = request.getRequestDispatcher("");
-    		dispatcher.forward(request, response);
+
+            response.sendRedirect("login.jsp");
+
+
         }else if("changePassword".equals(action)){
             String userId = request.getParameter(parameter_user_id) ;
             String password = request.getParameter(parameter_password) ;
@@ -168,6 +200,8 @@ public class LoginServlet extends HttpServlet {
             response.getWriter().write(res.toJSONString());
             response.getWriter().close();
 
+        }else{
+            response.sendRedirect("login.jsp");
         }
 	}
 

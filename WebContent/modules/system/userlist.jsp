@@ -4,10 +4,12 @@
 <%@ page import="com.auphi.ktrl.system.user.util.UMStatus" %>
 <%@ page import="com.auphi.ktrl.system.user.bean.*" %>
 <%@ page import="com.auphi.ktrl.i18n.Messages" %>
+<%@ page import="com.alibaba.fastjson.JSON" %>
 
 <%
 	PageList pageList = (PageList)request.getAttribute("pageList");
 	List<UserBean> listUser = (List<UserBean>)pageList.getList();
+	String jsonlist = JSON.toJSONString(listUser);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -26,7 +28,7 @@ Ext.onReady(function(){
 	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.Update") %>',iconCls: 'update',handler: onUpdateClick});
 	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.Delete") %>',iconCls: 'delete',handler: onDeleteClick});
 	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.Refresh") %>',iconCls: 'refresh',handler: onRefreshClick});
-	tb.add({text: '<%=Messages.getString("UserManager.Toolbar.RoleSetting") %>',iconCls: 'refresh',handler: onPriviledgeClick});
+	tb.add({id:'toolbar_rolesetting',text: '<%=Messages.getString("UserManager.Toolbar.RoleSetting") %>',iconCls: 'refresh',handler: onPriviledgeClick});
 	tb.doLayout();
 
 	if(!win){
@@ -514,6 +516,16 @@ function checkAll(){
 	}
 }
 
+function check_user(index,type_id){
+
+	var user_type = "${userBean.isSystemUser}"
+	if((type_id =='1' || type_id == '3')  && user_type=='2'){
+		Ext.getCmp("toolbar_rolesetting").hide()
+	}else{
+		Ext.getCmp("toolbar_rolesetting").show()
+	}
+}
+
 function closeMessageDiv()
 {
 	var divs = document.getElementsByTagName('div') ;
@@ -563,8 +575,10 @@ function countlen(){
 			<td><%=Messages.getString("UserManager.Table.Column.LastLogin") %></td>
 		</tr>
 <%
+	int index = 0;
 	for(UserBean userBean:listUser)
 	{
+
 		String description = userBean.getDescription()==null?"":userBean.getDescription();
 		String description_b = "";
 		String lastLogin = userBean.getLastLogin() == null?"":userBean.getLastLogin().toString() ;
@@ -583,13 +597,14 @@ function countlen(){
 
 %>
 		<tr>
-			<td align="center" nowrap="nowrap"><input type="checkbox" name="check"   value="<%=userBean.getUser_id() %>" class="ainput"></td>
+			<td align="center"  nowrap="nowrap"><input onclick="check_user('<%=index%>','<%=userBean.getIsSystemUser()%>');" type="checkbox" name="check"   value="<%=userBean.getUser_id() %>" class="ainput"></td>
 			<td nowrap="nowrap"><%=userBean.getNick_name() %></td>
 			<td nowrap="nowrap"><%=description_b %></td>
 			<td nowrap="nowrap"><%=user_status %></td>
 			<td nowrap="nowrap"><%=lastLogin %></td>
 		</tr>
 <%
+		index++;
 	}
 %>
 	</table>
@@ -636,6 +651,7 @@ function countlen(){
 					<td>
 
 						<select id="user_type" name="user_type"  style="width: 195px;">
+							<option value="0">用户</option>
 							<option value="1">系统管理员</option>
 							<option value="2">安全管理员</option>
 							<option value="3">审计员</option>

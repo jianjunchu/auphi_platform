@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
  * Support：support@pentahochina.com
  *
  *******************************************************************************
@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,12 +26,15 @@ import com.auphi.data.hub.core.BaseMultiActionController;
 import com.auphi.ktrl.schedule.bean.ScheduleBean;
 import com.auphi.ktrl.schedule.util.QuartzUtil;
 import com.auphi.ktrl.schedule.util.ScheduleUtil;
+import com.auphi.ktrl.system.log.SystemLogUtil;
+import com.auphi.ktrl.system.log.domain.SystemLog;
 import com.auphi.ktrl.system.repository.bean.RepositoryBean;
 import com.auphi.ktrl.system.repository.util.RepositoryUtil;
 import com.auphi.ktrl.system.user.bean.UserBean;
 import com.auphi.ktrl.system.user.util.UMStatus;
 import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.PageList;
+import com.auphi.ktrl.util.StringUtil;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
@@ -151,6 +154,16 @@ public class ScheduleController extends BaseMultiActionController {
         try {
             ScheduleBean scheduleBean = ScheduleUtil.createScheduleBeanFromRequest(request, userBean);
             QuartzUtil.create(scheduleBean);
+
+            SystemLog systemLog = new SystemLog();
+
+            systemLog.setIp(StringUtil.getIpAddr(request));
+            systemLog.setUsername(userBean.getUser_name());
+            systemLog.setModule("ScheduleController");
+            systemLog.setOperation("添加调度:"+scheduleBean.getJobName());
+            systemLog.setMethod("ScheduleController.create");
+            SystemLogUtil.insertSysLog(systemLog);
+
             this.setOkTipMsg("success", response);
         } catch (Exception e) {
             this.setFailTipMsg(e.getMessage(), response);
@@ -201,6 +214,16 @@ public class ScheduleController extends BaseMultiActionController {
         try {
             ScheduleBean scheduleBean = ScheduleUtil.createScheduleBeanFromRequest(request, userBean);
             QuartzUtil.update(scheduleBean, oriJobName, userBean);
+
+            SystemLog systemLog = new SystemLog();
+
+            systemLog.setIp(StringUtil.getIpAddr(request));
+            systemLog.setUsername(userBean.getUser_name());
+            systemLog.setModule("ScheduleController");
+            systemLog.setOperation("修改调度:"+oriJobName);
+            systemLog.setMethod("ScheduleController.update");
+            SystemLogUtil.insertSysLog(systemLog);
+
             this.setOkTipMsg("success", response);
         } catch (Exception e) {
             this.setFailTipMsg(e.getMessage(), response);
@@ -217,6 +240,17 @@ public class ScheduleController extends BaseMultiActionController {
             UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.delete(jobNames.split(","), userBean);
+
+                SystemLog systemLog = new SystemLog();
+
+                systemLog.setIp(StringUtil.getIpAddr(request));
+                systemLog.setUsername(userBean.getUser_name());
+                systemLog.setModule("ScheduleController");
+                systemLog.setOperation("删除调度:"+jobNames);
+                systemLog.setMethod("ScheduleController.delete");
+                SystemLogUtil.insertSysLog(systemLog);
+
+
                 this.setOkTipMsg("success", response);
             } catch (Exception e) {
                 this.setFailTipMsg(e.getMessage(), response);
@@ -267,6 +301,16 @@ public class ScheduleController extends BaseMultiActionController {
                 JobDetail jobDetail = QuartzUtil.getJobDetail(jobName, userBean);
                 JobDataMap data = jobDetail.getJobDataMap();
                 ScheduleUtil.executeNormal(data, jobDetail.getName(), jobDetail.getGroup(), arguments);
+
+                SystemLog systemLog = new SystemLog();
+
+                systemLog.setIp(StringUtil.getIpAddr(request));
+                systemLog.setUsername(userBean.getUser_name());
+                systemLog.setModule("ScheduleController");
+                systemLog.setOperation("执行调度:"+jobName);
+                systemLog.setMethod("ScheduleController.execute");
+                SystemLogUtil.insertSysLog(systemLog);
+
                 this.setOkTipMsg("success", response);
             } catch (Exception e) {
                 this.setFailTipMsg(e.getMessage(), response);
@@ -312,6 +356,16 @@ public class ScheduleController extends BaseMultiActionController {
             UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.pause(jobNames.split(","), userBean);
+
+                SystemLog systemLog = new SystemLog();
+
+                systemLog.setIp(StringUtil.getIpAddr(request));
+                systemLog.setUsername(userBean.getUser_name());
+                systemLog.setModule("ScheduleController");
+                systemLog.setOperation("暂停调度:"+jobNames);
+                systemLog.setMethod("ScheduleController.pause");
+                SystemLogUtil.insertSysLog(systemLog);
+
                 this.setOkTipMsg("success", response);
             } catch (Exception e) {
                 this.setFailTipMsg(e.getMessage(), response);
@@ -338,6 +392,16 @@ public class ScheduleController extends BaseMultiActionController {
             UserBean userBean = request.getSession().getAttribute("userBean") == null ? null : (UserBean) request.getSession().getAttribute("userBean");
             try {
                 QuartzUtil.resume(jobNames.split(","), userBean);
+
+                SystemLog systemLog = new SystemLog();
+
+                systemLog.setIp(StringUtil.getIpAddr(request));
+                systemLog.setUsername(userBean.getUser_name());
+                systemLog.setModule("ScheduleController");
+                systemLog.setOperation("恢复调度:"+jobNames);
+                systemLog.setMethod("ScheduleController.resume");
+                SystemLogUtil.insertSysLog(systemLog);
+
                 this.setOkTipMsg("success", response);
             } catch (Exception e) {
                 this.setFailTipMsg(e.getMessage(), response);
