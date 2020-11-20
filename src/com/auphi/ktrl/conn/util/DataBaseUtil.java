@@ -63,6 +63,8 @@ public class DataBaseUtil {
 	public static final String SQLSERVER = "MS SQL Server";
 	public static final String DB2 = "IBM DB2";
 	public static final String KINGBASE= "KingbaseES";
+	public static final String KINGBASE8= "KingbaseES8";
+
 	public static final String POSTGRESQL= "PostgreSQL";
 	
 	public static ConnConfigBean connConfig = null;
@@ -119,6 +121,8 @@ public class DataBaseUtil {
 			url = "jdbc:sqlserver://" + ip + ":" + port + ";databaseName=" + database + ";SelectMethod=Cursor";
 		}else if(KINGBASE.equals(dbms)){
 			url = "jdbc:kingbase://" + ip + ":" + port + "/" + database;
+		}else if(KINGBASE8.equals(dbms)){
+			url = "jdbc:kingbase8://" + ip + ":" + port + "/" + database;
 		}else if(DB2.equals(dbms)){
 			url = "jdbc:db2://" + ip + ":" + port + "/" + database;
 		}else if(POSTGRESQL.equals(dbms)){
