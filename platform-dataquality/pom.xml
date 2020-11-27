@@ -17,24 +17,6 @@
         <module>platform-dataquality-server</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-kettle-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-log-sys</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
 

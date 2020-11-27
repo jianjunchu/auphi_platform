@@ -7,7 +7,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -18,7 +18,7 @@ public class CompareSqlColumnResponse  {
 
     private static final long serialVersionUID = 1L;
 
-    private Long compareSqlColumnId;
+    private Long compareSqlFieldId;
 
     /**
      * 列名

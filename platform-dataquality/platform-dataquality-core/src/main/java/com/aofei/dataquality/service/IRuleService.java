@@ -1,5 +1,6 @@
 package com.aofei.dataquality.service;
 
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.dataquality.entity.Rule;
 import com.aofei.dataquality.model.request.RuleRequest;
 import com.aofei.dataquality.model.response.RuleResponse;
@@ -67,4 +68,6 @@ public interface IRuleService extends IService<Rule> {
      * @return
      */
     RuleResponse updateIsEnable(RuleRequest request);
+
+    Boolean refresh(RuleRequest request, CurrentUserResponse user);
 }

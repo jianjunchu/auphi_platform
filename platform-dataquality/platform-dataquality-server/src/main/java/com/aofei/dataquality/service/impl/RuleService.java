@@ -1,18 +1,20 @@
 package com.aofei.dataquality.service.impl;
 
+import com.aofei.base.common.Const;
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
+import com.aofei.base.model.response.CurrentUserResponse;
+import com.aofei.base.service.impl.BaseService;
 import com.aofei.dataquality.entity.Rule;
 import com.aofei.dataquality.entity.RuleAttr;
-import com.aofei.dataquality.i18n.Messages;
 import com.aofei.dataquality.mapper.RuleAttrMapper;
 import com.aofei.dataquality.mapper.RuleMapper;
 import com.aofei.dataquality.model.request.RuleAttrRequest;
 import com.aofei.dataquality.model.request.RuleRequest;
 import com.aofei.dataquality.model.response.RuleAttrResponse;
 import com.aofei.dataquality.model.response.RuleResponse;
+import com.aofei.dataquality.service.ExecuteCheckService;
 import com.aofei.dataquality.service.IRuleService;
-import com.aofei.base.service.impl.BaseService;
 import com.aofei.log.annotation.Log;
 import com.aofei.utils.BeanCopier;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -20,7 +22,10 @@ import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,6 +37,11 @@ import java.util.List;
  */
 @Service
 public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleService {
+
+
+    @Autowired
+    private ExecuteCheckService executeCheckService;
+
 
     @Autowired
     private RuleAttrMapper ruleAttrMapper;
@@ -94,7 +104,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
 
             return BeanCopier.copy(rule, RuleResponse.class);
         }else{
-            throw new ApplicationException(StatusCode.CONFLICT.getCode(), Messages.getString("DataQuality.Error.FieldNameExist ",request.getFieldName()));
+            throw new ApplicationException(StatusCode.CONFLICT.getCode(), "当前字段规则类型已存在!");
         }
 
     }
@@ -122,6 +132,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
                 existing.setSchemaName(request.getSchemaName());
                 existing.setFieldName(request.getFieldName());
                 existing.setFieldType(request.getFieldType());
+                existing.setFieldOriginalType(request.getFieldOriginalType());
                 existing.setTableName(request.getTableName());
                 existing.setFieldName(request.getFieldName());
                 existing.setDescription(request.getDescription());
@@ -147,7 +158,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
             }
 
         }else{
-            throw new ApplicationException(StatusCode.CONFLICT.getCode(), Messages.getString("DataQuality.Error.FieldNameExist ",request.getFieldName()));
+            throw new ApplicationException(StatusCode.CONFLICT.getCode(), "当前字段规则类型已存在!");
         }
 
 
@@ -189,4 +200,28 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }
     }
+
+    @Override
+    public Boolean refresh(RuleRequest request, CurrentUserResponse user) {
+
+        request.setIsEnable(Const.YES);
+        List<Rule> list = baseMapper.findList(request);
+        Map<Long,List<Rule>> map = new HashMap<>();
+
+        for(Rule rule : list){
+            List<Rule> rules = map.get(rule.getDatabaseId());
+            if(rules==null){
+                rules = new ArrayList<>();
+                rules.add(rule);
+                map.put(rule.getDatabaseId(),rules);
+            }else{
+                rules.add(rule);
+            }
+        }
+
+        executeCheckService.refreshCheckResult(map,user);
+
+        return true;
+    }
+
 }

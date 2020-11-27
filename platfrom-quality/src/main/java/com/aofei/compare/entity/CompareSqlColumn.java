@@ -29,7 +29,7 @@ public class CompareSqlColumn extends DataEntity<CompareSqlColumn> {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "ID_COMPARE_SQL_COLUMN", type = IdType.ID_WORKER)
-    private Long compareSqlColumnId;
+    private Long compareSqlFieldId;
 
     /**
      * 列名
@@ -88,7 +88,7 @@ public class CompareSqlColumn extends DataEntity<CompareSqlColumn> {
 
     @Override
     protected Serializable pkVal() {
-        return this.compareSqlColumnId;
+        return this.compareSqlFieldId;
     }
 
 }

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aofei.dataquality.mapper.CompareSqlResultMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aofei.dataquality.entity.CompareSqlResult">
+        <id column="COMPARE_SQL_RESULT_ID" property="compareSqlResultId" />
+        <result column="COMPARE_SQL_FIELD_ID" property="compareSqlFieldId" />
+        <result column="FIELD_VALUE" property="fieldValue" />
+        <result column="REF_FIELD_VALUE" property="refFieldValue" />
+        <result column="COMPARE_RESULT" property="compareResult" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.COMPARE_SQL_RESULT_ID AS compareSqlResultId
+        , a.COMPARE_SQL_FIELD_ID AS compareSqlFieldId
+        , a.ORGANIZER_ID AS organizerId
+        , a.FIELD_VALUE AS fieldValue
+        , a.REF_FIELD_VALUE AS refFieldValue
+        , a.COMPARE_RESULT AS compareResult
+        , a.CREATE_TIME AS compareTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+
+
+        , b.COMPARE_SQL_FIELD_ID AS compareSqlFieldId
+        , b.COMPARE_SQL_ID AS compareSqlId
+        , b.FIELD_NAME AS fieldName
+        , b.FIELD_TYPE AS fieldType
+        , b.REF_FIELD_NAME AS refFieldName
+        , b.FIELD_DESC AS fieldDesc
+        , b.FIELD_COMPARE_TYPE AS fieldCompareType
+        , b.MIN_RATIO AS minRatio
+        , b.MAX_RATIO AS maxRatio
+
+        , d.COMPARE_SQL_ID AS compareSqlId
+        , d.REPOSITORY_NAME AS repositoryName
+        , d.DATABASE_ID AS databaseId
+        , e.DATABASE_NAME AS databaseName
+        , d.REF_DATABASE_ID AS refDatabaseId
+        , f.DATABASE_NAME AS refDatabaseName
+        , d.RULE_GROUP_ID AS ruleGroupId
+        , g.GROUP_NAME AS ruleGroupName
+        , d.COMPARE_NAME AS compareName
+        , d.COMPARE_DESC AS compareDesc
+        , d.CREATE_TIME AS createTime
+        , d.COMPARE_TYPE AS compareType
+        , d.`SQL` AS `sql`
+        , d.REF_SQL AS refSql
+
+    </sql>
+
+
+
+
+    <select id="findList"  resultType="com.aofei.dataquality.entity.CompareSqlResult">
+
+        SELECT
+
+        <include refid="Base_Column_List"/>
+
+        FROM DATA_QUALITY_COMPARE_SQL_RESULT a
+        RIGHT JOIN DATA_QUALITY_COMPARE_SQL_FIELD b on a.COMPARE_SQL_FIELD_ID = b.COMPARE_SQL_FIELD_ID
+        RIGHT JOIN DATA_QUALITY_COMPARE_SQL d on b.COMPARE_SQL_ID = d.COMPARE_SQL_ID
+        JOIN R_DATABASE e on e.ID_DATABASE = d.DATABASE_ID
+        JOIN R_DATABASE f on f.ID_DATABASE = d.DATABASE_ID
+        JOIN DATA_QUALITY_RULE_GROUP g on g.GROUP_ID = d.RULE_GROUP_ID
+        <where>
+            b.DEL_FLAG = 0 AND d.DEL_FLAG = 0 AND  (a.CREATE_TIME = (SELECT MAX(CREATE_TIME) FROM DATA_QUALITY_COMPARE_SQL_RESULT WHERE COMPARE_SQL_FIELD_ID = a.COMPARE_SQL_FIELD_ID) OR a.CREATE_TIME is null)
+            <if test="organizerId !=null ">
+                AND  d.ORGANIZER_ID  = #{organizerId}
+            </if>
+            <if test="compareSqlId !=null ">
+                AND  b.COMPARE_SQL_ID  = #{compareSqlId}
+            </if>
+            <if test="ruleGroupId !=null ">
+                AND  d.RULE_GROUP_ID  = #{ruleGroupId}
+            </if>
+            <if test="fieldName !=null and fieldName != ''">
+                AND  b.FIELD_NAME  like '%${fieldName}%'
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aofei.query.mapper.DataExactTMapper">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.accept_no AS acceptNo
+        , a.unit_no AS unitNo
+        , a.backup_start  AS  backupStart
+        , a.backup_end  AS  backupEnd
+        , a.backup_time  AS backupTime
+        , a.backup_count AS backupCount
+        , a.backup_valid_count AS backupValidCount
+        , a.backup_invalid_count AS backupInvalidCount
+        , a.business  AS business
+        , a.operation  AS operation
+    </sql>
+
+
+    <select id="findList"  resultType="com.aofei.query.entity.DataExactT">
+        select
+        <include refid="Base_Column_List"/>
+        from l_data_exact_t a
+        <where>
+            <if test="acceptNo !=null and acceptNo != ''">
+                AND  a.accept_no  = #{acceptNo}
+            </if>
+            <if test="unitNo !=null and unitNo != ''">
+                AND  a.unit_no   = #{unitNo}
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
+                AND  to_date(a.backup_time,'yyyy-MM-dd hh:mi:ss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mi:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mi:ss')
+            </if>
+        </where>
+    </select>
+
+</mapper>

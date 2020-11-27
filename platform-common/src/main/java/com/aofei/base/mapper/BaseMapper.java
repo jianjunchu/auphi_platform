@@ -1,6 +1,6 @@
 package com.aofei.base.mapper;
 
-import com.aofei.base.model.request.BaseRequest;
+import com.aofei.base.model.request.PageRequest;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.mapper.BaseMapper<T>{
 
-    List<T> findList(Page<T> page, BaseRequest entity);
+    List<T> findList(Page<T> page, PageRequest entity);
 
-    List<T> findList(BaseRequest entity);
+    List<T> findList(PageRequest entity);
 }

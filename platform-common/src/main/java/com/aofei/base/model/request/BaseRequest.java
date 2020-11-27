@@ -4,7 +4,6 @@ package com.aofei.base.model.request;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -19,14 +18,6 @@ public class BaseRequest<T> extends PageRequest {
      */
     @ApiModelProperty(hidden = true)
     protected Date createTime;
-
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ApiModelProperty(hidden = true)
-    protected Date startCreateTime;
-
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    @ApiModelProperty(hidden = true)
-    protected Date endCreateTime;
 
     /**
      * 更新时间

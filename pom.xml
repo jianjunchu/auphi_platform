@@ -13,12 +13,12 @@
     <module>platform-generator</module>
     <module>platform-auth</module>
     <module>platform-kettle</module>
-    <module>platfrom-quality</module>
     <module>platform-datasource</module>
     <module>platfrom-cluster</module>
     <module>platform-mdm</module>
     <module>platform-dataservice</module>
     <module>platform-dataquality</module>
+    <module>platform-query-statistics</module>
   </modules>
   <packaging>pom</packaging>
   <name>auphi_platform_v3.9.0</name>

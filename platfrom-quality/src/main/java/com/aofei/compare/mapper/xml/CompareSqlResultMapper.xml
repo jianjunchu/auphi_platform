@@ -7,7 +7,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
           ID_COMPARE_SQL_RESULT AS compareSqlResultId
-        , ID_COMPARE_SQL_COLUMN AS compareSqlColumnId
+        , ID_COMPARE_SQL_COLUMN AS compareSqlFieldId
         , COLUMN_VALUE AS columnValue
         , REFERENCE_COLUMN_VALUE AS referenceColumnValue
         , COMPARE_RESULT AS compareResult

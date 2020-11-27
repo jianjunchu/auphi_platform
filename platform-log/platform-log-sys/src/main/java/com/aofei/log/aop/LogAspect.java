@@ -36,6 +36,7 @@ public class LogAspect {
         Method method = currentMethod(joinPoint, methodName);
         Log log = method.getAnnotation(Log.class);
 
+
         CurrentUserResponse userResponse = UserUtil.getSessionUser();
 
         /**

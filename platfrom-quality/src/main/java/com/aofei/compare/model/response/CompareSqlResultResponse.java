@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -18,7 +18,7 @@ public class CompareSqlResultResponse  {
 
 
     @ApiModelProperty(value = "字段ID")
-    private Long compareSqlColumnId;
+    private Long compareSqlFieldId;
 
     /**
      * 名称

@@ -113,6 +113,16 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils{
         }
     }
 
+    public static boolean isDouble(String str) {
+        try
+        {
+            Double.parseDouble(str);
+            return true;
+        }
+        catch(NumberFormatException ex){}
+        return false;
+    }
+
     public static String defaultString(Integer str) {
         return str == null ? "" : String.valueOf(str);
     }

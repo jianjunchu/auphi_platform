@@ -65,7 +65,7 @@
 
         <where>
             a.DEL_FLAG = 0
-            <if test="compareSqlColumnId !=null ">
+            <if test="compareSqlFieldId !=null ">
                 AND  a.ID_PROFILE_TABLE_COLUMN  = #{profileTableColumnId}
             </if>
             <if test="profileTableId !=null ">

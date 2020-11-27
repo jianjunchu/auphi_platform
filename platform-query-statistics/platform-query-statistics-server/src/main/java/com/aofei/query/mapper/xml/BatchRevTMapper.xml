@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aofei.query.mapper.BatchRevTMapper">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.batch_no AS batchNo
+        , a.file_count AS fileCount
+        , a.rev_time AS revTime
+
+    </sql>
+
+    <select id="findList"  resultType="com.aofei.query.entity.BatchRevT">
+        select
+        <include refid="Base_Column_List"/>
+        from s_batch_rev_t a
+        <where>
+            <if test="batchNo !=null and batchNo != ''">
+                AND  a.batch_no  like '%${batchNo}%'
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
+                AND  to_date(a.rev_time,'yyyy-MM-dd hh:mi:ss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mi:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mi:ss')
+            </if>
+        </where>
+    </select>
+
+</mapper>

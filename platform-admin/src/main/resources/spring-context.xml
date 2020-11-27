@@ -2,14 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-4.3.xsd
        http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+       http://www.springframework.org/schema/aop/spring-aop-4.3.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <!-- 使用Annotation自动注册Bean，解决事物失效问题：在主容器中不扫描@RestController注解，在SpringMvc中只扫描@RestController注解。  -->
     <context:component-scan base-package="com.aofei" scoped-proxy="interfaces">
@@ -21,6 +20,7 @@
         <property name="locations">
             <list>
                 <value>classpath*:config/db.properties</value>
+                <value>classpath*:config/ext_db.properties</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -35,7 +35,7 @@
                 <value>classpath*:config/application.properties</value>
             </list>
         </property>
-        
+
         <property name="properties">
             <props>
                 <prop key="DB2">db2</prop>
@@ -87,10 +87,13 @@
         <property name="properties" ref="propertiesReader"/>
     </bean>
 
+    <task:executor id="refreshDataQualityCheckResult" pool-size="10"/>
+    <task:annotation-driven executor="refreshDataQualityCheckResult"/>
 
 
 
     <import resource="/spring-ehcache.xml" />
     <import resource="/spring-mybatis.xml"/>
+    <import resource="/spring-mybatis-ext.xml"/>
     <import resource="/spring-schedule.xml"/>
 </beans>

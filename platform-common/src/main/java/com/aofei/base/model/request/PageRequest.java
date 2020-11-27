@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * Created by Hao on 2017-03-23.
  */
+
 public class PageRequest<T> {
 
 
@@ -29,6 +30,16 @@ public class PageRequest<T> {
      */
     @ApiModelProperty(hidden = true)
     private String sort;
+
+    @ApiModelProperty(hidden = true)
+    private String search_time;
+
+    @ApiModelProperty(hidden = true)
+    protected String search_satrt;
+
+
+    @ApiModelProperty(hidden = true)
+    protected String search_end;
 
     public PageRequest() {
     }
@@ -63,6 +74,31 @@ public class PageRequest<T> {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+
+    public String getSearch_time() {
+        return search_time;
+    }
+
+    public void setSearch_time(String search_time) {
+        this.search_time = search_time;
+    }
+
+    public String getSearch_satrt() {
+        return search_satrt;
+    }
+
+    public void setSearch_satrt(String search_satrt) {
+        this.search_satrt = search_satrt;
+    }
+
+    public String getSearch_end() {
+        return search_end;
+    }
+
+    public void setSearch_end(String search_end) {
+        this.search_end = search_end;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.aofei.dataquality.model.response;
 
-import com.aofei.dataquality.model.request.RuleAttrRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -50,7 +49,7 @@ public class RuleResponse {
      * 规则类型
      */
     @ApiModelProperty(value = "规则类型")
-    private String ruleType;
+    private Integer ruleType;
     /**
      * 数据库ID
      */
@@ -83,6 +82,9 @@ public class RuleResponse {
      */
     @ApiModelProperty(value = "字段类型")
     private Integer fieldType;
+
+    @ApiModelProperty(value = "字段原生类型")
+    private String fieldOriginalType;
 
     /**
      * 是否启用

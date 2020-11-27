@@ -1,11 +1,14 @@
 package com.aofei.dataquality.controller;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
+import com.aofei.dataquality.model.enums.RuleType;
 import com.aofei.dataquality.model.request.RuleRequest;
 import com.aofei.dataquality.model.response.RuleResponse;
 import com.aofei.dataquality.service.IRuleService;
@@ -144,6 +147,28 @@ public class RuleController extends BaseController {
             @PathVariable Long id)  {
 
         return Response.ok(ruleService.get(id)) ;
+    }
+
+    /**
+     * 获取规则类型
+     * @return
+     */
+    @ApiOperation(value = "获取规则类型", notes = "获取规则类型")
+    @RequestMapping(value = "/ruleTypes", method = RequestMethod.GET)
+    public Response<JSONArray> listRuleType()  {
+
+        JSONArray array = new JSONArray();
+
+        for (RuleType ruleType : RuleType.values()) {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("value",ruleType.getCode());
+            jsonObject.put("label",ruleType.getMessage());
+            array.add(jsonObject);
+        }
+
+
+        return Response.ok(array) ;
     }
 
 

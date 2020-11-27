@@ -1,20 +1,15 @@
 package com.aofei.dataquality.entity;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.aofei.base.entity.DataEntity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.aofei.base.entity.DataEntity;
-
-import com.baomidou.mybatisplus.annotations.Version;
-
-import io.swagger.annotations.ApiModelProperty;
+import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -63,7 +58,7 @@ public class Rule extends DataEntity<Rule> {
      * 规则类型
      */
     @TableField("RULE_TYPE")
-    private String ruleType;
+    private Integer ruleType;
     /**
      * 数据库ID
      */
@@ -96,6 +91,9 @@ public class Rule extends DataEntity<Rule> {
      */
     @TableField("FIELD_TYPE")
     private Integer fieldType;
+
+    @TableField("FIELD_ORIGINAL_TYPE")
+    private String fieldOriginalType;
 
     /**
      * 是否启用

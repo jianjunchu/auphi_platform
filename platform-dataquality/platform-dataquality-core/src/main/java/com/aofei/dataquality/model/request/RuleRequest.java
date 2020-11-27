@@ -43,7 +43,7 @@ public class RuleRequest extends BaseRequest<RuleRequest> {
      * 规则类型
      */
     @ApiModelProperty(value = "规则类型")
-    private String ruleType;
+    private Integer ruleType;
     /**
      * 数据库ID
      */
@@ -70,6 +70,9 @@ public class RuleRequest extends BaseRequest<RuleRequest> {
      */
     @ApiModelProperty(value = "字段类型")
     private Integer fieldType;
+
+    @ApiModelProperty(value = "字段原生类型")
+    private String fieldOriginalType;
 
     /**
      * 是否启用

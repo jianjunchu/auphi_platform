@@ -2,7 +2,8 @@ package com.aofei.dataquality.service;
 
 import com.aofei.dataquality.entity.RuleAttr;
 import com.baomidou.mybatisplus.service.IService;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -15,4 +16,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IRuleAttrService extends IService<RuleAttr> {
 
     int deleteByRuleId(Long ruleId);
+
+    Map<String, String> getAttrMapByRuleId(Long ruleId);
 }

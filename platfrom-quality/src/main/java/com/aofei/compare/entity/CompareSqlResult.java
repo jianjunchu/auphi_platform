@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -34,7 +34,7 @@ public class CompareSqlResult extends DataEntity<CompareSqlResult> {
      * 字段ID
      */
     @TableField("ID_COMPARE_SQL_COLUMN")
-    private Long compareSqlColumnId;
+    private Long compareSqlFieldId;
 
     /**
      * 名称

@@ -150,7 +150,7 @@ public class DataCompareController extends BaseController {
                         Map<String,String> resultSetTmp = i > resultSetTmps.size() ? null : resultSetTmps.get(i);
                         Map<String,String> referenceResultSetTmp = i > referenceResultSetTmps.size()? null:  referenceResultSetTmps.get(i);
                         CompareSqlColumn compareSqlColumn = compareSql.getCompareSqlColumns().get(i);
-                        CompareSqlResultRequest compareSqlResult = new CompareSqlResultRequest(compareSqlColumn.getCompareSqlColumnId());
+                        CompareSqlResultRequest compareSqlResult = new CompareSqlResultRequest(compareSqlColumn.getcompareSqlFieldId());
                         compareSqlResult.setCreateTime(new Date());
                         compareSqlResult.setColumnValue(resultSetTmp == null ? null : resultSetTmp.get(compareSqlColumn.getColumnName()));
                         compareSqlResult.setReferenceColumnValue(referenceResultSetTmp ==null ? null:referenceResultSetTmp.get(compareSqlColumn.getColumnName()));

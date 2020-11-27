@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -25,7 +25,7 @@ public class CompareSqlResultRequest extends BaseRequest<CompareSqlResultRequest
 
     private Long compareSqlResultId;
 
-    private Long compareSqlColumnId;
+    private Long compareSqlFieldId;
 
     private String columnValue;
 
@@ -40,7 +40,7 @@ public class CompareSqlResultRequest extends BaseRequest<CompareSqlResultRequest
 
     }
 
-    public CompareSqlResultRequest(Long compareSqlColumnId) {
-        setCompareSqlColumnId(compareSqlColumnId);
+    public CompareSqlResultRequest(Long compareSqlFieldId) {
+        setcompareSqlFieldId(compareSqlFieldId);
     }
 }

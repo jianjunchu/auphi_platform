@@ -70,17 +70,22 @@ public class UserController extends BaseController {
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
         UserResponse response = userService.get(user.getUserId());
 
-        List<MenuResponse>  list = menuService.getMenusByUser(response.getUserId());
-        List<String> roles = new ArrayList<>();
+        if(response!=null){
+            List<MenuResponse>  list = menuService.getMenusByUser(response.getUserId());
+            List<String> roles = new ArrayList<>();
 
-        for(MenuResponse menuResponse : list){
-            roles.add(menuResponse.getPerms());
+            for(MenuResponse menuResponse : list){
+                roles.add(menuResponse.getPerms());
+            }
+            if(response.getIsSystemUser()!=null && response.getIsSystemUser() ==1){
+                roles.add("admin");
+            }
+            response.setRoles(roles);
+            return Response.ok(response);
+        }else{
+            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(),"用户未登录或者用户已不存在");
         }
-        if(response.getIsSystemUser() ==1){
-            roles.add("admin");
-        }
-        response.setRoles(roles);
-        return Response.ok(response);
+
     }
 
     /**

@@ -17,7 +17,8 @@
         , a.SCHEMA_NAME AS schemaName
         , a.TABLE_NAME AS tableName
         , a.FIELD_NAME AS fieldName
-         , a.FIELD_TYPE AS fieldType
+        , a.FIELD_TYPE AS fieldType
+        , a.FIELD_ORIGINAL_TYPE AS fieldOriginalType
         , a.IS_ENABLE AS isEnable
         , a.CREATE_USER AS createUser
         , a.UPDATE_USER AS updateUser
@@ -46,6 +47,9 @@
             <if test="ruleType !=null and ruleType != ''">
                 AND  a.RULE_TYPE   = #{ruleType}
             </if>
+            <if test="isEnable !=null ">
+                AND  a.IS_ENABLE   = #{isEnable}
+            </if>
             <if test="tableName !=null and tableName != ''">
                 AND  a.TABLE_NAME   like '%${tableName}%'
             </if>
@@ -55,6 +59,7 @@
             <if test="fieldName !=null and fieldName != ''">
                 AND  a.FIELD_NAME   like '%${fieldName}%'
             </if>
+
 
         </where>
     </select>
@@ -77,6 +82,7 @@
             , a.SCHEMA_NAME = #{et.schemaName}
             , a.TABLE_NAME = #{et.tableName}
             , a.FIELD_NAME = #{et.fieldName}
+            , a.FIELD_ORIGINAL_TYPE = #{et.fieldOriginalType}
             , a.FIELD_TYPE = #{et.fieldType}
             , a.IS_ENABLE = #{et.isEnable}
             , a.UPDATE_USER = #{et.updateUser}

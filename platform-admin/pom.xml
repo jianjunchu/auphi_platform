@@ -101,7 +101,12 @@
         <!--数据源管理-->
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-datasource</artifactId>
+            <artifactId>platform-datasource-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-datasource-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -121,6 +126,18 @@
         <dependency>
             <groupId>com.aofei</groupId>
             <artifactId>platform-dataquality-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--公安一所 查询统计-->
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-query-statistics-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-query-statistics-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 

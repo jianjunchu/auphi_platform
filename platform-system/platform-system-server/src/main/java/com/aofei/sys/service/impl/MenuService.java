@@ -131,7 +131,7 @@ public class MenuService extends BaseService<MenuMapper, Menu> implements IMenuS
         for(Menu root: list){
             request.setParentId(root.getMenuId());
             MenuTreeResponse rootResponse = BeanCopier.copy(root,MenuTreeResponse.class);
-
+            rootResponse.getRoles().add(root.getPerms());
             List<Menu> childrens = baseMapper.findList(request);
             for(Menu children :  childrens){
                 MenuTreeResponse child = BeanCopier.copy(children,MenuTreeResponse.class);

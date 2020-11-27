@@ -6,7 +6,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-          a.ID_COMPARE_SQL_COLUMN AS compareSqlColumnId
+          a.ID_COMPARE_SQL_COLUMN AS compareSqlFieldId
         , a.COLUMN_NAME AS columnName
         , a.COLUMN_TYPE AS columnType
         , a.REFERENCE_COLUMN_NAME AS referenceColumnName
@@ -46,8 +46,8 @@
 
         <where>
             a.DEL_FLAG = 0
-            <if test="compareSqlColumnId !=null ">
-                AND  a.ID_COMPARE_SQL_COLUMN  = #{compareSqlColumnId}
+            <if test="compareSqlFieldId !=null ">
+                AND  a.ID_COMPARE_SQL_COLUMN  = #{compareSqlFieldId}
             </if>
             <if test="compareSqlId !=null ">
                 AND  a.ID_COMPARE_SQL  = #{compareSqlId}
@@ -62,8 +62,8 @@
         from COMPARE_SQL_COLUMN a
         <where>
             a.DEL_FLAG = 0
-            <if test="compareSqlColumnId !=null ">
-                AND  a.ID_COMPARE_SQL_COLUMN  = #{compareSqlColumnId}
+            <if test="compareSqlFieldId !=null ">
+                AND  a.ID_COMPARE_SQL_COLUMN  = #{compareSqlFieldId}
             </if>
             <if test="compareSqlId !=null ">
                 AND  a.ID_COMPARE_SQL  = #{compareSqlId}
