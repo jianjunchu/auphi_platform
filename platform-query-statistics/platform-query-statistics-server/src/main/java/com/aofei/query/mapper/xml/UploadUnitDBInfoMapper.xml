@@ -26,10 +26,10 @@
                 AND  a.unit_no   = #{unitNo}
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'create_time' ">
-                AND  to_date(a.create_time,'yyyy-MM-dd hh:mi:ss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mi:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mi:ss')
+                AND  to_date(a.create_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'update_time' ">
-                AND  to_date(a.update_time,'yyyy-MM-dd hh:mi:ss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mi:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mi:ss')
+                AND  to_date(a.update_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
             </if>
         </where>
     </select>

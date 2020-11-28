@@ -13,22 +13,19 @@ import com.aofei.compare.model.response.CompareSqlResponse;
 import com.aofei.compare.service.ICompareSqlResultService;
 import com.aofei.compare.service.ICompareSqlService;
 import com.aofei.compare.util.TemplateUtil;
+import com.aofei.kettle.utils.DatabaseUtils;
 import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
-import io.swagger.annotations.*;
 import lombok.extern.log4j.Log4j;
-import com.aofei.kettle.utils.DatabaseUtils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.*;
 
 
 /**

@@ -21,7 +21,7 @@
                 AND  a.batch_no  like '%${batchNo}%'
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
-                AND  to_date(a.rev_time,'yyyy-MM-dd hh:mi:ss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mi:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mi:ss')
+                AND  to_date(a.rev_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
             </if>
         </where>
     </select>
