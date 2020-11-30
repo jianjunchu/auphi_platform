@@ -16,4 +16,8 @@ public interface DataLoadTMapper extends BaseMapper<DataLoadT> {
 
 
     List<DataLoadT> findBackupFrequencyList(Page<DataLoadT> page, DataLoadTRequest request);
+
+    List<DataLoadT> findBackupFrequencyList(DataLoadTRequest request);
+
+    List<DataLoadT> findBackupRecordChartDat(DataLoadTRequest request);
 }

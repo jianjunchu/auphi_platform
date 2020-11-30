@@ -1,5 +1,6 @@
 package com.aofei.query.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.query.entity.DataLoadT;
 import com.aofei.query.model.request.DataLoadTRequest;
 import com.aofei.query.model.response.DataLoadTResponse;
@@ -17,4 +18,6 @@ public interface IDataLoadTService extends IService<DataLoadT> {
     Page<DataLoadTResponse> getPage(Page<DataLoadT> page, DataLoadTRequest request);
 
     Page<DataLoadTResponse> getBackupFrequencyPage(Page<DataLoadT> pagination, DataLoadTRequest request);
+
+    JSONObject getBackupRecordChartData(DataLoadTRequest request);
 }

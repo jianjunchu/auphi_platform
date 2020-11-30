@@ -65,5 +65,26 @@
 
     </select>
 
+    <select id="findBackupRecordChartDat" resultType="com.aofei.query.entity.DataLoadT">
+        select
+          a.unit_no AS unitNo
+        , count(1) AS backupCount
+
+        from s_data_load_t a
+        <where>
+            <if test="unitNo !=null and unitNo != ''">
+                AND  a.unit_no   = #{unitNo}
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
+                AND  to_date(a.load_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
+                AND  to_date(a.backup_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+            </if>
+        </where>
+        group by a.unit_no,a.load_time
+
+    </select>
+
 
 </mapper>

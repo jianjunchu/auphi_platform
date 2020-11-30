@@ -1,5 +1,6 @@
 package com.aofei.query.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
@@ -79,6 +80,25 @@ public class DataQueryController extends BaseController {
         return Response.ok(buildDataGrid(page)) ;
     }
 
+    /**
+     * 备份频率统计(分页查询)
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "备份频率统计(分页查询)", notes = "备份频率统计(分页查询)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
+
+    })
+    @RequestMapping(value = "/backupFrequency/chartData", method = RequestMethod.GET)
+    public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request)  {
+
+        JSONObject jsonObject  = dataLoadTService.getBackupRecordChartData(request);
+        return Response.ok(jsonObject) ;
+    }
+
+
 
     /**
      * 备份记录查询(分页查询)
@@ -99,7 +119,7 @@ public class DataQueryController extends BaseController {
     }
 
     /**
-     * 备份记录查询(分页查询)
+     * 错误数据查询(分页查询)
      * @param request
      * @return
      */
@@ -117,7 +137,7 @@ public class DataQueryController extends BaseController {
     }
 
     /**
-     * 备份记录查询(分页查询)
+     * 数据抽取记录查询(分页查询)
      * @param request
      * @return
      */

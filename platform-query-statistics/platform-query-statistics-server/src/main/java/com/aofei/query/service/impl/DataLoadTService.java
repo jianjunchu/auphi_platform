@@ -1,5 +1,7 @@
 package com.aofei.query.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.service.impl.BaseService;
 import com.aofei.query.entity.DataLoadT;
 import com.aofei.query.mapper.DataLoadTMapper;
@@ -26,5 +28,24 @@ public class DataLoadTService extends BaseService<DataLoadTMapper, DataLoadT> im
         List<DataLoadT> list = baseMapper.findBackupFrequencyList(page, request);
         page.setRecords(list);
         return convert(page, DataLoadTResponse.class);
+    }
+
+    @Override
+    public JSONObject getBackupRecordChartData(DataLoadTRequest request) {
+
+        JSONArray axis = new JSONArray();
+        JSONArray series = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+
+        List<DataLoadT> list = baseMapper.findBackupRecordChartDat(request);
+
+        for(DataLoadT dataLoadT : list){
+            axis.add(dataLoadT.getUnitNo());
+            series.add(dataLoadT.getBackupCount());
+        }
+        jsonObject.put("axis",axis);
+        jsonObject.put("series",series);
+
+        return jsonObject;
     }
 }
