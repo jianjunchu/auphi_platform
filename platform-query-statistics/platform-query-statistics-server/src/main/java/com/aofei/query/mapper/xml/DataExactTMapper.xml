@@ -5,7 +5,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-          a.accept_no AS acceptNo
+          a.batch_no AS batchNo
         , a.unit_no AS unitNo
         , a.backup_start  AS  backupStart
         , a.backup_end  AS  backupEnd
@@ -23,14 +23,14 @@
         <include refid="Base_Column_List"/>
         from l_data_exact_t a
         <where>
-            <if test="acceptNo !=null and acceptNo != ''">
-                AND  a.accept_no  = #{acceptNo}
+            <if test="batchNo !=null and batchNo != ''">
+                AND  a.batch_no  = #{batchNo}
             </if>
             <if test="unitNo !=null and unitNo != ''">
                 AND  a.unit_no   = #{unitNo}
             </if>
-            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
-                AND  to_date(a.backup_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' and search_satrt !=null and search_satrt!='' and search_end !=null and search_end!=''">
+                AND  str_to_date(a.backup_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
         </where>
     </select>

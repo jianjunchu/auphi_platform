@@ -24,6 +24,12 @@ public class CheckResultErrRequest extends BaseRequest<CheckResultErrRequest> {
      * 组织ID
      */
     private Long organizerId;
+
+    /**
+     * 规则id
+     */
+    private Long ruleId;
+
     /**
      * 结果id
      */
