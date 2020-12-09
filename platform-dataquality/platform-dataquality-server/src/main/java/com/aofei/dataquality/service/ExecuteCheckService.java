@@ -17,6 +17,8 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -28,10 +30,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,9 +56,20 @@ public class ExecuteCheckService {
     private IRuleAttrService  ruleAttrService;
 
 
+    private static Map<Long,Integer> thread = new HashMap<>();
+
+    public Integer getThreadStatus(Long userId){
+        if(thread.get(userId) ==null){
+            return 100;
+        }else{
+            return thread.get(userId);
+        }
+    }
+
     @Async(value = "refreshDataQualityCheckResult")
     public void refreshCheckResult(Map<Long, List<Rule>> map, CurrentUserResponse user) {
         Repository repository = App.getInstance().getRepository();
+        thread.put(user.getUserId(),0);
         try{
 
             for(Long key:map.keySet()){
@@ -135,6 +145,7 @@ public class ExecuteCheckService {
         }catch (Exception e){
             log.error(e);
         }finally {
+            thread.remove(user.getUserId());
             if(repository!=null){
                 repository.disconnect();
             }
@@ -142,6 +153,8 @@ public class ExecuteCheckService {
 
 
     }
+
+
 
     /**
      * 日期范围检查
@@ -155,20 +168,20 @@ public class ExecuteCheckService {
         CheckResultRequest result = initCheckResult(user,rule);
 
         List<CheckResultErrRequest>  errors = new  ArrayList();
-        ValueMetaBase obj = new ValueMetaBase(rule.getFieldName(),ValueMetaInterface.TYPE_DATE);
+        ValueMetaBase obj;
+
+        if(ValueMetaInterface.TYPE_TIMESTAMP == rule.getFieldType()){
+            obj = new ValueMetaTimestamp(rule.getFieldName());
+        }else{
+            obj = new ValueMetaDate(rule.getFieldName(),rule.getFieldType());
+        }
+
 
         while(resultSet.next()){
 
             Object value =  resultSet.getObject(1);
 
-            if(value ==null){
-                result.setNotPassedNum(result.getNotPassedNum()+1L);
-                CheckResultErrRequest err = new CheckResultErrRequest();
-                err.setErrorValue("");
-                err.setErrorDesc("value is null");
-                err.setOrganizerId(rule.getOrganizerId());
-                errors.add(err);
-            }else{
+            if(value !=null){
                 obj.setConversionMask(ruleAttrMap.get("VALUE_FORMAT"));
                 if(rule.getFieldType() ==ValueMetaInterface.TYPE_STRING || rule.getFieldType()==ValueMetaInterface.TYPE_DATE || rule.getFieldType()== ValueMetaInterface.TYPE_TIMESTAMP ){
                     Date value2 =  obj.getDate(value);
@@ -222,14 +235,7 @@ public class ExecuteCheckService {
            Object value =  obj.getValueFromResultSet(databaseMeta.getDatabaseInterface(),resultSet,0);
 
 
-            if(value ==null){
-                result.setNotPassedNum(result.getNotPassedNum()+1L);
-                CheckResultErrRequest err = new CheckResultErrRequest();
-                err.setErrorValue("");
-                err.setErrorDesc("value is null");
-                err.setOrganizerId(rule.getOrganizerId());
-                errors.add(err);
-            }else{
+            if(value !=null){
                 switch (rule.getFieldType()){
 
                     case ValueMetaInterface.TYPE_NUMBER:
@@ -300,14 +306,8 @@ public class ExecuteCheckService {
             Object value = resultSet.getObject(1);
             if(value !=null){
                 result.setPassedNum(result.getPassedNum()+1L);
-
             }else{
                 result.setNotPassedNum(result.getNotPassedNum()+1L);
-
-                CheckResultErrRequest err = new CheckResultErrRequest();
-                err.setErrorValue(value.toString());
-                err.setOrganizerId(rule.getOrganizerId());
-                errors.add(err);
             }
             result.setTotalCheckedNum(result.getTotalCheckedNum()+1L);
         }
@@ -326,10 +326,7 @@ public class ExecuteCheckService {
         while(resultSet.next()){
 
             Object value = resultSet.getObject(1);
-            if(value ==null){
-                result.setPassedNum(result.getPassedNum()+1L);
-
-            }else{
+            if(value !=null){
                 result.setNotPassedNum(result.getNotPassedNum()+1L);
 
                 CheckResultErrRequest err = new CheckResultErrRequest();
@@ -360,25 +357,25 @@ public class ExecuteCheckService {
 
             String value = resultSet.getString(1);
 
+            if(value !=null){
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(value);
 
-            Pattern pattern;
-            Matcher matcher;
-            pattern = Pattern.compile(regex);
-            matcher = pattern.matcher(value);
+                if(!matcher.matches() ){
+                    result.setNotPassedNum(result.getNotPassedNum()+1L);
 
-            if(!matcher.matches() ){
-                result.setNotPassedNum(result.getNotPassedNum()+1L);
+                    CheckResultErrRequest err = new CheckResultErrRequest();
+                    err.setErrorValue(value);
+                    err.setOrganizerId(user.getOrganizerId());
+                    errors.add(err);
 
-                CheckResultErrRequest err = new CheckResultErrRequest();
-                err.setErrorValue(value);
-                err.setOrganizerId(rule.getOrganizerId());
-                errors.add(err);
+                }else{
+                    result.setPassedNum(result.getPassedNum()+1L);
 
-            }else{
-                result.setPassedNum(result.getPassedNum()+1L);
-
+                }
+                result.setTotalCheckedNum(result.getTotalCheckedNum()+1L);
             }
-            result.setTotalCheckedNum(result.getTotalCheckedNum()+1L);
+
         }
 
         result.setErrs(errors);

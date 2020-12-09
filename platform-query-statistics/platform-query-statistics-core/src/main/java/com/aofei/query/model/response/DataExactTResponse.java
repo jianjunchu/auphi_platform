@@ -9,9 +9,9 @@ import lombok.Data;
 public class DataExactTResponse  {
 
     /**
-     * 受理号
+     * 批次号
      */
-    private String acceptNo;
+    private String batchNo;
 
     /**
      * 发送单位代码

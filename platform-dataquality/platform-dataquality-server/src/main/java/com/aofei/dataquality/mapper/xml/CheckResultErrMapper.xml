@@ -32,13 +32,22 @@
         , a.UPDATE_TIME AS updateTime
         , a.DEL_FLAG AS delFlag
     </sql>
+    <sql id="Base_Joins">
+        JOIN DATA_QUALITY_CHECK_RESULT b ON b.CHECK_RESULT_ID = a.CHECK_RESULT_ID AND b.DEL_FLAG = 0
+    </sql>
+
 
     <select id="findList"  resultType="com.aofei.dataquality.entity.CheckResultErr">
         select
         <include refid="Base_Column_List"/>
         from DATA_QUALITY_CHECK_RESULT_ERR a
+        <include refid="Base_Joins"/>
         <where>
-            a.DEL_FLAG = 0
+            a.DEL_FLAG = 0 AND
+            b.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where b.RULE_ID = d.RULE_ID )
+            <if test="ruleId !=null ">
+                AND  b.RULE_ID  = #{ruleId}
+            </if>
             <if test="organizerId !=null ">
                 AND  a.ORGANIZER_ID  = #{organizerId}
             </if>

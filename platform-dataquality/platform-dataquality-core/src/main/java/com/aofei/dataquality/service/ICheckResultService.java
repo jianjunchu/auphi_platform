@@ -77,4 +77,11 @@ public interface ICheckResultService extends IService<CheckResult> {
      * @return
      */
     JSONArray getCheckResultChartDataByGroupId(Long ruleGroupId);
+
+    /**
+     * 获取数据稽核状态
+     * @param userId
+     * @return
+     */
+    Integer getRefreshStatus(Long userId);
 }

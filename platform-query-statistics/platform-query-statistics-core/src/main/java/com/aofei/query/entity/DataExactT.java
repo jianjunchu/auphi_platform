@@ -21,10 +21,10 @@ import java.io.Serializable;
 public class DataExactT extends Model {
 
     /**
-     * 受理号
+     * 批次号
      */
-    @TableId(value = "accept_no", type = IdType.INPUT)
-    private String acceptNo;
+    @TableId(value = "batch_no", type = IdType.INPUT)
+    private String batchNo;
 
     /**
      * 发送单位代码
@@ -87,6 +87,6 @@ public class DataExactT extends Model {
 
     @Override
     protected Serializable pkVal() {
-        return acceptNo;
+        return batchNo;
     }
 }

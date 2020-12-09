@@ -17,6 +17,7 @@ import com.aofei.dataquality.mapper.RuleMapper;
 import com.aofei.dataquality.model.request.CheckResultErrRequest;
 import com.aofei.dataquality.model.request.CheckResultRequest;
 import com.aofei.dataquality.model.response.CheckResultResponse;
+import com.aofei.dataquality.service.ExecuteCheckService;
 import com.aofei.dataquality.service.ICheckResultService;
 import com.aofei.log.annotation.Log;
 import com.aofei.utils.BeanCopier;
@@ -49,6 +50,9 @@ public class CheckResultService extends BaseService<CheckResultMapper, CheckResu
 
     @Autowired
     private RuleGroupMapper ruleGroupMapper;
+
+    @Autowired
+    private ExecuteCheckService executeCheckService;
 
     @Override
     public Page<CheckResultResponse> getPage(Page<CheckResult> page, CheckResultRequest request) {
@@ -156,11 +160,13 @@ public class CheckResultService extends BaseService<CheckResultMapper, CheckResu
 
             JSONObject map3 = new JSONObject();
             map3.put("value",result.getNotPassedNum());
+            map3.put("ruleId",result.getRuleId().toString());
             map3.put("name","不合规数据");
             datas.add(map3);
 
             JSONObject map2 = new JSONObject();
             map2.put("value",result.getPassedNum());
+            map2.put("ruleId",result.getRuleId().toString());
             map2.put("name","合规数据");
             datas.add(map2);
 
@@ -174,6 +180,11 @@ public class CheckResultService extends BaseService<CheckResultMapper, CheckResu
 
 
         return jsonArray;
+    }
+
+    @Override
+    public Integer getRefreshStatus(Long userId) {
+        return executeCheckService.getThreadStatus(userId);
     }
 
 

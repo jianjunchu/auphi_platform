@@ -8,15 +8,22 @@ import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
+import com.aofei.base.model.vo.DataGrid;
+import com.aofei.dataquality.model.request.CheckResultErrRequest;
 import com.aofei.dataquality.model.request.CheckResultRequest;
 import com.aofei.dataquality.model.request.RuleRequest;
+import com.aofei.dataquality.model.response.CheckResultErrResponse;
 import com.aofei.dataquality.model.response.CheckResultResponse;
 import com.aofei.dataquality.model.response.RuleGroupResponse;
 import com.aofei.dataquality.model.response.RuleResponse;
+import com.aofei.dataquality.service.ICheckResultErrService;
 import com.aofei.dataquality.service.ICheckResultService;
 import com.aofei.dataquality.service.IRuleGroupService;
 import com.aofei.dataquality.service.IRuleService;
+import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +52,11 @@ public class CheckResultController extends BaseController {
     private ICheckResultService checkResultService;
 
     @Autowired
+    private ICheckResultErrService checkResultErrService;
+
+    @Autowired
     private IRuleService ruleService;
+
     @Autowired
     private IRuleGroupService ruleGroupService;
     /**
@@ -63,6 +74,41 @@ public class CheckResultController extends BaseController {
         request.setOrganizerId(user.getOrganizerId());
 
         return Response.ok(ruleService.refresh(request,user)) ;
+    }
+
+
+    /**
+     * 不符合规则数据(分页查询)
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "不符合规则数据(分页查询)", notes = "不符合规则数据(分页查询)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
+
+    })
+    @RequestMapping(value = "/err/listPage", method = RequestMethod.GET)
+    public Response<DataGrid<CheckResultErrResponse>> page(
+            @ApiIgnore CheckResultErrRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+        request.setOrganizerId(user.getOrganizerId());
+        Page<CheckResultErrResponse> page = checkResultErrService.getPage(getPagination(request), request);
+        return Response.ok(buildDataGrid(page)) ;
+    }
+
+
+    /**
+     * 编辑数据质量规则
+     * @return
+     */
+    @ApiOperation(value = "获取稽核状态", notes = "获取稽核状态")
+    @RequestMapping(value = "/refresh/status", method = RequestMethod.GET)
+    public Response<Integer> getRefreshStatus(
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+
+
+        return Response.ok(checkResultService.getRefreshStatus(user.getUserId())) ;
     }
 
     /**

@@ -50,16 +50,25 @@
 
     <select id="findRuleGroupResultList" resultType="com.aofei.dataquality.entity.CheckResult">
         select
-	          RULE_GROUP_ID AS ruleGroupId
+	          GROUP_ID AS ruleGroupId
             , GROUP_NAME AS ruleGroupName
             , IFNULL(SUM(TOTAL_CHECKED_NUM), 0) AS totalCheckedNum
             , IFNULL(SUM(NOT_PASSED_NUM), 0) AS notPassedNum
-        from (SELECT a.RULE_ID, b.RULE_GROUP_ID , c.GROUP_NAME , TOTAL_CHECKED_NUM ,NOT_PASSED_NUM , a.CREATE_TIME ,a.ORGANIZER_ID from DATA_QUALITY_CHECK_RESULT as a
-                    JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
-                    JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
-                WHERE a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )) AS e
-
-        WHERE ORGANIZER_ID  = #{organizerId}  GROUP BY RULE_GROUP_ID , GROUP_NAME
+        from (
+                SELECT
+                    a.RULE_ID,
+                    c.GROUP_ID ,
+                    c.GROUP_NAME,
+                    TOTAL_CHECKED_NUM,
+                    NOT_PASSED_NUM,
+                    a.CREATE_TIME,
+                    c.ORGANIZER_ID
+		        from DATA_QUALITY_CHECK_RESULT as a
+                JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+                RIGHT JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+                WHERE a.CREATE_TIME is null OR a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+            ) AS e
+        WHERE ORGANIZER_ID  = #{organizerId}  GROUP BY GROUP_ID , GROUP_NAME
     </select>
 
     <select id="countCompliance" resultType="java.lang.Integer">

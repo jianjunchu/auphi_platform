@@ -32,10 +32,10 @@
                 AND  a.unit_no   = #{unitNo}
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
-                AND  to_date(a.backup_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+                AND  str_to_date(a.backup_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
-                AND  to_date(a.load_time,'yyyyMMddhhmmss') between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+                AND  str_to_date(a.load_time,'%Y%m%d%H%i%s') between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
         </where>
     </select>
@@ -55,10 +55,10 @@
                 AND  a.unit_no   = #{unitNo}
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
-                AND  to_date(a.load_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+                AND  str_to_date(a.load_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
             <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
-                AND  to_date(a.backup_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+                AND  str_to_date(a.backup_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
         </where>
         group by a.unit_no
@@ -75,11 +75,11 @@
             <if test="unitNo !=null and unitNo != ''">
                 AND  a.unit_no   = #{unitNo}
             </if>
-            <if test="search_time !=null and search_time != '' and search_time == 'load_time' ">
-                AND  to_date(a.load_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+            <if test="search_time !=null and search_time != '' and search_time == 'load_time' and search_satrt !=null and search_satrt!='' and search_end !=null and search_end!=''">
+                AND  str_to_date(a.load_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
-            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' ">
-                AND  to_date(a.backup_time,'yyyyMMddhhmmss')  between to_date(#{search_satrt},'yyyy-MM-dd hh:mm:ss') and to_date(#{search_end},' yyyy-MM-dd hh:mm:ss')
+            <if test="search_time !=null and search_time != '' and search_time == 'backup_time' and search_satrt !=null and search_satrt!='' and search_end !=null and search_end!=''">
+                AND  str_to_date(a.backup_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
             </if>
         </where>
         group by a.unit_no,a.load_time
