@@ -5,6 +5,7 @@ import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.StringEscapeHelper;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -32,7 +33,7 @@ public class RowGenerator extends AbstractStep {
 		rowGeneratorMeta.setLastTimeField(cell.getAttribute("lastTimeField"));
 		rowGeneratorMeta.setNeverEnding("Y".equalsIgnoreCase(cell.getAttribute("neverEnding")));
 
-		String fields = cell.getAttribute("fields");
+		String fields = StringEscapeHelper.decode(cell.getAttribute("fields"));
 		JSONArray jsonArray = JSONArray.fromObject(fields);
 		String[] fieldName = new String[jsonArray.size()];
 		String[] fieldType = new String[jsonArray.size()];
@@ -109,7 +110,7 @@ public class RowGenerator extends AbstractStep {
 			jsonArray.add(jsonObject);
 		}
 
-		e.setAttribute("fields", jsonArray.toString());
+		e.setAttribute("fields", StringEscapeHelper.encode(jsonArray.toString()));
 
 		return e;
 	}
