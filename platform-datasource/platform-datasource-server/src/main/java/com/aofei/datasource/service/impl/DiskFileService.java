@@ -5,6 +5,7 @@ import com.aofei.base.exception.ApplicationException;
 import com.aofei.datasource.exception.DiskError;
 import com.aofei.datasource.model.request.DiskFileCreateRequest;
 import com.aofei.datasource.model.request.DiskFileRequest;
+import com.aofei.datasource.model.request.FileRenameToRequest;
 import com.aofei.datasource.model.response.DiskFileResponse;
 import com.aofei.datasource.service.IDiskFileService;
 import com.aofei.utils.DiskFileUtil;
@@ -28,6 +29,66 @@ public class DiskFileService implements IDiskFileService {
     private Logger logger = LoggerFactory.getLogger(DiskFileService.class);
 
 
+    @Override
+    public List<DiskFileResponse> getFileTree(DiskFileRequest request) {
+
+        List<DiskFileResponse> list = new LinkedList<>();
+        String path = request.getPath();
+        if(StringUtils.isEmpty(path)){
+            path = Const.getUserDir(request.getOrganizerId());
+        }else{
+            path = Const.getUserDir(request.getOrganizerId())+path;
+        }
+        logger.info("path==>"+path);
+        File file= new File(path);
+
+        DiskFileResponse json = new DiskFileResponse();
+
+        json.setFilename("本地文件");
+        json.setIsdir(Const.YES);
+        json.setLeaf(false);
+        json.setPath("/");
+        json.setLastModified(0L);
+        json.setChildren(getAllFiles(request,file,json.getChildren()));
+
+        list.add(json);
+
+
+        return  list;
+
+    }
+
+
+    private List<DiskFileResponse> getAllFiles (DiskFileRequest request,File file, List<DiskFileResponse> array) {
+        File[] files = file.listFiles();
+
+        for (File current : files) {
+            if (current.isDirectory()) {
+                DiskFileResponse json = new DiskFileResponse();
+
+                json.setFilename(current.getName());
+                json.setIsdir(Const.YES);
+                json.setLeaf(!current.isDirectory());
+                json.setPath(Const.getUserFilePath(request.getOrganizerId(),current.getAbsolutePath()));
+                json.setLastModified(current.lastModified());
+                json.setChildren(getAllFiles(request,current, json.getChildren()));
+                array.add(json);
+
+            } else {
+                DiskFileResponse json = new DiskFileResponse();
+
+                json.setFilename(current.getName());
+                json.setIsdir(Const.NO);
+                json.setLeaf(!current.isDirectory());
+                json.setPath(Const.getUserFilePath(request.getOrganizerId(),current.getAbsolutePath()));
+                json.setLastModified(current.lastModified());
+
+                array.add(json);
+            }
+        }
+        return array;
+    }
+
 
     @Override
     public List<DiskFileResponse> getFileExplorer(DiskFileRequest request)  {
@@ -42,24 +103,16 @@ public class DiskFileService implements IDiskFileService {
         File[] files = new File(path).listFiles();
         if(files !=null && files.length>0){
             for(File file : files) {
-                DiskFileResponse response = null;
+                DiskFileResponse response  = new DiskFileResponse();
+
                 if(file.isHidden())
                     continue;
-                if(file.isDirectory()) {
-                    response = new DiskFileResponse();
-                    response.setFilename(file.getName());
-                    response.setIsdir(Const.YES);
-                    response.setPath(Const.getUserFilePath(request.getOrganizerId(),file.getAbsolutePath()));
-                    response.setLastModified(file.lastModified());
 
-                } else if(file.isFile() ){
-                    response = new DiskFileResponse();
-                    response.setFilename(file.getName());
-                    response.setIsdir(Const.NO);
-                    response.setPath(Const.getUserFilePath(request.getOrganizerId(),file.getAbsolutePath()));
-                    response.setSize(DiskFileUtil.getPrintSize(file.length()));
-                    response.setLastModified(file.lastModified());
-                }
+                response.setFilename(file.getName());
+                response.setIsdir(file.isDirectory() ? Const.YES : Const.NO);
+                response.setLeaf(!file.isDirectory());
+                response.setPath(Const.getUserFilePath(request.getOrganizerId(),file.getAbsolutePath()));
+                response.setLastModified(file.lastModified());
 
                 list.add(response);
             }
@@ -68,6 +121,8 @@ public class DiskFileService implements IDiskFileService {
 
         return list;
     }
+
+
 
     @Override
     public boolean mkdir(DiskFileCreateRequest request) {
@@ -106,6 +161,41 @@ public class DiskFileService implements IDiskFileService {
         DiskFileUtil.delFolder(path);
         // 测试表明删除文件夹删除不了
         return 1;
+    }
+
+    @Override
+    public Boolean renameTo(FileRenameToRequest request) {
+
+        String userPath = Const.getUserDir(request.getOrganizerId());
+        String startFilePath = request.getStartFile();
+        String endPath = request.getEndPath();
+        if(!startFilePath.startsWith(userPath)){
+            startFilePath = userPath+startFilePath;
+        }
+
+        if(!endPath.startsWith(userPath)){
+            endPath = userPath+endPath;
+        }
+
+        //#源文件路径
+        File startFile = new File(startFilePath);
+
+        //#目的目录路径
+        File endDirection=new File(endPath);
+
+        File endFile=new File(endDirection+ File.separator+ startFile.getName());
+
+        try {
+	        //#调用File类的核心方法renameTo
+            if (startFile.renameTo(endFile)) {
+               return true;
+            } else {
+                return false;
+            }
+        }catch(Exception e) {
+            return false;
+        }
+
     }
 
     /**

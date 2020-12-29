@@ -292,8 +292,69 @@ public class KettleRepositoryController extends BaseController {
 			repository.renameRepositoryDirectory(directory.getObjectId(), null, newName);
 		}
 
+		repository.disconnect();
+
 		JsonUtils.success("操作成功");
 	}
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.POST, value = "/renameTo")
+	protected void renameTo(@RequestParam String path, String newPath, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
+		Repository repository = App.getInstance().getRepository();
+
+		String dir = path.substring(0, path.lastIndexOf("/"));
+		String name = path.substring(path.lastIndexOf("/") + 1);
+		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+		if(directory == null)
+			directory = repository.getUserHomeDirectory();
+
+		newPath = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(),newPath);
+
+		RepositoryDirectoryInterface new_directory = repository.findDirectory(newPath);
+
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
+				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
+			ObjectId id_transformation = repository.getTransformationID(name, directory);
+
+			//TODO 直接调用rename死锁！为什么
+			if(id_transformation != null) {
+				TransMeta transMeta = repository.loadTransformation(id_transformation, null);
+				transMeta.setRepositoryDirectory(new_directory);
+				transMeta.setModifiedDate(new Date());
+				transMeta.setModifiedUser(user.getUsername());
+				repository.save(transMeta, "重命名：oldname=" + name, null);
+
+				if(repository instanceof KettleFileRepository) {
+					repository.deleteTransformation(id_transformation);
+				}
+			}
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
+				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
+			ObjectId id_job = repository.getJobId(name, directory);
+			//TODO 直接调用rename死锁！为什么
+			if(id_job != null) {
+				JobMeta jobMeta = repository.loadJob(id_job, null);
+				jobMeta.setRepositoryDirectory(new_directory);
+				jobMeta.setModifiedDate(new Date());
+				jobMeta.setModifiedUser(user.getUsername());
+				repository.save(jobMeta, "重命名：oldname=" + name, null);
+
+				if(repository instanceof KettleFileRepository) {
+					repository.deleteJob(id_job);
+				}
+			}
+		} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
+			directory = repository.findDirectory(path);
+			directory.setParent(new_directory);
+
+		}
+
+		repository.disconnect();
+
+		JsonUtils.success("操作成功");
+	}
+
+
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/open")
@@ -891,6 +952,9 @@ public class KettleRepositoryController extends BaseController {
 		List list = browser(repository, dir, loadElement);
 		return list;
 	}
+
+
+
 
 	private List browser(Repository repository, RepositoryDirectoryInterface dir, int loadElement) throws KettleException {
 		ArrayList list = new ArrayList();

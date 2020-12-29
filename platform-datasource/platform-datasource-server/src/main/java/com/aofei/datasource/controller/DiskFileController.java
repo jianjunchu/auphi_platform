@@ -11,6 +11,7 @@ import com.aofei.datasource.exception.DiskError;
 import com.aofei.datasource.model.request.DiskFileCreateRequest;
 import com.aofei.datasource.model.request.DiskFileDeleteRequest;
 import com.aofei.datasource.model.request.DiskFileRequest;
+import com.aofei.datasource.model.request.FileRenameToRequest;
 import com.aofei.datasource.model.response.DiskFileListResponse;
 import com.aofei.datasource.model.response.DiskFileResponse;
 import com.aofei.datasource.model.response.ResidualSpaceResponse;
@@ -67,6 +68,47 @@ public class DiskFileController extends BaseController {
         response.setList(list);
         response.setPath(request.getPath());
         return Response.ok(response) ;
+    }
+
+    /**
+     * 服务器文件列表
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "服务器文件列表", notes = "服务器文件列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "目录", paramType = "query", dataType = "String"),
+    })
+    @RequestMapping(value = "/tree", method = RequestMethod.POST)
+    public Response<DiskFileResponse> tree(
+            @ApiIgnore DiskFileRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+        request.setOrganizerId(user.getOrganizerId());
+        request.setOrganizerName(user.getOrganizerName());
+
+
+
+        List<DiskFileResponse> list = diskFileService.getFileTree(request);
+
+        return Response.ok(list) ;
+    }
+
+
+    @ApiOperation(value = "服务器文件移动", notes = "服务器文件移动")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startFile", value = "要移动的文件", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "endPath", value = "移动的位置(目录)", paramType = "query", dataType = "String"),
+    })
+    @RequestMapping(value = "/renameTo", method = RequestMethod.POST)
+    public Response<Boolean> renameTo(
+            @RequestBody FileRenameToRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user){
+
+        request.setOrganizerId(user.getOrganizerId());
+
+       Boolean res = diskFileService.renameTo(request);
+
+        return Response.ok(res) ;
     }
 
 

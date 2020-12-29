@@ -58,10 +58,18 @@ public class Const {
     }
 
     public static String getRootPath(Long organizerId){
-        return "/"+organizerId;
+        return "/"+ (organizerId==null ? "" : organizerId.toString());
     }
 
     public static String getUserPath(Long organizerId,String path){
+
+        if(StringUtils.isEmpty(path)){
+            return getRootPath(organizerId);
+        }
+
+        if(path.startsWith(organizerId.toString()) || path.startsWith(getRootPath(organizerId))){
+            return  (path.startsWith("/") ? "" : "/")  + path;
+        }
         return getRootPath(organizerId) +(path.startsWith("/") ? "" : "/")  + path;
     }
 

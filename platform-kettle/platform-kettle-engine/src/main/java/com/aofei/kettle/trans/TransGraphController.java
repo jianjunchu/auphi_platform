@@ -117,6 +117,13 @@ public class TransGraphController {
 		transMeta.setModifiedDate(new Date());
 		transMeta.setModifiedUser(user.getUsername());
 
+		List<DatabaseMeta> list = transMeta.getDatabases();
+		for(DatabaseMeta meta : list){
+			meta.setCreateUser(user.getUsername());
+			meta.setUpdateUser(user.getUsername());
+			meta.setOrganizerId(user.getOrganizerId());
+		}
+
 		 boolean versioningEnabled = true;
          boolean versionCommentsEnabled = true;
          String fullPath = transMeta.getRepositoryDirectory() + "/" + transMeta.getName() + transMeta.getRepositoryElementType().getExtension();
