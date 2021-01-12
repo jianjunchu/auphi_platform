@@ -29,8 +29,17 @@ package com.aofei.authorization.manager;
  * @create 2017-04-10
  */
 public interface TokenValidator {
+    /**
+     * 验证Token
+     * @param token
+     * @return
+     */
     boolean validate(String token);
-
+    /**
+     * 根据Token获取用户的ID
+     * @param token
+     * @return
+     */
     String getKey(String token);
 
 

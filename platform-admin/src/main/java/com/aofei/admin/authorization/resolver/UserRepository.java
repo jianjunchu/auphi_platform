@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * 
  * @author Hao
  * @create 2017-04-10
  */
-
 @Component
 public class UserRepository implements UserModelRepository {
 

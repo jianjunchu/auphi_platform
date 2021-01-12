@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 通用接口
+ */
 @Api(tags = { "通用接口" })
 @RestController
 @RequestMapping(value = "/index", produces = {"application/json;charset=UTF-8"})
@@ -28,7 +31,7 @@ public class IndexController extends BaseController {
 
     /**
      * 获取手机注册验证码
-     *
+     * 系统配置文件
      * @return
      */
     @ApiOperation(value = "系统配置文件", notes = "系统配置文件")

@@ -54,6 +54,7 @@ import java.util.TimerTask;
 
 
 /**
+ * 系统启动Init类
  * @auther Tony
  * @create 2018-09-21 18:13
  */
@@ -103,6 +104,10 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         logger.info("********************************************");
     }
 
+    /**
+     * 系统停止时要执行的方法
+     * @throws Exception
+     */
     @Override
     public void destroy() throws Exception {
         logger.info("********************************************");

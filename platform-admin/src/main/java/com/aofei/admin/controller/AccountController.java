@@ -61,6 +61,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 系统管理
+ * 登录认证模块接口
  * @auther Tony
  * @create 2018-09-15 15:45
  */

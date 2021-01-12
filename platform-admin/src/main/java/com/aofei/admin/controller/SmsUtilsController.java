@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * 系统管理
+ * 短信接口
  * @auther Tony
  * @create 2018-09-15 15:45
  */
@@ -45,11 +47,12 @@ public class SmsUtilsController extends BaseController {
     private TencentSmsSingleSender tencentSmsSingleSender;
 
     /**
-     * 获取手机注册验证码
-     *
+     * 国家代码列表
      * @return
+     *  countryCode:国家代码
+     *  countryName: 国家名称
      */
-    @ApiOperation(value = "国家代码列表", notes = "国家代码列表")
+    @ApiOperation(value = "", notes = "国家代码列表")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success")})
     @RequestMapping(value = "/country/listAll", method = RequestMethod.GET)
@@ -60,11 +63,15 @@ public class SmsUtilsController extends BaseController {
 
 
     /**
-     * 获取手机注册验证码
-     *
+     * 获取注册手机注册验证码
+     * @param request
+     *      mobilephone:手机号
+     *      countryCode: 国家代码
      * @return
+     *     0:发送短信成功
+     * @throws Exception
      */
-    @ApiOperation(value = "获取注册手机注册验证码", notes = "获取手机注册验证码")
+    @ApiOperation(value = "", notes = "获取手机注册验证码")
     @ApiResponses(value = {
             @ApiResponse(code = 200013, message = "the phone number is exist"),
             @ApiResponse(code = 200, message = "success")})
@@ -83,9 +90,13 @@ public class SmsUtilsController extends BaseController {
     }
 
     /**
-     * 获取手机注册验证码
-     *
+     * 获取登录手机注册验证码
+     * @param request
+     *      mobilephone:手机号
+     *      countryCode: 国家代码
      * @return
+     *     0:发送短信成功
+     * @throws Exception
      */
     @ApiOperation(value = "获取登录手机注册验证码", notes = "获取手机注册验证码")
     @ApiResponses(value = {

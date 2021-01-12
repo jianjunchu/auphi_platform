@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
+ * 首页
+ * 仪表盘
  * @auther Tony
  * @create 2018-09-15 15:45
  */
@@ -33,8 +35,15 @@ public class DashboardController extends BaseController {
 
 
     /**
-     * 注销
-     *
+     * 首页
+     * 仪表盘数据
+     *     int runCount: 运行中作业
+     *     int finishCount:运行完成作业;
+     *     int allCount:总作业数
+     *     int errorCount:错误作业数
+     *     RunTimesResponse runTimes:作业耗时(前五)
+     *     RunCountResponse runCounts:近七天完成数和错误数量
+     * @param user 当前登录的用户
      * @return
      */
     @ApiOperation(value = "首页-仪表盘", notes = "首页-仪表盘")

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
+ * Token验证类
  * @author Hao
  * @create 2017-04-10
  */
@@ -21,6 +22,11 @@ public class JwtTokenValidator  implements TokenValidator {
     @Autowired
     private JwtConfig jwtConfig;
 
+    /**
+     * 验证Token
+     * @param token
+     * @return
+     */
     @Override
     public boolean validate(String token) {
         //验证token
@@ -33,6 +39,11 @@ public class JwtTokenValidator  implements TokenValidator {
         return false;
     }
 
+    /**
+     * 根据Token获取用户的ID
+     * @param token
+     * @return
+     */
     @Override
     public String getKey(String token) {
         //验证token

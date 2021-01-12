@@ -129,17 +129,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--公安一所 查询统计-->
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-query-statistics-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aofei</groupId>
-            <artifactId>platform-query-statistics-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
 
         <!--数据接口管理-->
         <dependency>

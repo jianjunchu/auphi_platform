@@ -2,7 +2,9 @@ package com.aofei.admin.authorization;
 
 import java.io.Serializable;
 
+
 /**
+ * 用户登录返回的Token对象
  * @author Hao
  * @create 2017-04-08
  */

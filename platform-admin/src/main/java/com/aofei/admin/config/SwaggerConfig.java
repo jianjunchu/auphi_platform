@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *  配置类 SwaggerConfig
  * @auther Tony
  * @create 2018-09-15 20:07
  */

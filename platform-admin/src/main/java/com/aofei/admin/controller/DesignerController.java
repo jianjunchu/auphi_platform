@@ -2,12 +2,9 @@ package com.aofei.admin.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import com.aofei.base.common.Const;
 import com.aofei.base.controller.BaseController;
-
 import com.aofei.base.exception.ApplicationException;
-import com.aofei.sys.exception.SystemError;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IUserService;
 import io.swagger.annotations.*;
@@ -15,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
-
+/**
+ * 设计器登录控制器
+ *
+ */
 @Api(tags = { "系统管理-登录认证模块接口" })
 @RestController
 public class DesignerController extends BaseController {
@@ -26,9 +26,12 @@ public class DesignerController extends BaseController {
 
 
     /**
-     * 登录
-     *
-     * @return
+     * 设计器登录接口api
+     * @param action action(非必须,兼容老版本)
+     * @param user_name 用户名
+     * @param password 密码
+     * @return 返回资源库信息(数据库连接信息)
+     * @throws Exception
      */
     @ApiOperation(value = "设计器登录接口(兼容老版本)", notes = "设计器登录接口(兼容老版本)")
     @ApiResponses(value = {

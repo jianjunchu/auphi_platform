@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
+ * JWT的token，区分大小写
  * @author Hao
  * @create 2017-04-08
  */
@@ -11,15 +12,27 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JwtConfig {
 
+    /**
+     * #base64加密字符串
+     */
     @Value("#{propertiesReader['jwt.base64.secret']}")
     private String base64Secret;
 
+    /**
+     * #base64加密字符串
+     */
     @Value("#{propertiesReader['jwt.refresh.base64.secret']}")
     private String refreshBase64Secret;
 
+    /**
+     * #jwt token过期时间，毫秒
+     */
     @Value("#{propertiesReader['jwt.expires.second']}")
     private long expiresSecond;
 
+    /**
+     * #refresh token过期时间
+     */
     @Value("#{propertiesReader['jwt.refresh.expires.second']}")
     private long refreshExpiresSecond;
 
