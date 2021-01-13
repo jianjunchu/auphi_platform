@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-21 13:56
  */
 public class DatabaseCodec extends com.aofei.kettle.core.database.DatabaseCodec {

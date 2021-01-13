@@ -3,7 +3,7 @@ package com.aofei.compare.exception;
 /**
  * ${DESCRIPTION}
  *
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-19 20:15
  */
 public enum CompareError {

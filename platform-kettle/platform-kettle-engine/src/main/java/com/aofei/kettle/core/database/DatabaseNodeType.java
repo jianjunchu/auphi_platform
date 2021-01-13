@@ -1,7 +1,14 @@
 package com.aofei.kettle.core.database;
 
+/**
+ * 数据库Node类型响应对象
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class DatabaseNodeType {
-
+	/**
+	 *
+	 */
 	private static final int SCHEMA = 0x0001;
 	private static final int TABLE = 0x0002;
 	private static final int VIEW = 0x0004;

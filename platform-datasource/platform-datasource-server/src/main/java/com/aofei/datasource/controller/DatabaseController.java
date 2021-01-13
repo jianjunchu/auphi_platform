@@ -61,8 +61,15 @@ public class DatabaseController extends BaseController {
     private IDatabaseService databaseService;
 
     /**
-     * 列表(分页查询)
+     * 分页查询资源库中所有的数据库连接对象
+     * @param request
+     *   page: 当前页码(默认1)
+     *   rows: 每页数量(默认10)
+     *   name: 数据源名称(like查询)
+     * @param user
      * @return
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "数据库列表(分页查询)", notes = "数据库列表(分页查询)")
     @ApiImplicitParams({
@@ -79,11 +86,15 @@ public class DatabaseController extends BaseController {
     }
 
     /**
-     * 列表(分页查询)
+     * 查询资源库中所有的数据库连接对象
+     * @param request
+     *   name: 数据源名称(like查询)
+     * @param user
      * @return
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "数据库列表", notes = "数据库列表")
-
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Response<DataGrid<DatabaseResponse>> listAll(
             @ApiIgnore DatabaseRequest request
@@ -92,9 +103,15 @@ public class DatabaseController extends BaseController {
         List<DatabaseResponse> page = databaseService.getDatabases( request);
         return Response.ok(page) ;
     }
+
     /**
-     * 列表(分页查询)
+     * 查询资源库中所有的数据库连接名称
+     * @param request
+     *   name: 数据源名称(like查询)
+     * @param user
      * @return
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "数据库名称列表(只返回name)", notes = "数据库名称列表")
     @RequestMapping(value = "/listNames", method = RequestMethod.POST)
@@ -107,6 +124,11 @@ public class DatabaseController extends BaseController {
 
     /**
      * 获取数据库中的所有模式名
+     * @param id 数据库ID
+     * @return
+     *  ArrayList<Map> 所有模式集合
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "获取数据库中的所有模式名", notes = "获取数据库中的所有模式名")
     @RequestMapping(value = "/{id}/listSchemas", method = RequestMethod.GET)
@@ -169,7 +191,13 @@ public class DatabaseController extends BaseController {
     }
 
     /**
-     * 获取数据库中的所有模式名
+     * 获取数据库中的所有表的集合
+     * @param databaseId 数据库ID
+     * @param schemaName 模式名
+     * @return
+     *     表名集合
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "获取数据库中的所有表", notes = "获取数据库中的所有表")
     @RequestMapping(value = "/listTableNames", method = RequestMethod.POST)
@@ -217,7 +245,13 @@ public class DatabaseController extends BaseController {
     }
 
     /**
-     * 获取数据库中的所有模式名
+     * 获取表所有字段名称
+     * @param databaseId 数据库ID
+     * @param schemaName    模式名
+     * @param tableName 表名
+     * @return
+     * @throws KettleException
+     * @throws SQLException
      */
     @ApiOperation(value = "获取数据库中的表的所有字段", notes = "获取数据库中的表的所有字段")
     @RequestMapping(value = "/listFieldNames", method = RequestMethod.POST)

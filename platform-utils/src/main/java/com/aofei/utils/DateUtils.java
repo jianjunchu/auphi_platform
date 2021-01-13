@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * 日期格式处理
  * @author Hao
  * @create 2017-04-10
  */
@@ -31,61 +32,136 @@ public class DateUtils {
     public final static DateTimeFormatter FORMATTER_HH_MM = DateTimeFormat.forPattern(HH_MM);
     public final static DateTimeFormatter FORMATTER_YYYYMMDD = DateTimeFormat.forPattern(YYYYMMDD);
 
+    /**
+     * 返回yyyy-MM-dd HH:mm:ss格式的日期字符串
+     * @param dateTime 要转换的字符串
+     * @param targetPattern 日期格式 如:yyyy-MM-dd HH:mm
+     * @return 返回yyyy-MM-dd HH:mm:ss格式的日期字符串
+     */
     public static String format(String dateTime, String targetPattern) {
         return format(dateTime, FORMATTER_YYYY_MM_DD_HH_MM_SS, targetPattern);
     }
 
+    /**
+     * 返回指定格式的日期字符串
+     * @param dateTime 要转换的字符串
+     * @param formatter 要返回的字符串格式
+     * @param targetPattern 当前字符串格式
+     * @return
+     */
     public static String format(String dateTime, DateTimeFormatter formatter, String targetPattern) {
         DateTime result = DateTime.parse(dateTime, formatter);
         return result.toString(targetPattern);
     }
 
+    /**
+     * 将日期类型转换为指定的字符串格式
+     * @param time 日期
+     * @param targetPattern 格式
+     * @return
+     */
     public static String format(Date time, String targetPattern) {
         DateTime dateTime = new DateTime(time);
         return dateTime.toString(targetPattern,Locale.ENGLISH);
     }
 
+    /**
+     * 将执行的字符串转换成日期格式
+     * @param dateTime 要转换的字符串
+     * @param formatter 字符串格式
+     * @return
+     */
     public static Date format(String dateTime, DateTimeFormatter formatter) {
         DateTime time = DateTime.parse(dateTime, formatter);
         return time.toDate();
     }
 
+    /**
+     * 将yyyy-MM-dd HH:mm:ss类型的字符串转换为日期格式
+     * @param dateTime 字符串
+     * @return
+     */
     public static Date format(String dateTime) {
         return format(dateTime, FORMATTER_YYYY_MM_DD_HH_MM_SS);
     }
 
+    /**
+     * 将日期转换为yyyy-MM-dd类型字符串
+     * @param dateTime 日期
+     * @return
+     */
     public static String toYmd(Date dateTime) {
         return format(dateTime, YYYY_MM_DD);
     }
 
+    /**
+     * 将日期转换为MM-dd类型字符串
+     * @param dateTime 日期
+     * @return
+     */
     public static String toMd(Date dateTime) {
         return format(dateTime, MM_DD);
     }
 
+    /**
+     * 将日期转换为HH:mm类型字符串
+     * @param dateTime 日期
+     * @return
+     */
     public static String toHm(Date dateTime) {
         return format(dateTime, HH_MM);
     }
 
+    /**
+     * 将日期转换为yyyy-MM-dd HH:mm类型字符串
+     * @param dateTime 日期
+     * @return
+     */
     public static String toYmdHm(Date dateTime) {
         return format(dateTime, YYYY_MM_DD_HH_MM);
     }
 
+    /**
+     * 将日期转换为yyyy-MM-dd HH:mm:ss类型字符串
+     * @param dateTime 日期
+     * @return
+     */
     public static String toYmdHms(Date dateTime) {
         return format(dateTime, YYYY_MM_DD_HH_MM_SS);
     }
 
+    /**
+     * 开始日期
+     * 将日期的的时间设置为0时0分0秒
+     * @param value
+     * @return
+     */
     public static Date startOfDay(Date value) {
         DateTime dateTime = new DateTime(value);
         dateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 00, 00, 00);
         return dateTime.toDate();
     }
 
+    /**
+     * 结束时间
+     * 将日期的时间设置为
+     * 23时59分59秒
+     * @param value
+     * @return
+     */
     public static Date endOfDay(Date value) {
         DateTime dateTime = new DateTime(value);
         dateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), 23, 59, 59);
         return dateTime.toDate();
     }
 
+    /**
+     * 将日期转换为int类型
+     * 将日期转换为yyyyMMdd类型的int值
+     * 如2020年12月31日转换为数值 20201231
+     * @param dateTime
+     * @return
+     */
     public static int  toInt(Date dateTime) {
         String dateStr = format(dateTime, YYYYMMDD);
         return Integer.valueOf(dateStr);

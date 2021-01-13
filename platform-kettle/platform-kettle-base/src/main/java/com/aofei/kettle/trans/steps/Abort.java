@@ -1,10 +1,10 @@
 package com.aofei.kettle.trans.steps;
 
-import java.util.List;
-
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.trans.step.AbstractStep;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
@@ -14,13 +14,29 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxUtils;
+import java.util.List;
 
+
+/**
+ *
+ * Step that will abort after having seen 'x' number of rows on its input.
+ *
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Component("Abort")
 @Scope("prototype")
 public class Abort extends AbstractStep {
 
+	/**
+	 * XML decode to AbortMeta
+	 * @param stepMetaInterface
+	 * @param cell
+	 * @param databases
+	 * @param metaStore
+	 * @param user
+	 * @throws Exception
+	 */
 	@Override
 	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		AbortMeta abortMeta = (AbortMeta) stepMetaInterface;
@@ -29,6 +45,13 @@ public class Abort extends AbstractStep {
 		abortMeta.setAlwaysLogRows("Y".equals(cell.getAttribute("always_log_rows")));
 	}
 
+	/**
+	 * AbortMeta encode XML
+	 * @param stepMetaInterface
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Element encode(StepMetaInterface stepMetaInterface, CurrentUserResponse user) throws Exception {
 		Document doc = mxUtils.createDocument();

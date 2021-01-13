@@ -1,6 +1,5 @@
 package com.aofei.datasource.model.request;
 
-import com.aofei.base.model.request.BaseRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,12 +25,21 @@ public class DiskFileUpdateRequest  {
     @ApiModelProperty(hidden = true)
     private String organizerName;
 
+    /**
+     * 原文件名称
+     */
     @ApiModelProperty(value = "文件名称")
     private String name;
 
+    /**
+     * 文件的路径
+     */
     @ApiModelProperty(value = "路径")
     private String path;
 
+    /**
+     * 新的文件名称
+     */
     @ApiModelProperty(value = "新文件名称")
     private String newName;
 

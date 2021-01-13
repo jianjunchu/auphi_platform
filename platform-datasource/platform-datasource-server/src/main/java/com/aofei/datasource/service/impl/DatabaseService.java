@@ -8,17 +8,27 @@ import com.aofei.datasource.model.response.DatabaseResponse;
 import com.aofei.datasource.service.IDatabaseService;
 import com.aofei.utils.BeanCopier;
 import com.baomidou.mybatisplus.plugins.Page;
+import org.pentaho.di.core.exception.KettleException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-21 21:50
  */
 @Service
 public class DatabaseService extends BaseService<DatabaseMapper, DatabaseEntity> implements IDatabaseService {
 
+    /**
+     * 分页查询本地数据库列表
+     * @param page
+     * @param request
+     * @return
+     * @throws KettleException
+     * @throws SQLException
+     */
     @Override
     public Page<DatabaseResponse> getPage(Page<DatabaseEntity> page, DatabaseRequest request) {
 
@@ -87,6 +97,11 @@ public class DatabaseService extends BaseService<DatabaseMapper, DatabaseEntity>
 
     }
 
+    /**
+     * 查询本地数据库列表
+     * @param request
+     * @return
+     */
     @Override
     public List<DatabaseResponse> getDatabases(DatabaseRequest request) {
         List<DatabaseEntity> list = baseMapper.findList(request);

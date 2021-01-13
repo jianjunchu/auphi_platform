@@ -1,8 +1,5 @@
 package com.aofei.kettle.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -13,7 +10,17 @@ import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * Takes care of displaying a dialog that will handle the wait while previewing a transformation...
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class TransPreviewProgress {
+
 	  private TransMeta transMeta;
 	  private String[] previewStepNames;
 	  private int[] previewSize;
@@ -22,6 +29,13 @@ public class TransPreviewProgress {
 	  private String loggingText;
 	  private TransDebugMeta transDebugMeta;
 
+	/**
+	 * Creates a new dialog that will handle the wait while previewing a transformation...
+	 * @param transMeta
+	 * @param previewStepNames
+	 * @param previewSize
+	 * @throws Exception
+	 */
 	  public TransPreviewProgress( TransMeta transMeta, String[] previewStepNames, int[] previewSize ) throws Exception {
 	    this.transMeta = transMeta;
 	    this.previewStepNames = previewStepNames;
@@ -29,7 +43,7 @@ public class TransPreviewProgress {
 	    try {
 	    	doPreview();
 	    } catch(Exception e) {
-	    	
+
 	    } finally {
 	    	// Capture preview activity to a String:
 		    loggingText = KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), true ).toString();
@@ -90,9 +104,14 @@ public class TransPreviewProgress {
 
 	    trans.stopAll();
 
-	    
+
 	  }
 
+	/**
+	 * @param stepname
+	 *          the name of the step to get the preview rows for
+	 * @return A list of rows as the result of the preview run.
+	 */
 	public List<Object[]> getPreviewRows(String stepname) {
 		if (transDebugMeta == null) {
 			return null;
@@ -107,6 +126,11 @@ public class TransPreviewProgress {
 		return null;
 	}
 
+	/**
+	 * @param stepname
+	 *          the name of the step to get the preview rows for
+	 * @return A description of the row (metadata)
+	 */
 	public RowMetaInterface getPreviewRowsMeta(String stepname) {
 		if (transDebugMeta == null) {
 			return null;
@@ -121,16 +145,26 @@ public class TransPreviewProgress {
 		return null;
 	}
 
+	/**
+	 * @return The logging text from the latest preview run
+	 */
 	public String getLoggingText() {
 		return loggingText;
 	}
 
+	/**
+	 *
+	 * @return The transformation object that executed the preview TransMeta
+	 */
 	public Trans getTrans() {
 		return trans;
 	}
 
+	/**
+	 * @return the transDebugMeta
+	 */
 	public TransDebugMeta getTransDebugMeta() {
 		return transDebugMeta;
 	}
-	  
+
 }

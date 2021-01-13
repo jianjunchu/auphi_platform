@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-18 14:23
  */
 @Getter

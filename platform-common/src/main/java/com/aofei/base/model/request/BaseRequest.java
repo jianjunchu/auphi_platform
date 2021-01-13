@@ -7,6 +7,10 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ *
+ * @param <T>
+ */
 @Setter
 @Getter
 public class BaseRequest<T> extends PageRequest {

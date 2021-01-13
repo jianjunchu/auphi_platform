@@ -19,6 +19,9 @@ public class DiskFileDeleteRequest  {
     @ApiModelProperty(hidden = true)
     private Long organizerId;
 
+    /**
+     * 要删除的文件路径(文件的路径和名称 '/'开头）
+     */
     @ApiModelProperty(value = "路径(文件的路径和名称 '/'开头）")
     private String path;
 

@@ -6,7 +6,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 本地数据库
+ * 本地数据库请求参数
  * </p>
  *
  * @author Tony
@@ -20,8 +20,16 @@ public class DatabaseRequest extends BaseRequest<DatabaseRequest> {
     @ApiModelProperty(hidden = true)
     private Long organizerId;
 
+    /**
+     * 数据库名称
+     */
+    @ApiModelProperty(value = "数据库名称")
     private String name;
 
+    /**
+     * 资源库名称
+     */
+    @ApiModelProperty(value = "资源库名称")
     private String repository;
 
 

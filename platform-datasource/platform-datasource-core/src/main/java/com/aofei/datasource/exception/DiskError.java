@@ -1,5 +1,8 @@
 package com.aofei.datasource.exception;
 
+/**
+ * 错误返回码
+ */
 public enum DiskError {
 
     /*

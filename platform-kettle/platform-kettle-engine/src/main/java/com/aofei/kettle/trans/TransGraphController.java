@@ -47,7 +47,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Element;
 
@@ -55,9 +54,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.net.URLDecoder;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
+/**
+ * Transformation转换 - 接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping(value="/trans")
 @Api(tags = "Transformation转换 - 接口api")
@@ -65,6 +69,14 @@ public class TransGraphController {
 
 	private static Logger logger = LoggerFactory.getLogger(TransGraphController.class);
 
+	/**
+	 * 获取引擎文件
+	 * @param request
+	 * @param response
+	 * @param graphXml 图形信息XML字符串
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取引擎文件")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -80,6 +92,13 @@ public class TransGraphController {
 		response.getWriter().write(xml);
 	}
 
+	/**
+	 * 获取转换内私有数据库连接
+	 * @param graphXml 图形信息XML字符串
+	 * @param name 数据库连接名称
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取转换内私有数据库连接")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -99,6 +118,14 @@ public class TransGraphController {
 		JsonUtils.response(jsonObject);
 	}
 
+	/**
+	 * 保存转换
+	 * @param request
+	 * @param response
+	 * @param graphXml 图形信息XML字符串
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "保存转换")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -149,6 +176,14 @@ public class TransGraphController {
 		JsonUtils.success("转换保存成功！");
 	}
 
+
+	/**
+	 * 校验转换
+	 * @param graphXml 图形信息
+	 * @param show_successful_results 是否显示成功记录
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "校验转换")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -187,6 +222,13 @@ public class TransGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 初始化
+	 * @param graphXml
+	 * @param selectedCells
+	 * @param user
+	 * @throws Exception
+	 */
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/initPreview")
 	protected void initPreview(@RequestParam String graphXml, @RequestParam String selectedCells, @CurrentUser CurrentUserResponse user) throws Exception {
@@ -292,6 +334,13 @@ public class TransGraphController {
         JsonUtils.success(transExecutor.getExecutionId());
 	}
 
+
+	/**
+	 * 停止执行
+	 * @param executionId 执行ID
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "停止执行")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "executionId", value = "执行ID", paramType="query", dataType = "string")
@@ -376,6 +425,13 @@ public class TransGraphController {
 
 //	private Map<TransMeta, TransDebugMeta> transPreviewMetaMap = new HashMap<TransMeta, TransDebugMeta>();
 
+
+	/**
+	 * 初始化执行
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "初始化执行")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -430,6 +486,13 @@ public class TransGraphController {
 		JsonUtils.response(TransExecutionConfigurationCodec.encode(executionConfiguration));
 	}
 
+	/**
+	 * 执行转换
+	 * @param graphXml 图形信息
+	 * @param executionConfiguration 执行数据
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "执行转换")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -454,6 +517,11 @@ public class TransGraphController {
 
 //	private static HashMap<String, TransExecutor> executions = new HashMap<String, TransExecutor>();
 
+	/**
+	 * 获取执行结果
+	 * @param executionId 执行ID,由run方法返回
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取执行结果")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "executionId", value = "执行ID,由run方法返回", paramType="query", dataType = "string")
@@ -493,6 +561,14 @@ public class TransGraphController {
 
 	}
 
+	/**
+	 * 新建一个转换步骤，获取该步骤的默认值
+	 * @param graphXml 图形信息
+	 * @param pluginId 步骤ID
+	 * @param name 步骤名称，无需做重名校验
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "新建一个转换步骤，获取该步骤的默认值")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -530,6 +606,13 @@ public class TransGraphController {
 		}
 	}
 
+	/**
+	 * 新建一个转换步骤，获取该步骤的默认值，相比较newStep接口，该接口性能更好
+	 * @param pluginId 步骤ID
+	 * @param name 步骤名称，无需做重名校验
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "新建一个转换步骤，获取该步骤的默认值，相比较newStep接口，该接口性能更好")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "pluginId", value = "步骤ID", paramType="query", dataType = "string"),
@@ -553,6 +636,14 @@ public class TransGraphController {
 		}
 	}
 
+
+	/**
+	 * 获取指定环节的后续所有环节
+	 * @param graphXml 图形信息
+	 * @param stepName 环节名称
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取指定环节的后续所有环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -576,6 +667,13 @@ public class TransGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取指定环节的前面所有环节
+	 * @param graphXml 图形信息
+	 * @param stepName 环节名称
+	 * @param user 当前登录用户
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取指定环节的前面所有环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -599,6 +697,12 @@ public class TransGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 产生这个环节需要的SQL
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "产生这个环节需要的SQL")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -629,6 +733,14 @@ public class TransGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取输入输出字段
+	 * @param graphXml 图形信息
+	 * @param stepName 当前环节
+	 * @param before true表示输入字段，false表示输出字段
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取输入输出字段")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -684,6 +796,16 @@ public class TransGraphController {
 		return null;
 	}
 
+
+	/**
+	 * 获取数据库表的所有字段
+	 * @param graphXml 图形信息
+	 * @param databaseName 数据库连接名称
+	 * @param schema 数据库模式
+	 * @param table 数据库表
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取数据库表的所有字段")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -716,6 +838,14 @@ public class TransGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取预览数据
+	 * @param graphXml 图形信息
+	 * @param stepName 预览环节
+	 * @param rowLimit 限制行
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取预览数据")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -791,8 +921,8 @@ public class TransGraphController {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					if(!StringUtils.hasText(string))
-						string = "&lt;null&gt;";
+					/*if(!StringUtils.hasText(string))
+						string = "&lt;null&gt;";*/
 
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 					row.put(valueMeta.getName(), string);

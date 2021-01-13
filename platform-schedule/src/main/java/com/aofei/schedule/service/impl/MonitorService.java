@@ -32,6 +32,18 @@ public class MonitorService extends BaseService<MonitorMapper, Monitor> implemen
         return convert(page, MonitorResponse.class);
     }
 
+    /**
+     * 返回首页仪表盘数据
+     *     int runCount: 运行中作业
+     *     int finishCount:运行完成作业;
+     *     int allCount:总作业数
+     *     int errorCount:错误作业数
+     *     RunTimesResponse runTimes:作业耗时(前五)
+     *     RunCountResponse runCounts:近七天完成数和错误数量
+     * @param user 当前登录的用户
+     * @return
+     * @throws KettleException
+     */
     @Override
     public DashboardResponse getDashboardCount(CurrentUserResponse user) throws KettleException {
         DashboardResponse response = new DashboardResponse();

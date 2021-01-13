@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
+ * 字符串操作工具类
  * @author Hao
  * @create 2017-04-10
  */

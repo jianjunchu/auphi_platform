@@ -56,11 +56,24 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * 资源库接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping("/repository")
 @Api(tags = "资源库接口api")
 public class KettleRepositoryController extends BaseController {
 
+	/**
+	 * 创建一个资源库目录
+	 * @param dir 父目录，如果不存在父目录就使用根目录
+	 * @param name 新目录的名称
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "创建一个资源库目录")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "dir", value = "父目录，如果不存在父目录就使用根目录", paramType="query", dataType = "string"),
@@ -85,6 +98,14 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.success("目录创建成功！");
 	}
 
+	/**
+	 * 在资源库中创建一个转换
+	 * @param dir 父目录，如果不存在父目录就使用根目录
+	 * @param transName 转换名称
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "在资源库中创建一个转换")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "dir", value = "父目录，如果不存在父目录就使用根目录", paramType="query", dataType = "string"),
@@ -122,6 +143,14 @@ public class KettleRepositoryController extends BaseController {
 
 	}
 
+	/**
+	 * 在资源库中创建一个作业
+	 * @param dir 父目录，如果不存在父目录就使用根目录
+	 * @param jobName 作业名称
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "在资源库中创建一个作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "dir", value = "父目录，如果不存在父目录就使用根目录", paramType="query", dataType = "string"),
@@ -157,6 +186,13 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.success(jobPath);
 	}
 
+	/**
+	 * 删除
+	 * @param path
+	 * @param type
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/drop")
 	protected void drop(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
@@ -244,7 +280,15 @@ public class KettleRepositoryController extends BaseController {
 	}
 
 
-
+	/**
+	 * 重命名
+	 * @param path 路径
+	 * @param newName 新的名字
+	 * @param type
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/rename")
 	protected void rename(@RequestParam String path, String newName, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
@@ -297,6 +341,15 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.success("操作成功");
 	}
 
+	/**
+	 * 移动文件
+	 * @param path
+	 * @param newPath
+	 * @param type
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/renameTo")
 	protected void renameTo(@RequestParam String path, String newPath, @RequestParam String type, @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
@@ -355,7 +408,13 @@ public class KettleRepositoryController extends BaseController {
 	}
 
 
-
+	/**
+	 * 打开文件
+	 * @param path 路径
+	 * @param type
+	 * @param user
+	 * @throws Exception
+	 */
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST, value = "/open")
 	protected void open(@RequestParam String path, @RequestParam String type,@CurrentUser CurrentUserResponse user) throws Exception {
@@ -386,6 +445,13 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
+	/**
+	 *  加载资源库中的一个转换或作业
+	 * @param path 对象路径
+	 * @param type 对象类型：transformation or job
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "加载资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
@@ -422,7 +488,15 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "加载资源库中的一个转换或作业")
+	/**
+	 * 复制资源库中的一个转换或作业
+	 * @param path 对象路径
+	 * @param type 对象类型：transformation or job
+	 * @param newname 新的文件名称
+	 * @param user
+	 * @throws Exception
+	 */
+	@ApiOperation(value = "复制资源库中的一个转换或作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "path", value = "对象路径", paramType="query", dataType = "string"),
         @ApiImplicitParam(name = "type", value = "对象类型：transformation or job", paramType="query", dataType = "string")
@@ -460,6 +534,14 @@ public class KettleRepositoryController extends BaseController {
 		JsonUtils.success("克隆成功！");
 	}
 
+	/**
+	 * 加载列表
+	 * @param path
+	 * @param user
+	 * @return
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@Authorization
 	@RequestMapping(method=RequestMethod.POST, value="/listElements")
 	protected  List<RepositoryObjectVO> listElements(@RequestParam String path,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
@@ -524,7 +606,9 @@ public class KettleRepositoryController extends BaseController {
 
 	/**
 	 * 资源库浏览，生成树结构
-	 *
+	 * @param path
+	 * @param loadElement
+	 * @return
 	 * @throws KettleException
 	 * @throws IOException
 	 */
@@ -694,6 +778,13 @@ public class KettleRepositoryController extends BaseController {
 		return false;
 	}
 
+	/**
+	 * 多文件导入，可以一次导入多个ktr或kjb文件
+	 * @param repositoryCurrentDir 当前资源库目录
+	 * @param filesPath 文件路径，可以是多个，文件需要先调用上传接口
+	 * @param user
+	 * @throws AppendableException
+	 */
 	@ApiOperation(value = "多文件导入，可以一次导入多个ktr或kjb文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "repositoryCurrentDir", value = "当前资源库目录", paramType="query", dataType = "string"),
@@ -762,6 +853,14 @@ public class KettleRepositoryController extends BaseController {
 
 	}
 
+
+	/**
+	 * 导入
+	 * @param filePath
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@RequestMapping(method=RequestMethod.POST, value="/imp")
 	protected @ResponseBody void imp(@RequestParam String filePath, @ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		File file = new File(filePath);
@@ -815,6 +914,13 @@ public class KettleRepositoryController extends BaseController {
 		}
 	}
 
+	/**
+	 *
+	 * @param filePath
+	 * @return
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@RequestMapping(method=RequestMethod.POST, value="/imptree")
 	protected @ResponseBody List imptree(@RequestParam String filePath) throws KettleException, IOException {
 		FileInputStream fis = new FileInputStream(new File(filePath));

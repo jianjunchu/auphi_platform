@@ -7,6 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 过滤器
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class GlobalFilter implements Filter {
 
 	@Override
@@ -14,6 +19,14 @@ public class GlobalFilter implements Filter {
 
 	}
 
+	/**
+	 * 过滤器解决前端跨域问题
+	 * @param req
+	 * @param res
+	 * @param fc
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain fc) throws IOException, ServletException {
 

@@ -24,11 +24,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ *
+ * Transformation转换 - 添加序列 - 接口api
+ *
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping(value = "/sequence")
 @Api(tags = "Transformation转换 - 添加序列 - 接口api")
 public class AddSequenceController {
 
+	/**
+	 * 校验数据库是否支持序列
+	 * @param name 数据库连接名称
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "校验数据库是否支持序列")
 	@RequestMapping(method = RequestMethod.POST, value = "/support")
 	protected @ResponseBody void support(String name) throws IOException, KettleException {
@@ -43,9 +56,17 @@ public class AddSequenceController {
 			jsonObject.put("support_sequence", supportsSequences);
 		}
 
+		repository.disconnect();
 		JsonUtils.response(jsonObject);
 	}
 
+	/**
+	 *  加载数据库中的序列
+	 * @param name 数据库名称连接
+	 * @return
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "加载数据库中的序列")
 	@RequestMapping(method = RequestMethod.POST, value = "/sequences")
 	protected @ResponseBody List sequences(String name) throws IOException, KettleException {
@@ -74,6 +95,7 @@ public class AddSequenceController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
+				repository.disconnect();
 				if (database != null) {
 					database.disconnect();
 					database = null;

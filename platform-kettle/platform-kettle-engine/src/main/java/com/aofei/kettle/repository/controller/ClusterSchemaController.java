@@ -28,12 +28,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 集群接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping("/clusterschema")
 @Api(tags = "集群接口api")
 public class ClusterSchemaController {
 
-
+	/**
+	 * 获取资源库中所有的集群信息
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "获取资源库中所有的集群信息")
 	@ResponseBody
 	@RequestMapping("/list")
@@ -71,6 +80,14 @@ public class ClusterSchemaController {
 
 	}
 
+	/**
+	 * 移除集群信息
+	 * @param name 集群名称
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	@ApiOperation(value = "移除集群信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "集群名称", paramType="query", dataType = "string")

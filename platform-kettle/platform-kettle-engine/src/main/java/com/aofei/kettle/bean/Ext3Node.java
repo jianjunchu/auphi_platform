@@ -2,6 +2,11 @@ package com.aofei.kettle.bean;
 
 import java.util.UUID;
 
+/**
+ * 前端EXTJS Node对象
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class Ext3Node {
 
 	private String id;

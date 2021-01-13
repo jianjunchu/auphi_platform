@@ -33,7 +33,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-22 15:39
  */
 @Api(tags = { "调度管理-周期调度" })

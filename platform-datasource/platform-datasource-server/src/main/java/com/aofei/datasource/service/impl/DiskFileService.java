@@ -8,6 +8,7 @@ import com.aofei.datasource.model.request.DiskFileRequest;
 import com.aofei.datasource.model.request.FileRenameToRequest;
 import com.aofei.datasource.model.response.DiskFileResponse;
 import com.aofei.datasource.service.IDiskFileService;
+import com.aofei.log.annotation.Log;
 import com.aofei.utils.DiskFileUtil;
 import com.aofei.utils.StringUtils;
 import org.apache.commons.vfs2.*;
@@ -20,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-21 21:50
  */
 @Service
@@ -29,6 +30,12 @@ public class DiskFileService implements IDiskFileService {
     private Logger logger = LoggerFactory.getLogger(DiskFileService.class);
 
 
+    /**
+     *  获取指定路径下的本地文件树形数据
+     * @param request
+     * @return
+     */
+    @Log(module = "本地文件管理",description = "本地文件管理")
     @Override
     public List<DiskFileResponse> getFileTree(DiskFileRequest request) {
 
@@ -89,7 +96,12 @@ public class DiskFileService implements IDiskFileService {
         return array;
     }
 
-
+    /**
+     *  获取指定路径下的本地文件列表
+     * @param request
+     * @return
+     */
+    @Log(module = "本地文件管理",description = "本地文件管理")
     @Override
     public List<DiskFileResponse> getFileExplorer(DiskFileRequest request)  {
         List<DiskFileResponse> list = new LinkedList<>();
@@ -123,7 +135,12 @@ public class DiskFileService implements IDiskFileService {
     }
 
 
-
+    /**
+     *  创建新的文件夹
+     * @param request
+     * @return
+     */
+    @Log(module = "本地文件管理",description = "创建文件夹")
     @Override
     public boolean mkdir(DiskFileCreateRequest request) {
         String userPath = Const.getUserDir(request.getOrganizerId());
@@ -147,7 +164,13 @@ public class DiskFileService implements IDiskFileService {
     }
 
 
-
+    /**
+     * 删除文件
+     * @param path 指定的文件夹路径
+     * @return
+     * @throws FileSystemException
+     */
+    @Log(module = "本地文件管理",description = "删除文件")
     @Override
     public boolean deleteFile(String path) throws FileSystemException {
         FileSystemManager fsManager = VFS.getManager();
@@ -163,6 +186,14 @@ public class DiskFileService implements IDiskFileService {
         return 1;
     }
 
+    /**
+     * 移动文件
+     * @param request
+     *  startFile:要移动的文件
+     *  endPath:移动目的位置
+     * @return
+     */
+    @Log(module = "本地文件管理",description = "移动文件")
     @Override
     public Boolean renameTo(FileRenameToRequest request) {
 

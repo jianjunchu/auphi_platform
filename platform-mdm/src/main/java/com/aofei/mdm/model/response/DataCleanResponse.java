@@ -4,7 +4,7 @@ import com.aofei.base.model.response.BaseResponse;
 import lombok.Data;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-11-08 22:45
  */
 @Data

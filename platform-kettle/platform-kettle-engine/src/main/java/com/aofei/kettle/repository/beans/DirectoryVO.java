@@ -2,12 +2,31 @@ package com.aofei.kettle.repository.beans;
 
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
+/**
+ * 文件夹对象
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class DirectoryVO {
-
+	/**
+	 * id
+	 */
 	private String id;
+	/**
+	 * 文件夹名称
+	 */
 	private String name;
+	/**
+	 * 文件夹全路径
+	 */
 	private String path;
+	/**
+	 * 登录用户文件夹显示路径
+	 */
 	private String userPath;
+	/**
+	 * 类型 默认dir
+	 */
 	private String type = "dir";
 
 	public DirectoryVO() {
@@ -17,7 +36,7 @@ public class DirectoryVO {
 	public DirectoryVO(RepositoryDirectoryInterface rdi) {
 		name = rdi.getName();
 		path = rdi.getParent().getPath();
-		
+
 		String path2 = path.endsWith("/") ? path : path + '/';
 		id = path2 + name;
 	}

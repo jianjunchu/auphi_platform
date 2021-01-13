@@ -39,12 +39,21 @@ public class DataGrid<T> extends IgnoreResponse {
 	@ApiModelProperty(value = "当前页码")
 	private int currPage;
 
+	/**
+	 * 总页数
+	 */
 	@ApiModelProperty(value = "总页数")
 	private int pageSize;
 
+	/**
+	 * 数据总数
+	 */
 	@ApiModelProperty(value = "数据总数")
 	private int totalCount;
 
+	/**
+	 * 数据总页数
+	 */
 	@ApiModelProperty(value = "数据总页数")
 	private int totalPage;
 

@@ -17,11 +17,23 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.List;
-
+/**
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Component("CheckSum")
 @Scope("prototype")
 public class CheckSum extends AbstractStep {
 
+	/**
+	 * XML decode to CheckSumMeta
+	 * @param stepMetaInterface
+	 * @param cell
+	 * @param databases
+	 * @param metaStore
+	 * @param user
+	 * @throws Exception
+	 */
 	@Override
 	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		CheckSumMeta checkSumMeta = (CheckSumMeta) stepMetaInterface;
@@ -48,6 +60,13 @@ public class CheckSum extends AbstractStep {
 		checkSumMeta.setFieldName(fieldName);
 	}
 
+	/**
+	 * CheckSumMeta encode to Document
+	 * @param stepMetaInterface
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Element encode(StepMetaInterface stepMetaInterface, CurrentUserResponse user) throws Exception {
 		CheckSumMeta checkSumMeta = (CheckSumMeta) stepMetaInterface;

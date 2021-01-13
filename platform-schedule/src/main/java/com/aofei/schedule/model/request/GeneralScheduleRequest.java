@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * 普通调度
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-28 13:24
  */
 @Data

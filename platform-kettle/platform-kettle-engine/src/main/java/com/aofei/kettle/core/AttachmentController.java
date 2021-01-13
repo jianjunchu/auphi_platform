@@ -22,6 +22,11 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * 文件上传下载接口api，用于资源库导入和导出
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping(value = "/attachment")
 @Api(tags = "文件上传下载接口api，用于资源库导入和导出")
@@ -44,6 +49,13 @@ public class AttachmentController {
 		}, 5000, 60 * 1000);
 	}
 
+	/**
+	 * 文件下载
+	 * @param filePath 文件路径
+	 * @param remove 下载完后是否删除
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "文件下载 ")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "filePath", value = "文件路径", paramType="query", dataType = "string"),
@@ -61,6 +73,12 @@ public class AttachmentController {
 		}
 	}
 
+	/**
+	 * 文件上传
+	 * @param file
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "文件上传 ")
 	@RequestMapping("/upload")
 	protected @ResponseBody void upload(@RequestParam(value="file") MultipartFile file) throws KettleException, IOException {

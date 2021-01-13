@@ -2,7 +2,6 @@ package com.aofei.base.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.model.request.PageRequest;
-import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.vo.DataGrid;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.validation.BindingResult;
@@ -12,6 +11,7 @@ import org.springframework.validation.ObjectError;
 import java.util.*;
 
 /**
+ *
  * Created by Hao on 2017-03-24.
  */
 public abstract class BaseController {
@@ -57,7 +57,12 @@ public abstract class BaseController {
     }
 
 
-
+    /**
+     * 封装分页数据
+     * @param pageRequest
+     * @param <T>
+     * @return
+     */
     protected <T> Page<T> getPagination(PageRequest pageRequest) {
         Page<T> page =  new Page<T>(pageRequest.getPage(), pageRequest.getRows());
         page.setAsc("asc".equalsIgnoreCase(pageRequest.getOrder()));//升序 降序

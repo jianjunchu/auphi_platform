@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 腾讯短信发送接口
+ */
 @Component
 public class TencentSmsSingleSender {
 
@@ -21,8 +24,11 @@ public class TencentSmsSingleSender {
 
     private static Map<String,VerificationCode> captchas = new HashMap<>();
 
+    /**
+     * 短信应用SDK AppID
+     */
     @Value("#{propertiesReader['qcloudsms.appid']}")
-    private int appid ; // 短信应用SDK AppID
+    private int appid ;
 
     @Value("#{propertiesReader['qcloudsms.appkey']}")
     private String appkey  ; // 短信应用SDK AppKey
@@ -42,15 +48,23 @@ public class TencentSmsSingleSender {
     private long valid = 1000*60*30;//验证码有效期
 
 
+    /**
+     * 发送短信
+     * @param countryCode
+     * @param phoneNumber
+     */
     public void sendSms(String countryCode, String phoneNumber) {
         try {
             String[] params = {createCaptcha(countryCode,phoneNumber),"30"};
             SmsSingleSender ssender = new SmsSingleSender(appid, appkey);
 
+            //判断是否是国内短信还是国际短信(国内短信和国际短信签名参数不一致)
             if("86".equalsIgnoreCase(countryCode)){
+                //国内短信
                 SmsSingleSenderResult result = ssender.sendWithParam(countryCode, phoneNumber,
                         zhTemplateId, params, zhSmsSign, "", "");  // 签名参数未提供或者为空时，会使用默认签名发送短信
             }else{
+                //国际短信
                 SmsSingleSenderResult result = ssender.sendWithParam(countryCode, phoneNumber,
                         enTemplateId, params, enSmsSign, "", "");  // 签名参数未提供或者为空时，会使用默认签名发送短信
             }
@@ -67,7 +81,12 @@ public class TencentSmsSingleSender {
         }
     }
 
-
+    /**
+     * 创建一个短信验证码,并且保存到内存中
+     * @param countryCode
+     * @param phoneNumber
+     * @return
+     */
     private String createCaptcha(String countryCode,String phoneNumber){
         int a = (int)((Math.random()*9+1)*100000) ;//6为随机数
 

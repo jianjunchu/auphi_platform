@@ -20,6 +20,7 @@
         <property name="locations">
             <list>
                 <value>classpath*:config/db.properties</value>
+                <value>classpath*:config/ext_db.properties</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -93,5 +94,6 @@
 
     <import resource="/spring-ehcache.xml" />
     <import resource="/spring-mybatis.xml"/>
+    <import resource="/spring-mybatis-ext.xml"/>
     <import resource="/spring-schedule.xml"/>
 </beans>

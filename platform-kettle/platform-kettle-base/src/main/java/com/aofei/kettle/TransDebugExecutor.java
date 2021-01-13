@@ -1,22 +1,13 @@
 package com.aofei.kettle;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.logging.KettleLogLayout;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LogMessage;
-import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -27,15 +18,9 @@ import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
-import org.pentaho.di.trans.step.RowAdapter;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaDataCombi;
-import org.pentaho.di.trans.step.StepStatus;
-import org.springframework.util.StringUtils;
+import org.pentaho.di.trans.step.*;
 
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
+import java.util.*;
 
 public class TransDebugExecutor implements Runnable {
 
@@ -45,41 +30,41 @@ public class TransDebugExecutor implements Runnable {
 	private TransDebugMeta transDebugMeta = null;
 	private Trans trans = null;
 	private Map<StepMeta, String> stepLogMap = new HashMap<StepMeta, String>();
-	
+
 	private TransDebugExecutor(TransExecutionConfiguration transExecutionConfiguration, TransMeta transMeta) {
 		this.executionId = UUID.randomUUID().toString().replaceAll("-", "");
 		this.executionConfiguration = transExecutionConfiguration;
 		this.transMeta = transMeta;
 	}
-	
+
 	private static Hashtable<String, TransDebugExecutor> executors = new Hashtable<String, TransDebugExecutor>();
-	
+
 	public static synchronized TransDebugExecutor initExecutor(TransExecutionConfiguration transExecutionConfiguration, TransMeta transMeta, TransDebugMeta transDebugMeta) {
 		TransDebugExecutor transExecutor = new TransDebugExecutor(transExecutionConfiguration, transMeta);
 		transExecutor.transDebugMeta = transDebugMeta;
 		executors.put(transExecutor.getExecutionId(), transExecutor);
 		return transExecutor;
 	}
-	
+
 	public static TransDebugExecutor getExecutor(String executionId) {
 		return executors.get(executionId);
 	}
-	
+
 	public static void remove(String executionId) {
 		executors.remove(executionId);
 	}
-	
+
 	public String getExecutionId() {
 		return executionId;
 	}
-	
+
 	private boolean finished = false;
 	private long errCount;
 
 	public long getErrCount() {
 		return errCount;
 	}
-	
+
 	private int startLineNr = 0;
 
 	@Override
@@ -108,14 +93,14 @@ public class TransDebugExecutor implements Runnable {
 	        boolean initialized = false;
 	        startLineNr = KettleLogStore.getLastBufferLineNr();
 	        trans = new Trans( transMeta );
-	        
+
 	        trans.setPreview(true);
 	        trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
 	        trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
 	        trans.setLogLevel( executionConfiguration.getLogLevel() );
 	        trans.setReplayDate( executionConfiguration.getReplayDate() );
 	        trans.setRepository( executionConfiguration.getRepository() );
-	        
+
 	        try {
 	            trans.prepareExecution( args );
 				capturePreviewData(trans, transMeta.getSteps());
@@ -126,14 +111,14 @@ public class TransDebugExecutor implements Runnable {
 	            errCount = 1;
 	            return;
 	        }
-	        
+
 	        transDebugMeta.addRowListenersToTransformation( trans );
 	        transDebugMeta.addBreakPointListers( new BreakPointListener() {
 	            public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
 	            	showPreview( transDebugMeta, stepDebugMeta, rowBufferMeta, rowBuffer );
 	            }
 	        });
-	        
+
 	        if ( trans.isReadyToStart() && initialized) {
 				trans.addTransListener(new TransAdapter() {
 					public void transFinished(Trans trans) {
@@ -141,12 +126,12 @@ public class TransDebugExecutor implements Runnable {
 						checkErrorVisuals();
 					}
 				});
-	        	
+
 				trans.startThreads();
-				
+
 				while(!trans.isFinished())
 					Thread.sleep(500);
-				
+
 				errCount = trans.getErrors();
 	        } else {
 	        	checkErrorVisuals();
@@ -160,7 +145,7 @@ public class TransDebugExecutor implements Runnable {
 			finished = true;
 		}
 	}
-	
+
 	public void capturePreviewData(Trans trans, List<StepMeta> stepMetas) {
 		final StringBuffer loggingText = new StringBuffer();
 
@@ -213,15 +198,15 @@ public class TransDebugExecutor implements Runnable {
 			}
 		});
 	}
-	
+
 	protected Map<StepMeta, RowMetaInterface> previewMetaMap = new HashMap<StepMeta, RowMetaInterface>();
 	protected Map<StepMeta, List<Object[]>> previewDataMap = new HashMap<StepMeta, List<Object[]>>();
 	protected Map<StepMeta, StringBuffer> previewLogMap = new HashMap<StepMeta, StringBuffer>();
-	
+
 	private void checkErrorVisuals() {
 		if (trans.getErrors() > 0) {
 			stepLogMap.clear();
-			
+
 			for (StepMetaDataCombi combi : trans.getSteps()) {
 				if (combi.step.getErrors() > 0) {
 					String channelId = combi.step.getLogChannel().getLogChannelId();
@@ -244,7 +229,7 @@ public class TransDebugExecutor implements Runnable {
 			stepLogMap.clear();
 		}
 	}
-	
+
 	private void checkTransEnded() {
 		if (transDebugMeta.getStepDebugMetaMap().isEmpty()) {
 			return;
@@ -260,14 +245,14 @@ public class TransDebugExecutor implements Runnable {
 		    }
 		}
 	}
-	
+
 	public boolean isFinished() {
 		return finished;
 	}
-	
+
 	public JSONArray getStepMeasure() throws Exception {
     	JSONArray jsonArray = new JSONArray();
-    	
+
     	if(executionConfiguration.isExecutingLocally()) {
     		for (int i = 0; i < trans.nrSteps(); i++) {
     			StepInterface baseStep = trans.getRunThread(i);
@@ -282,18 +267,18 @@ public class TransDebugExecutor implements Runnable {
     			jsonArray.add(childArray);
     		}
     	}
-    	
+
     	return jsonArray;
 	}
-	
+
 	public String getExecutionLog() throws Exception {
-		
+
 		if(executionConfiguration.isExecutingLocally()) {
 			String loggingText = KettleLogStore.getAppender().getBuffer(
 			          trans.getLogChannel().getLogChannelId(), false, startLineNr, KettleLogStore.getLastBufferLineNr() ).toString();
 			return loggingText;
-			
-			
+
+
 //			StringBuffer sb = new StringBuffer();
 //			KettleLogLayout logLayout = new KettleLogLayout( true );
 //			List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( trans.getLogChannelId() );
@@ -305,27 +290,27 @@ public class TransDebugExecutor implements Runnable {
 //			 }
 //			 return sb.toString();
     	}
-		
+
 		return "";
 	}
-	
+
 	public JSONArray getStepStatus() throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		
+
 		HashMap<String, Integer> stepIndex = new HashMap<String, Integer>();
 		for (StepMetaDataCombi combi : trans.getSteps()) {
 			Integer index = stepIndex.get(combi.stepMeta.getName());
-			
+
 			if(index == null) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("stepName", combi.stepMeta.getName());
-				
+
 				jsonObject.put("stepStatus", 0);	//执行中
 				if(combi.step.getStatus().equals( StepExecutionStatus.STATUS_FINISHED )
 						|| combi.step.getStatus().equals(StepExecutionStatus.STATUS_STOPPED)) {
 					jsonObject.put("stepStatus", -1);
 				}
-				
+
 				int errCount = (int) combi.step.getErrors();
 				if(errCount > 0) {
 					jsonObject.put("stepStatus", errCount);
@@ -343,7 +328,7 @@ public class TransDebugExecutor implements Runnable {
 					}
 					jsonObject.put("logText", logText.toString());
 				}
-				
+
 				stepIndex.put(combi.stepMeta.getName(), jsonArray.size());
 				jsonArray.add(jsonObject);
 			} else {
@@ -352,27 +337,27 @@ public class TransDebugExecutor implements Runnable {
 				if(errCount > 0) {
 					jsonObject.put("stepStatus", errCount);
 				}
-				
+
 			}
 		}
-		
+
 		return jsonArray;
 	}
-	
+
 	public void stop() {
 		trans.stopAll();
 	}
-	
+
 	public void resume() {
 		trans.resumeRunning();
 	}
-	
+
 	private JSONObject jsonObject = new JSONObject();
-	
+
 	public synchronized void showPreview(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta, RowMetaInterface rowMeta, List<Object[]> rowsData) {
 		List<ValueMetaInterface> valueMetas = rowMeta.getValueMetaList();
 		System.out.println("recived preview data: " + rowsData.size());
-		
+
 		JSONArray columns = new JSONArray();
 		JSONObject metaData = new JSONObject();
 		JSONArray fields = new JSONArray();
@@ -380,7 +365,7 @@ public class TransDebugExecutor implements Runnable {
 			ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
 			fields.add(valueMeta.getName());
 //			String header = valueMeta.getComments() == null ? valueMeta.getName() : valueMeta.getComments();
-			
+
 			JSONObject column = new JSONObject();
 			column.put("dataIndex", valueMeta.getName());
 			column.put("header", valueMeta.getName());
@@ -389,7 +374,7 @@ public class TransDebugExecutor implements Runnable {
 		}
 		metaData.put("fields", fields);
 		metaData.put("root", "firstRecords");
-		
+
 		JSONArray firstRecords = new JSONArray();
 		for (int rowNr = 0; rowNr < rowsData.size(); rowNr++) {
 			Object[] rowData = rowsData.get(rowNr);
@@ -408,31 +393,31 @@ public class TransDebugExecutor implements Runnable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if(!StringUtils.hasText(string))
-					string = "&lt;null&gt;";
-				
+				/*if(!StringUtils.hasText(string))
+					string = "&lt;null&gt;";*/
+
 				ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 				row.put(valueMeta.getName(), string);
 			}
 			firstRecords.add(row);
 		}
-		
+
 		jsonObject.put("metaData", metaData);
 		jsonObject.put("columns", columns);
 		jsonObject.put("firstRecords", firstRecords);
-		
+
 		System.out.println("put recived preview data: " + firstRecords.size());
 		rowsData.clear();
 	}
-	
+
 	public boolean isPreviewed() {
 		return jsonObject.size() == 3;
 	}
-	
+
 	public void clearPreview() {
 		jsonObject.clear();
 	}
-	
+
 	public JSONObject getPreviewData() {
 		return jsonObject;
 	}

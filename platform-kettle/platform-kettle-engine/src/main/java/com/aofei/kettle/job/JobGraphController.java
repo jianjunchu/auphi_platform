@@ -1,13 +1,22 @@
 package com.aofei.kettle.job;
 
-import java.net.URLDecoder;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
+import com.aofei.base.model.response.CurrentUserResponse;
+import com.aofei.kettle.App;
+import com.aofei.kettle.JobExecutor;
+import com.aofei.kettle.PluginFactory;
+import com.aofei.kettle.base.GraphCodec;
+import com.aofei.kettle.core.database.DatabaseCodec;
+import com.aofei.kettle.job.step.JobEntryEncoder;
+import com.aofei.kettle.utils.*;
+import com.enterprisedt.net.ftp.FTPClient;
+import com.mxgraph.util.mxUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
@@ -29,36 +38,31 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Element;
 
-import com.aofei.base.annotation.CurrentUser;
-import com.aofei.base.model.response.CurrentUserResponse;
-import com.aofei.kettle.App;
-import com.aofei.kettle.JobExecutor;
-import com.aofei.kettle.PluginFactory;
-import com.aofei.kettle.base.GraphCodec;
-import com.aofei.kettle.core.database.DatabaseCodec;
-import com.aofei.kettle.job.step.JobEntryEncoder;
-import com.aofei.kettle.utils.GetJobSQLProgress;
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
-import com.aofei.kettle.utils.JsonUtils;
-import com.aofei.kettle.utils.StringEscapeHelper;
-import com.enterprisedt.net.ftp.FTPClient;
-import com.mxgraph.util.mxUtils;
+import java.net.URLDecoder;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
+/**
+ * Job作业接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping(value="/job")
 @Api(tags = "Job作业接口api")
 public class JobGraphController {
 
+	/**
+	 * 查看该任务的引擎文件
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "查看该任务的引擎文件")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -73,6 +77,13 @@ public class JobGraphController {
 		JsonUtils.responseXml(xml);
 	}
 
+	/**
+	 * 获取作业中的私有数据库连接，不常用
+	 * @param graphXml 图形信息
+	 * @param name 数据库连接名称
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取作业中的私有数据库连接，不常用")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -92,6 +103,12 @@ public class JobGraphController {
 		JsonUtils.response(jsonObject);
 	}
 
+	/**
+	 * 获取该作业所有的环节
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取该作业所有的环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -113,6 +130,12 @@ public class JobGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 生成这个作业所需要的SQL脚本
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "生成这个作业所需要的SQL脚本")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -145,6 +168,12 @@ public class JobGraphController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 作业保存
+	 * @param user
+	 * @param graphXml 图形信息
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "作业保存")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -183,6 +212,14 @@ public class JobGraphController {
 		JsonUtils.success("作业保存成功！");
 	}
 
+	/**
+	 * 新建作业环节
+	 * @param graphXml 图形信息
+	 * @param pluginId 环节插件ID
+	 * @param name 环节名称
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "新建作业环节")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -244,6 +281,14 @@ public class JobGraphController {
 		}
 	}
 
+	/**
+	 * 新建作业连线
+	 * @param graphXml 图形信息
+	 * @param fromLabel 起始环节名
+	 * @param toLabel 结束环节名
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "新建作业连线")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -456,6 +501,12 @@ public class JobGraphController {
 		}
 	}
 
+	/**
+	 * 初始化执行
+	 * @param graphXml 图形信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "初始化执行")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string")
@@ -499,6 +550,13 @@ public class JobGraphController {
 		JsonUtils.response(JobExecutionConfigurationCodec.encode(executionConfiguration));
 	}
 
+	/**
+	 * 开始执行作业
+	 * @param graphXml 图形信息
+	 * @param executionConfiguration 执行信息
+	 * @param user
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "开始执行作业")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "graphXml", value = "图形信息", paramType="query", dataType = "string"),
@@ -521,6 +579,11 @@ public class JobGraphController {
         JsonUtils.success(jobExecutor.getExecutionId());
 	}
 
+	/**
+	 * 获取作业执行结果
+	 * @param executionId 执行句柄ID
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取作业执行结果")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "executionId", value = "执行句柄ID", paramType="query", dataType = "string")

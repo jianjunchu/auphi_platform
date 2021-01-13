@@ -505,8 +505,8 @@ public class JavaScriptController {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if(!StringUtils.hasText(string))
-							string = "&lt;null&gt;";
+						/*if(!StringUtils.hasText(string))
+							string = "&lt;null&gt;";*/
 
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 						row.put(valueMeta.getName(), string);

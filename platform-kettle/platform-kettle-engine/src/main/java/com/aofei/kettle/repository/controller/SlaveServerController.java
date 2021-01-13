@@ -27,11 +27,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 子服务器接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping("/slaveserver")
 @Api(tags = "子服务器接口api")
 public class SlaveServerController {
 
+	/**
+	 * 获取子服务器监控信息
+	 * @param name 子服务器名称
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取子服务器监控信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
@@ -63,6 +73,12 @@ public class SlaveServerController {
 
 	}
 
+
+	/**
+	 * 获取所有子服务器名称，注意只返回名称
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "获取所有子服务器名称，注意只返回名称")
 	@ResponseBody
 	@RequestMapping("/names")
@@ -78,6 +94,12 @@ public class SlaveServerController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取子服务器信息
+	 * @param name 子服务器名称
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "获取子服务器信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
@@ -98,6 +120,14 @@ public class SlaveServerController {
 		JsonUtils.response(SlaveServerCodec.encode(slaveServer));
 	}
 
+	/**
+	 * 持久化子服务器信息
+	 * @param slaveInfo 子服务器信息，JSON串
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	@ApiOperation(value = "持久化子服务器信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "slaveInfo", value = "子服务器信息，JSON串", paramType="query", dataType = "string")
@@ -113,6 +143,14 @@ public class SlaveServerController {
 		JsonUtils.success("执行器保存成功！");
 	}
 
+	/**
+	 * 移除子服务器信息
+	 * @param name 子服务器名称
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	@ApiOperation(value = "移除子服务器信息，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")
@@ -136,6 +174,15 @@ public class SlaveServerController {
 		}
 	}
 
+
+	/**
+	 * 测试子服务器是否可用
+	 * @param name 子服务器名称
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	@ApiOperation(value = "测试子服务器是否可用，")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "子服务器名称", paramType="query", dataType = "string")

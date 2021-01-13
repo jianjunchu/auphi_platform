@@ -1,17 +1,5 @@
 package com.aofei.kettle.utils;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Dimension2D;
-import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
-
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
@@ -23,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import com.aofei.kettle.utils.SvgImageUrl;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -32,6 +19,22 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.w3c.dom.Document;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
+import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+/**
+ *
+ * 步骤ICON 管理
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class StepImageManager {
 
 	private static LogChannelInterface log = new LogChannel("SvgImageUtil");

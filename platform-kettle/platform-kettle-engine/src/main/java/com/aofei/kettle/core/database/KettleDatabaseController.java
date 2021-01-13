@@ -58,6 +58,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
+/**
+ * 数据源管理接口API
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Log4j
 @Api(tags = { "数据源连接 - 接口api" })
 @Authorization
@@ -65,6 +70,12 @@ import java.util.*;
 @RequestMapping(value = "/database", produces = {"application/json;charset=UTF-8"})
 public class KettleDatabaseController extends BaseController {
 
+	/**
+	 * 该方法返回所有全局的数据库连接名称，只返回连接名称
+	 * @param user
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "该方法返回所有全局的数据库连接名称，只返回连接名称")
 	@ResponseBody
 	@RequestMapping("/listNames")
@@ -82,6 +93,11 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取资源库内的一个数据库连接信息
+	 * @param name  连接名称，非必填，不填就创建个默认的连接
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取资源库内的一个数据库连接信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "连接名称，非必填，不填就创建个默认的连接", required=false, paramType="query", dataType = "string")
@@ -107,6 +123,12 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.response(jsonObject);
 	}
 
+	/**
+	 * 清除数据库缓存，有时在数据库新建表后KETTLE获取不到，需要先清下缓存
+	 * @param name 连接名称，非必填
+	 * @throws KettleException
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "清除数据库缓存，有时在数据库新建表后KETTLE获取不到，需要先清下缓存")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "name", value = "连接名称，非必填", required=false, paramType="query", dataType = "string")
@@ -122,6 +144,10 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.success("缓存清除成功！");
 	}
 
+	/**
+	 * 获取支持的数据库类型，如Oracle,MySQL等
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "获取支持的数据库类型，如Oracle,MySQL等")
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/accessData")
@@ -130,6 +156,11 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 通过数据库类型获取访问方式：如JNDI、JDBC还是ODBC
+	 * @param accessData 数据库类型
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "通过数据库类型获取访问方式：如JNDI、JDBC还是ODBC")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "accessData", value = "数据库类型", required=true, paramType="query", dataType = "string")
@@ -141,6 +172,12 @@ public class KettleDatabaseController extends BaseController {
 		JsonUtils.response(jsonArray);
 	}
 
+	/**
+	 * 获取数据库配置面板，需要数据库类型及访问方式确定，主要包含了URL、username、password、端口等信息
+	 * @param accessData 数据库类型
+	 * @param accessMethod 数据库访问方式
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "获取数据库配置面板，需要数据库类型及访问方式确定，主要包含了URL、username、password、端口等信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "accessData", value = "数据库类型", required=true, paramType="query", dataType = "string"),
@@ -211,6 +248,13 @@ public class KettleDatabaseController extends BaseController {
 	    JsonUtils.success(fragment);
 	}
 
+	/**
+	 * 校验数据库连接，如果校验无误就保存，失败就返回失败信息
+	 * @param databaseInfo 数据库连接信息，JSON串
+	 * @param user
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "校验数据库连接，如果校验无误就保存，失败就返回失败信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "databaseInfo", value = "数据库连接信息，JSON串", paramType="query", dataType = "string")
@@ -371,6 +415,12 @@ public class KettleDatabaseController extends BaseController {
 	    return database;
 	}
 
+	/**
+	 * 保存之前的后台校验，对一些非空选项进行检查
+	 * @param databaseInfo JSON格式数据库信息
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "保存之前的后台校验，对一些非空选项进行检查")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "databaseInfo", value = "数据库信息", required=true, paramType="query", dataType = "string")
@@ -390,7 +440,12 @@ public class KettleDatabaseController extends BaseController {
 	}
 
 
-
+	/**
+	 * 持久化数据库信息，注意这里是持久化到全局，而不是资源库中
+	 * @param databaseInfo json格式数据库信息
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "持久化数据库信息，注意这里是持久化到全局，而不是资源库中")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "databaseInfo", value = "数据库信息", required=true, paramType="query", dataType = "string")
@@ -433,6 +488,12 @@ public class KettleDatabaseController extends BaseController {
 	    }*/
 	}
 
+	/**
+	 * 移除全局数据库信息
+	 * @param databaseName 数据库连接名称
+	 * @throws IOException
+	 * @throws KettleException
+	 */
 	@ApiOperation(value = "移除全局数据库信息")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "databaseName", value = "数据库连接名称", required=true, paramType="query", dataType = "string")
@@ -712,6 +773,14 @@ public class KettleDatabaseController extends BaseController {
 
 	}
 
+	/**
+	 * 返回指定数据库所有的存储过程名称
+	 * @param databaseInfo 数据库连接信息
+	 * @return
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws SQLException
+	 */
 	@ApiOperation(value = "返回指定数据库所有的存储过程名称")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "databaseInfo", value = "数据库连接信息", paramType="query", dataType = "string")
@@ -738,6 +807,14 @@ public class KettleDatabaseController extends BaseController {
 		return list;
 	}
 
+	/**
+	 * 返回指定数据库所有的存储过程名称2
+	 * @param database 连接名称
+	 * @return
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws SQLException
+	 */
 	@ApiOperation(value = "返回指定数据库所有的存储过程名称2")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "database", value = "连接名称", paramType="query", dataType = "string")
@@ -766,6 +843,17 @@ public class KettleDatabaseController extends BaseController {
 		return list;
 	}
 
+	/**
+	 *  浏览数据库
+	 * @param databaseInfo 数据库连接信息
+	 * @param nodeId root代表根节点请求,schema代表请求模式,table代表请求表
+	 * @param text 节点的字面值
+	 * @param includeElement 包含的节点类型
+	 * @return
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws SQLException
+	 */
 	@ApiOperation(value = "浏览数据库")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "databaseInfo", value = "数据库连接信息", paramType="query", dataType = "string"),
@@ -908,6 +996,17 @@ public class KettleDatabaseController extends BaseController {
 		return result;
 	}
 
+	/**
+	 * 浏览数据库2
+	 * @param database 数据库连接名称
+	 * @param nodeId root代表根节点请求,schema代表请求模式,table代表请求表
+	 * @param text 节点的字面值
+	 * @param includeElement 包含的节点类型
+	 * @return
+	 * @throws IOException
+	 * @throws KettleException
+	 * @throws SQLException
+	 */
 	//org.pentaho.di.ui.core.database.dialog.XulDatabaseExplorerController.createDatabaseNodes
 	@ApiOperation(value = "浏览数据库2")
 	@ApiImplicitParams({

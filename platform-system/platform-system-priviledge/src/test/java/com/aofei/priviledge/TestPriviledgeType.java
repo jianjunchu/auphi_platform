@@ -4,7 +4,7 @@ import com.aofei.priviledge.i18n.Messages;
 import org.junit.jupiter.api.Test;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-30 19:21
  */
 public class TestPriviledgeType {

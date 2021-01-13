@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ *  BeanCopier工具类
+ */
 public class BeanCopier {
     private static final String DOZER_CONFIG = "dozer-config/dozerBeanMapping.xml";
     private static DozerBeanMapper mapper;

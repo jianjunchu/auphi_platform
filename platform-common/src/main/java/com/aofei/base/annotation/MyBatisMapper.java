@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 /**
  * 标识MyBatis的Mapper,方便{@link org.mybatis.spring.mapper.MapperScannerConfigurer}的扫描。
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-14 20:35
  *
  */

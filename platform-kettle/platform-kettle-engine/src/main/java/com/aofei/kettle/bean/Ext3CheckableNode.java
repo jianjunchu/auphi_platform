@@ -3,6 +3,11 @@ package com.aofei.kettle.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 前端EXTJS 对象
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class Ext3CheckableNode extends Ext3Node {
 
 	private boolean checked = false;

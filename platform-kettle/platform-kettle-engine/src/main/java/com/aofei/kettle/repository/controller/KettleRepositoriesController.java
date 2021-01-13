@@ -1,9 +1,15 @@
 package com.aofei.kettle.repository.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.aofei.kettle.App;
+import com.aofei.kettle.core.database.DatabaseCodec;
+import com.aofei.kettle.repository.RepositoryCodec;
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.JsonUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -20,24 +26,17 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.kdr.KettleDatabaseRepositoryDialog;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.aofei.kettle.App;
-import com.aofei.kettle.core.database.DatabaseCodec;
-import com.aofei.kettle.repository.RepositoryCodec;
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
-import com.aofei.kettle.utils.JsonUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
+/**
+ * 资源库维护接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Controller
 @RequestMapping("/repository")
 @Api(tags = "资源库维护接口api")

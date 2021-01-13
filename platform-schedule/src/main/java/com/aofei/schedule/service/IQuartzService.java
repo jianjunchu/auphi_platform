@@ -35,7 +35,7 @@ import java.text.ParseException;
  *
  * ${DESCRIPTION}
  *
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-02 19:44
  */
 public interface IQuartzService {

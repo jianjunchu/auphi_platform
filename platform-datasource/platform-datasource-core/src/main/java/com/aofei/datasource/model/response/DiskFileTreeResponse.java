@@ -1,7 +1,9 @@
 package com.aofei.datasource.model.response;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+@Data
 public class DiskFileTreeResponse {
 
     @ApiModelProperty(value = "路径")

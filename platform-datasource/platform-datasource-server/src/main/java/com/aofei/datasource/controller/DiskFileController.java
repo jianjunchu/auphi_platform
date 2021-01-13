@@ -34,6 +34,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * 数据源管理-本地文件管理
+ * 用户本地文件管理;
+ * 上传文件
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Log4j
 @Api(tags = { "数据源管理-本地文件管理" })
 @Authorization
@@ -71,11 +78,22 @@ public class DiskFileController extends BaseController {
     }
 
     /**
-     * 服务器文件列表
+     * 返回指定目录下的文件目录名称 tree形结构
+     *
      * @param request
+     *  path:root目录
+     *
      * @return
+     *  Response<DiskFileResponse>
+     *  String path: 路径
+     *  String filename:文件名称;
+     *  Integer isdir: 是否是文件夹 0:否 1:是
+     *  String size:文件大小;
+     *  Boolean leaf: 文件夹是否还有文件;
+     *  Long lastModified:最后修改时间;
+     *  List<DiskFileResponse> children :子文件夹
      */
-    @ApiOperation(value = "服务器文件列表", notes = "服务器文件列表")
+    @ApiOperation(value = "服务器文:件列表", notes = "服务器文件列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "path", value = "目录", paramType = "query", dataType = "String"),
     })
@@ -94,6 +112,18 @@ public class DiskFileController extends BaseController {
     }
 
 
+    /**
+     * 文件移动
+     *
+     * @param request
+     *  startFile : 要移动的文件
+     *  endPath : 移动的位置
+     * @param user
+     *  当前登录的用户
+     * @return
+     *    Response<Boolean> true:移动成功 ; false:移动失败
+     *
+     */
     @ApiOperation(value = "服务器文件移动", notes = "服务器文件移动")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "startFile", value = "要移动的文件", paramType = "query", dataType = "String"),

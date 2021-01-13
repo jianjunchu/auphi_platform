@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-10-02 19:45
  */
 @Service

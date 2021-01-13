@@ -57,10 +57,23 @@ public class Const {
         return value;
     }
 
+    /**
+     * 获取
+     * @param organizerId
+     * @return
+     */
     public static String getRootPath(Long organizerId){
         return "/"+ (organizerId==null ? "" : organizerId.toString());
     }
 
+    /**
+     * 获取用户目录
+     * 用户目录=系统根目录+用户organizerId
+     *
+     * @param organizerId
+     * @param path
+     * @return
+     */
     public static String getUserPath(Long organizerId,String path){
 
         if(StringUtils.isEmpty(path)){
@@ -73,7 +86,14 @@ public class Const {
         return getRootPath(organizerId) +(path.startsWith("/") ? "" : "/")  + path;
     }
 
-
+    /**
+     * 获取用户目录
+     * 用户目录=系统根目录+用户organizerId
+     *
+     * @param organizerId
+     * @param path
+     * @return
+     */
     public static String getUserDir(Long organizerId){
         String base = loader.getProperty("disk.root.dir");
 

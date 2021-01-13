@@ -44,7 +44,7 @@ import java.util.List;
 
 /**
  *  配置类 SwaggerConfig
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-15 20:07
  */
 @Configuration

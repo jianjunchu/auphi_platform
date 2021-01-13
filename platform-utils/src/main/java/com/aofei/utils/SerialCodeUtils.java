@@ -3,7 +3,7 @@ package com.aofei.utils;
 import java.util.Random;
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-08-06 15:05
  */
 public class SerialCodeUtils {

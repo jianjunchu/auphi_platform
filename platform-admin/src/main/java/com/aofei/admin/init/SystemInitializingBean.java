@@ -55,7 +55,7 @@ import java.util.TimerTask;
 
 /**
  * 系统启动Init类
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-21 18:13
  */
 @Component

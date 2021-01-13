@@ -41,6 +41,9 @@ public class DataInterfaceController extends BaseController {
     /**
      * 接口数据源(分页查询)
      * @param request
+     *   page: 当前页码(默认1)
+     *   rows: 每页数量(默认10)
+     * @param user
      * @return
      */
     @ApiOperation(value = "接口数据源(分页查询)", notes = "接口数据源(分页查询)")

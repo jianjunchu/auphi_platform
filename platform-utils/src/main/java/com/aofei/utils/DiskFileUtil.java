@@ -3,8 +3,19 @@ package com.aofei.utils;
 import java.io.File;
 import java.text.NumberFormat;
 
+/**
+ * 文件操作类型
+ * @auther 傲飞数据整合平台
+ * @create 2018-01-04 10:53
+ */
 public class DiskFileUtil {
 
+    /**
+     * 转换文件大小
+     * 将文件的字节大小转换为GB为单位 MB单位
+     * @param size
+     * @return
+     */
     public static String getPrintSize(long size) {
         //如果字节数少于1024，则直接以B为单位，否则先除于1024，后3位因太少无意义
         if (size < 1024) {
@@ -34,7 +45,11 @@ public class DiskFileUtil {
         }
     }
 
-    // 递归方式 计算文件的大小
+    /**
+     * 递归方式 计算文件的大小
+     * @param file
+     * @return
+     */
     public static long getTotalSizeOfFilesInDir(final File file) {
         if (file.isFile())
             return file.length();
@@ -57,6 +72,11 @@ public class DiskFileUtil {
         return result;
     }
 
+    /**
+     * 删除文件
+     * @param path 文件根目录
+     * @return
+     */
     public static boolean delAllFile(String path) {
         boolean flag = false;
         File file = new File(path);
@@ -86,7 +106,12 @@ public class DiskFileUtil {
         return flag;
     }
 
-    //删除文件夹
+
+
+    /**
+     * 删除文件夹
+     * @param folderPath
+     */
     public static void delFolder(String folderPath) {
         try {
             delAllFile(folderPath); //删除完里面所有内容
@@ -99,7 +124,4 @@ public class DiskFileUtil {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.print(getPercentage(1,100000));
-    }
 }

@@ -26,6 +26,9 @@ public class DiskFileRequest extends BaseRequest<DiskFileRequest> {
     @ApiModelProperty(hidden = true)
     private String organizerName;
 
+    /**
+     * 文件操作路径
+     */
     @ApiModelProperty(value = "路径")
     private String path;
 

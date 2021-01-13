@@ -19,7 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 /**
  * 首页
  * 仪表盘
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-15 15:45
  */
 @Api(tags = { "首页-仪表盘" })

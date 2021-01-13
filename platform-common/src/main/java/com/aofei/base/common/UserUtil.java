@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-05-03 17:50
  */
 public class UserUtil {

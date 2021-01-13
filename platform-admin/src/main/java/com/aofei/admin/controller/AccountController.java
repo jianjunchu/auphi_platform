@@ -63,7 +63,7 @@ import java.util.Map;
 /**
  * 系统管理
  * 登录认证模块接口
- * @auther Tony
+ * @auther 傲飞数据整合平台
  * @create 2018-09-15 15:45
  */
 @Api(tags = { "系统管理-登录认证模块接口" })

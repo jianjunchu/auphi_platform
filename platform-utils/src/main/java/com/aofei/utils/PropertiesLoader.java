@@ -13,7 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 /**
- * @auther Tony
+ * Properties文件工具类
+ * @auther 傲飞数据整合平台
  * @create 2018-01-29 23:26
  */
 public class PropertiesLoader {
