@@ -71,7 +71,7 @@ public class InitServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		try{
 			VerifyLicense g = new VerifyLicense();
-			//g.install(null);
+			g.install(null);
 		}catch (Exception e){
 			e.printStackTrace();
 			logger.error("您的 License 已过期", e);

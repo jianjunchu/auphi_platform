@@ -14,4 +14,6 @@ public interface MonitorService {
     int deleteById(Long id);
 
     int deleteBySartDate(String clearDate);
+
+    void updateStatus2Stop(Integer id);
 }

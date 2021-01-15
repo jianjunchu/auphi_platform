@@ -130,11 +130,11 @@ public class JobExecutor implements Runnable{
 
     public static synchronized JobExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object repository,Object job, int execType,Map<String,String> arguments, Map<String,String> params, Map<String,String> variables) throws Exception {
         JobExecutor jobExecutor = new JobExecutor(monitorSchedule,repository,job,execType,arguments,params,variables);
-        executors.put(jobExecutor.getMonitorSchedule().getId(), jobExecutor);
+        executors.put(monitorSchedule.getId(), jobExecutor);
         return jobExecutor;
     }
 
-    public static JobExecutor getExecutor(Long executionId) {
+    public static JobExecutor getExecutor(Integer executionId) {
         return executors.get(executionId);
     }
 
@@ -391,6 +391,12 @@ public class JobExecutor implements Runnable{
         }
 
 
+    }
+
+    public void stopAllForcely() throws Exception{
+        Method  stopAllForcely  =  jobClass.getDeclaredMethod("stopAllForcely");
+
+        stopAllForcely.invoke(job);
     }
 
 

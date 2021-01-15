@@ -168,6 +168,13 @@ Ext.onReady(function(){
                 stopSelectJob();
             }
         },'-',{
+            text : '强制停止',
+            iconCls : 'deleteIcon',
+            id : 'id_tbi_qztz',
+            handler : function() {
+                stopAllSelectJob();
+            }
+        },'-',{
             text : '删除',
             id : 'tbi_del',
             iconCls : 'page_edit_1Icon',
@@ -343,7 +350,44 @@ Ext.onReady(function(){
         });
     }
 
-    
+    function stopAllSelectJob() {
+        var record = grid.getSelectionModel().getSelections();
+        if (Ext.isEmpty(record)) {
+            Ext.Msg.alert('提示', '请先选中要停止的作业!');
+            return;
+        }
+        var strChecked = jsArray2JsString(record, 'id');
+
+        Ext.MessageBox.show({
+            title:'确认提醒',
+            msg: '请选择您要停止选择的监控？',
+            buttons:{yes:'确认',cancel:'取消'},
+            fn: function(btn, text){
+
+                if(btn == 'yes'){
+                    Ext.Ajax.request( {
+                        url : '../monitor/stopAllForcely.shtml',
+                        success : function(response) {
+                            Ext.MessageBox.alert('提示', '操作成功');
+                            store_reload(false);
+                        },
+                        failure : function(response) {
+                            var resultArray = Ext.util.JSON
+                                .decode(response.responseText);
+                            Ext.Msg.alert('提示', resultArray.msg);
+                        },
+                        params : {
+                            ids : strChecked,
+                        }
+                    });
+                }
+
+            },
+            icon: Ext.MessageBox.QUESTION
+        });
+    }
+
+
     function clear() {
         winClear.show();
     }
@@ -366,7 +410,7 @@ Ext.onReady(function(){
             }
         });
     }
-    
+
     function resume(id) {
         Ext.Ajax.request( {
             url : '../monitor/resume.shtml',
@@ -385,7 +429,7 @@ Ext.onReady(function(){
             }
         });
     }
-    
+
     function deleteItem(){
         var record = grid.getSelectionModel().getSelections();
         if (Ext.isEmpty(record)) {

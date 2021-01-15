@@ -149,11 +149,11 @@ public class TransExecutor implements Runnable{
 
     public static synchronized TransExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object transMeta, int execType) throws Exception {
         TransExecutor transExecutor = new TransExecutor(monitorSchedule,transMeta,execType);
-        executors.put(transExecutor.getMonitorSchedule().getId(), transExecutor);
+        executors.put(monitorSchedule.getId(), transExecutor);
         return transExecutor;
     }
 
-    public static TransExecutor getExecutor(Long executionId) {
+    public static TransExecutor getExecutor(Integer executionId) {
         return executors.get(executionId);
     }
 
@@ -431,6 +431,12 @@ public class TransExecutor implements Runnable{
         Method  getResult  =  transClass.getDeclaredMethod("getResult");
         Object result = getResult.invoke(trans);
         return (Long) result.getClass().getDeclaredMethod("getNrLinesWritten").invoke(result);
+    }
+
+    public void stopAllForcely() throws Exception{
+        Method  stopAllForcely  =  transClass.getDeclaredMethod("stopAllForcely");
+
+        stopAllForcely.invoke(trans);
     }
 
     public void stop() throws Exception {

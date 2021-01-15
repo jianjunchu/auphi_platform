@@ -46,4 +46,9 @@ public class MonitorServiceImpl implements MonitorService {
         monitorScheduleBean.setStartTime(DateUtil.format(clearDate,"yyyy-MM-dd"));
         return systemDao.delete("monitorSchedule.deleteBySartDate",monitorScheduleBean);
     }
+
+    @Override
+    public void updateStatus2Stop(Integer id) {
+        systemDao.update("monitorSchedule.updateStatus2Stop",id);
+    }
 }

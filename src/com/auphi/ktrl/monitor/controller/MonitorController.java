@@ -75,7 +75,7 @@ public class MonitorController extends BaseMultiActionController {
             String ids = ServletRequestUtils.getStringParameter(req,"ids");
             String[] idArray = ids.split(",");
             for(String idStr : idArray){
-                Long id = Long.parseLong(idStr);
+                Integer id = Integer.parseInt(idStr);
 
                 TransExecutor  transExecutor =  TransExecutor.getExecutor(id);
                 if(transExecutor!=null){
@@ -86,6 +86,8 @@ public class MonitorController extends BaseMultiActionController {
                 if(jobExecutor!=null){
                     jobExecutor.stop();
                 }
+
+                monitorService.updateStatus2Stop(id);
             }
 
 
@@ -96,6 +98,38 @@ public class MonitorController extends BaseMultiActionController {
         }
         return null;
     }
+
+    public ModelAndView stopAllForcely(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        try {
+            String ids = ServletRequestUtils.getStringParameter(req,"ids");
+            String[] idArray = ids.split(",");
+            for(String idStr : idArray){
+                Integer id = Integer.parseInt(idStr);
+
+                TransExecutor  transExecutor =  TransExecutor.getExecutor(id);
+                if(transExecutor!=null){
+                    transExecutor.stopAllForcely();
+                }
+
+                JobExecutor jobExecutor =  JobExecutor.getExecutor(id);
+                if(jobExecutor!=null){
+                    jobExecutor.stopAllForcely();
+                }
+
+                monitorService.updateStatus2Stop(id);
+            }
+
+
+            this.setOkTipMsg("SUCCESS",resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.setFailTipMsg(e.getMessage(), resp);
+        }
+        return null;
+    }
+
+
 
     public ModelAndView delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 

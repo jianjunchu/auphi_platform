@@ -102,4 +102,9 @@
     <update id="deleteByIds">
         delete from KDI_T_MONITOR  WHERE ID in (${ids})
     </update>
+
+    <update id="updateStatus2Stop">
+       update KDI_T_MONITOR set JOBSTATUS = '中止运行' where id = #{id}
+    </update>
+
 </mapper>
