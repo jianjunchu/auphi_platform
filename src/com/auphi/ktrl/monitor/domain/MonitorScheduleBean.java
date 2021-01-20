@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Auphi Data Integration PlatformKettle Platform
- * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com 
+ * Copyright C 2011-2017 by Auphi BI : http://www.doetl.com
 
  * Support：support@pentahochina.com
  *
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    https://opensource.org/licenses/LGPL-3.0 
+ *    https://opensource.org/licenses/LGPL-3.0
 
  *
  * Unless required by applicable law or agreed to in writing, software

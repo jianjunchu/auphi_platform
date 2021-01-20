@@ -5,43 +5,35 @@ import com.auphi.ktrl.ha.bean.SlaveServerBean;
 import com.auphi.ktrl.ha.util.SlaveServerUtil;
 import com.auphi.ktrl.monitor.domain.MonitorScheduleBean;
 import com.auphi.ktrl.monitor.util.MonitorUtil;
-import com.auphi.ktrl.schedule.task.TransLogTimerTask;
 import com.auphi.ktrl.system.mail.util.MailUtil;
 import com.auphi.ktrl.system.user.util.UserUtil;
 import com.auphi.ktrl.util.ClassLoaderUtil;
 import com.auphi.ktrl.util.StringUtil;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Timer;
 
 public class TransExecutor implements Runnable{
 
     private int execType;
     private MonitorScheduleBean monitorSchedule;
-    private Object executionConfiguration;
-    private Class<?> executionConfigurationClass;
-    private Object transMeta = null;
-    private Object trans = null;
-    private Class<?> transMetaClass;
-    private Class<?> transClass;
+    private TransExecutionConfiguration executionConfiguration;
+    private TransMeta transMeta = null;
+    private Trans trans = null;
 
-    private Class<?> kettleLogStoreClass;
 
-    private Class<?> repositoryClass;
-    private Object repository;
+    private Repository repository;
 
     private Object transSplitter;
 
@@ -61,82 +53,67 @@ public class TransExecutor implements Runnable{
     private  String transMetaName;
 
 
-    public TransExecutor(MonitorScheduleBean monitorSchedule, Object trans, int execType) throws Exception {
+    public TransExecutor(MonitorScheduleBean monitorSchedule, Trans trans, int execType) throws Exception {
         this.monitorSchedule = monitorSchedule;
         this.trans = trans;
         this.execType = execType;
 
         try {
             CentralLogStore.init(100000, Const.MAX_NR_LOG_LINES);
-            this.transMetaClass = Class.forName("org.pentaho.di.trans.TransMeta", true, classLoaderUtil);
-            this.transClass= Class.forName("org.pentaho.di.trans.Trans", true, classLoaderUtil);
-            Method getJobMeta = this.transClass.getDeclaredMethod("getTransMeta");
-            this.transMeta = getJobMeta.invoke(trans);
 
-            this.transMetaName = (String) this.transMeta.getClass().getDeclaredMethod("getName").invoke(this.transMeta);
+            this.transMeta = trans.getTransMeta();
 
-            repositoryClass = Class.forName("org.pentaho.di.repository.Repository", true, classLoaderUtil);
-            Method getRepository = this.transClass.getDeclaredMethod("getRepository");
-            repository = getRepository.invoke(trans);
+            this.transMetaName = transMeta.getName();
 
-            executionConfigurationClass = Class.forName("org.pentaho.di.trans.TransExecutionConfiguration", true, classLoaderUtil);
+            repository = trans.getRepository();
 
-            Constructor<?> consTransExcutionConfig = executionConfigurationClass.getConstructor();
-            this.executionConfiguration = consTransExcutionConfig.newInstance();
 
-            Method setRepository = executionConfigurationClass.getDeclaredMethod("setRepository", repositoryClass);
-            setRepository.invoke(this.executionConfiguration, repository);
+            this.executionConfiguration = new TransExecutionConfiguration();
 
-            Method setExcutingLocally = executionConfigurationClass.getDeclaredMethod("setExecutingLocally", boolean.class);
-            Method setExecutingRemotely = executionConfigurationClass.getDeclaredMethod("setExecutingRemotely", boolean.class);
-            Method setExecutingClustered = executionConfigurationClass.getDeclaredMethod("setExecutingClustered", boolean.class);
+            this.executionConfiguration.setRepository(repository);;
+
+
             if(KettleEngine.EXECTYPE_LOCAL == execType){
 
-                setExcutingLocally.invoke(this.executionConfiguration, true);
-                setExecutingRemotely.invoke(this.executionConfiguration, false);
-                setExecutingClustered.invoke(this.executionConfiguration, false);
-
-                kettleLogStoreClass = Class.forName("org.pentaho.di.core.logging.CentralLogStore");
+                this.executionConfiguration.setExecutingLocally(true);
+                this.executionConfiguration.setExecutingRemotely(false);
+                this.executionConfiguration.setExecutingClustered(false);
 
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
 
-                setExcutingLocally.invoke(this.executionConfiguration, false);
-                setExecutingRemotely.invoke(this.executionConfiguration, true);
-                setExecutingClustered.invoke(this.executionConfiguration, false);
+                this.executionConfiguration.setExecutingLocally(false);
+                this.executionConfiguration.setExecutingRemotely(true);
+                this.executionConfiguration.setExecutingClustered(false);
 
                 SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
-                Object slaveServer = createSlaveServer(slaveServerBean);
+                SlaveServer slaveServer = createSlaveServer(slaveServerBean);
 
-                Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(this.executionConfiguration, slaveServer);
+                executionConfiguration.setRemoteServer(slaveServer);
+
 
             }else if(KettleEngine.EXECTYPE_CLUSTER == execType){
 
-                setExcutingLocally.invoke(this.executionConfiguration, false);
-                setExecutingRemotely.invoke(this.executionConfiguration, false);
-                setExecutingClustered.invoke(this.executionConfiguration, true);
-                Method setClusterPosting = executionConfigurationClass.getDeclaredMethod("setClusterPosting", boolean.class);
-                setClusterPosting.invoke(this.executionConfiguration, true);
-                Method setClusterPreparing = executionConfigurationClass.getDeclaredMethod("setClusterPreparing", boolean.class);
-                setClusterPreparing.invoke(this.executionConfiguration, true);
-                Method setClusterStarting = executionConfigurationClass.getDeclaredMethod("setClusterStarting", boolean.class);
-                setClusterStarting.invoke(this.executionConfiguration, true);
-                Method setClusterShowingTransformation = executionConfigurationClass.getDeclaredMethod("setClusterShowingTransformation", boolean.class);
-                setClusterShowingTransformation.invoke(this.executionConfiguration, true);
+                this.executionConfiguration.setExecutingLocally(false);
+                this.executionConfiguration.setExecutingRemotely(false);
+                this.executionConfiguration.setExecutingClustered(true);
+
+                executionConfiguration.setClusterPosting(true);
+                executionConfiguration.setClusterPreparing(true);
+                executionConfiguration.setClusterStarting(true);
+                executionConfiguration.setClusterShowingTransformation(true);
+
+
 
             }else if(KettleEngine.EXECTYPE_HA == execType){
-                setExcutingLocally.invoke(this.executionConfiguration, false);
-                setExecutingRemotely.invoke(this.executionConfiguration, true);
-                setExecutingClustered.invoke(this.executionConfiguration, false);
+                this.executionConfiguration.setExecutingLocally(false);
+                this.executionConfiguration.setExecutingRemotely(true);
+                this.executionConfiguration.setExecutingClustered(false);
 
-                SlaveServerBean slaveServerBean = getSlaveServerBean("", monitorSchedule.getHaName());
-                Object slaveServer = createSlaveServer(slaveServerBean);
-                Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(this.executionConfiguration, slaveServer);
+                SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
+                SlaveServer slaveServer = createSlaveServer(slaveServerBean);
+                executionConfiguration.setRemoteServer(slaveServer);
             }
-
-
 
         }catch (Exception e){
             throw e;
@@ -147,8 +124,8 @@ public class TransExecutor implements Runnable{
 
     private static Hashtable<Integer, TransExecutor> executors = new Hashtable<Integer, TransExecutor>();
 
-    public static synchronized TransExecutor initExecutor(MonitorScheduleBean monitorSchedule, Object transMeta, int execType) throws Exception {
-        TransExecutor transExecutor = new TransExecutor(monitorSchedule,transMeta,execType);
+    public static synchronized TransExecutor initExecutor(MonitorScheduleBean monitorSchedule, Trans trans, int execType) throws Exception {
+        TransExecutor transExecutor = new TransExecutor(monitorSchedule,trans,execType);
         executors.put(monitorSchedule.getId(), transExecutor);
         return transExecutor;
     }
@@ -173,99 +150,68 @@ public class TransExecutor implements Runnable{
             boolean running = true;
 
             if(KettleEngine.EXECTYPE_LOCAL == execType){
-                Method getLastBufferLineNr = kettleLogStoreClass.getMethod("getLastBufferLineNr");
-                startLineNr = (Integer) getLastBufferLineNr.invoke(null);
+                startLineNr = 0;
 
-                Method setSafeModeEnabled =  this.transClass.getDeclaredMethod("setSafeModeEnabled",boolean.class);
-                Method isSafeModeEnabled =  this.executionConfigurationClass.getDeclaredMethod("isSafeModeEnabled");
-                setSafeModeEnabled.invoke(this.trans,isSafeModeEnabled.invoke(this.executionConfiguration));
-
-
-                Method setLogLevel =  this.transClass.getDeclaredMethod("setLogLevel", LogLevel.class);
-                Method getLogLevel =  this.executionConfigurationClass.getDeclaredMethod("getLogLevel");
-                setLogLevel.invoke(this.trans,getLogLevel.invoke(this.executionConfiguration));
-
-                Method setReplayDate =  this.transClass.getDeclaredMethod("setReplayDate", Date.class);
-                Method getReplayDate =  this.executionConfigurationClass.getDeclaredMethod("getReplayDate");
-                setReplayDate.invoke(this.trans,getReplayDate.invoke(this.executionConfiguration));
-
-                Method setRepository =  this.transClass.getDeclaredMethod("setRepository", Repository.class);
-                Method getRepository =  this.executionConfigurationClass.getDeclaredMethod("getRepository");
-                setRepository.invoke(this.trans,getRepository.invoke(this.executionConfiguration));
-
-                //logs
-                Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
-                Object logChannel = getLogChannel.invoke(trans);
-                Method logMinimal = logChannel.getClass().getDeclaredMethod("logMinimal", new Class[] {String.class, Object[].class});
+                this.trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+                this.trans.setLogLevel(executionConfiguration.getLogLevel());
+                this.trans.setReplayDate(executionConfiguration.getReplayDate());
+                this.trans.setRepository(executionConfiguration.getRepository());
 
                 //trans execute
-                Method getArguments = transMetaClass.getDeclaredMethod("getArguments");
-                Method execute =  this.transClass.getDeclaredMethod("execute",String[].class);
-                execute.invoke(this.trans,getArguments.invoke(transMeta));
+                this.trans.execute(transMeta.getArguments());
 
-                Method isFinished  =  transClass.getDeclaredMethod("isFinished");
                 while (running){
                     Thread.sleep(500);
-                    running = ! (boolean) isFinished.invoke(trans);
+                    running = ! this.trans.isFinished();
                 }
-
-
-
-                //log write
-                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Finished", new Object[0]});
                 Date stop=new Date();
-                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Start="+StringUtil.DateToString(monitorSchedule.getStartTime(), "yyyy/MM/dd HH:mm:ss")+", Stop="+StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]});
+
+                //logs
+                LogChannelInterface logChannel =  this.trans.getLogChannel();
+
+                logChannel.logMinimal("ETL--TRANS Finished", new Object[0]);
+                logChannel.logMinimal("ETL--TRANS Start="+StringUtil.DateToString(monitorSchedule.getStartTime(), "yyyy/MM/dd HH:mm:ss")+", Stop="+StringUtil.DateToString(stop, "yyyy/MM/dd HH:mm:ss"), new Object[0]);
                 long millis=stop.getTime()-monitorSchedule.getStartTime().getTime();
-                logMinimal.invoke(logChannel, new Object[] {"ETL--TRANS Processing ended after "+(millis/1000)+" seconds.", new Object[0]});
+                logChannel.logMinimal("ETL--TRANS Processing ended after "+(millis/1000)+" seconds.", new Object[0]);
 
                 errCount = (int)trans.getClass().getDeclaredMethod("getErrors").invoke(trans);
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
                 SlaveServerBean slaveServerBean = getSlaveServerBean(monitorSchedule.getServerName(), "");
-                Object slaveServer = createSlaveServer(slaveServerBean);
-
-                Method setRemoteServer = this.executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(this.executionConfiguration, slaveServer);
-
-
-                Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
-                carteObjectId = (String) sendToSlaveServer.invoke(trans, transMeta, this.executionConfiguration, repository);
-
+                SlaveServer slaveServer = createSlaveServer(slaveServerBean);
+                executionConfiguration.setRemoteServer(slaveServer);
+                String carteObjectId =  trans.sendToSlaveServer(transMeta, this.executionConfiguration, repository);
 
                 Method getTransStatus = slaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class);
 
                 while(running) {
-                    Object transStatus = getTransStatus.invoke(slaveServer,transMetaName,carteObjectId,0);
-                    running = (boolean)transStatus.getClass().getDeclaredMethod("isRunning").invoke(transStatus);
-                    Object result = transStatus.getClass().getDeclaredMethod("getResult").invoke(transStatus);
+                    SlaveServerTransStatus transStatus = slaveServer.getTransStatus(transMetaName,carteObjectId,0);
+                    running = transStatus.isRunning();
+                    Result result = transStatus.getResult();
                     if(!running && result != null) {
-                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                        errCount = Long.valueOf(result.getNrErrors()).intValue();
                     }
                     Thread.sleep(500);
                 }
 
             }else if(KettleEngine.EXECTYPE_CLUSTER == execType){
 
-                Method executeClustered = trans.getClass().getDeclaredMethod("executeClustered", transMeta.getClass(), executionConfigurationClass);
 
-                transSplitter =  executeClustered.invoke(trans, transMeta, executionConfiguration);
+
             }else if(KettleEngine.EXECTYPE_HA == execType){
                 SlaveServerBean slaveServerBean = getSlaveServerBean("", monitorSchedule.getHaName());
-                Object slaveServer = createSlaveServer(slaveServerBean);
-                Method setRemoteServer = executionConfigurationClass.getDeclaredMethod("setRemoteServer", slaveServer.getClass());
-                setRemoteServer.invoke(executionConfiguration, slaveServer);
-
-                Method sendToSlaveServer = trans.getClass().getDeclaredMethod("sendToSlaveServer", transMeta.getClass(), executionConfigurationClass, repositoryClass);
-                carteObjectId = (String)  sendToSlaveServer.invoke(trans, transMeta, executionConfiguration, repository);
+                SlaveServer slaveServer = createSlaveServer(slaveServerBean);
+                executionConfiguration.setRemoteServer(slaveServer);
+                String carteObjectId =  trans.sendToSlaveServer(transMeta, this.executionConfiguration, repository);
 
                 Method getTransStatus = slaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class);
 
                 while(running) {
-                    Object transStatus = getTransStatus.invoke(slaveServer,transMetaName,carteObjectId,0);
-                    running = (boolean)transStatus.getClass().getDeclaredMethod("isRunning").invoke(transStatus);
-                    Object result = transStatus.getClass().getDeclaredMethod("getResult").invoke(transStatus);
+                    SlaveServerTransStatus transStatus = slaveServer.getTransStatus(transMetaName,carteObjectId,0);
+                    running = transStatus.isRunning();
+                    Result result = transStatus.getResult();
                     if(!running && result != null) {
-                        errCount = (int)result.getClass().getDeclaredMethod("getNrErrors").invoke(result);
+                        errCount = Long.valueOf(result.getNrErrors()).intValue();
                     }
                     Thread.sleep(500);
                 }
@@ -290,10 +236,7 @@ public class TransExecutor implements Runnable{
         }finally {
             finished = true;
             if(repository != null){
-                try {
-                    this.repository.getClass().getDeclaredMethod("disconnect").invoke(this.repository);
-                } catch (Exception e) {
-                }
+                repository.disconnect();
             }
         }
 
@@ -317,18 +260,13 @@ public class TransExecutor implements Runnable{
      * @return
      * @throws Exception
      */
-    private Object createSlaveServer(SlaveServerBean slaveServerBean) throws Exception{
+    private SlaveServer createSlaveServer(SlaveServerBean slaveServerBean) throws Exception{
         boolean isMaster = false;
         if("1".equals(slaveServerBean.getMaster())){
             isMaster = true;
         }
-        Class<?> slaveServerClass = Class.forName("org.pentaho.di.cluster.SlaveServer", true, classLoaderUtil);
-        Constructor<?> slaveServerConstructor = slaveServerClass
-                .getConstructor(String.class, String.class,
-                        String.class, String.class, String.class,
-                        String.class, String.class, String.class,
-                        boolean.class);
-        Object slaveServer = slaveServerConstructor.newInstance(
+
+        SlaveServer slaveServer = new SlaveServer(
                 slaveServerBean.getName(),
                 slaveServerBean.getHost_name(),
                 slaveServerBean.getPort(),
@@ -345,25 +283,22 @@ public class TransExecutor implements Runnable{
 
 
             try {
-                if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingLocally").invoke(executionConfiguration)) {
-                    Method getLogChannel = transClass.getDeclaredMethod("getLogChannel");
-                    Object logChannel = getLogChannel.invoke(trans);
+                if(executionConfiguration.isExecutingLocally()) {
 
-                    Method  getLogChannelId  =  logChannel.getClass().getDeclaredMethod("getLogChannelId");
-                    String logChannelId =   (String) getLogChannelId.invoke(logChannel);
+                    //logs
+                    LogChannelInterface logChannel =  this.trans.getLogChannel();
+
+                    String logChannelId =   logChannel.getLogChannelId();
 
 
                     String loggingText = CentralLogStore.getAppender().getBuffer(
                             logChannelId, false, startLineNr, CentralLogStore.getLastBufferLineNr()).toString();
                     return loggingText;
 
-                } else if((Boolean) executionConfiguration.getClass().getDeclaredMethod("isExecutingRemotely").invoke(executionConfiguration)) {
-                    Object remoteSlaveServer = executionConfiguration.getClass().getDeclaredMethod("getRemoteServer").invoke(executionConfiguration);
-
-
-
-                    Object transStatus = remoteSlaveServer.getClass().getDeclaredMethod("getTransStatus",String.class,String.class,int.class).invoke(remoteSlaveServer,transMetaName,carteObjectId,0) ;
-                    return (String) transStatus.getClass().getDeclaredMethod("getLoggingString").invoke(transStatus);
+                } else if(executionConfiguration.isExecutingRemotely()) {
+                    SlaveServer remoteSlaveServer = executionConfiguration.getRemoteServer();
+                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transMetaName,carteObjectId,0);
+                    return  transStatus.getLoggingString();
                 }
             }catch (Exception e){
                 return "";
@@ -384,67 +319,54 @@ public class TransExecutor implements Runnable{
 
     }
     public boolean isStopped() throws Exception {
-        Method  isFinishedOrStopped  =  transClass.getDeclaredMethod("isStopped");
 
-        return (boolean) isFinishedOrStopped.invoke(trans);
+        return this.trans.isStopped();
 
     }
 
 
     public Long getNrLinesInput() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesInput").invoke(result);
+
+        return trans.getResult().getNrLinesInput();
     }
 
     public Long getNrLinesOutput() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesOutput").invoke(result);
+
+        return trans.getResult().getNrLinesOutput();
     }
 
     public Long getNrLinesRead() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesRead").invoke(result);
+
+        return trans.getResult().getNrLinesRead();
     }
 
-    public Object getResult() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return result;
+    public Result getResult() throws Exception {
+
+        return trans.getResult();
     }
 
     public Long getNrLinesUpdated() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesUpdated").invoke(result);
+        return trans.getResult().getNrLinesUpdated();
     }
 
     public Long getNrLinesDeleted() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesDeleted").invoke(result);
+        return trans.getResult().getNrLinesDeleted();
     }
 
     public Long getNrLinesWritten() throws Exception {
-        Method  getResult  =  transClass.getDeclaredMethod("getResult");
-        Object result = getResult.invoke(trans);
-        return (Long) result.getClass().getDeclaredMethod("getNrLinesWritten").invoke(result);
+        return trans.getResult().getNrLinesWritten();
     }
 
     public void stopAllForcely() throws Exception{
-        Method  stopAllForcely  =  transClass.getDeclaredMethod("stopAllForcely");
 
-        stopAllForcely.invoke(trans);
+        this.trans.stopAllForcely();
     }
 
     public void stop() throws Exception {
 
         try {
             if(KettleEngine.EXECTYPE_LOCAL == execType){
-                Method  stopAll  =  transClass.getDeclaredMethod("stopAll");
-                stopAll.invoke(trans);
+                trans.stopAll();
 
             }else if(KettleEngine.EXECTYPE_REMOTE == execType){
 
@@ -462,35 +384,23 @@ public class TransExecutor implements Runnable{
 
     }
 
-    public Class<?> getRepositoryClass() {
-        return repositoryClass;
-    }
 
-    public void setRepositoryClass(Class<?> repositoryClass) {
-        this.repositoryClass = repositoryClass;
-    }
 
-    public Object getTrans() {
+    public Trans getTrans() {
         return trans;
     }
 
-    public void setTrans(Object trans) {
+    public void setTrans(Trans trans) {
         this.trans = trans;
     }
 
-    public Class<?> getTransMetaClass() {
-        return transMetaClass;
-    }
 
-    public void setTransMetaClass(Class<?> transMetaClass) {
-        this.transMetaClass = transMetaClass;
-    }
 
-    public Object getRepository() {
+    public Repository getRepository() {
         return repository;
     }
 
-    public void setRepository(Object repository) {
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 }
