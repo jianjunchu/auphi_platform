@@ -56,7 +56,9 @@ public class PlatformLogResponse  {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
-    private Date createTime;
+    private Date createDate;
+
+
 
 
 

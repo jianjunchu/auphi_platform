@@ -17,7 +17,6 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("l_data_exact_t")
 public class DataExactT extends Model {
 
     /**

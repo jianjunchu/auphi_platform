@@ -87,6 +87,12 @@ public class Rule extends DataEntity<Rule> {
     private String fieldName;
 
     /**
+     * 条件
+     */
+    @TableField("CONDITION")
+    private String condition;
+
+    /**
      * 字段类型
      */
     @TableField("FIELD_TYPE")

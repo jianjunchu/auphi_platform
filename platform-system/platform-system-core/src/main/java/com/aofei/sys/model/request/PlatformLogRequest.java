@@ -2,6 +2,7 @@ package com.aofei.sys.model.request;
 
 import com.aofei.base.model.request.BaseRequest;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -24,13 +25,13 @@ public class PlatformLogRequest extends BaseRequest {
      */
     private String username;
     /**
+     * 模块
+     */
+    private String module;
+    /**
      * 用户操作
      */
     private String operation;
-    /**
-     * 请求方法
-     */
-    private String method;
     /**
      * 请求参数
      */
@@ -43,12 +44,22 @@ public class PlatformLogRequest extends BaseRequest {
      * 创建时间
      */
     private Date createDate;
+
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date startCreateTime;
+
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date endCreateTime;
+
     /**
      * 是否删除  1：已删除  0：正常
      */
     private Integer delFlag;
 
 
-
+    /**
+     * 创建时间
+     */
+    private String type;
 
 }

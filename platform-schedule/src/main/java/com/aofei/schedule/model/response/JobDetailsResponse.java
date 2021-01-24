@@ -17,8 +17,14 @@ public class    JobDetailsResponse  {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     *
+     */
     private String schedName;
 
+    /**
+     * 作业名称
+     */
     private String jobName;
 
     private String groupName;

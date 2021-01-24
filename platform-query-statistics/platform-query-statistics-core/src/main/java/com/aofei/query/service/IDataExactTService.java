@@ -1,12 +1,12 @@
 package com.aofei.query.service;
 
-import com.aofei.query.entity.DataExactT;
 import com.aofei.query.model.request.DataExactTRequest;
-import com.aofei.query.model.response.DataExactTResponse;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
+import org.pentaho.di.core.exception.KettleException;
 
-public interface IDataExactTService extends IService<DataExactT> {
+import java.sql.SQLException;
+
+public interface IDataExactTService  {
 
 
     /**
@@ -15,6 +15,6 @@ public interface IDataExactTService extends IService<DataExactT> {
      * @param request
      * @return
      */
-    Page<DataExactTResponse> getPage(Page<DataExactT> page, DataExactTRequest request);
+    Page getPage(Page page, DataExactTRequest request) throws KettleException, SQLException;
 
 }

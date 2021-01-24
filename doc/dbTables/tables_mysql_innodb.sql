@@ -1,18 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : localhost
- Source Server Type    : MySQL
- Source Server Version : 50721
- Source Host           : localhost:3306
- Source Schema         : kettle
-
- Target Server Type    : MySQL
- Target Server Version : 50721
- File Encoding         : 65001
-
- Date: 28/11/2018 22:25:01
-*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -3931,6 +3916,7 @@ CREATE TABLE `DATA_QUALITY_RULE` (
   `FIELD_NAME` varchar(200) DEFAULT NULL COMMENT '字段名',
   `FIELD_TYPE` int(11) DEFAULT NULL COMMENT '字段类型',
   `IS_ENABLE` tinyint(1) DEFAULT '0' COMMENT '是否启用',
+  `CONDITION` varchar(255) DEFAULT NULL COMMENT '条件',
   `CREATE_USER` varchar(50) DEFAULT NULL COMMENT '创建用户',
   `UPDATE_USER` varchar(50) DEFAULT NULL COMMENT '最后修改用户',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',

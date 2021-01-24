@@ -5,8 +5,17 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-          ID_ROLE AS roleId
-        , ID_MENU AS menuId
+          ROLE_ID AS roleId
+        , MENU_ID AS menuId
     </sql>
+    <insert id="insert">
+        insert into SYS_ROLE_MENU (
+        ROLE_ID
+        ,MENU_ID
+        )VALUES(
+        ${roleId}
+        ,${menuId}
+        )
+    </insert>
 
 </mapper>

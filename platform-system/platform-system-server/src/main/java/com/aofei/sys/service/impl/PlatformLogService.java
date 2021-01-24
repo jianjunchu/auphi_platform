@@ -2,7 +2,6 @@ package com.aofei.sys.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.aofei.base.entity.BaseEntity;
-import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.service.impl.BaseService;
 import com.aofei.log.aop.LogPoint;
 import com.aofei.sys.entity.PlatformLog;
@@ -41,7 +40,7 @@ public class PlatformLogService extends BaseService<PlatformLogMapper, PlatformL
     }
 
     @Override
-    public void save(CurrentUserResponse userResponse, ProceedingJoinPoint joinPoint, String methodName, String module, String description) {
+    public void save(String username, ProceedingJoinPoint joinPoint, String methodName, String module, String description) {
         try {
             //请求的参数
             Object[] args = joinPoint.getArgs();
@@ -54,9 +53,7 @@ public class PlatformLogService extends BaseService<PlatformLogMapper, PlatformL
             platformLog.setModule(module);
             platformLog.setOperation(description);
             platformLog.setParams(params);
-            if(userResponse!=null){
-                platformLog.setUsername(userResponse.getUsername());
-            }
+            platformLog.setUsername(username);
             super.insert(platformLog);
         }catch (Exception e){
             logger.error(e.getMessage());

@@ -12,9 +12,11 @@
     <artifactId>platform-log</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>platform-log-sys</module>
-        <module>platform-log-job</module>
-        <module>platform-log-trans</module>
+        <module>platform-log-sys-core</module>
+        <module>platform-log-job-core</module>
+        <module>platform-log-job-server</module>
+        <module>platform-log-trans-core</module>
+        <module>platform-log-trans-server</module>
     </modules>
 
     <dependencies>

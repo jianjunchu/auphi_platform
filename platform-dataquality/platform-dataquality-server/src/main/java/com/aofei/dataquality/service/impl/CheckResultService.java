@@ -54,6 +54,7 @@ public class CheckResultService extends BaseService<CheckResultMapper, CheckResu
     @Autowired
     private ExecuteCheckService executeCheckService;
 
+    @Log(module = "数据质量管理",description = "查询规则检查结果")
     @Override
     public Page<CheckResultResponse> getPage(Page<CheckResult> page, CheckResultRequest request) {
         List<CheckResult> list = baseMapper.findList(page, request);

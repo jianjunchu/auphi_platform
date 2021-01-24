@@ -81,7 +81,7 @@
     <json-simple.version>1.1</json-simple.version>
     <jxl.version>2.6.12</jxl.version>
     <olap4j.version>1.2.0</olap4j.version>
-    <poi.version>3.17</poi.version>
+    <poi.version>4.0.0</poi.version>
     <postgresql.version>42.1.1</postgresql.version>
     <rome.version>1.0</rome.version>
     <saxon-dom.version>9.1.0.8</saxon-dom.version>
@@ -1147,6 +1147,19 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-excelant</artifactId>
+      <version>${poi.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml-schemas</artifactId>

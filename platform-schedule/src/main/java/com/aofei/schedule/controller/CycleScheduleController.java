@@ -16,11 +16,12 @@ import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDetailsRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
 import com.aofei.schedule.model.response.JobDetailsResponse;
+import com.aofei.schedule.model.response.JobPlanResponse;
 import com.aofei.schedule.service.IJobDetailsService;
 import com.aofei.schedule.service.IQuartzService;
-
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -30,7 +31,9 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @auther 傲飞数据整合平台
@@ -134,9 +137,9 @@ public class CycleScheduleController extends BaseController {
         }
 
         Class quartzExecuteClass = null;
-        if("JOB".equalsIgnoreCase(request.getFileType())){
+        if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = JobRunner.class;
-        }else if("TRANSFORMATION".equalsIgnoreCase(request.getFileType())){
+        }else if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = TransRunner.class;
         }
         request.setUsername(user.getUsername());
@@ -272,6 +275,20 @@ public class CycleScheduleController extends BaseController {
         GeneralScheduleResponse response = JSON.parseObject(json,GeneralScheduleResponse.class);
 
         return Response.ok(response) ;
+    }
+
+    @ApiOperation(value = "调度计划", notes = "当日调度计划清单列表")
+    @RequestMapping(value = "/plan", method = RequestMethod.GET)
+    public Response<List<JobPlanResponse>> plan(
+            @ApiIgnore JobDetailsRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user) throws ParseException {
+
+        request.setOrganizerId(user.getOrganizerId());
+        List<JobPlanResponse> page = jobDetailsService.listJobPlan(request);
+        Collections.sort(page); // 按年龄排序
+
+
+        return Response.ok(page) ;
     }
 
 }

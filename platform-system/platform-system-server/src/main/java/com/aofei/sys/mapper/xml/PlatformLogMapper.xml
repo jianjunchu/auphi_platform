@@ -23,12 +23,34 @@
         from SYS_PLATFORM_LOG a
         <where>
             a.DEL_FLAG = 0
+            <if test="username != null and username != ''">
+                AND a.USERNAME = like  '%${username}%'
+            </if>
+            <if test="module != null and module != ''">
+                AND a.MODULE = #{module}
+            </if>
+            <if test="operation != null and operation != ''">
+                AND a.OPERATION = #{operation}
+            </if>
             <if test="startCreateTime !=null ">
-                AND  DATE_FORMAT(a.CREATE_DATE,'%Y%m%d') <![CDATA[ >= ]]> DATE_FORMAT(#{startCreateTime},'%Y%m%d')
+                AND  DATE_FORMAT(a.CREATE_DATE,'%Y%m%d%H%i%s') <![CDATA[ >= ]]> DATE_FORMAT(#{startCreateTime},'%Y%m%d%H%i%s')
             </if>
             <if test="endCreateTime !=null ">
-                AND   DATE_FORMAT(a.CREATE_DATE,'%Y%m%d') <![CDATA[ <= ]]> DATE_FORMAT(#{endCreateTime},'%Y%m%d')
+                AND   DATE_FORMAT(a.CREATE_DATE,'%Y%m%d%H%i%s') <![CDATA[ <= ]]> DATE_FORMAT(#{endCreateTime},'%Y%m%d%H%i%s')
             </if>
+
+            <if test="type != null and type == 'login-log'">
+                AND a.OPERATION = '用户登录'
+            </if>
+
+            <if test="type != null and type == 'schedule-log'">
+                AND a.MODULE = '调度管理'
+            </if>
+
+            <if test="type != null and type == 'menu-log'">
+                AND a.MODULE <![CDATA[ <> ]]> '调度管理' AND a.OPERATION <![CDATA[ <> ]]> '用户登录'
+            </if>
+
         </where>
     </select>
 

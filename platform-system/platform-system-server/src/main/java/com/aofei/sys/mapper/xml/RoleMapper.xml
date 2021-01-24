@@ -52,6 +52,34 @@
 
     </select>
 
+    <insert id="insert">
+        insert into SYS_ROLE (
+          C_ROLE_ID
+        , C_ROLE_NAME
+        , C_DESCRIPTION
+        , C_ORGANIZER_ID
+        , C_PRIVILEDGES
+        , C_ISSYSTEMROLE
+        , CREATE_USER
+        , UPDATE_USER
+        , CREATE_TIME
+        , UPDATE_TIME
+        , DEL_FLAG
+        )VALUES(
+          #{roleId}
+        , #{roleName}
+        , #{description}
+        , #{organizerId}
+        , #{priviledges}
+        , #{isSystemRole}
+        , #{createUser}
+        , #{updateUser}
+        , #{createTime}
+        , #{updateTime}
+        , #{delFlag}
+        )
+    </insert>
+
     <update id="updateById">
         update SYS_ROLE a
         <set>

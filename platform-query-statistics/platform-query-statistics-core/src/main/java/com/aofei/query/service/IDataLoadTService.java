@@ -1,13 +1,13 @@
 package com.aofei.query.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.aofei.query.entity.DataLoadT;
 import com.aofei.query.model.request.DataLoadTRequest;
-import com.aofei.query.model.response.DataLoadTResponse;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
+import org.pentaho.di.core.exception.KettleException;
 
-public interface IDataLoadTService extends IService<DataLoadT> {
+import java.sql.SQLException;
+
+public interface IDataLoadTService  {
 
     /**
      * 获取 分页 列表
@@ -15,9 +15,9 @@ public interface IDataLoadTService extends IService<DataLoadT> {
      * @param request
      * @return
      */
-    Page<DataLoadTResponse> getPage(Page<DataLoadT> page, DataLoadTRequest request);
+    Page getPage(Page page, DataLoadTRequest request) throws KettleException, SQLException;
 
-    Page<DataLoadTResponse> getBackupFrequencyPage(Page<DataLoadT> pagination, DataLoadTRequest request);
+    Page getBackupFrequencyPage(Page pagination, DataLoadTRequest request) throws KettleException, SQLException;
 
-    JSONObject getBackupRecordChartData(DataLoadTRequest request);
+    JSONObject getBackupRecordChartData(DataLoadTRequest request) throws KettleException, SQLException;
 }

@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,14 +31,14 @@ public class UserRoleService extends BaseService<UserRoleMapper, UserRole> imple
             super.delete(new EntityWrapper<UserRole>().eq("C_USER_ID", userId));
 
             if (!Utils.isEmpty(roles)) {
-                List<UserRole> userRoles = new ArrayList<>();
+
                 for (Long roleId : roles) {
                     UserRole userRole = new UserRole();
                     userRole.setRoleId(roleId);
                     userRole.setUserId(userId);
-                    userRoles.add(userRole);
+                    baseMapper.insert(userRole);
                 }
-                super.insertBatch(userRoles);
+
                 return 1;
             }
         }

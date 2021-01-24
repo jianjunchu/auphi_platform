@@ -4,28 +4,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.controller.BaseController;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
-import com.aofei.query.model.request.BatchRevTRequest;
-import com.aofei.query.model.request.DataExactTRequest;
-import com.aofei.query.model.request.DataLoadTRequest;
-import com.aofei.query.model.request.ErrorTRequest;
-import com.aofei.query.model.response.BatchRevTResponse;
-import com.aofei.query.model.response.DataExactTResponse;
+import com.aofei.query.model.request.*;
 import com.aofei.query.model.response.DataLoadTResponse;
 import com.aofei.query.model.response.ErrorTResponse;
-import com.aofei.query.service.IBatchRevTService;
-import com.aofei.query.service.IDataExactTService;
-import com.aofei.query.service.IDataLoadTService;
-import com.aofei.query.service.IErrorTService;
+import com.aofei.query.service.*;
+import com.aofei.utils.ExcelUtil;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.pentaho.di.core.exception.KettleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 @Api(tags = { "查询统计-查询统计" })
 @RestController
@@ -39,10 +39,16 @@ public class DataQueryController extends BaseController {
     private IDataLoadTService dataLoadTService;
 
     @Autowired
-    private IErrorTService errorTService ;
+    private ISerrorTService serrorTService;
+
+    @Autowired
+    private IPerrorLogService perrorLogService;
 
     @Autowired
     private IDataExactTService dataExactTService ;
+
+    @Autowired
+    private IPdataExtractTService pdataExtractTService ;
 
     /**
      * 文件接收记录查询(分页查询)
@@ -56,9 +62,9 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/filerecv/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<BatchRevTResponse>> filerecvPage(@ApiIgnore BatchRevTRequest request)  {
+    public Response<DataGrid> filerecvPage(@ApiIgnore BatchRevTRequest request) throws KettleException, SQLException {
 
-        Page<BatchRevTResponse> page = batchRevTService.getPage(getPagination(request), request);
+        Page page = batchRevTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
 
@@ -74,7 +80,7 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupFrequency/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<DataLoadTResponse>> backupFrequencyPage(@ApiIgnore DataLoadTRequest request)  {
+    public Response<DataGrid<DataLoadTResponse>> backupFrequencyPage(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
 
         Page<DataLoadTResponse> page = dataLoadTService.getBackupFrequencyPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
@@ -92,7 +98,7 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupFrequency/chartData", method = RequestMethod.GET)
-    public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request)  {
+    public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
 
         JSONObject jsonObject  = dataLoadTService.getBackupRecordChartData(request);
         return Response.ok(jsonObject) ;
@@ -112,45 +118,154 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupRecord/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request)  {
+    public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
 
         Page<DataLoadTResponse> page = dataLoadTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
 
     /**
-     * 错误数据查询(分页查询)
+     * 服务端错误数据查询(分页查询)
      * @param request
      * @return
      */
-    @ApiOperation(value = "错误数据查询(分页查询)", notes = "错误数据查询(分页查询)")
+    @ApiOperation(value = "服务端错误数据查询(分页查询)", notes = "服务端错误数据查询(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
 
     })
-    @RequestMapping(value = "/error/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<ErrorTResponse>> backupRecordPage(@ApiIgnore ErrorTRequest request)  {
+    @RequestMapping(value = "/s_error/listPage", method = RequestMethod.GET)
+    public Response<Object> s_error(
+            HttpServletResponse response,
+            @ApiIgnore SerrorTRequest request) throws Exception {
 
-        Page<ErrorTResponse> page = errorTService.getPage(getPagination(request), request);
-        return Response.ok(buildDataGrid(page)) ;
+
+
+        if(request.getExport() == 1){
+            List<Map<String,Object>> dataList = serrorTService.getList(request);
+
+            String[] headers = {"受理号","上传单位代码","所属备份文件名","错误代码","错误描述","操作","处理状态","创建时间","更新时间"};
+
+            String[][] values = new String[dataList.size()][headers.length];
+
+            for(int i = 0;i < dataList.size();i++ ){
+                values[i][0] = dataList.get(i).get("acceptNo").toString();
+                values[i][1] = dataList.get(i).get("unitNo").toString();
+                values[i][2] = dataList.get(i).get("backupFile").toString();
+                values[i][3] = dataList.get(i).get("errorCode").toString();
+                values[i][4] = dataList.get(i).get("errorDesc").toString();
+                values[i][5] = dataList.get(i).get("currOperation").toString();
+                values[i][6] = dataList.get(i).get("dealFlag").toString();
+                values[i][7] = dataList.get(i).get("createTime").toString();
+                values[i][8] = dataList.get(i).get("updateTime").toString();
+            }
+
+            HSSFWorkbook workbook =  ExcelUtil.getHSSFWorkbook(null,null,"错误数据",headers,values,null);
+            String path =  ExcelUtil.exportExcel(workbook,"错误数据_"+ System.currentTimeMillis()+".xls");
+
+            return Response.ok(path) ;
+
+        }else{
+            Page<ErrorTResponse> page = serrorTService.getPage(getPagination(request), request);
+            return Response.ok(buildDataGrid(page)) ;
+        }
     }
 
     /**
-     * 数据抽取记录查询(分页查询)
+     * 服务端错误数据查询(分页查询)
      * @param request
      * @return
      */
-    @ApiOperation(value = "数据抽取记录查询(分页查询)", notes = "数据抽取记录查询(分页查询)")
+    @ApiOperation(value = "服务端错误数据查询(分页查询)", notes = "服务端错误数据查询(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
 
     })
-    @RequestMapping(value = "/exact/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<DataExactTResponse>> exactPage(@ApiIgnore DataExactTRequest request)  {
+    @RequestMapping(value = "/p_error/listPage", method = RequestMethod.GET)
+    public Response<Object> p_error(
+            HttpServletResponse response,
+            @ApiIgnore PerrorTRequest request) throws Exception {
 
-        Page<DataExactTResponse> page = dataExactTService.getPage(getPagination(request), request);
-        return Response.ok(buildDataGrid(page)) ;
+        if(request.getExport() == 1){
+            List<Map<String,Object>> dataList = perrorLogService.getList(request);
+
+            String[] headers = {"单位代码","文件名","ACCEPT_NO/GROUP_NO","错误代码","错误描述","操作","入库时间","处理状态","生成时间"};
+
+            String[][] values = new String[dataList.size()][headers.length];
+
+            for(int i = 0;i < dataList.size();i++ ){
+                values[i][0] = dataList.get(i).get("UNIT_NO").toString();
+                values[i][1] = dataList.get(i).get("EXTRACT_FILE").toString();
+                values[i][2] = dataList.get(i).get("ACCEPT_GROUP_NO").toString();
+                values[i][3] = dataList.get(i).get("ERROR_CODE").toString();
+                values[i][4] = dataList.get(i).get("ERROR_DESC").toString();
+                values[i][5] = dataList.get(i).get("OPERATION").toString();
+                values[i][6] = dataList.get(i).get("INSERT_DATE").toString();
+                values[i][7] = dataList.get(i).get("DEAL_STATUS").toString();
+                values[i][8] = dataList.get(i).get("INSERT_TIME").toString();
+            }
+
+            HSSFWorkbook workbook =  ExcelUtil.getHSSFWorkbook(null,null,"错误数据",headers,values,null);
+            String path = ExcelUtil.exportExcel(workbook,"错误数据_"+ System.currentTimeMillis()+".xls");
+
+            return Response.ok(path) ;
+
+        }else{
+            Page<ErrorTResponse> page = perrorLogService.getPage(getPagination(request), request);
+
+            return Response.ok(buildDataGrid(page)) ;
+        }
+
+
+    }
+    /**
+     * 制证端  数据抽取记录查询
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "制证端  数据抽取记录查询(分页查询)", notes = "制证端  数据抽取记录查询(分页查询)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "export", value = "1:导出", paramType = "query", dataType = "Integer"),
+
+    })
+    @RequestMapping(value = "/exact/listPage", method = RequestMethod.GET)
+    public Response<Object> exactPage(
+            HttpServletResponse response,
+            @ApiIgnore PdataExactTRequest request) throws Exception {
+
+        if(request.getExport() == 1){
+            List<Map<String,Object>> dataList = pdataExtractTService.getList(request);
+
+            String[] headers = {"批次号","单位代码","文件名","待抽取总数","待抽取有效数量","待抽取无效数量","抽取时间段起始日期","抽取时间段截止日期","最大受理号","生成时间"};
+
+            String[][] values = new String[dataList.size()][headers.length];
+
+            for(int i = 0;i < dataList.size();i++ ){
+                values[i][0] = dataList.get(i).get("BATCH_NO").toString();
+                values[i][1] = dataList.get(i).get("UNIT_NO").toString();
+                values[i][2] = dataList.get(i).get("EXTRACT_FILE").toString();
+                values[i][3] = dataList.get(i).get("EXTRACT_TOTAL_COUNT").toString();
+                values[i][4] = dataList.get(i).get("EXTRACT_VALID_COUNT").toString();
+                values[i][5] = dataList.get(i).get("EXTRACT_INVALID_COUNT").toString();
+                values[i][6] = dataList.get(i).get("EXTRACT_START").toString();
+                values[i][7] = dataList.get(i).get("EXTRACT_END").toString();
+                values[i][8] = dataList.get(i).get("MAX_ACCEPT_NO").toString();
+                values[i][9] = dataList.get(i).get("INSERT_TIME").toString();
+            }
+
+            HSSFWorkbook workbook =  ExcelUtil.getHSSFWorkbook(null,null,"数据抽取记录",headers,values,null);
+            String path= ExcelUtil.exportExcel(workbook,"数据抽取记录_"+ System.currentTimeMillis()+".xls");
+
+            return Response.ok(path) ;
+
+        }else{
+            Page page = pdataExtractTService.getPage(getPagination(request), request);
+            return Response.ok(buildDataGrid(page)) ;
+        }
+
     }
 }

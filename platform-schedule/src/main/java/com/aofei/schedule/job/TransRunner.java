@@ -7,6 +7,8 @@ import com.aofei.kettle.App;
 import com.aofei.kettle.TransExecutor;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.translog.entity.LogTrans;
+import com.aofei.translog.service.ILogTransService;
+import com.aofei.translog.service.ILogTransStepService;
 import com.aofei.translog.task.TransLogTimerTask;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -20,12 +22,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
 public class TransRunner extends QuartzJobBean {
+
+	@Resource
+	ILogTransService logTransService;
+
+	@Resource
+	ILogTransStepService logTransStepService;
 
 	private static Logger logger = LoggerFactory.getLogger(TransRunner.class);
 	private final Timer logTimer = new Timer();
@@ -39,6 +48,7 @@ public class TransRunner extends QuartzJobBean {
 
 			String dir = request.getFilePath();
 			String name = request.getFile();
+
 
 			System.out.println("Trans path ==> " + dir);
 			System.out.println("Trans name ==> " + name);
@@ -95,13 +105,14 @@ public class TransRunner extends QuartzJobBean {
 			LogTrans logTrans  = new LogTrans();
 			logTrans.setStartdate(new Date());
 			logTrans.setStatus("start");
+			logTrans.setFireTime(context.getFireTime());
 			logTrans.setQrtzJobGroup(context.getJobDetail().getKey().getGroup());
 			logTrans.setQrtzJobName(context.getJobDetail().getKey().getName());
 			logTrans.setTransname(transExecutor.getTransMeta().getName());
 			logTrans.setChannelId(transExecutor.getExecutionId());
 			logTrans.setTransCnName(transExecutor.getTransMeta().getName());
 
-            TransLogTimerTask transTimerTask = new TransLogTimerTask(transExecutor,logTrans);
+            TransLogTimerTask transTimerTask = new TransLogTimerTask(logTransService,logTransStepService,transExecutor,logTrans);
 			logTimer.schedule(transTimerTask, 0,10000);
 
 		} catch(Exception e) {

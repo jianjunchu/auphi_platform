@@ -2,9 +2,10 @@ package com.aofei.query.service;
 
 import com.aofei.query.entity.BatchRevT;
 import com.aofei.query.model.request.BatchRevTRequest;
-import com.aofei.query.model.response.BatchRevTResponse;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
+import org.pentaho.di.core.exception.KettleException;
+
+import java.sql.SQLException;
 
 /**
  * 一所数据查询
@@ -12,7 +13,7 @@ import com.baomidou.mybatisplus.service.IService;
  * @auther 傲飞数据整合平台
  * @create 2018-09-15 20:07
  */
-public interface IBatchRevTService extends IService<BatchRevT> {
+public interface IBatchRevTService {
 
     /**
      * 获取 分页 列表
@@ -20,6 +21,6 @@ public interface IBatchRevTService extends IService<BatchRevT> {
      * @param request
      * @return
      */
-    Page<BatchRevTResponse> getPage(Page<BatchRevT> page, BatchRevTRequest request);
+    Page getPage(Page<BatchRevT> page, BatchRevTRequest request) throws KettleException, SQLException;
 
 }

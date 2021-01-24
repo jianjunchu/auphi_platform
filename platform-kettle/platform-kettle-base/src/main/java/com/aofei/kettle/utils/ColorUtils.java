@@ -1,7 +1,21 @@
 package com.aofei.kettle.utils;
 
+/**
+ * Color 工具类
+ *
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class ColorUtils {
 
+	/**
+	 * Color RGB to Hex\
+	 * RGB颜色转16进制字符串
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
 	public static String toHex(int r, int g, int b) {
 		String R = Integer.toHexString(r);
 		R = R.length() < 2 ? ('0' + R) : R;
@@ -12,6 +26,12 @@ public class ColorUtils {
 		return '#' + R + B + G;
 	}
 
+	/**
+	 * Hex String get Red
+	 * 16进制颜色字符串获取红色int值
+	 * @param color
+	 * @return
+	 */
 	public static int r(String color) {
 		if(color == null)
 			return 0;
@@ -27,6 +47,12 @@ public class ColorUtils {
 		return i;
 	}
 
+	/**
+	 * Hex String get green
+	 * 16进制颜色字符串获取绿色int值
+	 * @param color
+	 * @return
+	 */
 	public static int g(String color) {
 		if(color == null)
 			return 0;
@@ -42,6 +68,12 @@ public class ColorUtils {
 		return i;
 	}
 
+	/**
+	 * Hex String get blue
+	 * 16进制颜色字符串获取蓝色int值
+	 * @param color
+	 * @return
+	 */
 	public static int b(String color) {
 		if(color == null)
 			return 0;

@@ -28,7 +28,12 @@ import java.util.List;
 @Service
 public class RuleGroupService extends BaseService<RuleGroupMapper, RuleGroup> implements IRuleGroupService {
 
-
+    /**
+     * 分页返回数据质量规则分组
+     * @param request
+     * @return
+     */
+    @Log(module = "数据质量管理",description = "数据质量规则查询")
     @Override
     public Page<RuleGroupResponse> getPage(Page<RuleGroup> page, RuleGroupRequest request) {
         List<RuleGroup> list = baseMapper.findList(page, request);
@@ -36,12 +41,22 @@ public class RuleGroupService extends BaseService<RuleGroupMapper, RuleGroup> im
         return convert(page, RuleGroupResponse.class);
     }
 
+    /**
+     * 返回所有数据质量规则分组
+     * @param request
+     * @return
+     */
     @Override
     public List<RuleGroupResponse> getRuleGroups(RuleGroupRequest request) {
         List<RuleGroup> list = baseMapper.findList(request);
         return BeanCopier.copy(list,RuleGroupResponse.class);
     }
 
+    /**
+     * 新建数据质量规则分组
+     * @param request
+     * @return
+     */
     @Log(module = "数据质量管理",description = "新建数据质量规则分组")
     @Override
     public RuleGroupResponse save(RuleGroupRequest request) {
@@ -60,6 +75,11 @@ public class RuleGroupService extends BaseService<RuleGroupMapper, RuleGroup> im
 
     }
 
+    /**
+     * 修改数据质量规则分组
+     * @param request
+     * @return
+     */
     @Log(module = "数据质量管理",description = "修改数据质量规则分组")
     @Override
     public RuleGroupResponse update(RuleGroupRequest request) {
@@ -75,6 +95,12 @@ public class RuleGroupService extends BaseService<RuleGroupMapper, RuleGroup> im
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }
     }
+
+    /**
+     * 删除数据质量规则分组
+     * @param deptId
+     * @return
+     */
     @Log(module = "数据质量管理",description = "删除数据质量规则分组")
     @Override
     public int del(Long deptId) {
@@ -88,8 +114,12 @@ public class RuleGroupService extends BaseService<RuleGroupMapper, RuleGroup> im
         }
     }
 
-
-
+    /**
+     * 数据质量规则详情
+     * @param deptId
+     * @return
+     */
+    @Log(module = "数据质量管理",description = "数据质量规则详情")
     @Override
     public RuleGroupResponse get(Long deptId) {
         RuleGroup existing = selectById(deptId);

@@ -1,12 +1,12 @@
 package com.aofei.query.service;
 
-import com.aofei.query.entity.UploadUnitDBInfo;
 import com.aofei.query.model.request.UploadUnitDBInfoRequest;
-import com.aofei.query.model.response.UploadUnitDBInfoResponse;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
+import org.pentaho.di.core.exception.KettleException;
 
-public interface IUploadUnitDBInfoService extends IService<UploadUnitDBInfo> {
+import java.sql.SQLException;
+
+public interface IUploadUnitDBInfoService  {
 
     /**
      * 获取 分页 列表
@@ -14,6 +14,6 @@ public interface IUploadUnitDBInfoService extends IService<UploadUnitDBInfo> {
      * @param request
      * @return
      */
-    Page<UploadUnitDBInfoResponse> getPage(Page<UploadUnitDBInfo> page, UploadUnitDBInfoRequest request);
+    Page getPage(Page page, UploadUnitDBInfoRequest request) throws KettleException, SQLException;
 
 }

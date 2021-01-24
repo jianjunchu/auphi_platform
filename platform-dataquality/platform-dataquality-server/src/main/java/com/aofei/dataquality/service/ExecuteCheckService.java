@@ -7,6 +7,7 @@ import com.aofei.dataquality.model.request.CheckResultErrRequest;
 import com.aofei.dataquality.model.request.CheckResultRequest;
 import com.aofei.kettle.App;
 import com.aofei.utils.DateUtils;
+import com.aofei.utils.StringUtils;
 import lombok.extern.log4j.Log4j;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -404,7 +405,12 @@ public class ExecuteCheckService {
         String tableName =databaseMeta.getQuotedSchemaTableCombination(rule.getSchemaName(),rule.getTableName());
 
         StringBuffer sql = new StringBuffer("SELECT ")
-                .append(rule.getFieldName()).append(" FROM ").append(tableName);
+                .append(rule.getFieldName())
+                .append(" FROM ")
+                .append(tableName);
+        if(!StringUtils.isEmpty(rule.getCondition())){
+            sql.append(" WHERE ").append(rule.getCondition());
+        }
 
         return sql.toString();
 

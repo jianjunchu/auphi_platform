@@ -4,6 +4,8 @@ package com.aofei.schedule.job;
 import com.alibaba.fastjson.JSON;
 import com.aofei.base.common.Const;
 import com.aofei.joblog.entity.LogJob;
+import com.aofei.joblog.service.ILogJobService;
+import com.aofei.joblog.service.ILogJobStepService;
 import com.aofei.joblog.task.JobLogTimerTask;
 import com.aofei.kettle.App;
 import com.aofei.kettle.JobExecutor;
@@ -18,12 +20,20 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
 public class JobRunner extends QuartzJobBean {
+
+	@Resource
+	ILogJobService logJobService;
+
+	@Resource
+	ILogJobStepService logJobStepService;
+
 
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
@@ -83,6 +93,7 @@ public class JobRunner extends QuartzJobBean {
 			LogJob logJob  = new LogJob();
 			logJob.setStartdate(new Date());
 			logJob.setStatus("start");
+			logJob.setFireTime(context.getFireTime());
 			logJob.setQrtzJobGroup(context.getJobDetail().getKey().getGroup());
 			logJob.setQrtzJobName(context.getJobDetail().getKey().getName());
 			logJob.setJobName(jobMeta.getName());
@@ -90,7 +101,7 @@ public class JobRunner extends QuartzJobBean {
 			logJob.setJobCnName(jobMeta.getName());
 
 
-			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
+			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(logJobService,logJobStepService,jobExecutor,logJob);
 			Timer logTimer = new Timer();
 			logTimer.schedule(jobLogTimerTask, 0,1000);
 

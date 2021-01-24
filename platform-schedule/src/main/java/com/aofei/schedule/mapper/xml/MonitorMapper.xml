@@ -67,6 +67,50 @@
     </select>
 
 
+	<select id="findPlanMonitor"  resultType="com.aofei.schedule.entity.Monitor">
+		SELECT
+		a.ID AS id,
+		a.QRTZ_JOB_NAME AS qrtzJobName,
+		a.QRTZ_JOB_GROUP AS qrtzJobGroup,
+		gp.GROUP_NAME AS qrtzJobGroupName,
+		a.STARTDATE AS startdate,
+		a.ENDDATE AS enddate,
+		a.STATUS AS status,
+		a.ERRORS AS errors,
+		a.FILE_TYPE AS fileType
+		FROM (
+		SELECT
+			LOG_TRANS_ID AS ID,
+			QRTZ_JOB_NAME,
+			QRTZ_JOB_GROUP,
+			STARTDATE,
+			ENDDATE,
+			STATUS,
+			ERRORS,
+			"TRANSFORMATION" AS FILE_TYPE,
+			FIRE_TIME
+			FROM LOG_TRANS
+		UNION
+			SELECT
+			LOG_JOB_ID AS ID,
+			QRTZ_JOB_NAME,
+			QRTZ_JOB_GROUP,
+			STARTDATE,
+			ENDDATE,
+			STATUS,
+			ERRORS,
+			"JOB" AS FILE_TYPE,
+			FIRE_TIME
+			FROM LOG_JOB
+		) a
+
+		join QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = a.QRTZ_JOB_GROUP
+
+		<where>
+			a.QRTZ_JOB_GROUP = #{qrtzJobGroup} AND a.QRTZ_JOB_NAME  = #{qrtzJobName}  AND  DATE_FORMAT(a.FIRE_TIME,'%Y%m%d%H%i%s') = DATE_FORMAT(#{fireTime},'%Y%m%d%H%i%s')
+		</where>
+	</select>
+
 	<select id="findList"  databaseId="oracle" resultType="com.aofei.schedule.entity.Monitor">
 		SELECT
 		a.ID AS id,

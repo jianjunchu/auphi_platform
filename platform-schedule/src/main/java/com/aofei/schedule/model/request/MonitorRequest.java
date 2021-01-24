@@ -25,6 +25,6 @@ public class MonitorRequest extends BaseRequest {
     private String  endTime;
     private String  status;
 
-
+    private Date fireTime;
 
 }

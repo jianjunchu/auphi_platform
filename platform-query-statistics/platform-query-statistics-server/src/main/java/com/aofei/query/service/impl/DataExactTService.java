@@ -1,24 +1,39 @@
 package com.aofei.query.service.impl;
 
-import com.aofei.base.service.impl.BaseService;
-import com.aofei.query.entity.DataExactT;
-import com.aofei.query.mapper.DataExactTMapper;
 import com.aofei.query.model.request.DataExactTRequest;
-import com.aofei.query.model.response.DataExactTResponse;
 import com.aofei.query.service.IDataExactTService;
+import com.aofei.query.utils.DatabaseLoader;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
+import org.pentaho.di.core.exception.KettleException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.sql.SQLException;
 
 @Service
-public class DataExactTService extends BaseService<DataExactTMapper, DataExactT> implements IDataExactTService {
+public class DataExactTService   implements IDataExactTService {
 
 
     @Override
-    public Page<DataExactTResponse> getPage(Page<DataExactT> page, DataExactTRequest request) {
-        List<DataExactT> list = baseMapper.findList(page, request);
-        page.setRecords(list);
-        return convert(page, DataExactTResponse.class);
+    public Page getPage(Page page, DataExactTRequest request) throws KettleException, SQLException {
+
+        DatabaseLoader loader = new DatabaseLoader();
+
+        StringBuffer sql = new StringBuffer("select   a.batch_no AS batchNo, a.unit_no AS unitNo, a.backup_start  AS  backupStart, a.backup_end  AS  backupEnd, a.backup_time  AS backupTime, a.backup_count AS backupCount, a.backup_valid_count AS backupValidCount, a.backup_invalid_count AS backupInvalidCount, a.business  AS business, a.operation  AS operation from l_data_exact_t a where 1 = 1" );//where a.batch_no like '%"+request.getBatchNo()+"%'";
+        if(!StringUtils.isEmpty(request.getBatchNo())){
+            sql.append(" and a.batch_no like '%").append(request.getBatchNo()).append("%'");
+        }
+        if(!StringUtils.isEmpty(request.getUnitNo())){
+            sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
+        }
+
+        if(!StringUtils.isEmpty(request.getSearch_time())
+                && !StringUtils.isEmpty(request.getSearch_satrt())
+                && !StringUtils.isEmpty(request.getSearch_end())){
+            sql.append(" AND ").append(loader.getDateBetween("a.backup_time",request));
+
+        }
+        return loader.getPage(page,sql.toString());
+
     }
 }

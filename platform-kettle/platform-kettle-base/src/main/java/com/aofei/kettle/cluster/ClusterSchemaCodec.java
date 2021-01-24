@@ -1,20 +1,29 @@
 package com.aofei.kettle.cluster;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.xml.sax.SAXException;
 
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * 集群
+ * 子服务器对象编码解码
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class ClusterSchemaCodec {
 
+	/**
+	 * ClusterSchema 对象 encode to JSON
+	 * @param clusterSchema
+	 * @return
+	 */
 	public static JSONObject encode(ClusterSchema clusterSchema) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", clusterSchema.getName());
@@ -31,10 +40,19 @@ public class ClusterSchemaCodec {
 			slaveservers.add(SlaveServerCodec.encode(slaveServer));
 		}
 		jsonObject.put("slaveservers", slaveservers);
-		
+
 		return jsonObject;
 	}
-	
+
+	/**
+	 * JSON decode to ClusterSchema
+	 * @param jsonObject
+	 * @param referenceSlaveServers
+	 * @return
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public static ClusterSchema decode(JSONObject jsonObject, List<SlaveServer> referenceSlaveServers) throws ParserConfigurationException, SAXException, IOException {
 		ClusterSchema clusterSchema = new ClusterSchema();
 		clusterSchema.setName(jsonObject.optString( "name" ));
@@ -43,7 +61,7 @@ public class ClusterSchemaCodec {
 		clusterSchema.setSocketsFlushInterval(jsonObject.optString( "sockets_flush_interval" ));
 		clusterSchema.setSocketsCompressed("Y".equalsIgnoreCase( jsonObject.optString( "sockets_compressed" ) ));
 		clusterSchema.setDynamic("Y".equalsIgnoreCase( jsonObject.optString( "dynamic" ) ));
-		
+
 		ArrayList<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
 		JSONArray slavesNode = jsonObject.optJSONArray("slaveservers");
 		if(slavesNode != null) {
@@ -56,17 +74,17 @@ public class ClusterSchemaCodec {
 			}
 			clusterSchema.setSlaveServers(slaveServers);
 		}
-		
+
 		return clusterSchema;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	public static JSONObject encode2(ClusterSchema clusterSchema) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", clusterSchema.getName());
@@ -83,10 +101,10 @@ public class ClusterSchemaCodec {
 			slaveservers.add(slaveServer.getName());
 		}
 		jsonObject.put("slaveservers", slaveservers);
-		
+
 		return jsonObject;
 	}
-	
+
 	public static ClusterSchema decode2(JSONObject jsonObject, List<SlaveServer> referenceSlaveServers) throws ParserConfigurationException, SAXException, IOException {
 		ClusterSchema clusterSchema = new ClusterSchema();
 		clusterSchema.setName(jsonObject.optString( "name" ));
@@ -95,7 +113,7 @@ public class ClusterSchemaCodec {
 		clusterSchema.setSocketsFlushInterval(jsonObject.optString( "sockets_flush_interval" ));
 		clusterSchema.setSocketsCompressed("Y".equalsIgnoreCase( jsonObject.optString( "sockets_compressed" ) ));
 		clusterSchema.setDynamic("Y".equalsIgnoreCase( jsonObject.optString( "dynamic" ) ));
-		
+
 		ArrayList<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
 		JSONArray slavesNode = jsonObject.optJSONArray("slaveservers");
 		if(slavesNode != null) {
@@ -108,8 +126,8 @@ public class ClusterSchemaCodec {
 			}
 			clusterSchema.setSlaveServers(slaveServers);
 		}
-		
+
 		return clusterSchema;
 	}
-	
+
 }

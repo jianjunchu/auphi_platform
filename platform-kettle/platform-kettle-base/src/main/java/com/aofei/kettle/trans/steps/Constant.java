@@ -18,10 +18,24 @@ import org.w3c.dom.Element;
 
 import java.util.List;
 
+/**
+ * Constant 步骤 转码解码类
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @Component("Constant")
 @Scope("prototype")
 public class Constant extends AbstractStep {
 
+	/**
+	 *	XML 转 ConstantMeta对象
+	 * @param stepMetaInterface
+	 * @param cell
+	 * @param databases
+	 * @param metaStore
+	 * @param user
+	 * @throws Exception
+	 */
 	@Override
 	public void decode(StepMetaInterface stepMetaInterface, mxCell cell, List<DatabaseMeta> databases, IMetaStore metaStore, CurrentUserResponse user) throws Exception {
 		ConstantMeta constantMeta = (ConstantMeta) stepMetaInterface;
@@ -63,6 +77,13 @@ public class Constant extends AbstractStep {
 		constantMeta.setEmptyString(setEmptyString);
 	}
 
+	/**
+	 * ConstantMeta 转 Element XML
+	 * @param stepMetaInterface
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Element encode(StepMetaInterface stepMetaInterface, CurrentUserResponse user) throws Exception {
 		ConstantMeta constantMeta = (ConstantMeta) stepMetaInterface;

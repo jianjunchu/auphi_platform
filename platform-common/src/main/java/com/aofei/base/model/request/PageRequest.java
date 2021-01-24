@@ -41,6 +41,9 @@ public class PageRequest<T> {
     @ApiModelProperty(hidden = true)
     protected String search_end;
 
+
+    private int export;
+
     public PageRequest() {
     }
 
@@ -99,6 +102,14 @@ public class PageRequest<T> {
 
     public void setSearch_end(String search_end) {
         this.search_end = search_end;
+    }
+
+    public int getExport() {
+        return export;
+    }
+
+    public void setExport(int export) {
+        this.export = export;
     }
 
     /**

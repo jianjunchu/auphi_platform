@@ -11,15 +11,15 @@ public class RepositoryObjectVO {
 	private String userPath;
 	private String modifiedUser;
 	private String modifiedDate;
-	
+
 	public RepositoryObjectVO() {
-		
+
 	}
-	
+
 	public RepositoryObjectVO(RepositoryElementMetaInterface re) {
 		String path2 = re.getRepositoryDirectory().getPath();
 		path2 = path2.endsWith("/") ? path2 : path2 + '/';
-		
+
 		id = path2 + re.getName() + re.getObjectType().getExtension();
 		name = re.getName();
 		type = re.getObjectType().getExtension();
@@ -34,13 +34,11 @@ public class RepositoryObjectVO {
 	public RepositoryObjectVO(RepositoryElementMetaInterface re,String replace) {
 
 		this(re);
-		userPath = getPath().replace(replace,"");
-		if("".equals(userPath)){
-			userPath = "/";
-		}
+		userPath = getPath().replace(replace,"/");
+
 
 	}
-	
+
 	public String getId() {
 		return id;
 	}

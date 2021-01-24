@@ -206,13 +206,13 @@ public class KettleRepositoryController extends BaseController {
 			return;
 		}
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			ObjectId id_transformation = repository.getTransformationID(name, directory);
 			if(id_transformation != null) {
 				repository.deleteTransformation(id_transformation);
 			}
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
 			ObjectId id_job = repository.getJobId(name, directory);
 			if(id_job != null) {
@@ -300,7 +300,7 @@ public class KettleRepositoryController extends BaseController {
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			ObjectId id_transformation = repository.getTransformationID(name, directory);
 
@@ -316,7 +316,7 @@ public class KettleRepositoryController extends BaseController {
 					repository.deleteTransformation(id_transformation);
 				}
 			}
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
 			ObjectId id_job = repository.getJobId(name, directory);
 			//TODO 直接调用rename死锁！为什么
@@ -365,7 +365,7 @@ public class KettleRepositoryController extends BaseController {
 
 		RepositoryDirectoryInterface new_directory = repository.findDirectory(newPath);
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
 			ObjectId id_transformation = repository.getTransformationID(name, directory);
 
@@ -381,7 +381,7 @@ public class KettleRepositoryController extends BaseController {
 					repository.deleteTransformation(id_transformation);
 				}
 			}
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)
 				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
 			ObjectId id_job = repository.getJobId(name, directory);
 			//TODO 直接调用rename死锁！为什么
@@ -426,7 +426,7 @@ public class KettleRepositoryController extends BaseController {
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)) {
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 			transMeta.setRepositoryDirectory(directory);
 
@@ -434,7 +434,7 @@ public class KettleRepositoryController extends BaseController {
 			String graphXml = codec.encode(transMeta,user);
 
 			JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)) {
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 	    	jobMeta.setRepositoryDirectory(directory);
 
@@ -468,7 +468,7 @@ public class KettleRepositoryController extends BaseController {
 		if(directory == null)
 			directory = repository.getUserHomeDirectory();
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(type)) {
+		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
 			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 			transMeta.setRepositoryDirectory(directory);
 
@@ -476,7 +476,7 @@ public class KettleRepositoryController extends BaseController {
 			String graphXml = codec.encode(transMeta, user);
 
 			JsonUtils.success(StringEscapeHelper.encode(graphXml));
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equals(type)) {
+		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
 
 			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 	    	jobMeta.setRepositoryDirectory(directory);
@@ -681,12 +681,12 @@ public class KettleRepositoryController extends BaseController {
 				String name = path.substring(path.lastIndexOf("/") + 1);
 
 				RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-				if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equals(jsonObject.optString("type"))) {
+				if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(jsonObject.optString("type"))) {
 					TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
 					String xml = XMLHandler.getXMLHeader() + "\n" + transMeta.getXML();
 					out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.TRANSFORMATION.getExtension()));
 					out.write(xml.getBytes(Const.XML_ENCODING));
-				} else if(RepositoryObjectType.JOB.getTypeDescription().equals(jsonObject.optString("type"))) {
+				} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(jsonObject.optString("type"))) {
 					JobMeta jobMeta = repository.loadJob(name, directory, null, null);
 					String xml = XMLHandler.getXMLHeader() + "\n" + jobMeta.getXML();
 					out.putNextEntry(new ZipEntry(entryPath + RepositoryObjectType.JOB.getExtension()));

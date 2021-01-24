@@ -36,7 +36,7 @@ import java.util.List;
 @Api(tags = { "数据质量管理-数据质量规则" })
 @Authorization
 @RestController
-@RequestMapping("/dataQuality/rule")
+@RequestMapping(value = "/dataQuality/rule", produces = {"application/json;charset=UTF-8"})
 public class RuleController extends BaseController {
 
     @Autowired
@@ -108,7 +108,8 @@ public class RuleController extends BaseController {
     })
     @RequestMapping(value = "/edit/enable", method = RequestMethod.POST)
     public Response<RuleResponse> editIsEnable(
-            @ApiIgnore @RequestBody RuleRequest request)  {
+            @ApiIgnore @RequestBody RuleRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
         return Response.ok(ruleService.updateIsEnable(request)) ;
     }
 
@@ -120,7 +121,8 @@ public class RuleController extends BaseController {
     @ApiOperation(value = "编辑数据质量规则", notes = "编辑数据质量规则")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response<RuleResponse> edit(
-            @RequestBody RuleRequest request)  {
+            @RequestBody RuleRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
         return Response.ok(ruleService.update(request)) ;
     }
 
@@ -132,7 +134,7 @@ public class RuleController extends BaseController {
     @ApiOperation(value = "删除数据质量规则", notes = "删除数据质量规则", httpMethod = "DELETE")
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
     public Response<Integer> del(
-            @PathVariable Long id)  {
+            @PathVariable Long id,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
         return Response.ok(ruleService.del(id)) ;
     }
 
@@ -144,7 +146,7 @@ public class RuleController extends BaseController {
     @ApiOperation(value = "根据Id查询数据质量规则", notes = "根据Id查询数据质量规则")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Response<RuleResponse> get(
-            @PathVariable Long id)  {
+            @PathVariable Long id,@ApiIgnore @CurrentUser CurrentUserResponse user)  {
 
         return Response.ok(ruleService.get(id)) ;
     }

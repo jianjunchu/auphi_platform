@@ -84,7 +84,6 @@ public class CompareSqlService extends BaseService<CompareSqlMapper, CompareSql>
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }
 
-
     }
     @Log(module = "数据质量管理",description = "删除数据质量规则")
     @Override
@@ -107,7 +106,7 @@ public class CompareSqlService extends BaseService<CompareSqlMapper, CompareSql>
     }
 
 
-
+    @Log(module = "数据质量管理",description = "查询数据质量规则详情")
     @Override
     public CompareSqlResponse get(Long compareSqlId) {
         CompareSql existing = selectById(compareSqlId);

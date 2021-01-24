@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-log-sys</artifactId>
+            <artifactId>platform-log-sys-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -14,11 +14,18 @@ public interface IMonitorService extends IService<Monitor> {
     Page<MonitorResponse> getPage(Page<Monitor> page, MonitorRequest request);
 
 
-
     /**
      * 统计信息
      * @param user
      * @return
      */
     DashboardResponse getDashboardCount(CurrentUserResponse user) throws KettleException;
+
+    /**
+     * 查询计划任务日志
+     * @param request
+     * @return
+     */
+    MonitorResponse getPlanMonitor(MonitorRequest request);
+
 }

@@ -25,122 +25,192 @@ package com.aofei.schedule.util;
 
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
+import com.aofei.utils.DateUtils;
 import com.aofei.utils.StringUtils;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerUtils;
+import org.quartz.impl.triggers.CronTriggerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class QuartzUtil {
 
+    private static Logger logger = LoggerFactory.getLogger(QuartzUtil.class);
+    /**
+     * 执行一次
+     */
     public static final int MODE_ONCE = 1;
+    /**
+     * 每几秒执行一次
+     */
     public static final int MODE_SECOND = 2;
+    /**
+     * 每几分钟执行一次
+     */
     public static final int MODE_MINUTE = 3;
+    /**
+     * 每几小时执行一次
+     */
     public static final int MODE_HOUR = 4;
+
+    /**
+     * 周期天
+     */
     public static final int MODE_DAY = 5;
+    /**
+     * 周期星期
+     */
     public static final int MODE_WEEK = 6;
+    /**
+     * 周期月
+     */
     public static final int MODE_MONTH = 7;
+    /**
+     * 周期年
+     */
     public static final int MODE_YEAR = 8;
 
+    public static final  String kg = " ";
+    public static final  String wh = "?";
+    public static final  String xx = "*";
+    public static final  String xg = "/";
+
     public static Trigger getTrigger(GeneralScheduleRequest request, String group){
-        String cronString = "";
+
+
         Date satrtDate = request.getStartTime();
         Date endDate = request.getEndTime();
         String name = request.getJobName();
 
+        String cron = getCron(request);
+
+        logger.info(cron.toString());
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(name, group)
+                .startAt(satrtDate)
+                .endAt(endDate)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron.toString()))
+                .build();
+        return trigger;
+
+    }
+
+    public static String getCron(GeneralScheduleRequest request) {
         Calendar ca = Calendar.getInstance();
-        ca.setTime(satrtDate);
-        Trigger trigger;
+        ca.setTime(request.getStartTime());
 
+        StringBuffer cronString = new StringBuffer();
         switch (request.getCycle()) {
+            //执行一次
             case MODE_ONCE:
-
                 long repeatInterval = ca.getTime().getTime() - new Date().getTime();
-
                 if(repeatInterval>0){
-                    // 创建一个触发器
-                     trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(name, group)
-                            .startAt(satrtDate)
-                            .endAt(endDate)
-                            .withSchedule(SimpleScheduleBuilder
-                                    .simpleSchedule()
-                                    .withIntervalInMilliseconds(repeatInterval)//每隔一秒执行一次
-                                    //重复执行的次数，因为加入任务的时候马上执行了，所以不需要重复，否则会多一次。
-                                    .withRepeatCount(0))
-                            .build();
-                    return trigger;
+                    /**
+                     * 只执行一次的Cron表达式 如: 2020年3月11日13点27分15秒,?指的是不考虑星期几
+                     * 15 27 13 11 3 ? 2020
+                     */
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append(ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(ca.get(Calendar.DATE)).append(kg)
+                            .append(ca.get(Calendar.MONTH)+1).append(kg)
+                            .append(wh).append(kg)
+                            .append(ca.get(Calendar.YEAR));
+
                 }else{
 
                 }
 
                 break;
             case MODE_SECOND:
-                // 创建一个触发器
-                trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(name, group)
-                        .startAt(satrtDate)
-                        .endAt(endDate)
-                        .withSchedule(SimpleScheduleBuilder
-                                .simpleSchedule()
-                                .withIntervalInSeconds(Integer.parseInt(request.getCycleNum()))
-                                //重复执行的次数，因为加入任务的时候马上执行了，所以不需要重复，否则会多一次。
-                                .withRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY))
-                        .build();
-                return trigger;
+                //周期秒 每?几秒执行一次
+                //每隔5秒执行一次：*/5 * * * * ?
 
+                cronString.append(xx).append(xg).append(request.getCycleNum()).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(wh);
+
+                break;
             case MODE_MINUTE:
 
-                // 创建一个触发器
-                trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(name, group)
-                        .startAt(satrtDate)
-                        .endAt(endDate)
-                        .withSchedule(SimpleScheduleBuilder
-                                .simpleSchedule()
-                                .withIntervalInMinutes(Integer.valueOf(request.getCycleNum()))//每隔一秒执行一次
-                                //重复执行的次数，因为加入任务的时候马上执行了，所以不需要重复，否则会多一次。
-                                .withRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY))
-                        .build();
-                return trigger;
+                //周期分钟 每?几分钟执行一次
+                //每隔1分钟执行一次：0 */1 * * * ?
+                cronString.append("0").append(kg)
+                        .append(xx).append(xg).append(request.getCycleNum()).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(wh);
+
+                break;
             case MODE_HOUR:
 
-                trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(name, group)
-                        .startAt(satrtDate)
-                        .endAt(endDate)
-                        .withSchedule(SimpleScheduleBuilder
-                                .simpleSchedule()
-                                .withIntervalInHours(Integer.valueOf(request.getCycleNum()))//每隔一秒执行一次
-                                //重复执行的次数，因为加入任务的时候马上执行了，所以不需要重复，否则会多一次。
-                                .withRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY))
-                        .build();
-
-                return trigger;
+                //周期小时 每?几小时执行一次
+                //每隔1分钟执行一次：0 0 */1  * * ?
+                cronString.append("0").append(kg)
+                        .append("0").append(kg)
+                        .append(xx).append(xg).append(request.getCycleNum()).append(kg)
+                        .append(xx).append(kg)
+                        .append(xx).append(kg)
+                        .append(wh);
+                break;
             case MODE_DAY:
 
 
                 if(1 == request.getDayType()){
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " ? * MON-FRI";
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append("MON-FRI");
+
                 }else if(2 == request.getDayType()){
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " ? * *";
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append(xx);
                 }else{
                     throw new ApplicationException();
                 }
 
                 break;
             case MODE_WEEK:
-                //create cron string
-                cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                        " " + ca.get(Calendar.HOUR_OF_DAY) + " ? * " + request.getCycleNum();
+
+                cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                        .append(ca.get(Calendar.MINUTE)).append(kg)
+                        .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                        .append(wh).append(kg)
+                        .append(xx).append(kg)
+                        .append(request.getCycleNum());
 
                 break;
             case MODE_MONTH:
                 if(1 == request.getMonthType()){
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " " + request.getCycleNum() + " * ?";
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(request.getCycleNum()).append(kg)
+                            .append(xx).append(kg)
+                            .append(wh);
+
+
+
                 }else if(2 == request.getMonthType()){
                     String weeknum = StringUtils.defaultString(request.getWeekNum()) ;
                     String daynum = StringUtils.defaultString(request.getDayNum());
@@ -149,8 +219,13 @@ public class QuartzUtil {
                         weeknum = "#" + weeknum;
                     }
 
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " ? * " + daynum + weeknum;
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append(daynum).append(weeknum);
+
                 }
 
 
@@ -159,8 +234,15 @@ public class QuartzUtil {
 
                 if(1 == request.getYearType()){//month and day
                     String[] monthAndDay = request.getCycleNum().split("-");
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " " + monthAndDay[1] + " " + monthAndDay[0] + " ?";
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(monthAndDay[1]).append(kg)
+                            .append(monthAndDay[0]).append(kg)
+                            .append(wh);
+
+
                 }else if(2 == request.getYearType()){//month week and day
                     String monthnum = StringUtils.defaultString(request.getMonthNum()) ;
                     String weeknum = StringUtils.defaultString(request.getWeekNum()) ;
@@ -170,22 +252,41 @@ public class QuartzUtil {
                         weeknum = "#" + weeknum;
                     }
 
-                    cronString = ca.get(Calendar.SECOND) + " " + ca.get(Calendar.MINUTE) +
-                            " " + ca.get(Calendar.HOUR_OF_DAY) + " ? " + monthnum + " " + daynum + weeknum;
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(monthnum).append(kg).append(daynum).append(weeknum);
+
                 }
 
                 break;
         }
-        trigger = TriggerBuilder.newTrigger()
-                .withIdentity(name, group)
-                .startAt(satrtDate)
-                .endAt(endDate)
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronString))
-                .build();
-        return trigger;
 
+        return cronString.toString();
     }
 
+    /**
+     *
+     * @param cron cron  表达式
+     * @throws ParseException
+     * @throws InterruptedException
+     */
+    public static List<Date> getQuartzPlan(String cron,Date satrtTime) throws ParseException {
+
+        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+        cronTriggerImpl.setCronExpression(cron);//这里写要准备猜测的cron表达式
+
+        Date origin = DateUtils.startOfDay(new Date());
+        if(origin.getTime() < satrtTime.getTime()){
+            origin = satrtTime;
+        }
+
+        Date end= DateUtils.endOfDay(new Date());
+        //这个是重点，计算两个时间之间的触发时间
+         return TriggerUtils.computeFireTimesBetween(cronTriggerImpl, null, origin, end);
+
+    }
 
 
 }

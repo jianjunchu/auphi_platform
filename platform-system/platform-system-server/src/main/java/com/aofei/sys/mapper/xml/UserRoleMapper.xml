@@ -9,5 +9,15 @@
         , ID_ROLE AS roleId
     </sql>
 
+    <insert id="insert">
+        insert into SYS_USER_ROLE (
+            ID_USER
+            ,ID_ROLE
+        )VALUES(
+            ${userId}
+            ,${roleId}
+        )
+    </insert>
+
 
 </mapper>

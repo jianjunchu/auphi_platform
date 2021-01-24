@@ -4,6 +4,7 @@ package com.aofei.schedule.mapper;
 import com.aofei.base.annotation.MyBatisMapper;
 import com.aofei.base.mapper.BaseMapper;
 import com.aofei.schedule.entity.Monitor;
+import com.aofei.schedule.model.request.MonitorRequest;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import java.util.List;
@@ -46,4 +47,13 @@ public interface MonitorMapper extends BaseMapper<Monitor> {
      * @return
      */
     int countError(Long organizerId);
+
+    /**
+     * 查询是否有计划时间日志
+     * @param request
+     * @return
+     */
+    List<Monitor> findPlanMonitor(MonitorRequest request);
+
+
 }

@@ -40,10 +40,10 @@ public class RoleMenuService extends BaseService<RoleMenuMapper, RoleMenu> imple
                     RoleMenu roleResource = new RoleMenu();
                     roleResource.setRoleId(roleId);
                     roleResource.setMenuId(menuId);
-                    roleResources.add(roleResource);
+                    baseMapper.insert(roleResource);
                 }
 
-                super.insertBatch(roleResources);
+
 
                 return 1;
             }

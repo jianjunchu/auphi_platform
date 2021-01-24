@@ -7,8 +7,37 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaAndData;
 
+/**
+ * This class describes a condition in a general meaning.
+ *
+ * A condition can either be
+ * <p>
+ * <p>
+ * 1) Atomic (a=10, B='aa')
+ * <p>
+ * 2) Composite ( NOT Condition1 AND Condition2 OR Condition3 )
+ * <p>
+ * <p>
+ * If the nr of atomic conditions is 0, the condition is atomic, otherwise it's Composit.
+ * <p>
+ * Precedence doesn't exist. Conditions are evaluated in the order in which they are found.
+ * <p>
+ * A condition can be negated or not.
+ * <p>
+ * <p>
+ * Condition转换类
+ *
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 public class ConditionCodec {
 
+	/**
+	 * Condition对象 encode to JOSN
+	 * @param condition
+	 * @return
+	 * @throws KettleValueException
+	 */
 	public static JSONObject encode(Condition condition) throws KettleValueException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("negated", condition.isNegated());

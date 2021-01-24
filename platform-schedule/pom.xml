@@ -48,13 +48,24 @@
 
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-log-trans</artifactId>
+            <artifactId>platform-log-trans-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-trans-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-log-job</artifactId>
+            <artifactId>platform-log-job-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-job-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -90,7 +101,7 @@
         </dependency>
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-log-sys</artifactId>
+            <artifactId>platform-log-sys-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

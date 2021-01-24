@@ -29,6 +29,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.aofei.admin.authorization.Token;
 import com.aofei.admin.authorization.jwt.JwtConfig;
 import com.aofei.admin.authorization.jwt.JwtTokenBuilder;
+import com.aofei.authorization.interceptor.AuthorizationInterceptor;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.common.Const;
 import com.aofei.base.common.UserUtil;
@@ -56,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,6 +106,7 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Response<Token> login(
+            HttpServletRequest request,
             @ApiParam(value = "用户名", required = true)  @RequestParam(value = "username") String username,
             @ApiParam(value = "密码",   required = true)  @RequestParam(value = "password") String password,
             @ApiParam(value = "验证码", required = true)  @RequestParam(value = "captcha") String captcha) throws Exception {
@@ -119,6 +122,7 @@ public class AccountController extends BaseController {
 
         if(user != null) {
             UserUtil.setSessionUser(BeanCopier.copy(user, CurrentUserResponse.class));
+            request.setAttribute(AuthorizationInterceptor.REQUEST_CURRENT_KEY, user.getUsername());
             String host = StringUtils.getRemoteAddr();
             UserRequest userRequest = new UserRequest(user.getUserId());
             userRequest.setLastLoginIp(host);
@@ -161,6 +165,7 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/login/phone", method = RequestMethod.POST)
     @ResponseBody
     public Response<Token> login_phone(
+            HttpServletRequest request,
             @ApiParam(value = "国家代码", required = true)  @RequestParam(value = "countryCode") String countryCode,
             @ApiParam(value = "手机号",   required = true)  @RequestParam(value = "mobilephone") String mobilephone,
             @ApiParam(value = "验证码", required = true)  @RequestParam(value = "captcha") String captcha) throws Exception {
@@ -173,6 +178,7 @@ public class AccountController extends BaseController {
                     .eq("DEL_FLAG",User.DEL_FLAG_NORMAL));
 
             UserUtil.setSessionUser(BeanCopier.copy(user, CurrentUserResponse.class));
+            request.setAttribute(AuthorizationInterceptor.REQUEST_CURRENT_KEY, user.getUsername());
             String host = StringUtils.getRemoteAddr();
             UserRequest userRequest = new UserRequest(user.getUserId());
             userRequest.setLastLoginIp(host);

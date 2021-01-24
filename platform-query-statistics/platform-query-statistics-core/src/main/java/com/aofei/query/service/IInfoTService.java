@@ -2,11 +2,13 @@ package com.aofei.query.service;
 
 import com.aofei.query.entity.InfoT;
 import com.aofei.query.model.request.InfoTRequest;
-import com.aofei.query.model.response.InfoTResponse;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import org.pentaho.di.core.exception.KettleException;
 
-public interface IInfoTService extends IService<InfoT> {
+import java.sql.SQLException;
+
+public interface IInfoTService  {
 
     /**
      * 获取 分页 列表
@@ -14,6 +16,6 @@ public interface IInfoTService extends IService<InfoT> {
      * @param request
      * @return
      */
-    Page<InfoTResponse> getPage(Page<InfoT> page, InfoTRequest request);
+    Page getPage(Page page, InfoTRequest request) throws KettleException, SQLException;
 
 }

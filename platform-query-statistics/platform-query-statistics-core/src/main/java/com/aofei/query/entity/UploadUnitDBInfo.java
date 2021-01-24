@@ -14,7 +14,6 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("upload_unit_DB_info")
 public class UploadUnitDBInfo extends Model {
 
     /**

@@ -59,7 +59,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
         return BeanCopier.copy(list,RuleResponse.class);
     }
 
-    @Log(module = "数据质量管理",description = "单独编辑数据质量规则是否启用状态")
+    @Log(module = "数据质量管理",description = "修改状态")
     @Override
     public RuleResponse updateIsEnable(RuleRequest request) {
         Rule existing = selectById(request.getRuleId());
@@ -137,6 +137,7 @@ public class RuleService extends BaseService<RuleMapper, Rule> implements IRuleS
                 existing.setFieldName(request.getFieldName());
                 existing.setDescription(request.getDescription());
                 existing.setIsEnable(request.getIsEnable());
+                existing.setCondition(request.getCondition());
                 existing.preUpdate();
                 super.insertOrUpdate(existing);
 

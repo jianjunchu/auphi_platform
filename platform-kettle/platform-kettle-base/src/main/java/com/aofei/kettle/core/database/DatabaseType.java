@@ -1,14 +1,5 @@
 package com.aofei.kettle.core.database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -18,10 +9,20 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 
+import java.util.*;
+
+/**
+ * <p>
+ * 数据库类型
+ *
+ * </p>
+ *
+ * @author Tony
+ * @since 2020-11-02
+ */
 public class DatabaseType implements PluginTypeListener {
 
 	private static final DatabaseType instance = new DatabaseType();
-
 	public SortedMap<String, DatabaseInterface> connectionMap = new TreeMap<String, DatabaseInterface>();	//key=pluginName, value=plugin
 	public Map<String, String> connectionNametoID = new HashMap<String, String>();	// key=pluginName, value=pluginId
 
@@ -39,6 +40,10 @@ public class DatabaseType implements PluginTypeListener {
 		return instance;
 	}
 
+	/**
+	 * 加载所有数据库类型
+	 * @return
+	 */
 	public List loadSupportedDatabaseTypes() {
 		ArrayList list = new ArrayList();
 		for ( String value : connectionMap.keySet() ) {
@@ -49,6 +54,7 @@ public class DatabaseType implements PluginTypeListener {
 	    }
 		return list;
 	}
+
 
 	public List loadSupportedDatabaseMethodsByTypeId(String typeId) {
 		String name = null;

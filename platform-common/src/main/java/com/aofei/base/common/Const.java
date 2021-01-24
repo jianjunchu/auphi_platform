@@ -37,6 +37,8 @@ public class Const {
     public final static String REPOSITORY_PASSWORD = "admin";
 
 
+
+
     public static final  int YES = 1;
 
     public static final  int NO = 0;
@@ -63,6 +65,10 @@ public class Const {
      * @return
      */
     public static String getRootPath(Long organizerId){
+        String is = getConfig("sys.standalone.mode");
+        if("Y".equalsIgnoreCase(is)){
+            return "/";
+        }
         return "/"+ (organizerId==null ? "" : organizerId.toString());
     }
 
@@ -98,8 +104,11 @@ public class Const {
         String base = loader.getProperty("disk.root.dir");
 
         base = StringUtils.isEmpty(base) ? System.getProperty("etl_platform.root") : base;
-
-        String path = base + File.separator +"disk"+ File.separator +organizerId;
+        String path = base + File.separator +"disk";
+        String is = getConfig("sys.standalone.mode");
+        if("N".equalsIgnoreCase(is)){
+            path = path + File.separator +organizerId;
+        }
 
         File file = new File(path);
         if(!file.exists()){
@@ -111,6 +120,10 @@ public class Const {
 
 
     public static String getUserFilePath(Long organizerId, String path) {
+        String is = getConfig("sys.standalone.mode");
+        if("Y".equalsIgnoreCase(is)){
+            return path;
+        }
         if(path!=null && organizerId!=null){
             String root = getUserDir(organizerId);
             return path.replace(root,"");

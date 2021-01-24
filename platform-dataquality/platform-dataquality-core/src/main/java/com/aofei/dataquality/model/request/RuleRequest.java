@@ -66,6 +66,12 @@ public class RuleRequest extends BaseRequest<RuleRequest> {
     private String fieldName;
 
     /**
+     * 条件
+     */
+    @ApiModelProperty(value = "条件")
+    private String condition;
+
+    /**
      * 字段类型
      */
     @ApiModelProperty(value = "字段类型")

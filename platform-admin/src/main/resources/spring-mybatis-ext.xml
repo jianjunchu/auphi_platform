@@ -51,10 +51,10 @@
     <bean id="sqlSessionFactoryExt" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSourceExt"/>
         <property name="databaseIdProvider" ref="databaseIdProvider"/>
-        <property name="typeAliasesPackage" value="com.aofei"/>
+        <property name="typeAliasesPackage" value="com.aofei.query"/>
         <property name="typeAliasesSuperType" value="com.aofei.base.entity.BaseEntity"/>
         <!-- 自动扫描Mapping.xml文件 -->
-        <property name="mapperLocations" value="classpath*:com/aofei/**/mapper/xml/*Mapper.xml"/>
+        <property name="mapperLocations" value="classpath*:com/aofei/query/**/mapper/xml/*Mapper.xml"/>
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
 
         <property name="plugins">
@@ -65,51 +65,24 @@
                 </bean>
             </array>
         </property>
-        <!-- 全局配置注入 -->
-        <property name="globalConfig" ref="globalConfig"/>
-    </bean>
 
-    <bean id="globalConfig" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">
-        <!--
-            AUTO->`0`("数据库ID自增")
-             INPUT->`1`(用户输入ID")
-            ID_WORKER->`2`("全局唯一ID")
-            UUID->`3`("全局唯一ID")
-        -->
-        <property name="idType" value="2"/>
-        <!--
-            MYSQL->`mysql`
-            ORACLE->`oracle`
-            DB2->`db2`
-            H2->`h2`
-            HSQL->`hsql`
-            SQLITE->`sqlite`
-            POSTGRE->`postgresql`
-            SQLSERVER2005->`sqlserver2005`
-            SQLSERVER->`sqlserver`
-        -->
-        <!-- Oracle需要添加该项 -->
-        <!-- <property name="dbType" value="oracle" /> -->
-        <!-- 全局表为下划线命名设置 true -->
-        <property name="dbColumnUnderline" value="true"/>
-        <!--<property name="metaObjectHandler">
-            <bean class="com.baomidou.springmvc.common.MyMetaObjectHandler"/>
-        </property>-->
     </bean>
 
 
 
-    <!-- 扫描basepackage下所有以@MyBatisDao注解的接口 -->
+
+
+    <!-- 扫描basepackage下所有以@ExtMyBatisMapper注解的接口 -->
     <bean id="mapperScannerConfigurerExt" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryExt" />
-        <property name="basePackage" value="com.aofei"/>
+        <property name="basePackage" value="com.aofei.query"/>
         <property name="annotationClass" value="com.aofei.base.annotation.ExtMyBatisMapper"/>
     </bean>
 
     <!--动态加载 mapper.xml，XML文件热加载-->
     <bean class="com.baomidou.mybatisplus.spring.MybatisMapperRefresh">
         <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryExt"/>
-        <constructor-arg name="mapperLocations" value="classpath*:com/aofei/**/mapper/xml/*Mapper.xml"/>
+        <constructor-arg name="mapperLocations" value="classpath*:com/aofei/query/**/mapper/xml/*Mapper.xml"/>
         <!--项目启动延迟加载时间  单位：秒  默认:10s-->
         <constructor-arg name="delaySeconds" value="10"/>
         <!--刷新时间间隔  单位：秒 默认:20s-->
@@ -117,11 +90,5 @@
         <constructor-arg name="enabled" value="true"/>
     </bean>
 
-    <!-- 配置事务管理 -->
-    <bean name="transactionManagerExt" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSourceExt"/>
-    </bean>
 
-    <!-- 配置 Annotation 驱动，扫描@Transactional注解的类定义事务  -->
-    <tx:annotation-driven transaction-manager="transactionManagerExt" proxy-target-class="true"/>
 </beans>

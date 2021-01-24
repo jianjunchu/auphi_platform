@@ -13,11 +13,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Transformation转换 - 添加校验列 - 接口api
+ * @auther 傲飞数据整合平台
+ * @create 2018-09-15 20:07
+ */
 @RestController
 @RequestMapping(value="/checksum")
 @Api(tags = "Transformation转换 - 添加校验列 - 接口api")
 public class CheckSumController {
 
+	/**
+	 * 获取支持的校验算法
+	 * @return
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "获取支持的校验算法")
 	@RequestMapping(method=RequestMethod.POST, value="/types")
 	protected @ResponseBody List types() throws IOException {
@@ -32,6 +42,11 @@ public class CheckSumController {
 		return list;
 	}
 
+	/**
+	 * 校验结果类型
+	 * @return
+	 * @throws IOException
+	 */
 	@ApiOperation(value = "校验结果类型")
 	@RequestMapping(method=RequestMethod.POST, value="/resulttype")
 	protected @ResponseBody List resulttype() throws IOException {

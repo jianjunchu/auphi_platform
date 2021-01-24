@@ -17,7 +17,6 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("s_error_t")
 public class ErrorT extends Model {
 
     /**

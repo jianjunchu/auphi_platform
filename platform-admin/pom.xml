@@ -94,7 +94,7 @@
         <!--日志-->
         <dependency>
             <groupId>com.aofei</groupId>
-            <artifactId>platform-log-sys</artifactId>
+            <artifactId>platform-log-sys-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -129,6 +129,17 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--数据质量管理-->
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-query-statistics-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-query-statistics-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 
         <!--数据接口管理-->

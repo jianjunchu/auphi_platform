@@ -18,7 +18,6 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("s_batch_rev_t")
 public class BatchRevT extends Model {
 
     /**

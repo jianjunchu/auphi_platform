@@ -18,7 +18,6 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("s_info_t")
 public class InfoT extends Model {
 
 

@@ -27,6 +27,7 @@ import java.util.List;
 public class CheckResultErrService extends BaseService<CheckResultErrMapper, CheckResultErr> implements ICheckResultErrService {
 
 
+    @Log(module = "数据质量管理",description = "查询错误字段值记录")
     @Override
     public Page<CheckResultErrResponse> getPage(Page<CheckResultErr> page, CheckResultErrRequest request) {
         List<CheckResultErr> list = baseMapper.findList(page, request);

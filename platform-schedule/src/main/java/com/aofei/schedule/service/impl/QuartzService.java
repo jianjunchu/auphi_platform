@@ -64,7 +64,7 @@ public class QuartzService implements IQuartzService {
      * @param jobExecClass
      * @throws SchedulerException
      */
-    @Log(module = "周期调度",description = "创建调度信息")
+    @Log(module = "调度管理",description = "创建调度信息")
     @Override
     public  void create(GeneralScheduleRequest request,  Class<? extends Job> jobExecClass) throws SchedulerException {
         String jobName = request.getJobName();
@@ -83,8 +83,11 @@ public class QuartzService implements IQuartzService {
 
             // 创建一项作业
             JobDetail jobDetail = JobBuilder.newJob(jobExecClass)
-                    .withIdentity(jobName, group)
+                    .withIdentity(jobName, group).storeDurably()
+
                     .withDescription(request.getDescription()).build();
+
+
             JobDataMap data = jobDetail.getJobDataMap();
 
             data.put(Const.GENERAL_SCHEDULE_KEY, JSONObject.toJSONString(request));
@@ -141,7 +144,7 @@ public class QuartzService implements IQuartzService {
      * @param organizerId
      * @return
      */
-    @Log(module = "周期调度",description = "删除调度信息")
+    @Log(module = "调度管理",description = "删除调度信息")
     @Override
     public boolean removeJob(String jobName, String group, Long organizerId) throws SchedulerException {
 
@@ -183,7 +186,7 @@ public class QuartzService implements IQuartzService {
      * @param jobGroup
      * @return
      */
-    @Log(module = "周期调度",description = "暂停调度")
+    @Log(module = "调度管理",description = "暂停调度")
     @Override
     public  boolean pause(String jobName, String jobGroup) throws SchedulerException {
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
@@ -199,7 +202,7 @@ public class QuartzService implements IQuartzService {
      * @return
      * @throws SchedulerException
      */
-    @Log(module = "周期调度",description = "还原调度")
+    @Log(module = "调度管理",description = "还原调度")
     @Override
     public  boolean resume(String jobName, String jobGroup) throws SchedulerException {
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
@@ -231,7 +234,7 @@ public class QuartzService implements IQuartzService {
      * @param quartzExecuteClass
      * @throws SchedulerException
      */
-    @Log(module = "周期调度",description = "更新调度信息")
+    @Log(module = "调度管理",description = "更新调度信息")
     @Override
     public void update(GeneralScheduleRequest request, Class<Job> quartzExecuteClass) throws SchedulerException {
         if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){

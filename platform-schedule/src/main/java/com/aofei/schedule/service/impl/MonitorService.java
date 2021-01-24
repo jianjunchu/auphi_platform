@@ -7,11 +7,9 @@ import com.aofei.kettle.App;
 import com.aofei.schedule.entity.Monitor;
 import com.aofei.schedule.mapper.MonitorMapper;
 import com.aofei.schedule.model.request.MonitorRequest;
-import com.aofei.schedule.model.response.DashboardResponse;
-import com.aofei.schedule.model.response.MonitorResponse;
-import com.aofei.schedule.model.response.RunCountResponse;
-import com.aofei.schedule.model.response.RunTimesResponse;
+import com.aofei.schedule.model.response.*;
 import com.aofei.schedule.service.IMonitorService;
+import com.aofei.utils.BeanCopier;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
@@ -82,6 +80,16 @@ public class MonitorService extends BaseService<MonitorMapper, Monitor> implemen
 
         return response;
     }
+
+    @Override
+    public MonitorResponse getPlanMonitor(MonitorRequest request) {
+        List<Monitor> list = baseMapper.findPlanMonitor(request);
+        if(list.size()>0){
+            return BeanCopier.copy(list.get(0), MonitorResponse.class);
+        }
+        return null;
+    }
+
 
     private int getAllCount(CurrentUserResponse user) throws KettleException {
         int count = 0;
