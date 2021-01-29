@@ -238,20 +238,17 @@ public class UserController extends BaseController {
         return Response.ok(buildDataGrid(page)) ;
     }
 
+
     /**
      * 修改用户密码
-     * @param id
-     * @param originalPassword
-     * @param newPassword
      * @return
      */
     @ApiOperation(value = "修改用户密码", notes = "修改用户密码")
-    @RequestMapping(value = "{id}/modifypwd", method = RequestMethod.POST)
-    public Integer modifyPassword(
-            @ApiParam(value = "用户Id", required = true)  @PathVariable("id") Long id,
-            @ApiParam(value = "原密码", required = true)  @RequestParam("originalPassword") String originalPassword,
-            @ApiParam(value = "新密码", required = true)  @RequestParam("newPassword") String newPassword) {
-        return userService.modifyPassword(id, originalPassword, newPassword);
+    @RequestMapping(value = "/modifypwd", method = RequestMethod.POST)
+    public Response<Integer> modifyPassword(
+            @ApiIgnore @CurrentUser CurrentUserResponse user,
+            @RequestBody EditUserPasswordRequest request) {
+        return Response.ok(userService.modifyPassword(user.getUserId(), request.getOriginalPassword(), request.getNewPassword()));
     }
 
 }

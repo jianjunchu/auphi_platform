@@ -23,6 +23,7 @@ import com.aofei.schedule.service.IQuartzService;
 import com.aofei.schedule.util.QuartzUtil;
 import com.aofei.utils.BeanCopier;
 import com.aofei.utils.DateUtils;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
@@ -240,7 +241,9 @@ public class JobDetailsService extends BaseService<JobDetailsMapper, JobDetails>
             String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
             GeneralScheduleRequest generalScheduleRequest = JSON.parseObject(json,GeneralScheduleRequest.class);
 
-            if( generalScheduleRequest.getStartTime().getTime() < DateUtils.endOfDay(new Date()).getTime()  ){
+            if( generalScheduleRequest.getStartTime().getTime() < DateUtils.endOfDay(new Date()).getTime()
+                    && !"PAUSED".equalsIgnoreCase(jobDetails.getTriggerState())
+                    && !StringUtils.isEmpty(jobDetails.getTriggerState())){
 
                 String cron = QuartzUtil.getCron(generalScheduleRequest);
                 List<Date> dates = QuartzUtil.getQuartzPlan(cron,generalScheduleRequest.getStartTime());

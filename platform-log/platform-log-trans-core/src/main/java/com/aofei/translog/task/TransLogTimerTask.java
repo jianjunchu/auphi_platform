@@ -56,12 +56,12 @@ public class TransLogTimerTask extends TimerTask {
                     logTransSteps = new ArrayList<>();
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
                     logTrans.setLogTransId(IdWorker.getId());
-                    logTransService.insert(logTrans);
+                    logTrans.insertOrUpdate();
 
                 }else{
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
                     logTrans.setLoginfo(transExecutor.getExecutionLog());
-                    logTransService.updateById(logTrans);
+                    logTrans.insertOrUpdate();
                     JSONArray jsonArray = transExecutor.getStepMeasure();
                     for(int i = 0;i< jsonArray.size();i++ ){
                         JSONArray childArray = (JSONArray) jsonArray.get(i);
@@ -83,8 +83,7 @@ public class TransLogTimerTask extends TimerTask {
                             logTransStep.setCosttime(childArray.get(10).toString());
                             logTransStep.setSpeed(childArray.get(11).toString());
 
-                            //logTransStep.setStepCopy(childArray[1]);
-                            logTransStepService.insertOrUpdate(logTransStep);
+                            logTransStep.insertOrUpdate();
                         }
                     }
                 }
@@ -102,10 +101,12 @@ public class TransLogTimerTask extends TimerTask {
                         logTrans.setStatus("stop");
                     }
                     logTrans.setLogdate(new Date());
-                    logTrans.setEnddate(transExecutor.getTrans().getEndDate());
+
+                    logTrans.setEnddate(new Date());
                     logTrans.setErrors(transExecutor.getErrCount());
                     logTrans.setLoginfo(transExecutor.getExecutionLog());
-                    logTransService.updateById(logTrans);
+                    logTrans.insertOrUpdate();
+
                     cancel();
                 }
             }

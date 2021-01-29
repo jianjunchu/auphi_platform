@@ -199,11 +199,11 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
                 return 1;
             } else {
                 //原密码错误
-                throw new ApplicationException(SystemError.ORIGINAL_PASSWORD_ERROR.getCode(), StringUtils.getMessage("System.Error.OriginalPasswordError"));
+                throw new ApplicationException(SystemError.ORIGINAL_PASSWORD_ERROR.getCode(), "原密码不正确!");
             }
         } else {
             //用户不存在
-            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
+            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), "用户不存在!");
         }
     }
 

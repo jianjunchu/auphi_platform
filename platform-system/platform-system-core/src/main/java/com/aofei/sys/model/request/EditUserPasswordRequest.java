@@ -17,6 +17,9 @@ public class EditUserPasswordRequest {
     @ApiModelProperty(value = "用户新密码")
     private String newPassword;
 
+    @ApiModelProperty(value = "用户新密码")
+    private String originalPassword;
+
     @ApiModelProperty(value = "用户确认新密码")
     private String renewPassword;
 }

@@ -57,8 +57,10 @@ public class LogTrans extends Model<LogTrans> {
     private Long errors;
     @TableField("STARTDATE")
     private Date startdate;
+
     @TableField("ENDDATE")
     private Date enddate;
+
     @TableField("LOGDATE")
     private Date logdate;
     @TableField("DEPDATE")
