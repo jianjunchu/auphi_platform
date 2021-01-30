@@ -44,10 +44,7 @@ import com.aofei.sys.model.request.PhoneRegisterRequest;
 import com.aofei.sys.model.request.UserRequest;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IUserService;
-import com.aofei.utils.BeanCopier;
-import com.aofei.utils.SendMailUtil;
-import com.aofei.utils.StringUtils;
-import com.aofei.utils.TencentSmsSingleSender;
+import com.aofei.utils.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.*;
@@ -111,6 +108,7 @@ public class AccountController extends BaseController {
             @ApiParam(value = "密码",   required = true)  @RequestParam(value = "password") String password,
             @ApiParam(value = "验证码", required = true)  @RequestParam(value = "captcha") String captcha) throws Exception {
 
+        password = DesCipherUtil.decryptPassword(password);
         //验证码校验
         UserResponse user = null;
         try {

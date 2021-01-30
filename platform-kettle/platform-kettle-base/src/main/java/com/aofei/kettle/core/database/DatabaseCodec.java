@@ -1,22 +1,18 @@
 package com.aofei.kettle.core.database;
 
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
+import com.aofei.kettle.utils.StringEscapeHelper;
+import com.aofei.utils.DesCipherUtil;
+import org.pentaho.di.core.database.*;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
-import com.aofei.kettle.utils.StringEscapeHelper;
-import org.pentaho.di.core.database.BaseDatabaseMeta;
-import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.GenericDatabaseMeta;
-import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
-import org.pentaho.di.core.database.PartitionDatabaseMeta;
-import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.springframework.util.StringUtils;
 
 public class DatabaseCodec {
 
@@ -30,7 +26,7 @@ public class DatabaseCodec {
 		jsonObject.put("hostname", databaseMeta.getHostname());
 		jsonObject.put("databaseName", databaseMeta.getDatabaseName());
 		jsonObject.put("username", databaseMeta.getUsername());
-		jsonObject.put("password", Encr.decryptPasswordOptionallyEncrypted(databaseMeta.getPassword()));
+		jsonObject.put("password", DesCipherUtil.encryptPassword(Encr.decryptPasswordOptionallyEncrypted(databaseMeta.getPassword())));
 		if(databaseMeta.isStreamingResults())
 			jsonObject.put("streamingResults", databaseMeta.isStreamingResults());
 		jsonObject.put("dataTablespace", databaseMeta.getDataTablespace());
@@ -153,8 +149,12 @@ public class DatabaseCodec {
 			databaseMeta.setDBName(jsonObject.optString("databaseName"));
 		if(jsonObject.containsKey("username"))
 			databaseMeta.setUsername(jsonObject.optString("username"));
-		if(jsonObject.containsKey("password"))
-			databaseMeta.setPassword(jsonObject.optString("password"));
+
+		if(jsonObject.containsKey("password")){
+			String passwd = DesCipherUtil.decryptPassword(jsonObject.optString("password"));
+			databaseMeta.setPassword(passwd);
+		}
+
 		if(jsonObject.containsKey("streamingResults"))	// infobright-jndi
 			databaseMeta.setStreamingResults(true);
 		if(jsonObject.containsKey("dataTablespace"))	//oracle-jndi
