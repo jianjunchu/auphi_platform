@@ -221,7 +221,7 @@ public class KettleRepositoriesController {
 		try {
 			Repository repository = App.getInstance().getRepository();
 			repository.connect(username, password);
-
+			repository.disconnect();
 			JsonUtils.success("登录成功！");
 		} catch(Exception e) {
 			e.printStackTrace();

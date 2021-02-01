@@ -1,12 +1,23 @@
 package com.aofei.kettle.trans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
 import com.aofei.base.model.response.CurrentUserResponse;
+import com.aofei.kettle.App;
+import com.aofei.kettle.PluginFactory;
+import com.aofei.kettle.base.BaseGraphCodec;
+import com.aofei.kettle.base.GraphCodec;
+import com.aofei.kettle.cluster.SlaveServerCodec;
+import com.aofei.kettle.core.PropsUI;
+import com.aofei.kettle.trans.step.StepDecoder;
+import com.aofei.kettle.trans.step.StepEncoder;
+import com.aofei.kettle.trans.step.StepErrorMetaCodec;
+import com.aofei.kettle.utils.JSONArray;
+import com.aofei.kettle.utils.JSONObject;
 import com.aofei.kettle.utils.StringEscapeHelper;
+import com.aofei.kettle.utils.SvgImageUrl;
+import com.mxgraph.io.mxCodec;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxUtils;
+import com.mxgraph.view.mxGraph;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -38,22 +49,10 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.aofei.kettle.App;
-import com.aofei.kettle.PluginFactory;
-import com.aofei.kettle.base.BaseGraphCodec;
-import com.aofei.kettle.base.GraphCodec;
-import com.aofei.kettle.cluster.SlaveServerCodec;
-import com.aofei.kettle.core.PropsUI;
-import com.aofei.kettle.trans.step.StepDecoder;
-import com.aofei.kettle.trans.step.StepEncoder;
-import com.aofei.kettle.trans.step.StepErrorMetaCodec;
-import com.aofei.kettle.utils.JSONArray;
-import com.aofei.kettle.utils.JSONObject;
-import com.aofei.kettle.utils.SvgImageUrl;
-import com.mxgraph.io.mxCodec;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxUtils;
-import com.mxgraph.view.mxGraph;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 @Component(GraphCodec.TRANS_CODEC)
 @Scope("prototype")
@@ -67,13 +66,13 @@ public class TransMetaCodec extends BaseGraphCodec {
 		graph.getModel().beginUpdate();
 		mxCell parent = (mxCell) graph.getDefaultParent();
 		Document doc = mxUtils.createDocument();
-		
+
 		try {
 			Element e = super.encodeCommRootAttr(transMeta, doc);
 			e.setAttribute("trans_version", transMeta.getTransversion());
 			e.setAttribute("trans_type", transMeta.getTransformationType().getCode() );
 			e.setAttribute("trans_status", String.valueOf(transMeta.getTransstatus()));
-			
+
 		    //variables
 		    Properties sp = new Properties();
 		    JSONArray jsonArray = new JSONArray();
@@ -97,7 +96,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    for ( String varname : Const.INTERNAL_JOB_VARIABLES ) {
 		    	String value = transMeta.getVariable( varname );
 		    	if ( !Const.isEmpty( value ) ) {
-		    		
+
 		    		JSONObject param = new JSONObject();
 	    			param.put("var_name", varname);
 	    			param.put("var_value", value);
@@ -105,7 +104,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    	}
 		    }
 		    e.setAttribute("variables", jsonArray.toString());
-			
+
 		    TransLogTable transLogTable = transMeta.getTransLogTable();
 		    JSONObject jsonObject = new JSONObject();
 		    jsonObject.put( "connection", transLogTable.getConnectionName() );
@@ -131,7 +130,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    }
 		    jsonObject.put("fields", fields);
 		    e.setAttribute("transLogTable", jsonObject.toString());
-		    
+
 		    StepLogTable stepLogTable = transMeta.getStepLogTable();
 		    jsonObject = new JSONObject();
 		    jsonObject.put( "connection", stepLogTable.getConnectionName() );
@@ -149,7 +148,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    }
 		    jsonObject.put("fields", fields);
 		    e.setAttribute("stepLogTable", jsonObject.toString());
-		    
+
 		    PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
 		    jsonObject = new JSONObject();
 		    jsonObject.put( "connection", performanceLogTable.getConnectionName() );
@@ -204,7 +203,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    }
 		    jsonObject.put("fields", fields);
 		    e.setAttribute("metricsLogTable", jsonObject.toString());
-		    
+
 			jsonObject = new JSONObject();
 		    jsonObject.put("connection", transMeta.getMaxDateConnection() == null ? "" : transMeta.getMaxDateConnection().getName());
 		    jsonObject.put("table", transMeta.getMaxDateTable());
@@ -212,7 +211,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		    jsonObject.put("offset", transMeta.getMaxDateOffset());
 		    jsonObject.put("maxdiff", transMeta.getMaxDateDifference());
 		    e.setAttribute("maxdate", jsonObject.toString());
-			
+
 		    e.setAttribute("size_rowset", String.valueOf(transMeta.getSizeRowset()));
 		    e.setAttribute("feedback_shown", transMeta.isFeedbackShown() ? "Y" : "N");
 		    e.setAttribute("feedback_size", String.valueOf(transMeta.getFeedbackSize()));
@@ -220,13 +219,13 @@ public class TransMetaCodec extends BaseGraphCodec {
 //		    e.setAttribute("shared_objects_file", transMeta.getSharedObjectsFile());
 		    e.setAttribute("using_thread_priorities", transMeta.isUsingThreadPriorityManagment() ? "Y" : "N");
 		    e.setAttribute("trans_type", transMeta.getTransformationType().getCode());
-		    
+
 		    e.setAttribute("sleep_time_empty", String.valueOf(transMeta.getSleepTimeEmpty()));
 		    e.setAttribute("sleep_time_full", String.valueOf(transMeta.getSleepTimeFull()));
 		    e.setAttribute("capture_step_performance", transMeta.isCapturingStepPerformanceSnapShots() ? "Y" : "N");
 		    e.setAttribute("step_performance_capturing_delay", String.valueOf(transMeta.getStepPerformanceCapturingDelay()));
 		    e.setAttribute("step_performance_capturing_size_limit", transMeta.getStepPerformanceCapturingSizeLimit());
-		    
+
 		    List<TransDependency> dependencies = transMeta.getDependencies();
 		    jsonArray = new JSONArray();
 		    if(dependencies != null) {
@@ -240,11 +239,11 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 		    }
 		    e.setAttribute("dependencies", jsonArray.toString());
-		    
+
 		    super.encodeSlaveServers(e, transMeta);
 		    encodeClusterSchema(e, transMeta);
 		    encodePartitionSchema(e, transMeta);
-		    
+
 		    try {
 		    	if(transMeta.getKey() != null) {
 		    		e.setAttribute("key_for_session_key", XMLHandler.encodeBinaryData(transMeta.getKey()));
@@ -256,12 +255,12 @@ public class TransMetaCodec extends BaseGraphCodec {
 				e.setAttribute("key_for_session_key", "");
 			}
 			e.setAttribute("is_key_private", transMeta.isPrivateKey() ? "Y" : "N");
-	
+
 			super.encodeNote(doc, graph, transMeta);
-			
+
 			super.encodeDatabases(e, transMeta);
 		    parent.setValue(e);
-		    
+
 		    // encode steps and hops
 			HashMap<StepMeta, Object> cells = new HashMap<StepMeta, Object>();
 			List<StepMeta> list = transMeta.getSteps();
@@ -272,31 +271,31 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 				Point p = stepMeta.getLocation();
 				StepEncoder stepEncoder = (StepEncoder) PluginFactory.getBean(stepMeta.getStepID());
-				
+
 				PluginInterface plugin = PluginRegistry.getInstance().getPlugin(StepPluginType.class, stepMeta.getStepID());
 				Object cell = graph.insertVertex(parent, null, stepEncoder.encodeStep(stepMeta,user), p.x, p.y, PropsUI.STEP_SIZE, PropsUI.STEP_SIZE, "icon;image=" + SvgImageUrl.getUrl(plugin));
 				cells.put(stepMeta, cell);
 			}
-			
+
 			for(int i=0; i<transMeta.nrTransHops(); i++) {
 				TransHopMeta transHopMeta = transMeta.getTransHop(i);
-				
+
 				Object v1 = cells.get(transHopMeta.getFromStep());
 				Object v2 = cells.get(transHopMeta.getToStep());
-				
+
 				String style = null;
 				StepErrorMeta stepErrorMeta = transHopMeta.getFromStep().getStepErrorMeta();
 				if(stepErrorMeta != null && transHopMeta.getToStep().equals(stepErrorMeta.getTargetStep())) {
 					style = "error";
 				}
-				
+
 				graph.insertEdge(parent, null, TransHopMetaCodec.encode(transHopMeta), v1, v2, style);
 			}
-			
+
 		} finally {
 			graph.getModel().endUpdate();
 		}
-		
+
 		mxCodec codec = new mxCodec();
 		return mxUtils.getPrettyXml(codec.encode(graph.getModel()));
 	}
@@ -308,22 +307,22 @@ public class TransMetaCodec extends BaseGraphCodec {
 		Document doc = mxUtils.parseXml(graphXml);
 		codec.decode(doc.getDocumentElement(), graph.getModel());
 		mxCell root = (mxCell) graph.getDefaultParent();
-		
+
 		TransMeta transMeta = new TransMeta();
 		decodeCommRootAttr(root, transMeta);
 		transMeta.setTransstatus(Const.toInt( root.getAttribute( "trans_status" ), -1 ));
 		transMeta.setTransversion(root.getAttribute("trans_version"));
-		
+
 		if(transMeta.getRepository() != null)
 			transMeta.setSharedObjects(transMeta.getRepository().readTransSharedObjects( transMeta ));
 		else
 			transMeta.setSharedObjects(transMeta.readSharedObjects());
-		
+
 		transMeta.importFromMetaStore();
-		
+
 		decodeDatabases(root, transMeta);
 		decodeNote(graph, transMeta);
-		
+
 		int count = graph.getModel().getChildCount(root);
 		for(int i=0; i<count; i++) {
 			mxCell cell = (mxCell) graph.getModel().getChildAt(root, i);
@@ -332,12 +331,12 @@ public class TransMetaCodec extends BaseGraphCodec {
 				if(PropsUI.TRANS_STEP_NAME.equals(e.getTagName())) {
 					StepDecoder stepDecoder = (StepDecoder) PluginFactory.getBean(cell.getAttribute("ctype"));
 					StepMeta stepMeta = stepDecoder.decodeStep(cell, transMeta.getDatabases(), transMeta.getMetaStore(), user);
-					
+
 					stepMeta.setParentTransMeta( transMeta );
 					if (stepMeta.isMissing()) {
 						transMeta.addMissingTrans((MissingTrans) stepMeta.getStepMetaInterface());
 					}
-					
+
 					StepMeta check = transMeta.findStep(stepMeta.getName());
 					if (check != null) {
 						if (!check.isShared()) {
@@ -353,7 +352,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-		
+
 		// Have all StreamValueLookups, etc. reference the correct source steps...
         //
 		for (int i = 0; i < transMeta.nrSteps(); i++) {
@@ -363,7 +362,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				sii.searchInfoAndTargetSteps(transMeta.getSteps());
 			}
 		}
-		
+
 		for(int i=0; i<count; i++) {
 			mxCell cell = (mxCell) graph.getModel().getChildAt(root, i);
 			if(cell.isVertex()) {
@@ -376,7 +375,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-		
+
 		count = graph.getModel().getChildCount(root);
 		for(int i=0; i<count; i++) {
 			mxCell cell = (mxCell) graph.getModel().getChildAt(root, i);
@@ -395,7 +394,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				transMeta.addTransHop(hopinf);
 			}
 		}
-		
+
 		JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("transLogTable"));
 		TransLogTable transLogTable = transMeta.getTransLogTable();
 		transLogTable.setConnectionName(jsonObject.optString("connection"));
@@ -420,7 +419,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-	    
+
 	    jsonObject = JSONObject.fromObject(root.getAttribute("stepLogTable"));
 		StepLogTable stepLogTable = transMeta.getStepLogTable();
 		stepLogTable.setConnectionName(jsonObject.optString("connection"));
@@ -442,7 +441,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-	    
+
 	    jsonObject = JSONObject.fromObject(root.getAttribute("channelLogTable"));
 		ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
 		channelLogTable.setConnectionName(jsonObject.optString("connection"));
@@ -487,7 +486,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-	    
+
 	    jsonObject = JSONObject.fromObject(root.getAttribute("metricsLogTable"));
 	    MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
 	    metricsLogTable.setConnectionName(jsonObject.optString("connection"));
@@ -509,7 +508,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-	    
+
 		jsonArray = JSONArray.fromObject(root.getAttribute("partitionSchemas"));
 		for (int i = 0; i < jsonArray.size(); i++) {
 			jsonObject = jsonArray.getJSONObject(i);
@@ -523,7 +522,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				transMeta.getPartitionSchemas().add(partitionSchema);
 			}
 		}
-		
+
 		for (int i = 0; i < transMeta.nrSteps(); i++) {
 			StepPartitioningMeta stepPartitioningMeta = transMeta.getStep(i).getStepPartitioningMeta();
 			if (stepPartitioningMeta != null) {
@@ -534,9 +533,9 @@ public class TransMetaCodec extends BaseGraphCodec {
 				targetStepPartitioningMeta.setPartitionSchemaAfterLoading(transMeta.getPartitionSchemas());
 			}
 		}
-	    
+
 		decodeSlaveServers(root, transMeta);
-		
+
 		jsonArray = JSONArray.fromObject(root.getAttribute("clusterSchemas"));
 		for (int i = 0; i < jsonArray.size(); i++) {
 			jsonObject = jsonArray.getJSONObject(i);
@@ -552,16 +551,18 @@ public class TransMetaCodec extends BaseGraphCodec {
 				transMeta.getClusterSchemas().add(clusterSchema);
 			}
 		}
-	    
+
 		for (int i = 0; i < transMeta.nrSteps(); i++) {
 			transMeta.getStep(i).setClusterSchemaAfterLoading(transMeta.getClusterSchemas());
 		}
-		
+
+		Repository repository = App.getInstance().getRepository();
+
 	    String maxdate = root.getAttribute("maxdate");
 	    if(StringUtils.hasText(maxdate)) {
 	    	jsonObject = JSONObject.fromObject(maxdate);
 	    	if(StringUtils.hasText(jsonObject.optString("connection"))) {
-	    		Repository repository = App.getInstance().getRepository();
+
 	    		ObjectId id_database = repository.getDatabaseID(jsonObject.optString("connection"));
 	    		if(id_database != null) {
 	    			transMeta.setMaxDateConnection(repository.loadDatabaseMeta(id_database, null));
@@ -572,7 +573,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 	    	transMeta.setMaxDateOffset(jsonObject.optInt("offset", 0));
 	    	transMeta.setMaxDateDifference(jsonObject.optInt("maxdiff", 0));
 	    }
-	    
+
 		transMeta.setSizeRowset(Const.toInt( root.getAttribute( "size_rowset" ), Const.ROWS_IN_ROWSET ));
 		transMeta.setFeedbackShown(!"N".equalsIgnoreCase( root.getAttribute( "feedback_shown" ) ));
         transMeta.setFeedbackSize(Const.toInt( root.getAttribute( "feedback_size" ), Const.ROWS_UPDATE ));
@@ -580,22 +581,21 @@ public class TransMetaCodec extends BaseGraphCodec {
 //        transMeta.setSharedObjectsFile(root.getAttribute("shared_objects_file"));
         transMeta.setUsingThreadPriorityManagment(!"N".equalsIgnoreCase( root.getAttribute( "using_thread_priorities" ) ));
         transMeta.setTransformationType(TransformationType.getTransformationTypeByCode( root.getAttribute( "trans_type" ) ));
-        
-		
+
+
 		transMeta.setSleepTimeEmpty( Const.toInt( root.getAttribute( "sleep_time_empty" ), Const.TIMEOUT_GET_MILLIS ));
 		transMeta.setSleepTimeFull( Const.toInt( root.getAttribute( "sleep_time_full" ), Const.TIMEOUT_PUT_MILLIS ));
         transMeta.setCapturingStepPerformanceSnapShots("Y".equalsIgnoreCase( root.getAttribute( "capture_step_performance" ) ));
         transMeta.setStepPerformanceCapturingDelay(Const.toLong( root.getAttribute( "step_performance_capturing_delay" ), 1000 ));
         transMeta.setStepPerformanceCapturingSizeLimit(root.getAttribute( "step_performance_capturing_size_limit" ));
-	    
-        Repository repository = App.getInstance().getRepository();
+
 	    String dependencies = root.getAttribute( "dependencies" );
 	    if(StringUtils.hasText(dependencies)) {
 	    	jsonArray = JSONArray.fromObject(dependencies);
 	    	for(int i=0; i<jsonArray.size(); i++) {
 	    		JSONObject dependencyJson = jsonArray.getJSONObject(i);
 	    		TransDependency td = new TransDependency();
-	    		
+
 	    		String database = dependencyJson.optString("database");
 	    		if(StringUtils.hasText(database)) {
 	    			ObjectId id_database = repository.getDatabaseID(database);
@@ -609,14 +609,14 @@ public class TransMetaCodec extends BaseGraphCodec {
 	    		transMeta.addDependency(td);
 	    	}
 	    }
-        
+
 
 	    transMeta.setKey(XMLHandler.stringToBinary( root.getAttribute( "key_for_session_key" ) ));
 	    transMeta.setPrivateKey("Y".equals( root.getAttribute( "is_key_private" ) ));
-	    
+	    repository.disconnect();
 	    return transMeta;
 	}
-	
+
 	public ClusterSchema decodeClusterSchema(JSONObject jsonObject, List<SlaveServer> referenceSlaveServers) {
 		ClusterSchema clusterSchema = new ClusterSchema();
 		clusterSchema.setName(jsonObject.optString( "name" ));
@@ -625,7 +625,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		clusterSchema.setSocketsFlushInterval(jsonObject.optString( "sockets_flush_interval" ));
 		clusterSchema.setSocketsCompressed("Y".equalsIgnoreCase( jsonObject.optString( "sockets_compressed" ) ));
 		clusterSchema.setDynamic("Y".equalsIgnoreCase( jsonObject.optString( "dynamic" ) ));
-		
+
 		ArrayList<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
 		JSONArray slavesNode = jsonObject.optJSONArray("slaveservers");
 		if(slavesNode != null) {
@@ -638,10 +638,10 @@ public class TransMetaCodec extends BaseGraphCodec {
 			}
 			clusterSchema.setSlaveServers(slaveServers);
 		}
-		
+
 		return clusterSchema;
 	}
-	
+
 	public void encodeClusterSchema(Element e, TransMeta transMeta) {
 		JSONArray jsonArray = new JSONArray();
 		for (int i = 0; i < transMeta.getClusterSchemas().size(); i++) {
@@ -667,7 +667,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		}
 		e.setAttribute("clusterSchemas", jsonArray.toString());
 	}
-	
+
 	public PartitionSchema decodePartitionSchema(JSONObject jsonObject) {
 		PartitionSchema partitionSchema = new PartitionSchema();
 		partitionSchema.setName(jsonObject.optString("name"));
@@ -682,21 +682,21 @@ public class TransMetaCodec extends BaseGraphCodec {
 	    			partitionSchema.getPartitionIDs().add(jsonObject2.optString("partitionId"));
 		    }
 	    }
-	    
+
 	    return partitionSchema;
 	}
-	
+
 	public void encodePartitionSchema(Element e, TransMeta transMeta) {
 		JSONArray jsonArray = new JSONArray();
 	    List<PartitionSchema> partitionSchemas = transMeta.getPartitionSchemas();
 		for (int i = 0; i < partitionSchemas.size(); i++) {
 			PartitionSchema partitionSchema = partitionSchemas.get(i);
-			
+
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("name", partitionSchema.getName());
 			jsonObject.put("dynamic", partitionSchema.isDynamicallyDefined() ? "Y" : "N");
 			jsonObject.put("partitions_per_slave", partitionSchema.getNumberOfPartitionsPerSlave());
-			
+
 			JSONArray partitionIds = new JSONArray();
 			List<String> partitionIDs = partitionSchema.getPartitionIDs();
 			for (int j = 0; j < partitionIDs.size(); j++) {
@@ -705,7 +705,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				partitionIds.add(jsonObject2);
 			}
 			jsonObject.put("partition", partitionIds);
-			
+
 			jsonArray.add(jsonObject);
 		}
 		e.setAttribute("partitionSchemas", jsonArray.toString());
@@ -723,7 +723,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 				}
 			}
 		}
-		
+
 		TransLogTable transLogTable = transMeta.getTransLogTable();
 		if (transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals(databaseMeta)) {
 			return true;

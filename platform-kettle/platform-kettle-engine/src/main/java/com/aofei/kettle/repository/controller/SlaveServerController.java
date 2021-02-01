@@ -51,25 +51,33 @@ public class SlaveServerController {
 	protected void slaveserver(String name) throws Exception {
 		Repository repository = App.getInstance().getRepository();
 
-		ObjectId slaveId = repository.getSlaveID(name);
-		SlaveServer slaveServer = repository.loadSlaveServer(slaveId, null);
-		SlaveServerStatus status = slaveServer.getStatus();
-		System.out.println("cpuCores: " + status.getCpuCores());
-		System.out.println("cpuProcessTim: " + status.getCpuProcessTime());
+		try {
+			ObjectId slaveId = repository.getSlaveID(name);
+			SlaveServer slaveServer = repository.loadSlaveServer(slaveId, null);
+			SlaveServerStatus status = slaveServer.getStatus();
+			System.out.println("cpuCores: " + status.getCpuCores());
+			System.out.println("cpuProcessTim: " + status.getCpuProcessTime());
 
-		System.out.println("threadCount: " + status.getThreadCount());
+			System.out.println("threadCount: " + status.getThreadCount());
 
-		List<SlaveServerTransStatus> transStatusList = status.getTransStatusList();
-		System.out.println(transStatusList);
-		for(SlaveServerTransStatus transStatus : transStatusList) {
-			System.out.println(transStatus.getId());
+			List<SlaveServerTransStatus> transStatusList = status.getTransStatusList();
+			System.out.println(transStatusList);
+			for(SlaveServerTransStatus transStatus : transStatusList) {
+				System.out.println(transStatus.getId());
+			}
+
+			List<SlaveServerJobStatus> jobStatusList = status.getJobStatusList();
+			System.out.println(jobStatusList);
+			for(SlaveServerJobStatus jobStatus : jobStatusList) {
+				System.out.println(jobStatus.getId());
+			}
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		List<SlaveServerJobStatus> jobStatusList = status.getJobStatusList();
-		System.out.println(jobStatusList);
-		for(SlaveServerJobStatus jobStatus : jobStatusList) {
-			System.out.println(jobStatus.getId());
-		}
+
 
 	}
 
@@ -85,13 +93,20 @@ public class SlaveServerController {
 	protected void slavenames() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
 
-		String[] slaveNames = repository.getSlaveNames(false);
-		JSONArray jsonArray = new JSONArray();
-		for(String slaveName: slaveNames) {
-			jsonArray.add(slaveName);
+		try {
+			String[] slaveNames = repository.getSlaveNames(false);
+			JSONArray jsonArray = new JSONArray();
+			for(String slaveName: slaveNames) {
+				jsonArray.add(slaveName);
+			}
+
+			JsonUtils.response(jsonArray);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(jsonArray);
 	}
 
 	/**
@@ -109,15 +124,23 @@ public class SlaveServerController {
 	protected void load(String name) throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
 
-		SlaveServer slaveServer = null;
-		if(StringUtils.hasText(name)) {
-			ObjectId id_slave = repository.getSlaveID(name);
-			slaveServer = repository.loadSlaveServer(id_slave, null);
-		} else {
-			slaveServer = new SlaveServer();
+		try {
+			SlaveServer slaveServer = null;
+			if(StringUtils.hasText(name)) {
+				ObjectId id_slave = repository.getSlaveID(name);
+				slaveServer = repository.loadSlaveServer(id_slave, null);
+			} else {
+				slaveServer = new SlaveServer();
+			}
+
+
+			JsonUtils.response(SlaveServerCodec.encode(slaveServer));
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(SlaveServerCodec.encode(slaveServer));
 	}
 
 	/**
@@ -139,7 +162,7 @@ public class SlaveServerController {
 		JSONObject jsonObject = JSONObject.fromObject(slaveInfo);
 		SlaveServer slaveServer = SlaveServerCodec.decode(jsonObject);
 		repository.save(slaveServer, "保存执行器：" + slaveServer.getName(), null);
-
+		repository.disconnect();
 		JsonUtils.success("执行器保存成功！");
 	}
 
@@ -159,19 +182,29 @@ public class SlaveServerController {
 	@RequestMapping("/remove")
 	protected void remove(String name) throws IOException, KettleException, ParserConfigurationException, SAXException {
 		Repository repository = App.getInstance().getRepository();
-		ObjectId id_slave = repository.getSlaveID(name);
-
-		if(id_slave == null) {
-			JsonUtils.fail("未找到name=" + name + "的执行器");
-			return;
-		}
 
 		try {
-			repository.deleteSlave(id_slave);
-			JsonUtils.success("执行器成功删除！");
-		} catch(KettleDependencyException e) {
-			JsonUtils.fail("移除失败，该执行器被其他对象占用：" + e.getMessage());
+
+			ObjectId id_slave = repository.getSlaveID(name);
+
+			if(id_slave == null) {
+				JsonUtils.fail("未找到name=" + name + "的执行器");
+				return;
+			}
+
+			try {
+				repository.deleteSlave(id_slave);
+				JsonUtils.success("执行器成功删除！");
+			} catch(KettleDependencyException e) {
+				JsonUtils.fail("移除失败，该执行器被其他对象占用：" + e.getMessage());
+			}
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
 	}
 
 
@@ -191,24 +224,35 @@ public class SlaveServerController {
 	@RequestMapping("/test")
 	protected void test(String name) throws IOException, KettleException, ParserConfigurationException, SAXException {
 		Repository repository = App.getInstance().getRepository();
-		ObjectId id_slave = repository.getSlaveID(name);
 
-		if(id_slave == null) {
-			System.err.println("未找到name=" + name + "的执行器");
-			return;
-		} else {
-			System.out.println("开始测试执行器" + name + "");
-		}
-
-		SlaveServer slaveServer = repository.loadSlaveServer(id_slave, null);
-		System.out.println("执行器信息：" + slaveServer);
 		try {
-			slaveServer.getStatus();
-			JsonUtils.success("执行器连接成功！");
-		} catch (Exception e) {
-			e.printStackTrace();
-			JsonUtils.fail("执行器连接失败！");
+
+			ObjectId id_slave = repository.getSlaveID(name);
+
+			if(id_slave == null) {
+				System.err.println("未找到name=" + name + "的执行器");
+				return;
+			} else {
+				System.out.println("开始测试执行器" + name + "");
+			}
+
+			SlaveServer slaveServer = repository.loadSlaveServer(id_slave, null);
+			System.out.println("执行器信息：" + slaveServer);
+			try {
+				slaveServer.getStatus();
+				JsonUtils.success("执行器连接成功！");
+			} catch (Exception e) {
+				e.printStackTrace();
+				JsonUtils.fail("执行器连接失败！");
+			}
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
+
 
 	}
 

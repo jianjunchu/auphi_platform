@@ -268,12 +268,22 @@ public class InterfaceController extends BaseController {
     private Database getDatabase(ServiceInterfaceResponse serviceInterface) throws KettleException {
         Repository repository = App.getInstance().getRepository();
 
-        ObjectId conId =new LongObjectId(serviceInterface.getDatabaseId());
-        DatabaseMeta databaseMeta =  repository.loadDatabaseMeta(conId,null);
+        try {
 
-        Database database = new Database(loggingObject,databaseMeta);
+            ObjectId conId =new LongObjectId(serviceInterface.getDatabaseId());
+            DatabaseMeta databaseMeta =  repository.loadDatabaseMeta(conId,null);
 
-        return database;
+            Database database = new Database(loggingObject,databaseMeta);
+
+            return database;
+
+        }catch (Exception e){
+            throw e;
+        }finally {
+            repository.disconnect();
+        }
+
+
     }
 
 

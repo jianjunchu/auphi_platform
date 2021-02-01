@@ -136,6 +136,7 @@ public class ExecuteCheckService {
                     if(database !=null){
                         database.disconnect();
                     }
+                    repository.disconnect();
 
                 }
 

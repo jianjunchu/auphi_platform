@@ -84,18 +84,27 @@ public class KettleRepositoryController extends BaseController {
 	protected void createDir(@RequestParam String dir, @RequestParam String name,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		dir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(),dir);
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface path = repository.findDirectory(dir);
-		if(path == null)
-			path = repository.getUserHomeDirectory();
 
-		RepositoryDirectoryInterface child = path.findChild(name);
-		if(child == null) {
-			repository.createRepositoryDirectory(path, name.trim());
-		} else {
-			JsonUtils.fail("该目录已经存在，请重新输入！");
-			return;
+		try {
+			RepositoryDirectoryInterface path = repository.findDirectory(dir);
+			if(path == null)
+				path = repository.getUserHomeDirectory();
+
+			RepositoryDirectoryInterface child = path.findChild(name);
+			if(child == null) {
+				repository.createRepositoryDirectory(path, name.trim());
+			} else {
+				JsonUtils.fail("该目录已经存在，请重新输入！");
+				return;
+			}
+			JsonUtils.success("目录创建成功！");
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
-		JsonUtils.success("目录创建成功！");
+
+
 	}
 
 	/**
@@ -118,28 +127,36 @@ public class KettleRepositoryController extends BaseController {
 		dir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(),dir);
 
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null)
-			directory = repository.getUserHomeDirectory();
+		try {
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null)
+				directory = repository.getUserHomeDirectory();
 
-		if(repository.exists(transName, directory, RepositoryObjectType.TRANSFORMATION)) {
-			JsonUtils.fail("该转换已经存在，请重新输入！");
-			return;
+			if(repository.exists(transName, directory, RepositoryObjectType.TRANSFORMATION)) {
+				JsonUtils.fail("该转换已经存在，请重新输入！");
+				return;
+			}
+
+			TransMeta transMeta = new TransMeta();
+			transMeta.setRepository(App.getInstance().getRepository());
+			transMeta.setMetaStore(App.getInstance().getMetaStore());
+			transMeta.setName(transName);
+			transMeta.setRepositoryDirectory(directory);
+
+			repository.save(transMeta, "创建转换", null);
+
+			String transPath = directory.getPath();
+			if(!transPath.endsWith("/"))
+				transPath = transPath + '/';
+			transPath = transPath + transName;
+			JsonUtils.success(transPath);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		TransMeta transMeta = new TransMeta();
-		transMeta.setRepository(App.getInstance().getRepository());
-		transMeta.setMetaStore(App.getInstance().getMetaStore());
-		transMeta.setName(transName);
-		transMeta.setRepositoryDirectory(directory);
 
-		repository.save(transMeta, "创建转换", null);
-
-		String transPath = directory.getPath();
-		if(!transPath.endsWith("/"))
-			transPath = transPath + '/';
-		transPath = transPath + transName;
-		JsonUtils.success(transPath);
 
 	}
 
@@ -161,29 +178,37 @@ public class KettleRepositoryController extends BaseController {
 	protected void createJob(@RequestParam String dir, @RequestParam String jobName,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		dir = com.aofei.base.common.Const.getUserPath(user.getOrganizerId(),dir);
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null)
-			directory = repository.getUserHomeDirectory();
+		try {
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null)
+				directory = repository.getUserHomeDirectory();
 
-		if(repository.exists(jobName, directory, RepositoryObjectType.JOB)) {
-			JsonUtils.fail("该转换已经存在，请重新输入！");
-			return;
+			if(repository.exists(jobName, directory, RepositoryObjectType.JOB)) {
+				JsonUtils.fail("该转换已经存在，请重新输入！");
+				return;
+			}
+
+			JobMeta jobMeta = new JobMeta();
+			jobMeta.setRepository(App.getInstance().getRepository());
+			jobMeta.setMetaStore(App.getInstance().getMetaStore());
+			jobMeta.setName(jobName);
+			jobMeta.setRepositoryDirectory(directory);
+
+			repository.save(jobMeta, "创建作业", null);
+
+			String jobPath = directory.getPath();
+			if(!jobPath.endsWith("/"))
+				jobPath = jobPath + '/';
+			jobPath = jobPath + jobName;
+
+			JsonUtils.success(jobPath);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JobMeta jobMeta = new JobMeta();
-		jobMeta.setRepository(App.getInstance().getRepository());
-		jobMeta.setMetaStore(App.getInstance().getMetaStore());
-		jobMeta.setName(jobName);
-		jobMeta.setRepositoryDirectory(directory);
 
-		repository.save(jobMeta, "创建作业", null);
-
-		String jobPath = directory.getPath();
-		if(!jobPath.endsWith("/"))
-			jobPath = jobPath + '/';
-		jobPath = jobPath + jobName;
-
-		JsonUtils.success(jobPath);
 	}
 
 	/**
@@ -198,32 +223,41 @@ public class KettleRepositoryController extends BaseController {
 	protected void drop(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
 
-		String dir = path.substring(0, path.lastIndexOf("/"));
-		String name = path.substring(path.lastIndexOf("/") + 1);
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null) {
-			JsonUtils.fail("删除失败，定位不到目录.");
-			return;
+		try {
+
+			String dir = path.substring(0, path.lastIndexOf("/"));
+			String name = path.substring(path.lastIndexOf("/") + 1);
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null) {
+				JsonUtils.fail("删除失败，定位不到目录.");
+				return;
+			}
+
+			if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)
+					|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
+				ObjectId id_transformation = repository.getTransformationID(name, directory);
+				if(id_transformation != null) {
+					repository.deleteTransformation(id_transformation);
+				}
+			} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)
+					|| RepositoryObjectType.JOB.getExtension().equals(type)) {
+				ObjectId id_job = repository.getJobId(name, directory);
+				if(id_job != null) {
+					repository.deleteJob(id_job);
+				}
+			} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
+				directory = repository.findDirectory(path);
+				dropDirectory(repository, directory);
+			}
+
+			JsonUtils.success("操作成功");
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)
-				|| RepositoryObjectType.TRANSFORMATION.getExtension().equals(type)) {
-			ObjectId id_transformation = repository.getTransformationID(name, directory);
-			if(id_transformation != null) {
-				repository.deleteTransformation(id_transformation);
-			}
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)
-				|| RepositoryObjectType.JOB.getExtension().equals(type)) {
-			ObjectId id_job = repository.getJobId(name, directory);
-			if(id_job != null) {
-				repository.deleteJob(id_job);
-			}
-		} else if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
-			directory = repository.findDirectory(path);
-			dropDirectory(repository, directory);
-		}
-
-		JsonUtils.success("操作成功");
 	}
 
 	private void dropDirectory(Repository repository, RepositoryDirectoryInterface directory) throws KettleException, IOException {
@@ -253,30 +287,37 @@ public class KettleRepositoryController extends BaseController {
 	protected void dropVerify(@RequestParam String path, @RequestParam String type) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
 
-		String dir = path.substring(0, path.lastIndexOf("/"));
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null) {
-			JsonUtils.fail("校验失败，定位不到目录.");
-			return;
-		}
-
-		if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
-			directory = repository.findDirectory(path);
-			if(repository.getJobAndTransformationObjects(directory.getObjectId(), true).size() > 0) {
-				JsonUtils.fail("该目录下存在子元素，您确定要移除该目录吗?");
+		try {
+			String dir = path.substring(0, path.lastIndexOf("/"));
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null) {
+				JsonUtils.fail("校验失败，定位不到目录.");
 				return;
 			}
 
-			if(repository.getDirectoryNames(directory.getObjectId()).length > 0) {
-				JsonUtils.fail("该目录下存在子目录，您确定要移除该目录吗?");
-				return;
+			if(StringUtils.isEmpty(type) || "dir".equalsIgnoreCase(type)) {
+				directory = repository.findDirectory(path);
+				if(repository.getJobAndTransformationObjects(directory.getObjectId(), true).size() > 0) {
+					JsonUtils.fail("该目录下存在子元素，您确定要移除该目录吗?");
+					return;
+				}
+
+				if(repository.getDirectoryNames(directory.getObjectId()).length > 0) {
+					JsonUtils.fail("该目录下存在子目录，您确定要移除该目录吗?");
+					return;
+				}
+
+			} else {
+				JsonUtils.success("操作成功");
 			}
 
-		} else {
 			JsonUtils.success("操作成功");
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.success("操作成功");
 	}
 
 
@@ -422,26 +463,34 @@ public class KettleRepositoryController extends BaseController {
 		String name = path.substring(path.lastIndexOf("/") + 1);
 
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null)
-			directory = repository.getUserHomeDirectory();
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
-			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
-			transMeta.setRepositoryDirectory(directory);
 
-			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-			String graphXml = codec.encode(transMeta,user);
+		try {
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null)
+				directory = repository.getUserHomeDirectory();
 
-			JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
-			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
-	    	jobMeta.setRepositoryDirectory(directory);
+			if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
+				TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
+				transMeta.setRepositoryDirectory(directory);
 
-	    	GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-			String graphXml = codec.encode(jobMeta,user);
+				GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
+				String graphXml = codec.encode(transMeta,user);
 
-			JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
+				JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
+			} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
+				JobMeta jobMeta = repository.loadJob(name, directory, null, null);
+				jobMeta.setRepositoryDirectory(directory);
+
+				GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
+				String graphXml = codec.encode(jobMeta,user);
+
+				JsonUtils.responseXml(StringEscapeHelper.encode(graphXml));
+			}
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 	}
 
@@ -464,28 +513,41 @@ public class KettleRepositoryController extends BaseController {
 		String name = path.substring(path.lastIndexOf("/") + 1);
 
 		Repository repository = App.getInstance().getRepository();
-		RepositoryDirectoryInterface directory = repository.findDirectory(dir);
-		if(directory == null)
-			directory = repository.getUserHomeDirectory();
 
-		if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
-			TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
-			transMeta.setRepositoryDirectory(directory);
+		try {
+			RepositoryDirectoryInterface directory = repository.findDirectory(dir);
+			if(directory == null)
+				directory = repository.getUserHomeDirectory();
 
-			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-			String graphXml = codec.encode(transMeta, user);
+			if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(type)) {
+				TransMeta transMeta = repository.loadTransformation(name, directory, null, true, null);
+				transMeta.setRepositoryDirectory(directory);
 
-			JsonUtils.success(StringEscapeHelper.encode(graphXml));
-		} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
+				GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
+				String graphXml = codec.encode(transMeta, user);
 
-			JobMeta jobMeta = repository.loadJob(name, directory, null, null);
-	    	jobMeta.setRepositoryDirectory(directory);
+				JsonUtils.success(StringEscapeHelper.encode(graphXml));
+			} else if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(type)) {
 
-	    	GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-			String graphXml = codec.encode(jobMeta, user);
+				JobMeta jobMeta = repository.loadJob(name, directory, null, null);
+				jobMeta.setRepositoryDirectory(directory);
 
-			JsonUtils.success(StringEscapeHelper.encode(graphXml));
+				GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
+				String graphXml = codec.encode(jobMeta, user);
+
+				JsonUtils.success(StringEscapeHelper.encode(graphXml));
+			}
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
+
+
+
+
+
 	}
 
 	/**
@@ -531,6 +593,7 @@ public class KettleRepositoryController extends BaseController {
 	    	repository.save(jobMeta, null, null);
 		}
 
+		repository.disconnect();
 		JsonUtils.success("克隆成功！");
 	}
 
@@ -601,6 +664,7 @@ public class KettleRepositoryController extends BaseController {
 			}
 		});
 
+		repository.disconnect();
 		return list;
 	}
 
@@ -614,6 +678,8 @@ public class KettleRepositoryController extends BaseController {
 	 */
 	@RequestMapping(method=RequestMethod.POST, value="/explorer")
 	protected @ResponseBody List explorer(@RequestParam String path, @RequestParam int loadElement) throws KettleException, IOException {
+
+
 		ArrayList list = new ArrayList();
 
 		Repository repository = App.getInstance().getRepository();
@@ -655,7 +721,7 @@ public class KettleRepositoryController extends BaseController {
 				}
 			}
 		}
-
+		repository.disconnect();
 		return list;
 	}
 
@@ -694,6 +760,7 @@ public class KettleRepositoryController extends BaseController {
 				}
 
 			}
+
 
 			JsonUtils.success(StringEscapeHelper.encode(file.getAbsolutePath()));
 
@@ -901,6 +968,7 @@ public class KettleRepositoryController extends BaseController {
             }
 		} finally {
 			zip.close();
+			repository.disconnect();
 		}
 
 
@@ -928,91 +996,112 @@ public class KettleRepositoryController extends BaseController {
 
 		Repository repository = App.getInstance().getRepository();
 
-		ArrayList<RepositoryCheckNode> list = new ArrayList<RepositoryCheckNode>();
-		ZipFile zip = new ZipFile(new File(filePath));
-		Enumeration<ZipEntry> iter = (Enumeration<ZipEntry>) zip.entries();
-		while(iter.hasMoreElements()) {
-			List<RepositoryCheckNode> temp = list;
-			ZipEntry entry = iter.nextElement();
+		try {
 
-			if(entry.isDirectory())
-				continue;
+			ArrayList<RepositoryCheckNode> list = new ArrayList<RepositoryCheckNode>();
+			ZipFile zip = new ZipFile(new File(filePath));
+			Enumeration<ZipEntry> iter = (Enumeration<ZipEntry>) zip.entries();
+			while(iter.hasMoreElements()) {
+				List<RepositoryCheckNode> temp = list;
+				ZipEntry entry = iter.nextElement();
 
-			String[] strings = entry.getName().split("/");
-			String currentDir = "";
-			for(int i=0; i<strings.length; i++) {
-				currentDir += "/" + strings[i];
+				if(entry.isDirectory())
+					continue;
 
-				boolean found = false;
-				for(RepositoryCheckNode node : temp) {
-					if(node.getText().equals(strings[i])) {
-						temp = node.getChildren();
-						found = true;
-						break;
-					}
-				}
+				String[] strings = entry.getName().split("/");
+				String currentDir = "";
+				for(int i=0; i<strings.length; i++) {
+					currentDir += "/" + strings[i];
 
-				if(!found) {
-					RepositoryCheckNode node = null;
-					if(i == (strings.length - 1)) {
-						if(strings[i].endsWith(RepositoryObjectType.TRANSFORMATION.getExtension())) {
-							node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.TRANSFORMATION, true);
-
-							String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
-							RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
-							String name = strings[i].substring(0, strings[i].lastIndexOf("."));
-							if(dir != null) {
-								node.setRepoExist(repository.exists(name, dir, RepositoryObjectType.TRANSFORMATION));
-								node.setChecked(true);
-							} else {
-								node.setRepoExist(false);
-							}
-
-						} else if(strings[i].endsWith(RepositoryObjectType.JOB.getExtension())) {
-							node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.JOB, true);
-
-							String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
-							RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
-							String name = strings[i].substring(0, strings[i].lastIndexOf("."));
-							if(dir != null) {
-								node.setRepoExist(repository.exists(name, dir, RepositoryObjectType.JOB));
-							} else {
-								node.setRepoExist(false);
-							}
+					boolean found = false;
+					for(RepositoryCheckNode node : temp) {
+						if(node.getText().equals(strings[i])) {
+							temp = node.getChildren();
+							found = true;
+							break;
 						}
-					} else {
-						node = RepositoryCheckNode.initNode(strings[i], currentDir);
 					}
-					temp.add(node);
-					temp = node.getChildren();
+
+					if(!found) {
+						RepositoryCheckNode node = null;
+						if(i == (strings.length - 1)) {
+							if(strings[i].endsWith(RepositoryObjectType.TRANSFORMATION.getExtension())) {
+								node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.TRANSFORMATION, true);
+
+								String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
+								RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
+								String name = strings[i].substring(0, strings[i].lastIndexOf("."));
+								if(dir != null) {
+									node.setRepoExist(repository.exists(name, dir, RepositoryObjectType.TRANSFORMATION));
+									node.setChecked(true);
+								} else {
+									node.setRepoExist(false);
+								}
+
+							} else if(strings[i].endsWith(RepositoryObjectType.JOB.getExtension())) {
+								node = RepositoryCheckNode.initNode(strings[i], currentDir, RepositoryObjectType.JOB, true);
+
+								String parentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
+								RepositoryDirectoryInterface dir = repository.findDirectory(parentDir);
+								String name = strings[i].substring(0, strings[i].lastIndexOf("."));
+								if(dir != null) {
+									node.setRepoExist(repository.exists(name, dir, RepositoryObjectType.JOB));
+								} else {
+									node.setRepoExist(false);
+								}
+							}
+						} else {
+							node = RepositoryCheckNode.initNode(strings[i], currentDir);
+						}
+						temp.add(node);
+						temp = node.getChildren();
+					}
 				}
+
 			}
 
+
+
+			return list;
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			is.close();
+			fis.close();
+			repository.disconnect();
 		}
 
-		is.close();
-		fis.close();
 
-		return list;
 	}
 
 	@RequestMapping(method=RequestMethod.POST, value="/cascader")
 	protected Response<List<RepositoryCascaderVO>> cascader(@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		//List<RepositoryCascaderVO> list = new ArrayList<>();
 
-		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
-		RepositoryDirectoryInterface dir = repository.findDirectory(root);
+		try {
 
-		//RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerId().toString());
+			//List<RepositoryCascaderVO> list = new ArrayList<>();
 
-		List<RepositoryCascaderVO> childs = getCascaderChildren(repository,dir);
+			String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
+			RepositoryDirectoryInterface dir = repository.findDirectory(root);
+
+			//RepositoryCascaderVO repositoryCascaderVO = new RepositoryCascaderVO(user.getOrganizerName(),user.getOrganizerId().toString());
+
+			List<RepositoryCascaderVO> childs = getCascaderChildren(repository,dir);
 		/*if(!childs.isEmpty()){
 			repositoryCascaderVO.setChildren(childs);
 			list.add(repositoryCascaderVO);
 		}*/
 
-		return Response.ok(childs);
+			return Response.ok(childs);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
+
 
 	}
 
@@ -1053,10 +1142,17 @@ public class KettleRepositoryController extends BaseController {
 	@RequestMapping(method=RequestMethod.POST, value="/exptree")
 	protected @ResponseBody List exptree(@RequestParam int loadElement,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, IOException {
 		Repository repository = App.getInstance().getRepository();
-		String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
-		RepositoryDirectoryInterface dir = repository.findDirectory(root);
-		List list = browser(repository, dir, loadElement);
-		return list;
+		try {
+			String root = com.aofei.base.common.Const.getRootPath(user.getOrganizerId());
+			RepositoryDirectoryInterface dir = repository.findDirectory(root);
+			List list = browser(repository, dir, loadElement);
+			return list;
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
+
 	}
 
 
@@ -1111,31 +1207,47 @@ public class KettleRepositoryController extends BaseController {
 	protected void slaveservers() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
 
-		ObjectId[] slaveIDs = repository.getSlaveIDs(false);
-		JSONArray jsonArray = new JSONArray();
-		for(ObjectId id_slave: slaveIDs) {
-			SlaveServer slaveServer = repository.loadSlaveServer(id_slave, null);
-			jsonArray.add(SlaveServerCodec.encode(slaveServer));
+		try {
+
+			ObjectId[] slaveIDs = repository.getSlaveIDs(false);
+			JSONArray jsonArray = new JSONArray();
+			for(ObjectId id_slave: slaveIDs) {
+				SlaveServer slaveServer = repository.loadSlaveServer(id_slave, null);
+				jsonArray.add(SlaveServerCodec.encode(slaveServer));
+			}
+
+			JsonUtils.response(jsonArray);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(jsonArray);
+
 	}
 
 	@ApiOperation(value = "返回资源库中所有的数据库连接信息")
 	@RequestMapping("/databases")
 	protected @ResponseBody void databases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
+		try {
+			ObjectId[] databaseIds = repository.getDatabaseIDs(false);
+			JSONArray jsonArray = new JSONArray();
+			for(ObjectId databaseId: databaseIds) {
+				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
+				JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
+				jsonObject.put("changedDate", XMLHandler.date2string(databaseMeta.getChangedDate()));
+				jsonArray.add(jsonObject);
+			}
 
-		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
-		JSONArray jsonArray = new JSONArray();
-		for(ObjectId databaseId: databaseIds) {
-			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
-			JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
-			jsonObject.put("changedDate", XMLHandler.date2string(databaseMeta.getChangedDate()));
-			jsonArray.add(jsonObject);
+			JsonUtils.response(jsonArray);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(jsonArray);
 	}
 
 	@ApiOperation(value = "返回资源库中所有的分区数据库连接信息")
@@ -1143,20 +1255,27 @@ public class KettleRepositoryController extends BaseController {
 	protected @ResponseBody void partitionDatabases() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
 
-		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
-		JSONArray jsonArray = new JSONArray();
-		for(ObjectId databaseId: databaseIds) {
-			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
+		try {
+			ObjectId[] databaseIds = repository.getDatabaseIDs(false);
+			JSONArray jsonArray = new JSONArray();
+			for(ObjectId databaseId: databaseIds) {
+				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
 
-			if(databaseMeta.isPartitioned()) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("name", databaseMeta.getName());
-				jsonArray.add(jsonObject);
+				if(databaseMeta.isPartitioned()) {
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("name", databaseMeta.getName());
+					jsonArray.add(jsonObject);
+				}
+
 			}
 
+			JsonUtils.response(jsonArray);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(jsonArray);
 	}
 
 	@ApiOperation(value = "返回资源库中所有的数据库连接信息，包含连接是否可用的状态")
@@ -1164,27 +1283,35 @@ public class KettleRepositoryController extends BaseController {
 	protected @ResponseBody Collection databaseStatus() throws IOException, KettleException, InterruptedException, ExecutionException {
 		Repository repository = App.getInstance().getRepository();
 
-		ObjectId[] databaseIds = repository.getDatabaseIDs(false);
-		ExecutorService executor = Executors.newCachedThreadPool();
+		try {
+			ObjectId[] databaseIds = repository.getDatabaseIDs(false);
+			ExecutorService executor = Executors.newCachedThreadPool();
 
-		HashMap<String, JSONObject> result = new HashMap<String, JSONObject>();
-		HashMap<String, Future<Integer>> dbStatus = new HashMap<String, Future<Integer>>();
-		for(ObjectId databaseId: databaseIds) {
-			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
-			JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
-			result.put(databaseMeta.getName(), jsonObject);
+			HashMap<String, JSONObject> result = new HashMap<String, JSONObject>();
+			HashMap<String, Future<Integer>> dbStatus = new HashMap<String, Future<Integer>>();
+			for(ObjectId databaseId: databaseIds) {
+				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(databaseId, null);
+				JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
+				result.put(databaseMeta.getName(), jsonObject);
 
-			String port = databaseMeta.getDatabasePortNumberString();
-			Future<Integer> f = executor.submit(new ServerChecker(databaseMeta.getHostname(), Integer.parseInt(port)));
-			dbStatus.put(databaseMeta.getName(), f);
+				String port = databaseMeta.getDatabasePortNumberString();
+				Future<Integer> f = executor.submit(new ServerChecker(databaseMeta.getHostname(), Integer.parseInt(port)));
+				dbStatus.put(databaseMeta.getName(), f);
+			}
+
+			for(Map.Entry<String, Future<Integer>> entry : dbStatus.entrySet()) {
+				Integer status = entry.getValue().get();
+				result.get(entry.getKey()).put("status", status);
+			}
+
+			return result.values();
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		for(Map.Entry<String, Future<Integer>> entry : dbStatus.entrySet()) {
-			Integer status = entry.getValue().get();
-			result.get(entry.getKey()).put("status", status);
-		}
 
-		return result.values();
 	}
 
 	/**

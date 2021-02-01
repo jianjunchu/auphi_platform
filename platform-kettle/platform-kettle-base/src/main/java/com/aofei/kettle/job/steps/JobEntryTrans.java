@@ -88,81 +88,92 @@ public class JobEntryTrans extends AbstractJobEntry {
 
 	@Override
 	public Element encode(JobEntryInterface jobEntry) throws Exception {
-		Document doc = mxUtils.createDocument();
-		Element e = doc.createElement(PropsUI.JOB_JOBENTRY_NAME);
-		org.pentaho.di.job.entries.trans.JobEntryTrans jobEntryTrans = (org.pentaho.di.job.entries.trans.JobEntryTrans) jobEntry;
+
 		Repository repo = App.getInstance().getRepository();
-		e.setAttribute("supportsReferences", repo.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ? "Y" : "N");
 
-		ObjectLocationSpecificationMethod specificationMethod = jobEntryTrans.getSpecificationMethod();
-		e.setAttribute("specification_method", specificationMethod != null ? specificationMethod.getCode() : null);
+		try {
+			Document doc = mxUtils.createDocument();
+			Element e = doc.createElement(PropsUI.JOB_JOBENTRY_NAME);
+			org.pentaho.di.job.entries.trans.JobEntryTrans jobEntryTrans = (org.pentaho.di.job.entries.trans.JobEntryTrans) jobEntry;
 
-		if(specificationMethod == ObjectLocationSpecificationMethod.FILENAME) {
-			e.setAttribute("filename", jobEntryTrans.getFilename());
-		} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
-			e.setAttribute("transname", jobEntryTrans.getTransname());
-			if(StringUtils.hasText(jobEntryTrans.getDirectory()))
-				e.setAttribute("directory", jobEntryTrans.getDirectory());
-			else
-				e.setAttribute("directory", jobEntryTrans.getDirectoryPath());
-		} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE) {
-			ObjectId transObjectId = jobEntryTrans.getTransObjectId();
-			if(transObjectId != null) {
-				RepositoryObject objectInformation = repo.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-				if (objectInformation != null) {
-					e.setAttribute("trans_object_id", transObjectId.getId());
-					e.setAttribute("referenceName", getPathOf(objectInformation));
+			e.setAttribute("supportsReferences", repo.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ? "Y" : "N");
+
+			ObjectLocationSpecificationMethod specificationMethod = jobEntryTrans.getSpecificationMethod();
+			e.setAttribute("specification_method", specificationMethod != null ? specificationMethod.getCode() : null);
+
+			if(specificationMethod == ObjectLocationSpecificationMethod.FILENAME) {
+				e.setAttribute("filename", jobEntryTrans.getFilename());
+			} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
+				e.setAttribute("transname", jobEntryTrans.getTransname());
+				if(StringUtils.hasText(jobEntryTrans.getDirectory()))
+					e.setAttribute("directory", jobEntryTrans.getDirectory());
+				else
+					e.setAttribute("directory", jobEntryTrans.getDirectoryPath());
+			} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE) {
+				ObjectId transObjectId = jobEntryTrans.getTransObjectId();
+				if(transObjectId != null) {
+					RepositoryObject objectInformation = repo.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
+					if (objectInformation != null) {
+						e.setAttribute("trans_object_id", transObjectId.getId());
+						e.setAttribute("referenceName", getPathOf(objectInformation));
+					}
 				}
 			}
-		}
 
-		e.setAttribute("arg_from_previous", jobEntryTrans.argFromPrevious ? "Y" : "N");
-		e.setAttribute("params_from_previous", jobEntryTrans.paramsFromPrevious ? "Y" : "N");
-		e.setAttribute("exec_per_row", jobEntryTrans.execPerRow ? "Y" : "N");
-		e.setAttribute("clear_rows", jobEntryTrans.clearResultRows ? "Y" : "N");
-		e.setAttribute("clear_files", jobEntryTrans.clearResultFiles ? "Y" : "N");
-		e.setAttribute("set_logfile", jobEntryTrans.setLogfile ? "Y" : "N");
-		e.setAttribute("logfile", jobEntryTrans.logfile);
+			e.setAttribute("arg_from_previous", jobEntryTrans.argFromPrevious ? "Y" : "N");
+			e.setAttribute("params_from_previous", jobEntryTrans.paramsFromPrevious ? "Y" : "N");
+			e.setAttribute("exec_per_row", jobEntryTrans.execPerRow ? "Y" : "N");
+			e.setAttribute("clear_rows", jobEntryTrans.clearResultRows ? "Y" : "N");
+			e.setAttribute("clear_files", jobEntryTrans.clearResultFiles ? "Y" : "N");
+			e.setAttribute("set_logfile", jobEntryTrans.setLogfile ? "Y" : "N");
+			e.setAttribute("logfile", jobEntryTrans.logfile);
 
-		e.setAttribute("logext", jobEntryTrans.logext);
-		e.setAttribute("add_date", jobEntryTrans.addDate ? "Y" : "N");
-		e.setAttribute("add_time", jobEntryTrans.addTime ? "Y" : "N");
-		e.setAttribute("loglevel", jobEntryTrans.logFileLevel != null ? jobEntryTrans.logFileLevel.getCode() : null);
+			e.setAttribute("logext", jobEntryTrans.logext);
+			e.setAttribute("add_date", jobEntryTrans.addDate ? "Y" : "N");
+			e.setAttribute("add_time", jobEntryTrans.addTime ? "Y" : "N");
+			e.setAttribute("loglevel", jobEntryTrans.logFileLevel != null ? jobEntryTrans.logFileLevel.getCode() : null);
 
-		e.setAttribute("cluster", jobEntryTrans.isClustering() ? "Y" : "N");
-		e.setAttribute("slave_server_name", jobEntryTrans.getRemoteSlaveServerName());
-		e.setAttribute("set_append_logfile", jobEntryTrans.setAppendLogfile ? "Y" : "N");
-		e.setAttribute("wait_until_finished", jobEntryTrans.waitingToFinish ? "Y" : "N");
-		e.setAttribute("follow_abort_remote", jobEntryTrans.followingAbortRemotely ? "Y" : "N");
-		e.setAttribute("create_parent_folder", jobEntryTrans.createParentFolder ? "Y" : "N");
-		e.setAttribute("logging_remote_work", jobEntryTrans.isLoggingRemoteWork() ? "Y" : "N");
+			e.setAttribute("cluster", jobEntryTrans.isClustering() ? "Y" : "N");
+			e.setAttribute("slave_server_name", jobEntryTrans.getRemoteSlaveServerName());
+			e.setAttribute("set_append_logfile", jobEntryTrans.setAppendLogfile ? "Y" : "N");
+			e.setAttribute("wait_until_finished", jobEntryTrans.waitingToFinish ? "Y" : "N");
+			e.setAttribute("follow_abort_remote", jobEntryTrans.followingAbortRemotely ? "Y" : "N");
+			e.setAttribute("create_parent_folder", jobEntryTrans.createParentFolder ? "Y" : "N");
+			e.setAttribute("logging_remote_work", jobEntryTrans.isLoggingRemoteWork() ? "Y" : "N");
 
-		if (jobEntryTrans.arguments != null) {
-			JSONArray jsonArray = new JSONArray();
-			for (int i = 0; i < jobEntryTrans.arguments.length; i++) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("name", jobEntryTrans.arguments[i]);
-				jsonArray.add(jsonObject);
+			if (jobEntryTrans.arguments != null) {
+				JSONArray jsonArray = new JSONArray();
+				for (int i = 0; i < jobEntryTrans.arguments.length; i++) {
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("name", jobEntryTrans.arguments[i]);
+					jsonArray.add(jsonObject);
+				}
+				e.setAttribute("arguments", jsonArray.toString());
 			}
-			e.setAttribute("arguments", jsonArray.toString());
-		}
 
-		if ( jobEntryTrans.parameters != null ) {
-			e.setAttribute("pass_all_parameters", jobEntryTrans.isPassingAllParameters() ? "Y" : "N");
+			if ( jobEntryTrans.parameters != null ) {
+				e.setAttribute("pass_all_parameters", jobEntryTrans.isPassingAllParameters() ? "Y" : "N");
 
-			JSONArray jsonArray = new JSONArray();
-			for (int i = 0; i < jobEntryTrans.parameters.length; i++) {
+				JSONArray jsonArray = new JSONArray();
+				for (int i = 0; i < jobEntryTrans.parameters.length; i++) {
 
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("name", jobEntryTrans.parameters[i]);
-				jsonObject.put("stream_name", jobEntryTrans.parameterFieldNames[i]);
-				jsonObject.put("value", jobEntryTrans.parameterValues[i]);
-				jsonArray.add(jsonObject);
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("name", jobEntryTrans.parameters[i]);
+					jsonObject.put("stream_name", jobEntryTrans.parameterFieldNames[i]);
+					jsonObject.put("value", jobEntryTrans.parameterValues[i]);
+					jsonArray.add(jsonObject);
+				}
+				e.setAttribute("parameters", jsonArray.toString());
 			}
-			e.setAttribute("parameters", jsonArray.toString());
+
+			return e;
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repo.disconnect();
 		}
 
-		return e;
+
 	}
 
 	public static String getPathOf(RepositoryElementMetaInterface object) {

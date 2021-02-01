@@ -57,6 +57,7 @@ public class JobLogTimerTask extends TimerTask {
                     logJob.setLogJobId(IdWorker.getId());
                     logJobService.insert(logJob);
 
+
                 }else{
 
                     logJob.setChannelId(jobExecutor.getExecutionId());

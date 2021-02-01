@@ -49,34 +49,56 @@ public class ClusterSchemaController {
 	protected void clusterschemas() throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
 
-		ObjectId[] clusterIds = repository.getClusterIDs(false);
-		List<SlaveServer> slaveServers = repository.getSlaveServers();
-		JSONArray jsonArray = new JSONArray();
-		for(ObjectId clusterId: clusterIds) {
-			ClusterSchema clusterSchema = repository.loadClusterSchema(clusterId, slaveServers, null);
-			jsonArray.add(ClusterSchemaCodec.encode2(clusterSchema));
+		try {
+
+			ObjectId[] clusterIds = repository.getClusterIDs(false);
+			List<SlaveServer> slaveServers = repository.getSlaveServers();
+			JSONArray jsonArray = new JSONArray();
+			for(ObjectId clusterId: clusterIds) {
+				ClusterSchema clusterSchema = repository.loadClusterSchema(clusterId, slaveServers, null);
+				jsonArray.add(ClusterSchemaCodec.encode2(clusterSchema));
+			}
+
+			JsonUtils.response(jsonArray);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		JsonUtils.response(jsonArray);
 	}
 
 	@ResponseBody
 	@RequestMapping("/load")
 	protected Map load(String name) throws Exception {
-		if(StringUtils.hasText(name)) {
-			Repository repository = App.getInstance().getRepository();
-			List<SlaveServer> slaveServers = repository.getSlaveServers();
-			ObjectId[] id_clusters = repository.getClusterIDs(false);
-			for(ObjectId id_cluster : id_clusters) {
-				ClusterSchema clusterSchema = repository.loadClusterSchema(id_cluster, slaveServers, null);
-				if(clusterSchema.getName().equals(name)) {
-					return ClusterSchemaCodec.encode2(clusterSchema);
+
+		Repository repository = App.getInstance().getRepository();
+
+		try {
+
+			if(StringUtils.hasText(name)) {
+
+				List<SlaveServer> slaveServers = repository.getSlaveServers();
+				ObjectId[] id_clusters = repository.getClusterIDs(false);
+				for(ObjectId id_cluster : id_clusters) {
+					ClusterSchema clusterSchema = repository.loadClusterSchema(id_cluster, slaveServers, null);
+					if(clusterSchema.getName().equals(name)) {
+						return ClusterSchemaCodec.encode2(clusterSchema);
+					}
 				}
 			}
+
+			ClusterSchema clusterSchema = new ClusterSchema();
+			return ClusterSchemaCodec.encode2(clusterSchema);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		ClusterSchema clusterSchema = new ClusterSchema();
-		return ClusterSchemaCodec.encode2(clusterSchema);
+
 
 	}
 
@@ -96,47 +118,65 @@ public class ClusterSchemaController {
 	@RequestMapping("/remove")
 	protected void remove(String name) throws IOException, KettleException, ParserConfigurationException, SAXException {
 		Repository repository = App.getInstance().getRepository();
-		ObjectId id_cluster = null;
-
-		List<SlaveServer> slaveServers = repository.getSlaveServers();
-		ObjectId[] id_clusters = repository.getClusterIDs(false);
-		for(ObjectId id_cluster_schema : id_clusters) {
-			ClusterSchema clusterSchema = repository.loadClusterSchema(id_cluster_schema, slaveServers, null);
-			if(clusterSchema.getName().equals(name)) {
-				id_cluster = id_cluster_schema;
-				break;
-			}
-		}
-
-		if(id_cluster == null) {
-			JsonUtils.fail("未找到name=" + name + "的Kettle集群");
-			return;
-		}
 
 		try {
-			if(repository instanceof KettleDatabaseRepository) {
-				KettleDatabaseRepository databaseRepository = (KettleDatabaseRepository) repository;
-				databaseRepository.delClusterSlaves(id_cluster);
-			} else if(repository instanceof KettleDataSourceRepository) {
-				KettleDataSourceRepository dataSourceRepository = (KettleDataSourceRepository) repository;
-				dataSourceRepository.delClusterSlaves(id_cluster);
+
+
+			ObjectId id_cluster = null;
+
+			List<SlaveServer> slaveServers = repository.getSlaveServers();
+			ObjectId[] id_clusters = repository.getClusterIDs(false);
+			for(ObjectId id_cluster_schema : id_clusters) {
+				ClusterSchema clusterSchema = repository.loadClusterSchema(id_cluster_schema, slaveServers, null);
+				if(clusterSchema.getName().equals(name)) {
+					id_cluster = id_cluster_schema;
+					break;
+				}
 			}
 
-			repository.deleteClusterSchema(id_cluster);
-			JsonUtils.success("Kettle集群成功删除！");
-		} catch(KettleDependencyException e) {
-			JsonUtils.fail("移除失败，该Kettle集群被其他对象占用：" + e.getMessage());
+			if(id_cluster == null) {
+				JsonUtils.fail("未找到name=" + name + "的Kettle集群");
+				return;
+			}
+
+			try {
+				if(repository instanceof KettleDatabaseRepository) {
+					KettleDatabaseRepository databaseRepository = (KettleDatabaseRepository) repository;
+					databaseRepository.delClusterSlaves(id_cluster);
+				} else if(repository instanceof KettleDataSourceRepository) {
+					KettleDataSourceRepository dataSourceRepository = (KettleDataSourceRepository) repository;
+					dataSourceRepository.delClusterSlaves(id_cluster);
+				}
+
+				repository.deleteClusterSchema(id_cluster);
+				JsonUtils.success("Kettle集群成功删除！");
+			} catch(KettleDependencyException e) {
+				JsonUtils.fail("移除失败，该Kettle集群被其他对象占用：" + e.getMessage());
+			}
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
 	}
 
 	@ResponseBody
 	@RequestMapping("/persist")
 	protected void persist(String clusterInfo) throws IOException, KettleException, ParserConfigurationException, SAXException {
 		Repository repository = App.getInstance().getRepository();
-		JSONObject jsonObject = JSONObject.fromObject(clusterInfo);
-		ClusterSchema slaveServer = ClusterSchemaCodec.decode2(jsonObject, repository.getSlaveServers());
-		repository.save(slaveServer, "保存集群：" + slaveServer.getName(), null);
 
-		JsonUtils.success("集群保存成功！");
+		try {
+			JSONObject jsonObject = JSONObject.fromObject(clusterInfo);
+			ClusterSchema slaveServer = ClusterSchemaCodec.decode2(jsonObject, repository.getSlaveServers());
+			repository.save(slaveServer, "保存集群：" + slaveServer.getName(), null);
+
+			JsonUtils.success("集群保存成功！");
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
+
 	}
 }

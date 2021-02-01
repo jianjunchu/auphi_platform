@@ -5,23 +5,25 @@ import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.App;
 import com.aofei.kettle.PluginFactory;
 import com.aofei.kettle.base.GraphCodec;
-import com.aofei.kettle.utils.JSONObject;
 import com.aofei.kettle.utils.JsonUtils;
-import com.aofei.kettle.utils.StringEscapeHelper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.logging.*;
+import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -145,6 +147,7 @@ public class TransformationLogController {
                 if (db != null) {
                     db.disconnect();
                 }
+                repository.disconnect();
             }
         }
         return list;
@@ -192,6 +195,7 @@ public class TransformationLogController {
                     list.add(record);
                 }
             } finally {
+                repository.disconnect();
                 if (db != null) {
                     db.disconnect();
                 }

@@ -105,22 +105,31 @@ public class KettleDatabaseController extends BaseController {
 	@ResponseBody
 	@RequestMapping("/load")
 	protected void database(@RequestParam(required=false) String name) throws Exception {
-		DatabaseMeta databaseMeta = null;
-		if(StringUtils.hasText(name)) {
-			Repository repository = App.getInstance().getRepository();
-			ObjectId id_database = repository.getDatabaseID(name);
-			databaseMeta = repository.loadDatabaseMeta(id_database, null);
+		Repository repository = App.getInstance().getRepository();
+
+		try {
+			DatabaseMeta databaseMeta = null;
+			if(StringUtils.hasText(name)) {
+
+				ObjectId id_database = repository.getDatabaseID(name);
+				databaseMeta = repository.loadDatabaseMeta(id_database, null);
+			}
+			if(databaseMeta == null)
+				databaseMeta = new DatabaseMeta();
+
+			JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
+
+			if(databaseMeta.getObjectId() != null) {
+				jsonObject.put("objectId", databaseMeta.getObjectId().getId());
+			}
+
+			JsonUtils.response(jsonObject);
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
-		if(databaseMeta == null)
-			databaseMeta = new DatabaseMeta();
 
-		JSONObject jsonObject = DatabaseCodec.encode(databaseMeta);
-
-		if(databaseMeta.getObjectId() != null) {
-			jsonObject.put("objectId", databaseMeta.getObjectId().getId());
-		}
-
-		JsonUtils.response(jsonObject);
 	}
 
 	/**
@@ -262,20 +271,30 @@ public class KettleDatabaseController extends BaseController {
 	@RequestMapping("/checkAndSave")
 	public @ResponseBody void checkAndSave(@RequestParam String databaseInfo, @CurrentUser CurrentUserResponse user ) throws IOException, KettleException {
 
-		JSONObject result = new JSONObject();
-
-		DatabaseMeta databaseMeta = checkDatabase(databaseInfo, result);
-		if(result.size() > 0) {
-			JsonUtils.fail(result.toString());
-			return;
-		}
-		databaseMeta.setOrganizerId(user.getOrganizerId());
-		databaseMeta.setCreateUser(user.getUsername());
-		databaseMeta.setUpdateUser(user.getUsername());
 		Repository repository = App.getInstance().getRepository();
-		repository.save(databaseMeta, "add database", null);
 
-		JsonUtils.success(result.toString());
+		try {
+			JSONObject result = new JSONObject();
+
+			DatabaseMeta databaseMeta = checkDatabase(databaseInfo, result);
+			if(result.size() > 0) {
+				JsonUtils.fail(result.toString());
+				return;
+			}
+			databaseMeta.setOrganizerId(user.getOrganizerId());
+			databaseMeta.setCreateUser(user.getUsername());
+			databaseMeta.setUpdateUser(user.getUsername());
+
+			repository.save(databaseMeta, "add database", null);
+
+			JsonUtils.success(result.toString());
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
+
+
 	}
 
 	/**
@@ -453,26 +472,29 @@ public class KettleDatabaseController extends BaseController {
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/create")
 	public void create(@RequestParam String databaseInfo) throws IOException, KettleException {
-		JSONObject result = new JSONObject();
-
-		DatabaseMeta database = checkDatabase(databaseInfo, result);
-
-	    if(result.size() > 0) {
-			JsonUtils.fail(result.toString());
-			return;
-	    }
 
 		Repository repository = App.getInstance().getRepository();
 
+		try {
 
-		DatabaseMeta previousMeta = repository.loadDatabaseMeta(repository.getDatabaseID(database.getName()),null);
-		if(previousMeta != null) {
-			repository.deleteDatabaseMeta(database.getName());
-			// repositories.removeDatabase(repositories.indexOfDatabase(previousMeta));
-		}
-		repository.save(database, Const.VERSION_COMMENT_EDIT_VERSION, null);
+			JSONObject result = new JSONObject();
 
-		JsonUtils.success(database.getName());
+			DatabaseMeta database = checkDatabase(databaseInfo, result);
+
+			if(result.size() > 0) {
+				JsonUtils.fail(result.toString());
+				return;
+			}
+
+
+			DatabaseMeta previousMeta = repository.loadDatabaseMeta(repository.getDatabaseID(database.getName()),null);
+			if(previousMeta != null) {
+				repository.deleteDatabaseMeta(database.getName());
+				// repositories.removeDatabase(repositories.indexOfDatabase(previousMeta));
+			}
+			repository.save(database, Const.VERSION_COMMENT_EDIT_VERSION, null);
+
+			JsonUtils.success(database.getName());
 
 
 	    /*RepositoriesMeta repositories = new RepositoriesMeta();
@@ -486,6 +508,13 @@ public class KettleDatabaseController extends BaseController {
 
 	    	JsonUtils.success(database.getName());
 	    }*/
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
+
 	}
 
 	/**
@@ -501,12 +530,20 @@ public class KettleDatabaseController extends BaseController {
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/remove")
 	public void remove(@RequestParam String databaseName) throws IOException, KettleException {
-		JSONObject result = new JSONObject();
 
 		Repository repository = App.getInstance().getRepository();
-		repository.deleteDatabaseMeta(databaseName);
 
-		JsonUtils.success(result.toString());
+
+		try {
+			JSONObject result = new JSONObject();
+			repository.deleteDatabaseMeta(databaseName);
+
+			JsonUtils.success(result.toString());
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
+		}
 
 	    /*RepositoriesMeta repositories = new RepositoriesMeta();
 	    if(repositories.readData()) {
@@ -668,6 +705,7 @@ public class KettleDatabaseController extends BaseController {
 					message.append(Const.CR);
 				} finally {
 					db.disconnect();
+					repository.disconnect();
 				}
 	        }
 	        JsonUtils.success(StringEscapeHelper.encode(message.toString()));
@@ -837,6 +875,7 @@ public class KettleDatabaseController extends BaseController {
 				list.add(rec);
 			}
 		} finally {
+			repository.disconnect();
 			db.disconnect();
 		}
 

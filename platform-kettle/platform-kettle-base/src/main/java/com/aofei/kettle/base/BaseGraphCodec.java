@@ -1,16 +1,14 @@
 package com.aofei.kettle.base;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.aofei.kettle.App;
-import com.aofei.kettle.base.GraphCodec;
 import com.aofei.kettle.cluster.SlaveServerCodec;
 import com.aofei.kettle.core.NotePadCodec;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
 import com.aofei.kettle.utils.StringEscapeHelper;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.view.mxGraph;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -31,8 +29,8 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.mxgraph.model.mxCell;
-import com.mxgraph.view.mxGraph;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class BaseGraphCodec implements GraphCodec {
 
@@ -86,34 +84,46 @@ public abstract class BaseGraphCodec implements GraphCodec {
 	}
 
 	public void encodeDatabases(Element e, AbstractMeta meta) {
-		Props props = null;
-		if (Props.isInitialized()) {
-			props = Props.getInstance();
-		}
+		Repository repository = App.getInstance().getRepository();
 
-		JSONArray jsonArray = new JSONArray();
-		for (int i = 0; i < meta.nrDatabases(); i++) {
-			DatabaseMeta dbMeta = meta.getDatabase(i);
-			if (props != null && props.areOnlyUsedConnectionsSavedToXML()) {
-				if (isDatabaseConnectionUsed(meta, dbMeta)) {
-					jsonArray.add(dbMeta.getName());
+		try {
 
-					try {
-						Repository repository = App.getInstance().getRepository();
-						ObjectId id_database = repository.getDatabaseID(dbMeta.getName());
-						if(id_database == null) {
-							repository.save(dbMeta, "add private database", null);
-						}
-					} catch (KettleException e1) {
-						e1.printStackTrace();
-					}
-				}
-			} else {
-				jsonArray.add(dbMeta.getName());
+			Props props = null;
+			if (Props.isInitialized()) {
+				props = Props.getInstance();
 			}
+
+			JSONArray jsonArray = new JSONArray();
+			for (int i = 0; i < meta.nrDatabases(); i++) {
+				DatabaseMeta dbMeta = meta.getDatabase(i);
+				if (props != null && props.areOnlyUsedConnectionsSavedToXML()) {
+					if (isDatabaseConnectionUsed(meta, dbMeta)) {
+						jsonArray.add(dbMeta.getName());
+
+						try {
+
+							ObjectId id_database = repository.getDatabaseID(dbMeta.getName());
+							if(id_database == null) {
+								repository.save(dbMeta, "add private database", null);
+							}
+						} catch (KettleException e1) {
+							e1.printStackTrace();
+						}
+					}
+				} else {
+					jsonArray.add(dbMeta.getName());
+				}
+			}
+
+			e.setAttribute("databases", jsonArray.toString());
+
+		}catch (Exception ex){
+			throw ex;
+		}finally {
+			repository.disconnect();
 		}
 
-		e.setAttribute("databases", jsonArray.toString());
+
 	}
 
 	public void encodeSlaveServers(Element e, AbstractMeta meta) {
@@ -141,70 +151,81 @@ public abstract class BaseGraphCodec implements GraphCodec {
 
 	public void decodeCommRootAttr(mxCell root, AbstractMeta meta) throws Exception {
 		Repository repository = App.getInstance().getRepository();
-		meta.setRepository(repository);
-		meta.setMetaStore(App.getInstance().getMetaStore());
 
-		meta.setName(root.getAttribute("name"));
-		if(repository == null) {
-			meta.setFilename(root.getAttribute("fileName"));
-		} else {
-			String directory = root.getAttribute("directory");
-			RepositoryDirectoryInterface path = repository.findDirectory(directory);
-			if(path == null)
-				path = new RepositoryDirectory();
-			meta.setRepositoryDirectory(path);
+		try {
 
-			if(repository instanceof KettleFileRepository) {
-				KettleFileRepository ktr = (KettleFileRepository) repository;
-				ObjectId fileId = ktr.getTransformationID(root.getAttribute("name"), path);
-				if(fileId == null)
-					fileId = ktr.getJobId(root.getAttribute("name"), path);
-				String realPath = ktr.calcFilename(fileId);
-				meta.setFilename(realPath);
-			}
-		}
-		meta.setDescription(root.getAttribute("description"));
-		meta.setExtendedDescription(root.getAttribute("extended_description"));
-		meta.setSharedObjectsFile(root.getAttribute("shared_objects_file"));
+			meta.setRepository(repository);
+			meta.setMetaStore(App.getInstance().getMetaStore());
 
-		// Read the named parameters.
-		JSONArray namedParameters = JSONArray.fromObject(root.getAttribute("parameters"));
-		for (int i = 0; i < namedParameters.size(); i++) {
-			JSONObject jsonObject = namedParameters.getJSONObject(i);
+			meta.setName(root.getAttribute("name"));
+			if(repository == null) {
+				meta.setFilename(root.getAttribute("fileName"));
+			} else {
+				String directory = root.getAttribute("directory");
+				RepositoryDirectoryInterface path = repository.findDirectory(directory);
+				if(path == null)
+					path = new RepositoryDirectory();
+				meta.setRepositoryDirectory(path);
 
-			String paramName = jsonObject.optString("name");
-			String defaultValue = jsonObject.optString("default_value");
-			String descr = jsonObject.optString("description");
-
-			meta.addParameterDefinition(paramName, defaultValue, descr);
-		}
-
-		meta.setCreatedUser( root.getAttribute( "created_user" ));
-		meta.setCreatedDate(XMLHandler.stringToDate( root.getAttribute( "created_date" ) ));
-		meta.setModifiedUser(root.getAttribute( "modified_user" ));
-		meta.setModifiedDate(XMLHandler.stringToDate( root.getAttribute( "modified_date" ) ));
-
-		JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("channelLogTable"));
-		ChannelLogTable channelLogTable = meta.getChannelLogTable();
-		channelLogTable.setConnectionName(jsonObject.optString("connection"));
-		channelLogTable.setSchemaName(jsonObject.optString("schema"));
-		channelLogTable.setTableName(jsonObject.optString("table"));
-		channelLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
-		JSONArray jsonArray = jsonObject.optJSONArray("fields");
-		if(jsonArray != null) {
-			for ( int i = 0; i < jsonArray.size(); i++ ) {
-		    	JSONObject fieldJson = jsonArray.getJSONObject(i);
-		    	String id = fieldJson.optString("id");
-		    	LogTableField field = channelLogTable.findField( id );
-		    	if ( field == null && i<channelLogTable.getFields().size()) {
-		    		field = channelLogTable.getFields().get(i);
-		    	}
-				if (field != null) {
-					field.setFieldName(fieldJson.optString("name"));
-					field.setEnabled(fieldJson.optBoolean("enabled"));
+				if(repository instanceof KettleFileRepository) {
+					KettleFileRepository ktr = (KettleFileRepository) repository;
+					ObjectId fileId = ktr.getTransformationID(root.getAttribute("name"), path);
+					if(fileId == null)
+						fileId = ktr.getJobId(root.getAttribute("name"), path);
+					String realPath = ktr.calcFilename(fileId);
+					meta.setFilename(realPath);
 				}
 			}
+			meta.setDescription(root.getAttribute("description"));
+			meta.setExtendedDescription(root.getAttribute("extended_description"));
+			meta.setSharedObjectsFile(root.getAttribute("shared_objects_file"));
+
+			// Read the named parameters.
+			JSONArray namedParameters = JSONArray.fromObject(root.getAttribute("parameters"));
+			for (int i = 0; i < namedParameters.size(); i++) {
+				JSONObject jsonObject = namedParameters.getJSONObject(i);
+
+				String paramName = jsonObject.optString("name");
+				String defaultValue = jsonObject.optString("default_value");
+				String descr = jsonObject.optString("description");
+
+				meta.addParameterDefinition(paramName, defaultValue, descr);
+			}
+
+			meta.setCreatedUser( root.getAttribute( "created_user" ));
+			meta.setCreatedDate(XMLHandler.stringToDate( root.getAttribute( "created_date" ) ));
+			meta.setModifiedUser(root.getAttribute( "modified_user" ));
+			meta.setModifiedDate(XMLHandler.stringToDate( root.getAttribute( "modified_date" ) ));
+
+			JSONObject jsonObject = JSONObject.fromObject(root.getAttribute("channelLogTable"));
+			ChannelLogTable channelLogTable = meta.getChannelLogTable();
+			channelLogTable.setConnectionName(jsonObject.optString("connection"));
+			channelLogTable.setSchemaName(jsonObject.optString("schema"));
+			channelLogTable.setTableName(jsonObject.optString("table"));
+			channelLogTable.setTimeoutInDays(jsonObject.optString("timeout_days"));
+			JSONArray jsonArray = jsonObject.optJSONArray("fields");
+			if(jsonArray != null) {
+				for ( int i = 0; i < jsonArray.size(); i++ ) {
+					JSONObject fieldJson = jsonArray.getJSONObject(i);
+					String id = fieldJson.optString("id");
+					LogTableField field = channelLogTable.findField( id );
+					if ( field == null && i<channelLogTable.getFields().size()) {
+						field = channelLogTable.getFields().get(i);
+					}
+					if (field != null) {
+						field.setFieldName(fieldJson.optString("name"));
+						field.setEnabled(fieldJson.optBoolean("enabled"));
+					}
+				}
+			}
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
+
 	}
 
 	public void decodeNote(mxGraph graph, AbstractMeta meta) {
@@ -224,31 +245,41 @@ public abstract class BaseGraphCodec implements GraphCodec {
 		JSONArray jsonArray = JSONArray.fromObject(root.getAttribute("databases"));
 		Set<String> privateTransformationDatabases = new HashSet<String>(jsonArray.size());
 		Repository repository = App.getInstance().getRepository();
-		for (int i = 0; i < jsonArray.size(); i++) {
-			String name = jsonArray.getString(i);
-			ObjectId id_database = repository.getDatabaseID(name);
-			DatabaseMeta dbcon = repository.loadDatabaseMeta(id_database, null);
+
+		try {
+			for (int i = 0; i < jsonArray.size(); i++) {
+				String name = jsonArray.getString(i);
+				ObjectId id_database = repository.getDatabaseID(name);
+				DatabaseMeta dbcon = repository.loadDatabaseMeta(id_database, null);
 
 //			JSONObject jsonObject = jsonArray.getJSONObject(i);
 //			DatabaseMeta dbcon =  DatabaseCodec.decode(jsonObject);
 //
-			dbcon.shareVariablesWith(meta);
-			if (!dbcon.isShared()) {
-				privateTransformationDatabases.add(dbcon.getName());
-			}
+				dbcon.shareVariablesWith(meta);
+				if (!dbcon.isShared()) {
+					privateTransformationDatabases.add(dbcon.getName());
+				}
 
-			DatabaseMeta exist = meta.findDatabase(dbcon.getName());
-			if (exist == null) {
-				meta.addDatabase(dbcon);
-			} else {
-				if (!exist.isShared()) {
-					int idx = meta.indexOfDatabase(exist);
-					meta.removeDatabase(idx);
-					meta.addDatabase(idx, dbcon);
+				DatabaseMeta exist = meta.findDatabase(dbcon.getName());
+				if (exist == null) {
+					meta.addDatabase(dbcon);
+				} else {
+					if (!exist.isShared()) {
+						int idx = meta.indexOfDatabase(exist);
+						meta.removeDatabase(idx);
+						meta.addDatabase(idx, dbcon);
+					}
 				}
 			}
+			meta.setPrivateDatabases(privateTransformationDatabases);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
-		meta.setPrivateDatabases(privateTransformationDatabases);
+
+
 	}
 
 	public void decodeSlaveServers(mxCell root, AbstractMeta meta) throws Exception {

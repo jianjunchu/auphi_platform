@@ -1,24 +1,18 @@
 package com.aofei.kettle.job.steps;
 
-import java.util.List;
-
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.kettle.App;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.kettle.job.step.AbstractJobEntry;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxUtils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.repository.*;
 import org.pentaho.metastore.api.IMetaStore;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,8 +20,7 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxUtils;
+import java.util.List;
 
 @Component("JOB")
 @Scope("prototype")
@@ -93,80 +86,93 @@ public class JobEntryJOB extends AbstractJobEntry {
 
 	@Override
 	public Element encode(JobEntryInterface jobEntry) throws Exception {
-		Document doc = mxUtils.createDocument();
-		Element e = doc.createElement(PropsUI.JOB_JOBENTRY_NAME);
-		org.pentaho.di.job.entries.job.JobEntryJob jobEntryJob = (org.pentaho.di.job.entries.job.JobEntryJob) jobEntry;
+
 		Repository repo = App.getInstance().getRepository();
-		e.setAttribute("supportsReferences", repo.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ? "Y" : "N");
 
-		ObjectLocationSpecificationMethod specificationMethod = jobEntryJob.getSpecificationMethod();
-		e.setAttribute("specification_method", specificationMethod != null ? specificationMethod.getCode() : null);
+		try {
 
-		if(specificationMethod == ObjectLocationSpecificationMethod.FILENAME) {
-			e.setAttribute("filename", jobEntryJob.getFilename());
-		} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
-			e.setAttribute("jobname", jobEntryJob.getJobName());
-			if(StringUtils.hasText(jobEntryJob.getDirectory()))
-				e.setAttribute("directory", jobEntryJob.getDirectory());
-			else
-				e.setAttribute("directory", jobEntryJob.getDirectory());
-		} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE) {
-			ObjectId jobObjectId = jobEntryJob.getJobObjectId();
-			if(jobObjectId != null) {
-				RepositoryObject objectInformation = repo.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
-				if (objectInformation != null) {
-					e.setAttribute("job_object_id", jobObjectId.getId());
-					e.setAttribute("referenceName", getPathOf(objectInformation));
+			Document doc = mxUtils.createDocument();
+			Element e = doc.createElement(PropsUI.JOB_JOBENTRY_NAME);
+			org.pentaho.di.job.entries.job.JobEntryJob jobEntryJob = (org.pentaho.di.job.entries.job.JobEntryJob) jobEntry;
+
+			e.setAttribute("supportsReferences", repo.getRepositoryMeta().getRepositoryCapabilities().supportsReferences() ? "Y" : "N");
+
+			ObjectLocationSpecificationMethod specificationMethod = jobEntryJob.getSpecificationMethod();
+			e.setAttribute("specification_method", specificationMethod != null ? specificationMethod.getCode() : null);
+
+			if(specificationMethod == ObjectLocationSpecificationMethod.FILENAME) {
+				e.setAttribute("filename", jobEntryJob.getFilename());
+			} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
+				e.setAttribute("jobname", jobEntryJob.getJobName());
+				if(StringUtils.hasText(jobEntryJob.getDirectory()))
+					e.setAttribute("directory", jobEntryJob.getDirectory());
+				else
+					e.setAttribute("directory", jobEntryJob.getDirectory());
+			} else if(specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE) {
+				ObjectId jobObjectId = jobEntryJob.getJobObjectId();
+				if(jobObjectId != null) {
+					RepositoryObject objectInformation = repo.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
+					if (objectInformation != null) {
+						e.setAttribute("job_object_id", jobObjectId.getId());
+						e.setAttribute("referenceName", getPathOf(objectInformation));
+					}
 				}
 			}
-		}
 
-		e.setAttribute("arg_from_previous", jobEntryJob.argFromPrevious ? "Y" : "N");
-		e.setAttribute("params_from_previous", jobEntryJob.paramsFromPrevious ? "Y" : "N");
-		e.setAttribute("exec_per_row", jobEntryJob.execPerRow ? "Y" : "N");
-		e.setAttribute("set_logfile", jobEntryJob.setLogfile ? "Y" : "N");
-		e.setAttribute("logfile", jobEntryJob.logfile);
+			e.setAttribute("arg_from_previous", jobEntryJob.argFromPrevious ? "Y" : "N");
+			e.setAttribute("params_from_previous", jobEntryJob.paramsFromPrevious ? "Y" : "N");
+			e.setAttribute("exec_per_row", jobEntryJob.execPerRow ? "Y" : "N");
+			e.setAttribute("set_logfile", jobEntryJob.setLogfile ? "Y" : "N");
+			e.setAttribute("logfile", jobEntryJob.logfile);
 
-		e.setAttribute("logext", jobEntryJob.logext);
-		e.setAttribute("add_date", jobEntryJob.addDate ? "Y" : "N");
-		e.setAttribute("add_time", jobEntryJob.addTime ? "Y" : "N");
-		e.setAttribute("loglevel", jobEntryJob.logFileLevel != null ? jobEntryJob.logFileLevel.getCode() : null);
+			e.setAttribute("logext", jobEntryJob.logext);
+			e.setAttribute("add_date", jobEntryJob.addDate ? "Y" : "N");
+			e.setAttribute("add_time", jobEntryJob.addTime ? "Y" : "N");
+			e.setAttribute("loglevel", jobEntryJob.logFileLevel != null ? jobEntryJob.logFileLevel.getCode() : null);
 
-		e.setAttribute("slave_server_name", jobEntryJob.getRemoteSlaveServerName());
-		e.setAttribute("set_append_logfile", jobEntryJob.setAppendLogfile ? "Y" : "N");
-		e.setAttribute("wait_until_finished", jobEntryJob.waitingToFinish ? "Y" : "N");
-		e.setAttribute("follow_abort_remote", jobEntryJob.followingAbortRemotely ? "Y" : "N");
-		e.setAttribute("create_parent_folder", jobEntryJob.createParentFolder ? "Y" : "N");
-		e.setAttribute("expandingRemoteJob", jobEntryJob.expandingRemoteJob ? "Y" : "N");
-		e.setAttribute("passingExport", jobEntryJob.isPassingExport() ? "Y" : "N");
+			e.setAttribute("slave_server_name", jobEntryJob.getRemoteSlaveServerName());
+			e.setAttribute("set_append_logfile", jobEntryJob.setAppendLogfile ? "Y" : "N");
+			e.setAttribute("wait_until_finished", jobEntryJob.waitingToFinish ? "Y" : "N");
+			e.setAttribute("follow_abort_remote", jobEntryJob.followingAbortRemotely ? "Y" : "N");
+			e.setAttribute("create_parent_folder", jobEntryJob.createParentFolder ? "Y" : "N");
+			e.setAttribute("expandingRemoteJob", jobEntryJob.expandingRemoteJob ? "Y" : "N");
+			e.setAttribute("passingExport", jobEntryJob.isPassingExport() ? "Y" : "N");
 
 
-		if (jobEntryJob.arguments != null) {
-			JSONArray jsonArray = new JSONArray();
-			for (int i = 0; i < jobEntryJob.arguments.length; i++) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("name", jobEntryJob.arguments[i]);
-				jsonArray.add(jsonObject);
+			if (jobEntryJob.arguments != null) {
+				JSONArray jsonArray = new JSONArray();
+				for (int i = 0; i < jobEntryJob.arguments.length; i++) {
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("name", jobEntryJob.arguments[i]);
+					jsonArray.add(jsonObject);
+				}
+				e.setAttribute("arguments", jsonArray.toString());
 			}
-			e.setAttribute("arguments", jsonArray.toString());
-		}
 
-		if ( jobEntryJob.parameters != null ) {
-			e.setAttribute("pass_all_parameters", jobEntryJob.isPassingAllParameters() ? "Y" : "N");
+			if ( jobEntryJob.parameters != null ) {
+				e.setAttribute("pass_all_parameters", jobEntryJob.isPassingAllParameters() ? "Y" : "N");
 
-			JSONArray jsonArray = new JSONArray();
-			for (int i = 0; i < jobEntryJob.parameters.length; i++) {
+				JSONArray jsonArray = new JSONArray();
+				for (int i = 0; i < jobEntryJob.parameters.length; i++) {
 
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("name", jobEntryJob.parameters[i]);
-				jsonObject.put("stream_name", jobEntryJob.parameterFieldNames[i]);
-				jsonObject.put("value", jobEntryJob.parameterValues[i]);
-				jsonArray.add(jsonObject);
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("name", jobEntryJob.parameters[i]);
+					jsonObject.put("stream_name", jobEntryJob.parameterFieldNames[i]);
+					jsonObject.put("value", jobEntryJob.parameterValues[i]);
+					jsonArray.add(jsonObject);
+				}
+				e.setAttribute("parameters", jsonArray.toString());
 			}
-			e.setAttribute("parameters", jsonArray.toString());
+
+			return e;
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repo.disconnect();
 		}
 
-		return e;
+
 	}
 
 	public static String getPathOf(RepositoryElementMetaInterface object) {

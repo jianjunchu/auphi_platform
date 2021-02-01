@@ -46,18 +46,27 @@ public class AddSequenceController {
 	@RequestMapping(method = RequestMethod.POST, value = "/support")
 	protected @ResponseBody void support(String name) throws IOException, KettleException {
 		Repository repository = App.getInstance().getRepository();
-		ObjectId id_database = repository.getDatabaseID(name);
+		try {
 
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("support_sequence", false);
-		if (id_database != null) {
-			DatabaseMeta databaseMeta = repository.loadDatabaseMeta(id_database, null);
-			boolean supportsSequences = databaseMeta.supportsSequences();
-			jsonObject.put("support_sequence", supportsSequences);
+			ObjectId id_database = repository.getDatabaseID(name);
+
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("support_sequence", false);
+			if (id_database != null) {
+				DatabaseMeta databaseMeta = repository.loadDatabaseMeta(id_database, null);
+				boolean supportsSequences = databaseMeta.supportsSequences();
+				jsonObject.put("support_sequence", supportsSequences);
+			}
+
+			repository.disconnect();
+			JsonUtils.response(jsonObject);
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		repository.disconnect();
-		JsonUtils.response(jsonObject);
 	}
 
 	/**

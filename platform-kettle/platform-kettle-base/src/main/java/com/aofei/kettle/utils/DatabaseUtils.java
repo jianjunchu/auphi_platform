@@ -22,6 +22,7 @@ public class DatabaseUtils {
         Database database = new Database(databaseMeta);
         repository.getRepositoryMeta();
         database.connect();
+        repository.disconnect();
         return database;
 
 

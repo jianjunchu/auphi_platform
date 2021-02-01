@@ -232,6 +232,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         if(!file.exists()){//如果文件夹不存在
             file.mkdir();//创建文件夹
         }
+        repository.disconnect();
 
         return 1;
     }

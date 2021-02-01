@@ -171,7 +171,10 @@ public class TransGraphController {
 			e.printStackTrace();
 
 			throw e;
+		}finally {
+			repository.disconnect();
 		}
+
 
 		JsonUtils.success("转换保存成功！");
 	}

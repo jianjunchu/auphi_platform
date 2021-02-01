@@ -181,35 +181,48 @@ public class JobGraphController {
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/save")
 	protected void save(@CurrentUser CurrentUserResponse user, @RequestParam String graphXml) throws Exception {
-		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
-		JobMeta jobMeta = (JobMeta) codec.decode(StringEscapeHelper.decode(graphXml), user);
-		Repository repository = App.getInstance().getRepository();
-		ObjectId existingId = repository.getJobId( jobMeta.getName(), jobMeta.getRepositoryDirectory() );
-		if(jobMeta.getCreatedDate() == null)
-			jobMeta.setCreatedDate(new Date());
-		if(jobMeta.getObjectId() == null)
-			jobMeta.setObjectId(existingId);
-		jobMeta.setModifiedDate(new Date());
-		jobMeta.setModifiedUser(user.getUsername());
 
-		 boolean versioningEnabled = true;
-         boolean versionCommentsEnabled = true;
-         String fullPath = jobMeta.getRepositoryDirectory() + "/" + jobMeta.getName() + jobMeta.getRepositoryElementType().getExtension();
-         RepositorySecurityProvider repositorySecurityProvider = repository.getSecurityProvider() != null ? repository.getSecurityProvider() : null;
-         if ( repositorySecurityProvider != null ) {
-        	 versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
-        	 versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
-         }
-		String versionComment = null;
-		if (!versioningEnabled || !versionCommentsEnabled) {
-			versionComment = "";
-		} else {
-			versionComment = "no comment";
+		Repository repository = App.getInstance().getRepository();
+
+		try {
+
+			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.JOB_CODEC);
+			JobMeta jobMeta = (JobMeta) codec.decode(StringEscapeHelper.decode(graphXml), user);
+
+			ObjectId existingId = repository.getJobId( jobMeta.getName(), jobMeta.getRepositoryDirectory() );
+			if(jobMeta.getCreatedDate() == null)
+				jobMeta.setCreatedDate(new Date());
+			if(jobMeta.getObjectId() == null)
+				jobMeta.setObjectId(existingId);
+			jobMeta.setModifiedDate(new Date());
+			jobMeta.setModifiedUser(user.getUsername());
+
+			boolean versioningEnabled = true;
+			boolean versionCommentsEnabled = true;
+			String fullPath = jobMeta.getRepositoryDirectory() + "/" + jobMeta.getName() + jobMeta.getRepositoryElementType().getExtension();
+			RepositorySecurityProvider repositorySecurityProvider = repository.getSecurityProvider() != null ? repository.getSecurityProvider() : null;
+			if ( repositorySecurityProvider != null ) {
+				versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
+				versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
+			}
+			String versionComment = null;
+			if (!versioningEnabled || !versionCommentsEnabled) {
+				versionComment = "";
+			} else {
+				versionComment = "no comment";
+			}
+
+			repository.save( jobMeta, versionComment, null);
+			repository.disconnect();
+			JsonUtils.success("作业保存成功！");
+
+		}catch (Exception e){
+			throw e;
+		}finally {
+			repository.disconnect();
 		}
 
-		repository.save( jobMeta, versionComment, null);
-		repository.disconnect();
-		JsonUtils.success("作业保存成功！");
+
 	}
 
 	/**

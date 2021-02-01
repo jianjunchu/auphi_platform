@@ -97,7 +97,10 @@ public class MonitorService extends BaseService<MonitorMapper, Monitor> implemen
         String root = Const.getRootPath(user.getOrganizerId());
         RepositoryDirectoryInterface dir = repository.findDirectory(root);
 
-        return countChildren(count,repository,dir);
+        int res =  countChildren(count,repository,dir);
+
+        repository.disconnect();
+        return res;
 
     }
 

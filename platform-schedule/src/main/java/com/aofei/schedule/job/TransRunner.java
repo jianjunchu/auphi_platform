@@ -117,6 +117,8 @@ public class TransRunner extends QuartzJobBean {
 
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
+		}finally {
+			repository.disconnect();
 		}
 
 	}
