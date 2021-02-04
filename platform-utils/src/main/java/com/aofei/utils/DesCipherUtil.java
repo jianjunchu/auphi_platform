@@ -62,7 +62,7 @@ public class DesCipherUtil {
      */
     public static String encryptPassword(String encryptText) {
 
-        return encrypt(encryptText,key);
+        return encryptText;//encrypt(encryptText,key);
 
     }
 
@@ -101,7 +101,7 @@ public class DesCipherUtil {
      */
     public static  String decryptPassword(String password) {
 
-        return decrypt(password,key);
+        return password; //decrypt(password,key);
     }
 
 
