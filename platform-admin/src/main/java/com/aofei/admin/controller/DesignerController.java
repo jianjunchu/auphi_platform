@@ -57,6 +57,7 @@ public class DesignerController extends BaseController {
             object.put("user_id",user.getUserId());
             object.put("user_name",user.getNickName());
             object.put("status",0);
+            object.put("organizer_id", user.getOrganizerId());
             object.put("rep_list",null);
 
             JSONArray rep_list = new JSONArray();
@@ -71,6 +72,7 @@ public class DesignerController extends BaseController {
             rep.put("DBName", Const.getConfig("jdbc.database"));
             rep.put("DBType", Const.getConfig("jdbc.type"));
             rep.put("version", "V3.0");
+
             rep.put("DBPort", Const.getConfig("jdbc.port"));
 
             rep_list.add(rep);
