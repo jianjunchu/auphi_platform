@@ -27,6 +27,9 @@ public class JobExecutor implements Runnable {
 	private JobExecutionConfiguration executionConfiguration;
 	private JobMeta jobMeta = null;
 	private Job job = null;
+
+	private Date startDate;
+	private Date endDate;
 	private static final Class PKG = JobEntryCopyResult.class;
 //	private Map<StepMeta, String> stepLogMap = new HashMap<StepMeta, String>();
 
@@ -130,6 +133,7 @@ public class JobExecutor implements Runnable {
 			App.getInstance().getLog().logError("执行失败！", e);
 		} finally {
 			finished = true;
+			endDate = new Date();
 		}
 	}
 
@@ -338,4 +342,15 @@ public class JobExecutor implements Runnable {
 		}
 	}
 
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 }

@@ -31,7 +31,7 @@ import com.aofei.log.annotation.Log;
 import com.aofei.schedule.i18n.Messages;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.ParamRequest;
-import com.aofei.schedule.service.IQuartzService;
+import com.aofei.schedule.service.ICycleScheduleService;
 import com.aofei.schedule.util.QuartzUtil;
 import com.aofei.utils.DateUtils;
 import org.joda.time.DateTime;
@@ -46,9 +46,9 @@ import org.springframework.stereotype.Service;
  * @create 2018-10-02 19:45
  */
 @Service
-public class QuartzService implements IQuartzService {
+public class CycleScheduleService implements ICycleScheduleService {
 
-    private  Logger logger = LoggerFactory.getLogger(QuartzService.class);
+    private  Logger logger = LoggerFactory.getLogger(CycleScheduleService.class);
 
     @Autowired
     private Scheduler quartzScheduler;
@@ -59,12 +59,12 @@ public class QuartzService implements IQuartzService {
 
 
     /**
-     * 创建调度
+     * 创建周期调度
      * @param request
      * @param jobExecClass
      * @throws SchedulerException
      */
-    @Log(module = "调度管理",description = "创建调度信息")
+    @Log(module = "调度管理",description = "创建周期调度信息")
     @Override
     public  void create(GeneralScheduleRequest request,  Class<? extends Job> jobExecClass) throws SchedulerException {
         String jobName = request.getJobName();
@@ -78,7 +78,7 @@ public class QuartzService implements IQuartzService {
 
 
         if(!checkJobExist(jobName,group)){
-            // 获取调度器
+            // 获取周期调度器
             Scheduler sched = quartzScheduler;
 
             // 创建一项作业
@@ -108,7 +108,7 @@ public class QuartzService implements IQuartzService {
 
             Trigger trigger = QuartzUtil.getTrigger(request,group);
 
-            // 告诉调度器使用该触发器来安排作业
+            // 告诉周期调度器使用该触发器来安排作业
             sched.scheduleJob(jobDetail, trigger);
 
 
@@ -122,9 +122,9 @@ public class QuartzService implements IQuartzService {
 
 
     /**
-     * 根据调度名称获取调度详细信息
-     * @param jobName 调度名称
-     * @return JobDetail 调度详细信息
+     * 根据周期调度名称获取周期调度详细信息
+     * @param jobName 周期调度名称
+     * @return JobDetail 周期调度详细信息
      */
     @Override
     public JobDetail findByName(String jobName, String groupName){
@@ -144,7 +144,7 @@ public class QuartzService implements IQuartzService {
      * @param organizerId
      * @return
      */
-    @Log(module = "调度管理",description = "删除调度信息")
+    @Log(module = "调度管理",description = "删除周期调度信息")
     @Override
     public boolean removeJob(String jobName, String group, Long organizerId) throws SchedulerException {
 
@@ -154,7 +154,7 @@ public class QuartzService implements IQuartzService {
         JobKey jobKey = JobKey.jobKey(jobName, group);
         quartzScheduler.deleteJob(jobKey);//删除作业
 
-        logger.info("删除调度=> [作业名称：" + jobName + " 作业组：" + group + "] ");
+        logger.info("删除周期调度=> [作业名称：" + jobName + " 作业组：" + group + "] ");
         return true;
     }
 
@@ -162,59 +162,59 @@ public class QuartzService implements IQuartzService {
 
 
     /**
-     * 执行调度
-     * @param jobName 调度名称
+     * 执行周期调度
+     * @param jobName 周期调度名称
      * @param jobGroup
      * @param params
      * @return
      */
-    @Log(module = "执行调度",description = "手动执行调度")
+    @Log(module = "调度管理",description = "手动执行周期调度")
     @Override
     public  boolean execute(String jobName, String jobGroup, ParamRequest[] params) throws SchedulerException {
 
         logger.info("执行作业=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
         quartzScheduler.triggerJob(jk) ;
-        logger.info("执行调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
+        logger.info("执行周期调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         return true;
 
     }
 
     /**
-     * 暂停调度
+     * 暂停周期调度
      * @param jobName
      * @param jobGroup
      * @return
      */
-    @Log(module = "调度管理",description = "暂停调度")
+    @Log(module = "调度管理",description = "暂停周期调度")
     @Override
     public  boolean pause(String jobName, String jobGroup) throws SchedulerException {
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
         quartzScheduler.pauseJob(jk);
-        logger.info("暂停调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
+        logger.info("暂停周期调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         return true;
     }
 
     /**
-     * 还原调度
+     * 还原周期调度
      * @param jobName
      * @param jobGroup
      * @return
      * @throws SchedulerException
      */
-    @Log(module = "调度管理",description = "还原调度")
+    @Log(module = "调度管理",description = "还原周期调度")
     @Override
     public  boolean resume(String jobName, String jobGroup) throws SchedulerException {
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
         quartzScheduler.resumeJob(jk);
-        logger.info("还原调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
+        logger.info("还原周期调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         return true;
     }
 
     /**
-     * 检查调度是否存在
-     * @param jobName 调度名称
-     * @return boolean 调度是否存在
+     * 检查周期调度是否存在
+     * @param jobName 周期调度名称
+     * @return boolean 周期调度是否存在
      */
     @Override
     public  boolean checkJobExist(String jobName, String jobGroup){
@@ -229,12 +229,12 @@ public class QuartzService implements IQuartzService {
     }
 
     /**
-     * 更新调度信息
+     * 更新周期调度信息
      * @param request
      * @param quartzExecuteClass
      * @throws SchedulerException
      */
-    @Log(module = "调度管理",description = "更新调度信息")
+    @Log(module = "调度管理",description = "更新周期调度信息")
     @Override
     public void update(GeneralScheduleRequest request, Class<Job> quartzExecuteClass) throws SchedulerException {
         if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){

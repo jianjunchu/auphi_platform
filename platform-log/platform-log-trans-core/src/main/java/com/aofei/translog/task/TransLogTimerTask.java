@@ -4,8 +4,6 @@ import com.aofei.kettle.TransExecutor;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.translog.entity.LogTrans;
 import com.aofei.translog.entity.LogTransStep;
-import com.aofei.translog.service.ILogTransService;
-import com.aofei.translog.service.ILogTransStepService;
 import com.baomidou.mybatisplus.toolkit.IdWorker;
 import org.pentaho.di.core.Result;
 import org.slf4j.Logger;
@@ -21,8 +19,7 @@ public class TransLogTimerTask extends TimerTask {
     private static Logger logger = LoggerFactory.getLogger(TransLogTimerTask.class);
 
     private TransExecutor transExecutor;
-    private ILogTransService logTransService;
-    private ILogTransStepService logTransStepService;
+
     private boolean first = true;
     private LogTrans logTrans;
     private List<LogTransStep> logTransSteps;
@@ -31,18 +28,7 @@ public class TransLogTimerTask extends TimerTask {
         this.logTrans = logTrans;
     }
 
-    public TransLogTimerTask(ILogTransService logTransService, TransExecutor transExecutor, LogTrans logTrans) {
-        this.logTransService = logTransService;
-        this.transExecutor = transExecutor;
-        this.logTrans = logTrans;
-    }
 
-    public TransLogTimerTask(ILogTransService logTransService, ILogTransStepService logTransStepService, TransExecutor transExecutor, LogTrans logTrans) {
-        this.logTransService = logTransService;
-        this.logTransStepService = logTransStepService;
-        this.transExecutor = transExecutor;
-        this.logTrans = logTrans;
-    }
 
     @Override
     public void run() {
@@ -56,12 +42,12 @@ public class TransLogTimerTask extends TimerTask {
                     logTransSteps = new ArrayList<>();
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
                     logTrans.setLogTransId(IdWorker.getId());
-                    logTrans.insertOrUpdate();
+                    logTrans.insert();
 
                 }else{
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
                     logTrans.setLoginfo(transExecutor.getExecutionLog());
-                    logTrans.insertOrUpdate();
+                    logTrans.updateById();
                     JSONArray jsonArray = transExecutor.getStepMeasure();
                     for(int i = 0;i< jsonArray.size();i++ ){
                         JSONArray childArray = (JSONArray) jsonArray.get(i);
@@ -102,10 +88,10 @@ public class TransLogTimerTask extends TimerTask {
                     }
                     logTrans.setLogdate(new Date());
 
-                    logTrans.setEnddate(new Date());
+                    logTrans.setEnddate(transExecutor.getEndDate());
                     logTrans.setErrors(transExecutor.getErrCount());
                     logTrans.setLoginfo(transExecutor.getExecutionLog());
-                    logTrans.insertOrUpdate();
+                    logTrans.updateById();
 
                     cancel();
                 }

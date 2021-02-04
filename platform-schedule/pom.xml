@@ -59,6 +59,17 @@
 
         <dependency>
             <groupId>com.aofei</groupId>
+            <artifactId>platform-log-depend-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-depend-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
             <artifactId>platform-log-job-core</artifactId>
             <version>${project.version}</version>
         </dependency>

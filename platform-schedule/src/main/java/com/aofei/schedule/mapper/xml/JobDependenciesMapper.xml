@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aofei.schedule.mapper.JobDependenciesMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aofei.schedule.entity.JobDependencies">
+        <id column="DEPEND_ID" property="dependId" />
+        <result column="JOB_NAME" property="jobName" />
+        <result column="JOB_GROUP" property="jobGroup" />
+        <result column="START_JOB_GROUP" property="startJobGroup" />
+        <result column="START_JOB_NAME" property="startJobName" />
+        <result column="NEXT_JOB_GROUP" property="nextJobGroup" />
+        <result column="NEXT_JOB_NAME" property="nextJobName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        DEPEND_ID AS dependId, JOB_NAME AS jobName, JOB_GROUP AS jobGroup, START_JOB_GROUP AS startJobGroup, START_JOB_NAME AS startJobName, NEXT_JOB_GROUP AS nextJobGroup, NEXT_JOB_NAME AS nextJobName
+    </sql>
+
+</mapper>

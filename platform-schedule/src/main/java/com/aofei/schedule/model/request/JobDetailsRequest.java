@@ -4,9 +4,11 @@ import com.aofei.base.model.request.BaseRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Tony
@@ -18,6 +20,11 @@ public class JobDetailsRequest extends BaseRequest<JobDetailsRequest> {
     private static final long serialVersionUID = 1L;
 
     /**
+     *
+     */
+    private String schedName;
+
+    /**
      * 组织ID
      */
     @ApiModelProperty(hidden = true)
@@ -27,7 +34,7 @@ public class JobDetailsRequest extends BaseRequest<JobDetailsRequest> {
 
     private String jobGroup;
 
-
+    private List<String>  jobClassNames;
 
 
 

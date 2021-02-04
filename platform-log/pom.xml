@@ -17,6 +17,9 @@
         <module>platform-log-job-server</module>
         <module>platform-log-trans-core</module>
         <module>platform-log-trans-server</module>
+
+        <module>platform-log-depend-core</module>
+        <module>platform-log-depend-server</module>
     </modules>
 
     <dependencies>

@@ -129,6 +129,57 @@ public class MonitorController extends BaseController {
 
     /**
      * 调度执行日志日志
+     * @param channelId
+     * @param type
+     * @return
+     */
+    @ApiOperation(value = "", notes = "调度执行日志日志")
+    @RequestMapping(value = "/channelId/{channelId}/type/{type}", method = RequestMethod.GET)
+    public Response<JSONObject> getLogByChannelId(@PathVariable String channelId, @PathVariable String type)  {
+        JSONObject jsonObject = new JSONObject();
+
+        if("JOB".equalsIgnoreCase(type)){
+            LogJob logJob = logJobService.selectOne(new EntityWrapper<LogJob>()
+                    .eq("CHANNEL_ID",channelId));
+            jsonObject.put("msg",logJob.getJobLog());
+            JSONArray jsonArray = new JSONArray();
+            jsonObject.put("list",jsonArray);
+
+        }else if("TRANSFORMATION".equalsIgnoreCase(type)){
+            LogTrans logTrans = logTransService.selectOne(new EntityWrapper<LogTrans>().eq("CHANNEL_ID",channelId));
+            jsonObject.put("msg",logTrans.getLoginfo());
+            List<LogTransStep> list =  logTransStepService.selectList(new EntityWrapper<LogTransStep>().eq("LOG_TRANS_ID",logTrans.getLogTransId()));
+            JSONArray jsonArray = new JSONArray();
+            for (LogTransStep logTransStep : list){
+                JSONObject item = new JSONObject();
+                item.put("name",logTransStep.getStepname()+"("+logTransStep.getStepCopy()+")");
+
+                item.put("step_copy",logTransStep.getStepCopy());
+                item.put("lines_read",logTransStep.getLinesRead());
+                item.put("lines_written",logTransStep.getLinesWritten());
+                item.put("lines_updated",logTransStep.getLinesUpdated());
+                item.put("lines_input",logTransStep.getLinesInput());
+                item.put("lines_output",logTransStep.getLinesOutput());
+                item.put("lines_rejected",logTransStep.getLinesRejected());
+                item.put("errors",logTransStep.getErrors());
+                item.put("status",logTransStep.getStatus());
+                item.put("costtime",logTransStep.getCosttime());
+                item.put("speed",logTransStep.getSpeed());
+                jsonArray.add(item);
+            }
+
+            jsonObject.put("list",jsonArray);
+
+
+        }
+
+
+
+        return Response.ok(jsonObject);
+    }
+
+    /**
+     * 调度执行日志日志
      * @param id
      * @param type
      * @return

@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 普通调度
@@ -99,6 +100,8 @@ public class GeneralScheduleRequest extends BaseRequest {
 
     @ApiModelProperty(hidden = true)
     private String username;//用户名
+
+    private List<JobDependenciesRequest> dependencies;
 
 //    @ApiModelProperty(value = "参数")
 //    List<ParamRequest> params;

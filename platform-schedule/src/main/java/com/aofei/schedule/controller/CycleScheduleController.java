@@ -1,6 +1,8 @@
 package com.aofei.schedule.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.common.Const;
@@ -17,8 +19,8 @@ import com.aofei.schedule.model.request.JobDetailsRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
 import com.aofei.schedule.model.response.JobDetailsResponse;
 import com.aofei.schedule.model.response.JobPlanResponse;
+import com.aofei.schedule.service.ICycleScheduleService;
 import com.aofei.schedule.service.IJobDetailsService;
-import com.aofei.schedule.service.IQuartzService;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -31,9 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @auther 傲飞数据整合平台
@@ -48,7 +48,7 @@ public class CycleScheduleController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(CycleScheduleController.class);
 
     @Autowired
-    private IQuartzService quartzService;
+    private ICycleScheduleService cycleScheduleService;
 
 
     @Autowired
@@ -71,11 +71,46 @@ public class CycleScheduleController extends BaseController {
                             @ApiIgnore JobDetailsRequest request,
                             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
         request.setOrganizerId(user.getOrganizerId());
+        request.setSchedName("quartzScheduler");
         Page<JobDetailsResponse> page = jobDetailsService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
 
 
+    /**
+     * 资源库列表(分页查询)
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "查询所有调度名称", notes = "查询所有调度名称")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "jobGroup", value = "分组", paramType = "query", dataType = "String"),
+    })
+    @RequestMapping(value = "/listJobNames", method = RequestMethod.GET)
+    public Response<JSONArray> listNames(
+            @ApiIgnore JobDetailsRequest request,
+            @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+        request.setOrganizerId(user.getOrganizerId());
+        request.setSchedName("quartzScheduler");
+        List<JobDetailsResponse> list = jobDetailsService.getJobDetails(request);
+
+        Map<String,JSONArray> map = new HashMap<>();
+
+        for(JobDetailsResponse response : list){
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("value",response.getJobName());
+            jsonObject.put("text",response.getJobName());
+            JSONArray jsonArray = map.get(response.getJobGroup());
+            if(jsonArray==null){
+                jsonArray = new JSONArray();
+            }
+            jsonArray.add(jsonObject);
+            map.put(response.getJobGroup(),jsonArray);
+        }
+
+        return Response.ok(map) ;
+    }
 
     /**
      * 新建调度
@@ -124,15 +159,13 @@ public class CycleScheduleController extends BaseController {
         if(satrtDate==null){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择开始时间");
         }
-        if(endDate==null){
-            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择结束时间");
-        }
+
 
 
         if(satrtDate.getTime() - new Date().getTime() < 0){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"开始时间必须大于当前时间");
         }
-        if(satrtDate.getTime() - endDate.getTime() > 0){
+        if(endDate!=null && satrtDate.getTime() - endDate.getTime() > 0){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
         }
 
@@ -146,7 +179,7 @@ public class CycleScheduleController extends BaseController {
         request.setOrganizerId(user.getOrganizerId());
 
 
-        quartzService.create(request ,quartzExecuteClass);
+        cycleScheduleService.create(request ,quartzExecuteClass);
 
         return Response.ok(true) ;
     }
@@ -197,15 +230,13 @@ public class CycleScheduleController extends BaseController {
         if(satrtDate==null){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择开始时间");
         }
-        if(endDate==null){
-            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择结束时间");
-        }
+
 
 
         if(satrtDate.getTime() - new Date().getTime() < 0){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"开始时间必须大于当前时间");
         }
-        if(satrtDate.getTime() - endDate.getTime() > 0){
+        if(endDate != null && satrtDate.getTime() - endDate.getTime() > 0){
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
         }
 
@@ -215,7 +246,7 @@ public class CycleScheduleController extends BaseController {
         }else if("TRANSFORMATION".equalsIgnoreCase(request.getFileType())){
             quartzExecuteClass = TransRunner.class;
         }
-        quartzService.update(request, quartzExecuteClass);
+        cycleScheduleService.update(request, quartzExecuteClass);
 
         return Response.ok(true) ;
     }
@@ -227,7 +258,7 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(quartzService.removeJob(jobName,jobGroup,user.getOrganizerId())) ;
+        return Response.ok(cycleScheduleService.removeJob(jobName,jobGroup,user.getOrganizerId())) ;
     }
 
     @ApiOperation(value = "暂停调度", notes = "暂停调度")
@@ -237,7 +268,7 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(quartzService.pause(jobName,jobGroup)) ;
+        return Response.ok(cycleScheduleService.pause(jobName,jobGroup)) ;
     }
 
     @ApiOperation(value = "还原调度", notes = "还原暂停的调度")
@@ -247,7 +278,7 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(quartzService.resume(jobName,jobGroup)) ;
+        return Response.ok(cycleScheduleService.resume(jobName,jobGroup)) ;
     }
 
     @ApiOperation(value = "手动执行调度", notes = "手动执行调度")
@@ -257,7 +288,7 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(quartzService.execute(jobName,jobGroup,null)) ;
+        return Response.ok(cycleScheduleService.execute(jobName,jobGroup,null)) ;
     }
 
 
@@ -268,7 +299,7 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        JobDetail jobDetail = quartzService.findByName(jobName,jobGroup);
+        JobDetail jobDetail = cycleScheduleService.findByName(jobName,jobGroup);
 
         String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 

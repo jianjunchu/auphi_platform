@@ -38,7 +38,7 @@ import java.text.ParseException;
  * @auther 傲飞数据整合平台
  * @create 2018-10-02 19:44
  */
-public interface IQuartzService {
+public interface ICycleScheduleService {
 
     void create(GeneralScheduleRequest request, Class<? extends Job> jobExecClass) throws SchedulerException, ParseException;
 

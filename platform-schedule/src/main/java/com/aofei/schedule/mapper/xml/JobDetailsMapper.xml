@@ -34,6 +34,14 @@
         <include refid="Base_Joins"/>
         <where>
 
+            <if test="schedName != null and schedName!='' ">
+                AND a.SCHED_NAME = #{schedName}
+            </if>
+
+            <if test="schedName != null and schedName!='' ">
+                AND qts.SCHED_NAME = #{schedName}
+            </if>
+
             <if test="organizerId != null ">
                 AND qgp.ORGANIZER_ID = #{organizerId}
             </if>
@@ -41,6 +49,7 @@
             <if test="jobGroup != null and jobGroup!='' ">
                 AND  a.JOB_GROUP = #{jobGroup}
             </if>
+
 
             <if test="jobName != null and jobName!='' ">
                 AND  a.JOB_NAME  like '%${jobName}%'

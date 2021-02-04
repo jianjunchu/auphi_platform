@@ -31,6 +31,7 @@
         , a.JOB_LOG AS jobLog
         , a.QRTZ_JOB_NAME AS qrtzJobName
         , a.QRTZ_JOB_GROUP AS qrtzJobGroup
+        , a.FIRE_TIME AS fireTime
     </sql>
 
     <update id="updateById">
@@ -57,11 +58,9 @@
             , EXECUTING_SERVER = #{et.executingServer}
             , EXECUTING_USER = #{et.executingUser}
             , EXCUTOR_TYPE = #{et.excutorType}
-            , LOGINFO = #{et.loginfo}
-            , TRANS_CN_NAME = #{et.transCnName}
+            , JOB_LOG = #{et.jobLog}
             , QRTZ_JOB_NAME = #{et.qrtzJobName}
             , QRTZ_JOB_GROUP = #{et.qrtzJobGroup}
-
         </set>
         where LOG_JOB_ID = #{et.logJobId}
     </update>
@@ -90,8 +89,7 @@
             , EXECUTING_SERVER
             , EXECUTING_USER
             , EXCUTOR_TYPE
-            , LOGINFO
-            , TRANS_CN_NAME
+            , JOB_LOG
             , QRTZ_JOB_NAME
             , QRTZ_JOB_GROUP
             , FIRE_TIME
@@ -118,8 +116,7 @@
             , #{executingServer}
             , #{executingUser}
             , #{excutorType}
-            , #{loginfo}
-            , #{transCnName}
+            , #{jobLog}
             , #{qrtzJobName}
             , #{qrtzJobGroup}
             , #{fireTime}

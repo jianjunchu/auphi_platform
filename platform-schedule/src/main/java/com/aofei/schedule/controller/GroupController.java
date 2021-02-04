@@ -4,6 +4,8 @@ package com.aofei.schedule.controller;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
+import com.aofei.base.exception.ApplicationException;
+import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
@@ -111,6 +113,9 @@ public class GroupController extends BaseController {
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
     public Response<Integer> del(
             @PathVariable Long id)  {
+        if(id==null || id >1 ){
+            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), "非法请求!");
+        }
         return Response.ok(groupService.del(id)) ;
     }
 

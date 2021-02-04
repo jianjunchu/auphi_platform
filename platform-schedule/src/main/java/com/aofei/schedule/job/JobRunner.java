@@ -4,23 +4,22 @@ package com.aofei.schedule.job;
 import com.alibaba.fastjson.JSON;
 import com.aofei.base.common.Const;
 import com.aofei.joblog.entity.LogJob;
-import com.aofei.joblog.service.ILogJobService;
-import com.aofei.joblog.service.ILogJobStepService;
 import com.aofei.joblog.task.JobLogTimerTask;
 import com.aofei.kettle.App;
 import com.aofei.kettle.JobExecutor;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
+import org.apache.log4j.Logger;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +27,25 @@ import java.util.Timer;
 
 public class JobRunner extends QuartzJobBean {
 
-	@Resource
-	ILogJobService logJobService;
-
-	@Resource
-	ILogJobStepService logJobStepService;
-
+	private static Logger logger = Logger.getLogger(JobRunner.class);
 
 	@Override
 	public void executeInternal(JobExecutionContext context) throws JobExecutionException {
+
+		JobDetail jobDetail = context.getJobDetail();
+
+		executeJob(jobDetail,context.getFireTime());
+
+	}
+
+
+
+	public JobExecutor executeJob(JobDetail jobDetail ,Date fireTime) throws JobExecutionException {
+
+
 		Repository repository = App.getInstance().getRepository();
 		try {
-			String json = (String) context.getJobDetail().getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
+			String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
 
 			GeneralScheduleRequest request = JSON.parseObject(json,GeneralScheduleRequest.class);
 
@@ -86,31 +92,36 @@ public class JobRunner extends QuartzJobBean {
 				params.put(key, "");
 			}
 
-		    JobExecutor jobExecutor = JobExecutor.initExecutor(executionConfiguration, jobMeta);
-		    Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getExecutionId());
-		    tr.start();
+
+
+			JobExecutor jobExecutor = JobExecutor.initExecutor(executionConfiguration, jobMeta);
+			Thread tr = new Thread(jobExecutor, "JobExecutor_" + jobExecutor.getExecutionId());
+			tr.start();
+            jobExecutor.setStartDate(new Date());
 
 			LogJob logJob  = new LogJob();
-			logJob.setStartdate(new Date());
+			logJob.setStartdate(jobExecutor.getStartDate());
 			logJob.setStatus("start");
-			logJob.setFireTime(context.getFireTime());
-			logJob.setQrtzJobGroup(context.getJobDetail().getKey().getGroup());
-			logJob.setQrtzJobName(context.getJobDetail().getKey().getName());
+			logJob.setFireTime(fireTime);
+			logJob.setQrtzJobGroup(jobDetail.getKey().getGroup());
+			logJob.setQrtzJobName(jobDetail.getKey().getName());
 			logJob.setJobName(jobMeta.getName());
 			logJob.setChannelId(jobExecutor.getExecutionId());
 			logJob.setJobCnName(jobMeta.getName());
 
 
-			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(logJobService,logJobStepService,jobExecutor,logJob);
+			JobLogTimerTask jobLogTimerTask = new JobLogTimerTask(jobExecutor,logJob);
 			Timer logTimer = new Timer();
-			logTimer.schedule(jobLogTimerTask, 0,1000);
+			logTimer.schedule(jobLogTimerTask, 0,5000);
+
+			return jobExecutor ;
 
 		} catch(Exception e) {
 			throw new JobExecutionException(e);
 		}finally {
 			repository.disconnect();
 		}
-
 	}
+
 
 }

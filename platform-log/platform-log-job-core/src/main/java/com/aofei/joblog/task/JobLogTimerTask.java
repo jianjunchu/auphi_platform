@@ -2,8 +2,6 @@ package com.aofei.joblog.task;
 
 import com.aofei.joblog.entity.LogJob;
 import com.aofei.joblog.entity.LogJobStep;
-import com.aofei.joblog.service.ILogJobService;
-import com.aofei.joblog.service.ILogJobStepService;
 import com.aofei.kettle.JobExecutor;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
@@ -21,8 +19,6 @@ public class JobLogTimerTask extends TimerTask {
 
     private JobExecutor jobExecutor;
     private LogJob logJob;
-    private ILogJobService logJobService;
-    private ILogJobStepService logJobStepService;
 
     private boolean first = true;
     private List<LogJobStep> logJobSteps;
@@ -35,12 +31,7 @@ public class JobLogTimerTask extends TimerTask {
         this.logJob = logJob;
     }
 
-    public JobLogTimerTask(ILogJobService logJobService, ILogJobStepService logJobStepService, JobExecutor jobExecutor, LogJob logJob) {
-        this.logJobService = logJobService;
-        this.logJobStepService = logJobStepService;
-        this.jobExecutor = jobExecutor;
-        this.logJob = logJob;
-    }
+
 
     @Override
     public void run() {
@@ -55,7 +46,7 @@ public class JobLogTimerTask extends TimerTask {
                     logJobSteps = new ArrayList<>();
                     logJob.setJobConfigId(Long.valueOf(jobExecutor.getJobMeta().getObjectId().getId()));
                     logJob.setLogJobId(IdWorker.getId());
-                    logJobService.insert(logJob);
+                    logJob.insert();
 
 
                 }else{
@@ -63,7 +54,7 @@ public class JobLogTimerTask extends TimerTask {
                     logJob.setChannelId(jobExecutor.getExecutionId());
                     logJob.setJobLog(jobExecutor.getExecutionLog());
                     logJob.setLogdate(new Date());
-                    logJobService.updateById(logJob);
+                    logJob.updateById();
                     JSONArray jsonArray = jobExecutor.getJobMeasure();
                     for(int i = 0;i< jsonArray.size();i++ ){
                         JSONObject childArray = (JSONObject) jsonArray.get(i);
@@ -85,7 +76,7 @@ public class JobLogTimerTask extends TimerTask {
                             logJobStep.setLogDate(now);
 
                         }
-                        logJobStepService.insertOrUpdate(logJobStep);
+                        logJobStep.insertOrUpdate();
                     }
                 }
                 if(jobExecutor.isFinished()){
@@ -100,11 +91,11 @@ public class JobLogTimerTask extends TimerTask {
                     }else{
                         logJob.setStatus("stop");
                     }
-                    logJob.setEnddate(jobExecutor.getJob().getEndDate());
+                    logJob.setEnddate(jobExecutor.getEndDate());
                     logJob.setErrors(jobExecutor.getErrCount());
                     logJob.setJobLog(jobExecutor.getExecutionLog());
                     logJob.setLogdate(now);
-                    logJobService.updateById(logJob);
+                    logJob.updateById();
                     cancel();
                 }
             }

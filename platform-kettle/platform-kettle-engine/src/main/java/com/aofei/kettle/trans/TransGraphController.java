@@ -133,40 +133,48 @@ public class TransGraphController {
 	@ResponseBody
 	@RequestMapping(method=RequestMethod.POST, value="/save")
 	protected void save(HttpServletRequest request, HttpServletResponse response, @RequestParam String graphXml, @CurrentUser CurrentUserResponse user) throws Exception {
-		GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
-		AbstractMeta transMeta = codec.decode(StringEscapeHelper.decode(graphXml), user);
+
 		Repository repository = App.getInstance().getRepository();
-		ObjectId existingId = repository.getTransformationID( transMeta.getName(), transMeta.getRepositoryDirectory() );
-		if(transMeta.getCreatedDate() == null)
-			transMeta.setCreatedDate(new Date());
-		if(transMeta.getObjectId() == null)
-			transMeta.setObjectId(existingId);
-		transMeta.setModifiedDate(new Date());
-		transMeta.setModifiedUser(user.getUsername());
 
-		List<DatabaseMeta> list = transMeta.getDatabases();
-		for(DatabaseMeta meta : list){
-			meta.setCreateUser(user.getUsername());
-			meta.setUpdateUser(user.getUsername());
-			meta.setOrganizerId(user.getOrganizerId());
-		}
-
-		 boolean versioningEnabled = true;
-         boolean versionCommentsEnabled = true;
-         String fullPath = transMeta.getRepositoryDirectory() + "/" + transMeta.getName() + transMeta.getRepositoryElementType().getExtension();
-         RepositorySecurityProvider repositorySecurityProvider = repository.getSecurityProvider() != null ? repository.getSecurityProvider() : null;
-         if ( repositorySecurityProvider != null ) {
-        	 versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
-        	 versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
-         }
-		String versionComment = null;
-		if (!versioningEnabled || !versionCommentsEnabled) {
-			versionComment = "";
-		} else {
-			versionComment = "no comment";
-		}
 		try {
+
+			GraphCodec codec = (GraphCodec) PluginFactory.getBean(GraphCodec.TRANS_CODEC);
+			AbstractMeta transMeta = codec.decode(StringEscapeHelper.decode(graphXml), user);
+
+			ObjectId existingId = repository.getTransformationID( transMeta.getName(), transMeta.getRepositoryDirectory() );
+			if(transMeta.getCreatedDate() == null)
+				transMeta.setCreatedDate(new Date());
+			if(transMeta.getObjectId() == null)
+				transMeta.setObjectId(existingId);
+			transMeta.setModifiedDate(new Date());
+			transMeta.setModifiedUser(user.getUsername());
+
+			List<DatabaseMeta> list = transMeta.getDatabases();
+			for(DatabaseMeta meta : list){
+				meta.setCreateUser(user.getUsername());
+				meta.setUpdateUser(user.getUsername());
+				meta.setOrganizerId(user.getOrganizerId());
+			}
+
+			boolean versioningEnabled = true;
+			boolean versionCommentsEnabled = true;
+			String fullPath = transMeta.getRepositoryDirectory() + "/" + transMeta.getName() + transMeta.getRepositoryElementType().getExtension();
+			RepositorySecurityProvider repositorySecurityProvider = repository.getSecurityProvider() != null ? repository.getSecurityProvider() : null;
+			if ( repositorySecurityProvider != null ) {
+				versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
+				versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
+			}
+			String versionComment = null;
+			if (!versioningEnabled || !versionCommentsEnabled) {
+				versionComment = "";
+			} else {
+				versionComment = "no comment";
+			}
+
 			repository.save( transMeta, versionComment, null);
+
+			JsonUtils.success("转换保存成功！");
+
 		} catch(Exception e) {
 			e.printStackTrace();
 
@@ -176,7 +184,7 @@ public class TransGraphController {
 		}
 
 
-		JsonUtils.success("转换保存成功！");
+
 	}
 
 

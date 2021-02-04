@@ -32,6 +32,9 @@ public class TransExecutor implements Runnable {
 	private TransExecutionConfiguration executionConfiguration;
 	private TransMeta transMeta = null;
 	private Trans trans = null;
+	private Long logTransId;
+	private Date startDate;
+	private Date endDate;
 	private Map<StepMeta, String> stepLogMap = new HashMap<StepMeta, String>();
 
 	private TransSplitter transSplitter = null;
@@ -203,6 +206,7 @@ public class TransExecutor implements Runnable {
 
 				Result result = Trans.getClusteredTransformationResult(App.getInstance().getLog(), transSplitter, null);
 				errCount = result.getNrErrors();
+
 			}
 
 		} catch(Exception e) {
@@ -210,6 +214,7 @@ public class TransExecutor implements Runnable {
 			App.getInstance().getLog().logError("执行失败！", e);
 		} finally {
 			finished = true;
+			endDate = new Date();
 		}
 	}
 
@@ -681,5 +686,16 @@ public class TransExecutor implements Runnable {
 		}
 	}
 
+	public Date getEndDate() {
+		return endDate;
+	}
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
 
 }

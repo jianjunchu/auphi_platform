@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 普通调度
@@ -92,5 +94,10 @@ public class GeneralScheduleResponse  {
 
     @ApiModelProperty(hidden = true)
     private String username;//用户名
+
+    /**
+     * 依赖关系
+     */
+    private List<JobDependenciesResponse> dependencies = new ArrayList<>();
 
 }

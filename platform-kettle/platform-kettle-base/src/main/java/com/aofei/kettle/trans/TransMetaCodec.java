@@ -302,11 +302,18 @@ public class TransMetaCodec extends BaseGraphCodec {
 
 	@Override
 	public AbstractMeta decode(String graphXml, CurrentUserResponse user) throws Exception {
+
+		Repository repository = App.getInstance().getRepository();
+
+
+
 		mxGraph graph = new mxGraph();
 		mxCodec codec = new mxCodec();
 		Document doc = mxUtils.parseXml(graphXml);
 		codec.decode(doc.getDocumentElement(), graph.getModel());
 		mxCell root = (mxCell) graph.getDefaultParent();
+
+
 
 		TransMeta transMeta = new TransMeta();
 		decodeCommRootAttr(root, transMeta);
@@ -314,7 +321,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 		transMeta.setTransversion(root.getAttribute("trans_version"));
 
 		if(transMeta.getRepository() != null)
-			transMeta.setSharedObjects(transMeta.getRepository().readTransSharedObjects( transMeta ));
+			transMeta.setSharedObjects(repository.readTransSharedObjects( transMeta ));
 		else
 			transMeta.setSharedObjects(transMeta.readSharedObjects());
 
@@ -556,7 +563,7 @@ public class TransMetaCodec extends BaseGraphCodec {
 			transMeta.getStep(i).setClusterSchemaAfterLoading(transMeta.getClusterSchemas());
 		}
 
-		Repository repository = App.getInstance().getRepository();
+
 
 	    String maxdate = root.getAttribute("maxdate");
 	    if(StringUtils.hasText(maxdate)) {
