@@ -52,7 +52,8 @@ public class JsonInput extends AbstractStep {
 //		jsonInputMeta.setdoNotFailIfNoFile( "Y".equalsIgnoreCase( cell.getAttribute( "doNotFailIfNoFile" )) );
 //		jsonInputMeta.setIncludeRowNumber( "Y".equalsIgnoreCase( cell.getAttribute( "rownum" )) );
 //		jsonInputMeta.setRowNumberField( cell.getAttribute( "rownum_field" ) );
-		
+
+		ReflectUtils.set(stepMetaInterface, "defaultPathLeafToNull", "Y".equalsIgnoreCase(cell.getAttribute("defaultPathLeafToNull")));
 		ReflectUtils.set(stepMetaInterface, "doNotFailIfNoFile", "Y".equalsIgnoreCase(cell.getAttribute("doNotFailIfNoFile")));
 		ReflectUtils.set(stepMetaInterface, "includeRowNumber", "Y".equalsIgnoreCase(cell.getAttribute("rownum")));
 		ReflectUtils.set(stepMetaInterface, "rowNumberField", cell.getAttribute("rownum_field"));
@@ -108,7 +109,7 @@ public class JsonInput extends AbstractStep {
 			ReflectUtils.set(jsonInputField, "precision", jsonObject.optInt( "precision", -1) );
 			
 			ReflectUtils.set(jsonInputField, "trimType", ValueMetaBase.getTrimTypeByCode(jsonObject.optString( "trim_type" )));
-			ReflectUtils.set(jsonInputField, "repeated",  !"N".equalsIgnoreCase(jsonObject.optString( "repeat" )));
+			ReflectUtils.set(jsonInputField, "repeated",  "Y".equalsIgnoreCase(jsonObject.optString( "repeat" )));
 //			jsonInputField.setName( jsonObject.optString( "name" ) );
 //			jsonInputField.setPath( jsonObject.optString( "path" ) );
 //			jsonInputField.setType( ValueMeta.getType( jsonObject.optString( "type" ) ) );
@@ -190,6 +191,7 @@ public class JsonInput extends AbstractStep {
 		e.setAttribute("IsIgnoreEmptyFile", ReflectUtils.getBoolean(stepMetaInterface, "ignoreEmptyFile") ? "Y" : "N");
 		e.setAttribute("doNotFailIfNoFile", ReflectUtils.getFieldBoolean(stepMetaInterface, "doNotFailIfNoFile") ? "Y" : "N");
 		e.setAttribute("ignoreMissingPath", ReflectUtils.getFieldBoolean(stepMetaInterface, "ignoreMissingPath") ? "Y" : "N");
+		e.setAttribute("defaultPathLeafToNull", ReflectUtils.getFieldBoolean(stepMetaInterface, "defaultPathLeafToNull") ? "Y" : "N");
 		e.setAttribute("rownum_field", ReflectUtils.getString(stepMetaInterface, "rowNumberField"));
 //		
 //		e.setAttribute("IsIgnoreEmptyFile", jsonInputMeta.isIgnoreEmptyFile() ? "Y" : "N");
