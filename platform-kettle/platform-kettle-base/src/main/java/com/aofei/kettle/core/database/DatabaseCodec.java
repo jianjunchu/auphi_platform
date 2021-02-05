@@ -26,7 +26,7 @@ public class DatabaseCodec {
 		jsonObject.put("hostname", databaseMeta.getHostname());
 		jsonObject.put("databaseName", databaseMeta.getDatabaseName());
 		jsonObject.put("username", databaseMeta.getUsername());
-		jsonObject.put("password", DesCipherUtil.encryptPassword(Encr.decryptPasswordOptionallyEncrypted(databaseMeta.getPassword())));
+		jsonObject.put("password", DesCipherUtil.encryptPasswordIfNotUsingVariablesInternal(Encr.decryptPasswordOptionallyEncrypted(databaseMeta.getPassword())));
 		if(databaseMeta.isStreamingResults())
 			jsonObject.put("streamingResults", databaseMeta.isStreamingResults());
 		jsonObject.put("dataTablespace", databaseMeta.getDataTablespace());
@@ -151,7 +151,7 @@ public class DatabaseCodec {
 			databaseMeta.setUsername(jsonObject.optString("username"));
 
 		if(jsonObject.containsKey("password")){
-			String passwd = DesCipherUtil.decryptPassword(jsonObject.optString("password"));
+			String passwd = DesCipherUtil.decryptPasswordOptionallyEncryptedInternal(jsonObject.optString("password"));
 			databaseMeta.setPassword(passwd);
 		}
 

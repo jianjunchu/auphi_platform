@@ -12,6 +12,7 @@ import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
+import com.aofei.schedule.entity.JobDependencies;
 import com.aofei.schedule.job.JobRunner;
 import com.aofei.schedule.job.TransRunner;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
@@ -20,7 +21,9 @@ import com.aofei.schedule.model.response.GeneralScheduleResponse;
 import com.aofei.schedule.model.response.JobDetailsResponse;
 import com.aofei.schedule.model.response.JobPlanResponse;
 import com.aofei.schedule.service.ICycleScheduleService;
+import com.aofei.schedule.service.IJobDependenciesService;
 import com.aofei.schedule.service.IJobDetailsService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -49,6 +52,9 @@ public class CycleScheduleController extends BaseController {
 
     @Autowired
     private ICycleScheduleService cycleScheduleService;
+
+    @Autowired
+    private IJobDependenciesService jobDependenciesService;
 
 
     @Autowired
@@ -258,7 +264,23 @@ public class CycleScheduleController extends BaseController {
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(cycleScheduleService.removeJob(jobName,jobGroup,user.getOrganizerId())) ;
+
+
+        StringBuffer error = new StringBuffer("");
+        int list1 = jobDependenciesService.selectCount(new EntityWrapper<JobDependencies>()
+                .eq("START_JOB_GROUP",jobGroup).eq("START_JOB_NAME",jobName));
+
+        int list2 = jobDependenciesService.selectCount(new EntityWrapper<JobDependencies>()
+                .eq("NEXT_JOB_GROUP",jobGroup).eq("NEXT_JOB_NAME",jobName));
+
+
+
+        if(list1 == 0 && list2 == 0 ){
+            return Response.ok(cycleScheduleService.removeJob(jobName,jobGroup,user.getOrganizerId())) ;
+        }else{
+            throw new ApplicationException(StatusCode.DATA_INTEGRITY_VIOLATION_EXCEPTION.getCode(),"不能删除!,该调度在事件调度存在依赖");
+        }
+
     }
 
     @ApiOperation(value = "暂停调度", notes = "暂停调度")

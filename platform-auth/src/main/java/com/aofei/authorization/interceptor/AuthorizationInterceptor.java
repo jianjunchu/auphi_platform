@@ -29,7 +29,6 @@ import com.aofei.authorization.manager.TokenValidator;
 import com.aofei.base.annotation.Authorization;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.base.model.response.Response;
-import com.aofei.kettle.App;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;

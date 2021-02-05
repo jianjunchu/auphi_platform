@@ -17,12 +17,16 @@ public class DesCipherUtil {
         throw new AssertionError("No DesCipherUtil instances for you!");
     }
 
-    private static String key = "com.aofei.etl_platform.key";
+    private static final String PASSWORD_ENCRYPTED_PREFIX = "PlatformEncrypted ";
+    private static final String key = "com.aofei.etl_platform.key";
 
     static {
         // add BC provider
         Security.addProvider(new BouncyCastleProvider());
     }
+
+
+
 
     /**
      * 加密
@@ -62,7 +66,7 @@ public class DesCipherUtil {
      */
     public static String encryptPassword(String encryptText) {
 
-        return encryptText;//encrypt(encryptText,key);
+        return encrypt(encryptText,key);
 
     }
 
@@ -101,8 +105,40 @@ public class DesCipherUtil {
      */
     public static  String decryptPassword(String password) {
 
-        return password; //decrypt(password,key);
+        return decrypt(password,key);
     }
 
+    /**
+     * Decrypts a password if it contains the prefix "Encrypted "
+     *
+     * @param password
+     *          The encrypted password
+     * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
+     */
+    public static String decryptPasswordOptionallyEncryptedInternal( String password ) {
+        if ( !Utils.isEmpty( password ) && password.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
+            return decryptPassword( password.substring( PASSWORD_ENCRYPTED_PREFIX.length() ) );
+        }
+        return password;
+    }
+
+    /**
+     * Encrypt the password, but only if the password doesn't contain any variables.
+     *
+     * @param password
+     *          The password to encrypt
+     * @return The encrypted password or the
+     */
+    public static final String encryptPasswordIfNotUsingVariablesInternal( String password ) {
+        String encrPassword = "";
+
+        if ( !StringUtils.isEmpty(password) ) {
+            encrPassword = PASSWORD_ENCRYPTED_PREFIX + encryptPassword( password );
+        } else {
+            encrPassword = password;
+        }
+
+        return encrPassword;
+    }
 
 }

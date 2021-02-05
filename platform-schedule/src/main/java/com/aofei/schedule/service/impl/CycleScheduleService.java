@@ -28,18 +28,23 @@ import com.aofei.base.common.Const;
 import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.log.annotation.Log;
+import com.aofei.schedule.entity.JobDependencies;
 import com.aofei.schedule.i18n.Messages;
+import com.aofei.schedule.mapper.JobDependenciesMapper;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.ParamRequest;
 import com.aofei.schedule.service.ICycleScheduleService;
 import com.aofei.schedule.util.QuartzUtil;
 import com.aofei.utils.DateUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import org.joda.time.DateTime;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @auther 傲飞数据整合平台
@@ -53,7 +58,8 @@ public class CycleScheduleService implements ICycleScheduleService {
     @Autowired
     private Scheduler quartzScheduler;
 
-
+    @Autowired
+    private JobDependenciesMapper jobDependenciesMapper;
 
 
 
@@ -73,7 +79,6 @@ public class CycleScheduleService implements ICycleScheduleService {
         if(!request.getFilePath().contains(request.getOrganizerId().toString())){
             request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
         }
-
 
 
 
@@ -240,6 +245,23 @@ public class CycleScheduleService implements ICycleScheduleService {
         if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){
             removeJob(request.getOriginalJobName(),request.getOriginalJobGroup(), request.getOrganizerId());
             create(request,quartzExecuteClass);
+
+            List<JobDependencies> list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
+                    .eq("START_JOB_GROUP",request.getOriginalJobGroup()).eq("START_JOB_NAME",request.getOriginalJobName()));
+            for(JobDependencies dependencies:list){
+                dependencies.setStartJobGroup(request.getJobGroup());
+                dependencies.setStartJobName(request.getJobName());
+                dependencies.updateById();
+            }
+
+            list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
+                    .eq("NEXT_JOB_GROUP",request.getOriginalJobGroup()).eq("NEXT_JOB_NAME",request.getOriginalJobName()));
+            for(JobDependencies dependencies:list){
+                dependencies.setNextJobGroup(request.getJobGroup());
+                dependencies.setNextJobName(request.getJobName());
+                dependencies.updateById();
+            }
+
         }else{
             throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }

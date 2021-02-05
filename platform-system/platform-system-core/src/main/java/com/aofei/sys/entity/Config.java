@@ -30,6 +30,11 @@ public class Config extends DataEntity<Config> {
     @TableId(value = "CONFIG_ID", type = IdType.ID_WORKER)
     private Long configId;
     /**
+     * 组
+     */
+    @TableField("GROUP_CODE")
+    private String groupCode;
+    /**
      * 名称
      */
     @TableField("NAME")
@@ -40,6 +45,8 @@ public class Config extends DataEntity<Config> {
     @TableField("VALUE")
     private String value;
 
+    @TableField("REMARK")
+    private String remark;
 
 
     @Override

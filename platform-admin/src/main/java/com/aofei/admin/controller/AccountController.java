@@ -108,7 +108,7 @@ public class AccountController extends BaseController {
             @ApiParam(value = "密码",   required = true)  @RequestParam(value = "password") String password,
             @ApiParam(value = "验证码", required = true)  @RequestParam(value = "captcha") String captcha) throws Exception {
 
-        password = DesCipherUtil.decryptPassword(password);
+        password = DesCipherUtil.decryptPasswordOptionallyEncryptedInternal(password);
         //验证码校验
         UserResponse user = null;
         try {
