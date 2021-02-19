@@ -9,6 +9,7 @@ import com.aofei.base.model.response.Response;
 import com.aofei.sys.entity.Config;
 import com.aofei.sys.service.IConfigService;
 import com.aofei.sys.service.IUserService;
+import com.aofei.utils.CsvUtils;
 import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.swagger.annotations.Api;
@@ -21,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,5 +103,57 @@ public class ConfigController extends BaseController {
         return Response.ok(jsonObject) ;
     }
 
+    @ApiOperation(value = "系统配置", notes = "获取csv文件")
+    @RequestMapping(value = "/getCsvAll", method = RequestMethod.POST)
+    public Response<JSONObject> getCsvAll(
+            @RequestBody JSONObject jsonObject) throws IOException {
 
+        String sysPath = System.getProperty("user.dir");
+        String filePath = sysPath+ File.separator+"config.csv";
+        List<String[]> list = CsvUtils.read(filePath,false);
+        for(String[] cls : list){
+            String keyValue = cls[0];
+            String[] kv = keyValue.split("=");
+            if(kv.length ==2 && jsonObject.containsKey(kv[0])){
+                JSONObject object = jsonObject.getJSONObject(kv[0]);
+                object.put("value",kv[1]);
+            }
+        }
+
+        return Response.ok(jsonObject) ;
+    }
+
+
+    @ApiOperation(value = "系统配置", notes = "修改csv文件")
+    @RequestMapping(value = "/updateCsvAll", method = RequestMethod.POST)
+    public Response<JSONObject> updateCsvAll(
+            @RequestBody JSONObject jsonObject) throws IOException {
+
+        String sysPath = System.getProperty("user.dir");
+        String filePath = sysPath+ File.separator+"config.csv";
+        List<String[]> list = CsvUtils.read(filePath,false);
+        Map<String,String[]> maps = new HashMap<>();
+
+        for(String[] cls : list){
+            maps.put(cls[1],cls);
+        }
+
+        for(String key :jsonObject.keySet()){
+            JSONObject object = jsonObject.getJSONObject(key);
+            String[] cls = maps.get(key);
+            if(cls==null){
+                cls = new String[4];
+            }
+            cls[0] = object.getString("key")+"="+object.getString("value");
+            cls[1] = object.getString("remark");
+            maps.put(key,cls);
+        }
+
+        List<String[]> valueList = new ArrayList<String[]>(maps.values());
+        String[] head = {"参数配置","备注"};
+        CsvUtils.write(filePath,head,valueList);
+
+
+        return Response.ok(jsonObject) ;
+    }
 }

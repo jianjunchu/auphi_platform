@@ -103,6 +103,11 @@ public class GeneralScheduleRequest extends BaseRequest {
 
     private List<JobDependenciesRequest> dependencies;
 
+    /**
+     * 文件选择的字符串
+     */
+    private String cascader;
+
 //    @ApiModelProperty(value = "参数")
 //    List<ParamRequest> params;
 

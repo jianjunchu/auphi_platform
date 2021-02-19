@@ -8,6 +8,8 @@
     <sql id="Base_Column_List">
           a.ORGANIZER_ID AS organizerId
         , a.ORGANIZER_NAME AS name
+        , a.ORGANIZER_CODE AS code
+        , a.PARENT_ID AS parentId
         , a.ORGANIZER_CONTACT AS contact
         , a.ORGANIZER_EMAIL AS email
         , a.ORGANIZER_TELPHONE AS telphone
@@ -28,6 +30,9 @@
         from SYS_ORGANIZER a
         <where>
             a.DEL_FLAG = 0
+            <if test="parentId != null  ">
+                AND a.PARENT_ID = #{parentId}
+            </if>
             <if test="status != null and status != ''">
                 AND a.ORGANIZER_STATUS = #{status}
             </if>

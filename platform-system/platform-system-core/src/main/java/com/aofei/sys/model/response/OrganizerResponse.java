@@ -28,6 +28,17 @@ public class OrganizerResponse  {
      */
     private String name;
 
+    /**
+     * 编码
+     */
+    private String code;
+
+    /**
+     * 上级ID
+     */
+    private Long parentId;
+
+
     private String contact;
 
     private String email;

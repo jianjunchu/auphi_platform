@@ -5,17 +5,17 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-          ID_USER AS userId
-        , ID_ROLE AS roleId
+          C_USER_ID AS userId
+        , C_ROLE_ID AS roleId
     </sql>
 
     <insert id="insert">
         insert into SYS_USER_ROLE (
-            ID_USER
-            ,ID_ROLE
+            C_USER_ID
+          , C_ROLE_ID
         )VALUES(
             ${userId}
-            ,${roleId}
+          , ${roleId}
         )
     </insert>
 

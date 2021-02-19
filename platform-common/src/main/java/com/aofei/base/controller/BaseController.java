@@ -64,7 +64,7 @@ public abstract class BaseController {
      * @return
      */
     protected <T> Page<T> getPagination(PageRequest pageRequest) {
-        Page<T> page =  new Page<T>(pageRequest.getPage(), pageRequest.getRows());
+        Page<T> page =  new Page<T>(pageRequest.getPage(), pageRequest.getLimit());
         page.setAsc("asc".equalsIgnoreCase(pageRequest.getOrder()));//升序 降序
         page.setOrderByField(pageRequest.getSort());//排序字段名称
         return page;

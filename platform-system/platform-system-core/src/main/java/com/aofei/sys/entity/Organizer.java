@@ -38,6 +38,19 @@ public class Organizer extends DataEntity<Organizer> {
      */
     @TableField("ORGANIZER_NAME")
     private String name;
+
+    /**
+     * 编码
+     */
+    @TableField("ORGANIZER_CODE")
+    private String code;
+
+    /**
+     * 上级ID
+     */
+    @TableField("PARENT_ID")
+    private Long parentId;
+
     @TableField("ORGANIZER_CONTACT")
     private String contact;
     @TableField("ORGANIZER_EMAIL")

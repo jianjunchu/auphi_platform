@@ -33,7 +33,6 @@
         from QRTZ_JOB_DETAILS a
         <include refid="Base_Joins"/>
         <where>
-            qts.START_TIME > 0
             <if test="schedName != null and schedName!='' ">
                 AND a.SCHED_NAME = #{schedName}
             </if>

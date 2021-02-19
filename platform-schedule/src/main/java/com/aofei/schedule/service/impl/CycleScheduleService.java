@@ -29,7 +29,6 @@ import com.aofei.base.exception.ApplicationException;
 import com.aofei.base.exception.StatusCode;
 import com.aofei.log.annotation.Log;
 import com.aofei.schedule.entity.JobDependencies;
-import com.aofei.schedule.i18n.Messages;
 import com.aofei.schedule.mapper.JobDependenciesMapper;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.ParamRequest;
@@ -73,53 +72,56 @@ public class CycleScheduleService implements ICycleScheduleService {
     @Log(module = "调度管理",description = "创建周期调度信息")
     @Override
     public  void create(GeneralScheduleRequest request,  Class<? extends Job> jobExecClass) throws SchedulerException {
-        String jobName = request.getJobName();
-        String group = request.getJobGroup();
+        try {
+            String jobName = request.getJobName();
+            String group = request.getJobGroup();
+            if(!request.getFilePath().contains(request.getOrganizerId().toString())){
+                request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
+            }
+            if(!checkJobExist(jobName,group)){
+                // 获取周期调度器
+                Scheduler sched = quartzScheduler;
 
-        if(!request.getFilePath().contains(request.getOrganizerId().toString())){
-            request.setFilePath(Const.getUserPath(request.getOrganizerId(),request.getFilePath()) );
-        }
+                // 创建一项作业
+                JobDetail jobDetail = JobBuilder.newJob(jobExecClass)
+                        .withIdentity(jobName, group).storeDurably()
 
-
-
-        if(!checkJobExist(jobName,group)){
-            // 获取周期调度器
-            Scheduler sched = quartzScheduler;
-
-            // 创建一项作业
-            JobDetail jobDetail = JobBuilder.newJob(jobExecClass)
-                    .withIdentity(jobName, group).storeDurably()
-
-                    .withDescription(request.getDescription()).build();
+                        .withDescription(request.getDescription()).build();
 
 
-            JobDataMap data = jobDetail.getJobDataMap();
+                JobDataMap data = jobDetail.getJobDataMap();
 
-            data.put(Const.GENERAL_SCHEDULE_KEY, JSONObject.toJSONString(request));
+                data.put(Const.GENERAL_SCHEDULE_KEY, JSONObject.toJSONString(request));
 
-            data.put("isFastConfig", false);
+                data.put("isFastConfig", false);
 
 
-            data.put("background_action_name", "");
-            data.put("processId", QuartzUtil.class.getName()); //$NON-NLS-1$
-            data.put("background_user_name", "");
-            //data.put("background_output_location", "background/" + StringUtil.createNumberString(16)); //$NON-NLS-1$
-            data.put("background_submit_time", DateUtils.toYmd(DateTime.now().toDate()));
+                data.put("background_action_name", "");
+                data.put("processId", QuartzUtil.class.getName()); //$NON-NLS-1$
+                data.put("background_user_name", "");
+                //data.put("background_output_location", "background/" + StringUtil.createNumberString(16)); //$NON-NLS-1$
+                data.put("background_submit_time", DateUtils.toYmd(DateTime.now().toDate()));
 
-            // This tells our execution component (QuartzExecute) that we're running
-            // a background job instead of
-            // a standard quartz execution.
-            data.put("backgroundExecution", "true"); //$NON-NLS-1$
+                // This tells our execution component (QuartzExecute) that we're running
+                // a background job instead of
+                // a standard quartz execution.
+                data.put("backgroundExecution", "true"); //$NON-NLS-1$
 
-            Trigger trigger = QuartzUtil.getTrigger(request,group);
+                Trigger trigger = QuartzUtil.getTrigger(request,group);
 
-            // 告诉周期调度器使用该触发器来安排作业
-            sched.scheduleJob(jobDetail, trigger);
+                // 告诉周期调度器使用该触发器来安排作业
+                sched.scheduleJob(jobDetail, trigger);
 
 
 
-        }else{
-            throw new ApplicationException(StatusCode.CONFLICT.getCode(), Messages.getString("Schedule.Error.JobNameExist",jobName));
+
+
+            }else{
+                throw new ApplicationException(StatusCode.CONFLICT.getCode(), "改调度名称已存在,换一个吧");
+            }
+
+        } catch (Exception e){
+            throw new ApplicationException(StatusCode.DATA_INTEGRITY_VIOLATION_EXCEPTION.getCode(), "保存失败!调度周期没有合法的的触发时间");
         }
 
     }
@@ -242,29 +244,44 @@ public class CycleScheduleService implements ICycleScheduleService {
     @Log(module = "调度管理",description = "更新周期调度信息")
     @Override
     public void update(GeneralScheduleRequest request, Class<Job> quartzExecuteClass) throws SchedulerException {
-        if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){
-            removeJob(request.getOriginalJobName(),request.getOriginalJobGroup(), request.getOrganizerId());
-            create(request,quartzExecuteClass);
 
-            List<JobDependencies> list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
-                    .eq("START_JOB_GROUP",request.getOriginalJobGroup()).eq("START_JOB_NAME",request.getOriginalJobName()));
-            for(JobDependencies dependencies:list){
-                dependencies.setStartJobGroup(request.getJobGroup());
-                dependencies.setStartJobName(request.getJobName());
-                dependencies.updateById();
+        JobDetail oJobDetail = null;
+        Trigger oTrigger = null;
+
+        try {
+            if(checkJobExist(request.getOriginalJobName(),request.getOriginalJobGroup())){
+                oJobDetail = findByName(request.getOriginalJobName(),request.getOriginalJobGroup());
+                TriggerKey tk = TriggerKey.triggerKey(request.getOriginalJobName(), request.getOriginalJobGroup());
+                oTrigger =  quartzScheduler.getTrigger(tk);
+                removeJob(request.getOriginalJobName(),request.getOriginalJobGroup(), request.getOrganizerId());
+            }
+                create(request,quartzExecuteClass);
+
+                List<JobDependencies> list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
+                        .eq("START_JOB_GROUP",request.getOriginalJobGroup()).eq("START_JOB_NAME",request.getOriginalJobName()));
+                for(JobDependencies dependencies:list){
+                    dependencies.setStartJobGroup(request.getJobGroup());
+                    dependencies.setStartJobName(request.getJobName());
+                    dependencies.updateById();
+                }
+
+                list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
+                        .eq("NEXT_JOB_GROUP",request.getOriginalJobGroup()).eq("NEXT_JOB_NAME",request.getOriginalJobName()));
+                for(JobDependencies dependencies:list){
+                    dependencies.setNextJobGroup(request.getJobGroup());
+                    dependencies.setNextJobName(request.getJobName());
+                    dependencies.updateById();
+                }
+        }catch (Exception e){
+            if(oJobDetail!=null && oTrigger!=null){
+                quartzScheduler.scheduleJob(oJobDetail, oTrigger);
             }
 
-            list = jobDependenciesMapper.selectList(new EntityWrapper<JobDependencies>()
-                    .eq("NEXT_JOB_GROUP",request.getOriginalJobGroup()).eq("NEXT_JOB_NAME",request.getOriginalJobName()));
-            for(JobDependencies dependencies:list){
-                dependencies.setNextJobGroup(request.getJobGroup());
-                dependencies.setNextJobName(request.getJobName());
-                dependencies.updateById();
-            }
+            throw new ApplicationException(StatusCode.DATA_INTEGRITY_VIOLATION_EXCEPTION.getCode(),"保存失败!调度周期没有合法的的触发时间");
 
-        }else{
-            throw new ApplicationException(StatusCode.NOT_FOUND.getCode(), StatusCode.NOT_FOUND.getMessage());
         }
+
+
     }
 
 

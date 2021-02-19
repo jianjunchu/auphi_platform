@@ -36,7 +36,7 @@ public class UserRoleService extends BaseService<UserRoleMapper, UserRole> imple
                     UserRole userRole = new UserRole();
                     userRole.setRoleId(roleId);
                     userRole.setUserId(userId);
-                    baseMapper.insert(userRole);
+                    userRole.insert();
                 }
 
                 return 1;

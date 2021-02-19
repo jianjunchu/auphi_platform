@@ -96,6 +96,11 @@ public class GeneralScheduleResponse  {
     private String username;//用户名
 
     /**
+     * 文件选择的字符串
+     */
+    private String cascader;
+
+    /**
      * 依赖关系
      */
     private List<JobDependenciesResponse> dependencies = new ArrayList<>();

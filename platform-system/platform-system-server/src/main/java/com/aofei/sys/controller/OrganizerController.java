@@ -47,7 +47,7 @@ public class OrganizerController extends BaseController {
     @RequestMapping(value = "/listPage", method = RequestMethod.GET)
     @RequiresPermissions(logical = Logical.AND, value = {"view", "edit"})
     public Response<DataGrid<OrganizerResponse>> page(@ApiIgnore OrganizerRequest request, @ApiIgnore @CurrentUser CurrentUserResponse user)  {
-
+        request.setParentId(user.getOrganizerId());
         Page<OrganizerResponse> page = organizerService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }

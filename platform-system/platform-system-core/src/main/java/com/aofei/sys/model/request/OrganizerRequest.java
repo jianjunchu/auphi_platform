@@ -1,9 +1,6 @@
 package com.aofei.sys.model.request;
 
 import com.aofei.base.model.request.BaseRequest;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
 
 /**
@@ -27,6 +24,17 @@ public class OrganizerRequest extends BaseRequest<OrganizerRequest> {
      * 组织名称
      */
     private String name;
+
+    /**
+     * 编码
+     */
+    private String code;
+
+    /**
+     * 上级ID
+     */
+    private Long parentId;
+
     private String contact;
     private String email;
     private String telphone;

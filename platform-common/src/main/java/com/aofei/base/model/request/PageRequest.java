@@ -19,7 +19,7 @@ public class PageRequest<T> {
      * 每页数量
      */
     @ApiModelProperty(hidden = true)
-    private Integer rows = 15;
+    private Integer limit = 15;
     /**
      * 排序规则：升序=asc，降序=desc
      */
@@ -55,12 +55,12 @@ public class PageRequest<T> {
         this.page = page;
     }
 
-    public Integer getRows() {
-        return rows;
+    public Integer getLimit() {
+        return limit;
     }
 
-    public void setRows(Integer rows) {
-        this.rows = rows;
+    public void setLimit(Integer limit) {
+        this.limit = limit;
     }
 
     public String getOrder() {
@@ -140,7 +140,7 @@ public class PageRequest<T> {
     public String toString() {
         return "PageRequest{" +
                 "page=" + page +
-                ", rows=" + rows +
+                ", rows=" + limit +
                 ", order='" + order + '\'' +
                 ", sort='" + sort + '\'' +
                 '}';
