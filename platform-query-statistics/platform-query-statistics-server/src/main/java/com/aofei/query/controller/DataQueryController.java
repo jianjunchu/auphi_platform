@@ -1,7 +1,9 @@
 package com.aofei.query.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.aofei.base.annotation.CurrentUser;
 import com.aofei.base.controller.BaseController;
+import com.aofei.base.model.response.CurrentUserResponse;
 import com.aofei.base.model.response.Response;
 import com.aofei.base.model.vo.DataGrid;
 import com.aofei.query.model.request.*;
@@ -62,7 +64,11 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/filerecv/listPage", method = RequestMethod.GET)
-    public Response<DataGrid> filerecvPage(@ApiIgnore BatchRevTRequest request) throws KettleException, SQLException {
+    public Response<DataGrid> filerecvPage(
+            @ApiIgnore BatchRevTRequest request
+            ,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
+
+
 
         Page page = batchRevTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
@@ -80,8 +86,9 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupFrequency/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<DataLoadTResponse>> backupFrequencyPage(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
+    public Response<DataGrid<DataLoadTResponse>> backupFrequencyPage(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
 
+        request.setUnitNo(user.getUnitCode());
         Page<DataLoadTResponse> page = dataLoadTService.getBackupFrequencyPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -98,8 +105,8 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupFrequency/chartData", method = RequestMethod.GET)
-    public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
-
+    public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
+        request.setUnitNo(user.getUnitCode());
         JSONObject jsonObject  = dataLoadTService.getBackupRecordChartData(request);
         return Response.ok(jsonObject) ;
     }
@@ -118,8 +125,8 @@ public class DataQueryController extends BaseController {
 
     })
     @RequestMapping(value = "/backupRecord/listPage", method = RequestMethod.GET)
-    public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request) throws KettleException, SQLException {
-
+    public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
+        request.setUnitNo(user.getUnitCode());
         Page<DataLoadTResponse> page = dataLoadTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -138,9 +145,10 @@ public class DataQueryController extends BaseController {
     @RequestMapping(value = "/s_error/listPage", method = RequestMethod.GET)
     public Response<Object> s_error(
             HttpServletResponse response,
-            @ApiIgnore SerrorTRequest request) throws Exception {
+            @ApiIgnore SerrorTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
 
 
+        request.setUnitNo(user.getUnitCode());
 
         if(request.getExport() == 1){
             List<Map<String,Object>> dataList = serrorTService.getList(request);
@@ -186,7 +194,9 @@ public class DataQueryController extends BaseController {
     @RequestMapping(value = "/p_error/listPage", method = RequestMethod.GET)
     public Response<Object> p_error(
             HttpServletResponse response,
-            @ApiIgnore PerrorTRequest request) throws Exception {
+            @ApiIgnore PerrorTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
+
+        request.setUnitNo(user.getUnitCode());
 
         if(request.getExport() == 1){
             List<Map<String,Object>> dataList = perrorLogService.getList(request);
@@ -235,8 +245,9 @@ public class DataQueryController extends BaseController {
     @RequestMapping(value = "/exact/listPage", method = RequestMethod.GET)
     public Response<Object> exactPage(
             HttpServletResponse response,
-            @ApiIgnore PdataExactTRequest request) throws Exception {
+            @ApiIgnore PdataExactTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
 
+        request.setUnitNo(user.getUnitCode());
         if(request.getExport() == 1){
             List<Map<String,Object>> dataList = pdataExtractTService.getList(request);
 

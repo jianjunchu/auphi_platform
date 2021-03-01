@@ -3,6 +3,7 @@ package com.aofei.utils;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class CsvUtils {
      */
     public static List<String[]> read(String filePath,boolean readHeader) throws IOException {
 
+        judeFileExists(filePath);
 
         // 创建CSV读对象
         CsvReader csvReader = new CsvReader(filePath,',', Charset.forName("UTF-8"));
@@ -72,6 +74,23 @@ public class CsvUtils {
         String[] headers = {"编号","姓名","年龄"};
         String[] content = {"12365","张山","34"};
         read(filePath,false);
+
+    }
+
+    // 判断文件是否存在
+    public static void judeFileExists(String filePath) {
+
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
     }
 }

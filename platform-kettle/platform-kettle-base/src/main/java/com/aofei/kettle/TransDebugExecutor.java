@@ -2,6 +2,7 @@ package com.aofei.kettle;
 
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
+import org.apache.shiro.util.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -17,8 +18,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
-import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.*;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 import java.util.*;
 
@@ -395,6 +396,9 @@ public class TransDebugExecutor implements Runnable {
 				}
 				/*if(!StringUtils.hasText(string))
 					string = "&lt;null&gt;";*/
+
+				if(!StringUtils.hasText(string))
+					string = "";
 
 				ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 				row.put(valueMeta.getName(), string);

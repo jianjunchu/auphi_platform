@@ -145,6 +145,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
 
         User existing = selectById(request.getUserId());
         if (existing != null) {
+            existing.setUnitId(request.getUnitId());
             existing.setMobilephone(request.getMobilephone());
             existing.setEmail(request.getEmail());
             if(StringUtils.isEmpty(request.getPassword())){

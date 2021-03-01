@@ -24,7 +24,10 @@ public class DateUtils {
     public static final String HH_MM = "HH:mm";
     public static final String YYYYMMDD = "yyyyMMdd";
 
+    public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+
     public final static DateTimeFormatter FORMATTER_YYYY_MM_DD_HH_MM_SS = DateTimeFormat.forPattern(YYYY_MM_DD_HH_MM_SS);
+    public final static DateTimeFormatter FORMATTER_YYYYMMDDHHMMSS = DateTimeFormat.forPattern(YYYYMMDDHHMMSS);
     public final static DateTimeFormatter FORMATTER_YYYY_MM_DD_HH_MM = DateTimeFormat.forPattern(YYYY_MM_DD_HH_MM);
     public final static DateTimeFormatter FORMATTER_YYYY_MM_DD = DateTimeFormat.forPattern(YYYY_MM_DD);
     public final static DateTimeFormatter FORMATTER_MM_DD = DateTimeFormat.forPattern(MM_DD);

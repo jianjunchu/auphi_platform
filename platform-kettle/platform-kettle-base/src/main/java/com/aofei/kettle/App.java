@@ -7,6 +7,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.*;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -22,6 +23,7 @@ public class App {
 	private static App app;
 	private LogChannelInterface log;
 
+	public static VariableSpace space;
 
 	private KettleDatabaseRepositoryMeta kettleDatabaseRepositoryMeta;
 

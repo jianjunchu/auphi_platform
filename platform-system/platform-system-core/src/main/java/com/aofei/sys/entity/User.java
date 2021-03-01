@@ -95,6 +95,18 @@ public class User extends DataEntity<User> {
     private String organizerName;
 
     /**
+     * 组织ID
+     */
+    @TableField("C_UNIT_ID")
+    private Long unitId;
+
+    @TableField(exist = false)
+    private String unitCode;
+
+    @TableField(exist = false)
+    private String unitName;
+
+    /**
      * 用户状态
      */
     @TableField("C_USER_STATUS")

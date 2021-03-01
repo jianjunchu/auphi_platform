@@ -19,6 +19,7 @@ import com.aofei.translog.entity.LogTrans;
 import com.aofei.translog.entity.LogTransStep;
 import com.aofei.translog.service.ILogTransService;
 import com.aofei.translog.service.ILogTransStepService;
+import com.aofei.utils.DateUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
@@ -34,10 +35,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
 @Api(tags = { "调度管理-监控(调度执行日志)" })
-@Authorization
 @RestController
 @RequestMapping(value = "/schedule/monitor", produces = {"application/json;charset=UTF-8"})
 public class MonitorController extends BaseController {
@@ -68,6 +75,7 @@ public class MonitorController extends BaseController {
             @ApiImplicitParam(name = "jobName", value = "调度名称(模糊查询)", paramType = "query", dataType = "String")
 
     })
+    @Authorization
     @RequestMapping(value = "/listPage", method = RequestMethod.GET)
     public Response<DataGrid<MonitorResponse>> page(
             @ApiIgnore MonitorRequest request,
@@ -83,6 +91,7 @@ public class MonitorController extends BaseController {
      * @param type
      * @return
      */
+    @Authorization
     @ApiOperation(value = "", notes = "调度执行日志日志")
     @RequestMapping(value = "/info/{id}/type/{type}", method = RequestMethod.GET)
     public Response<JSONObject> info(@PathVariable Long id, @PathVariable String type)  {
@@ -118,14 +127,59 @@ public class MonitorController extends BaseController {
             }
 
             jsonObject.put("list",jsonArray);
-
-
         }
-
-
 
         return Response.ok(jsonObject);
     }
+
+    /**
+     * 调度执行日志日志
+     * @param id
+     * @param type
+     * @return
+     */
+    @ApiOperation(value = "", notes = "调度执行日志日志")
+    @RequestMapping(value = "/download/{id}/type/{type}", method = RequestMethod.GET)
+    public void downloadLog(@PathVariable Long id, @PathVariable String type, HttpServletResponse response)  {
+        String content = "";
+        if("JOB".equalsIgnoreCase(type)){
+            LogJob logJob = logJobService.selectById(id);
+            content = logJob.getJobLog();
+
+        }else if("TRANSFORMATION".equalsIgnoreCase(type)){
+            LogTrans logTrans = logTransService.selectById(id);
+            content = logTrans.getLoginfo();
+        }
+
+        String fileName = "日志_" + DateUtils.format(new Date(),DateUtils.YYYYMMDDHHMMSS) +".log";
+
+        response.setContentType("text/plain");
+
+        try {
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        ServletOutputStream outputStream = null;
+        BufferedOutputStream buffer = null;
+
+        try {
+            outputStream = response.getOutputStream();
+            buffer = new BufferedOutputStream(outputStream);
+            buffer.write(content.getBytes("UTF-8"));
+            buffer.flush();
+            buffer.close();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
 
     /**
      * 调度执行日志日志
@@ -133,6 +187,7 @@ public class MonitorController extends BaseController {
      * @param type
      * @return
      */
+    @Authorization
     @ApiOperation(value = "", notes = "调度执行日志日志")
     @RequestMapping(value = "/channelId/{channelId}/type/{type}", method = RequestMethod.GET)
     public Response<JSONObject> getLogByChannelId(@PathVariable String channelId, @PathVariable String type)  {
@@ -184,6 +239,7 @@ public class MonitorController extends BaseController {
      * @param type
      * @return
      */
+    @Authorization
     @ApiOperation(value = "", notes = "停止调度")
     @RequestMapping(value = "/stop/{id}/type/{type}", method = RequestMethod.GET)
     public Response<Boolean> stop(@PathVariable Long id, @PathVariable String type)  {

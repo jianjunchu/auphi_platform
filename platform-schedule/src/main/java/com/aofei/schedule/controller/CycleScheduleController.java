@@ -18,11 +18,14 @@ import com.aofei.schedule.job.TransRunner;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDetailsRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
+import com.aofei.schedule.model.response.GroupResponse;
 import com.aofei.schedule.model.response.JobDetailsResponse;
 import com.aofei.schedule.model.response.JobPlanResponse;
 import com.aofei.schedule.service.ICycleScheduleService;
+import com.aofei.schedule.service.IGroupService;
 import com.aofei.schedule.service.IJobDependenciesService;
 import com.aofei.schedule.service.IJobDetailsService;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
@@ -49,6 +52,9 @@ import java.util.*;
 public class CycleScheduleController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(CycleScheduleController.class);
+
+    @Autowired
+    private IGroupService groupService;
 
     @Autowired
     private ICycleScheduleService cycleScheduleService;
@@ -159,6 +165,27 @@ public class CycleScheduleController extends BaseController {
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
 
 
+        if(validate(request,user)){
+            Class quartzExecuteClass = null;
+            if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(request.getFileType())){
+                quartzExecuteClass = JobRunner.class;
+            }else if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(request.getFileType())){
+                quartzExecuteClass = TransRunner.class;
+            }
+            cycleScheduleService.create(request ,quartzExecuteClass);
+
+        }
+
+        return Response.ok(true) ;
+    }
+
+    private boolean validate(GeneralScheduleRequest request, CurrentUserResponse user) {
+
+        if(StringUtils.isEmpty(request.getJobGroup())){
+            GroupResponse  groupResponse = groupService.getDefaultGroup(user.getOrganizerId());
+            request.setJobGroup(groupResponse.getGroupId());
+        }
+
         Date satrtDate = request.getStartTime();
         Date endDate = request.getEndTime();
 
@@ -175,19 +202,11 @@ public class CycleScheduleController extends BaseController {
             throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
         }
 
-        Class quartzExecuteClass = null;
-        if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(request.getFileType())){
-            quartzExecuteClass = JobRunner.class;
-        }else if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(request.getFileType())){
-            quartzExecuteClass = TransRunner.class;
-        }
+
         request.setUsername(user.getUsername());
         request.setOrganizerId(user.getOrganizerId());
 
-
-        cycleScheduleService.create(request ,quartzExecuteClass);
-
-        return Response.ok(true) ;
+        return true;
     }
 
     /**
@@ -230,29 +249,16 @@ public class CycleScheduleController extends BaseController {
             @RequestBody GeneralScheduleRequest request,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
 
-        Date satrtDate = request.getStartTime();
-        Date endDate = request.getEndTime();
+        if(validate(request,user)){
+            Class quartzExecuteClass = null;
+            if(RepositoryObjectType.JOB.getTypeDescription().equalsIgnoreCase(request.getFileType())){
+                quartzExecuteClass = JobRunner.class;
+            }else if(RepositoryObjectType.TRANSFORMATION.getTypeDescription().equalsIgnoreCase(request.getFileType())){
+                quartzExecuteClass = TransRunner.class;
+            }
+            cycleScheduleService.update(request, quartzExecuteClass);
 
-        if(satrtDate==null){
-            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"请选择开始时间");
         }
-
-
-
-        if(satrtDate.getTime() - new Date().getTime() < 0){
-            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"开始时间必须大于当前时间");
-        }
-        if(endDate != null && satrtDate.getTime() - endDate.getTime() > 0){
-            throw  new ApplicationException(StatusCode.NOT_FOUND.getCode(),"结束时间必须大于开始时间");
-        }
-
-        Class quartzExecuteClass = null;
-        if("JOB".equalsIgnoreCase(request.getFileType())){
-            quartzExecuteClass = JobRunner.class;
-        }else if("TRANSFORMATION".equalsIgnoreCase(request.getFileType())){
-            quartzExecuteClass = TransRunner.class;
-        }
-        cycleScheduleService.update(request, quartzExecuteClass);
 
         return Response.ok(true) ;
     }

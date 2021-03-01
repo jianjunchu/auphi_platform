@@ -72,7 +72,7 @@ public class SerrorTService implements ISerrorTService {
         }
 
         if(!StringUtils.isEmpty(request.getAcceptNo())){
-            sql.append(" and a.ACCEPT_GROUP_NO = '").append(request.getAcceptNo()).append("'");
+            sql.append(" and a.accept_no = '").append(request.getAcceptNo()).append("'");
         }
 
         if(!StringUtils.isEmpty(request.getSearch_time())

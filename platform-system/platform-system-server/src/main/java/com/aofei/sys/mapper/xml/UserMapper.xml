@@ -19,6 +19,7 @@
         <result column="UPDATE_USER" property="updateUser" />
         <result column="CREATE_TIME" property="createTime" />
         <result column="UPDATE_TIME" property="updateTime" />
+        <result column="C_UNIT_ID" property="unitId" />
         <result column="DEL_FLAG" property="delFlag" />
     </resultMap>
 
@@ -43,9 +44,13 @@
         , a.CREATE_TIME AS createTime
         , a.UPDATE_TIME AS updateTime
         , a.DEL_FLAG AS delFlag
+        , a.C_UNIT_ID AS unitId
+        , c.ORGANIZER_CODE AS unitCode
+        , c.ORGANIZER_NAME AS unitName
     </sql>
     <sql id="Base_Joins">
         LEFT JOIN SYS_ORGANIZER b ON b.ORGANIZER_ID = a.C_ORGANIZER_ID
+        LEFT JOIN SYS_ORGANIZER c ON c.ORGANIZER_ID = a.C_UNIT_ID
     </sql>
 
 
@@ -112,6 +117,7 @@
             , a.C_DESCRIPTION = #{et.description}
             , a.C_IS_SYSTEM_USER = #{et.isSystemUser}
             , a.C_ORGANIZER_ID = #{et.organizerId}
+            , a.C_UNIT_ID = #{et.unitId}
             , a.C_USER_STATUS = #{et.userStatus}
             , a.LAST_LOGIN_TIME = #{et.lastLoginTime}
             , a.LAST_LOGIN_IP = #{et.lastLoginIp}

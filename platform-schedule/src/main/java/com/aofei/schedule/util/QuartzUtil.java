@@ -145,7 +145,7 @@ public class QuartzUtil {
 
                 //周期分钟 每?几分钟执行一次
                 //每隔1分钟执行一次：0 */1 * * * ?
-                cronString.append("0").append(kg)
+                cronString.append(ca.get(Calendar.SECOND)).append(kg)
                         .append(xx).append(xg).append(request.getCycleNum()).append(kg)
                         .append(xx).append(kg)
                         .append(xx).append(kg)
@@ -157,8 +157,8 @@ public class QuartzUtil {
 
                 //周期小时 每?几小时执行一次
                 //每隔1分钟执行一次：0 0 */1  * * ?
-                cronString.append("0").append(kg)
-                        .append("0").append(kg)
+                cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                        .append(ca.get(Calendar.MINUTE)).append(kg)
                         .append(xx).append(xg).append(request.getCycleNum()).append(kg)
                         .append(xx).append(kg)
                         .append(xx).append(kg)

@@ -29,13 +29,17 @@ import com.aofei.base.common.Const;
 import com.aofei.kettle.App;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.sys.utils.RepositoryCodec;
+import com.aofei.utils.CsvUtils;
+import com.aofei.utils.StringUtils;
 import org.joda.time.DateTime;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -47,10 +51,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.IOException;
+import java.util.*;
 
 
 /**
@@ -85,8 +87,8 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         logger.info("********开始加载资源库*************************");
         logger.info("********************************************");
         LanguageChoice.getInstance().setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
-        KettleLogStore.init( 5000, 720 );
-        KettleEnvironment.init();
+        KettleLogStore.init( 5000000, 720 );
+
         PropsUI.init( "KettleWebConsole", Props.TYPE_PROPERTIES_KITCHEN );
 
         //KettleDatabaseRepository repository =  RepositoryCodec.decodeDefault(dataSource);
@@ -95,13 +97,53 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         //App.getInstance().setRepository(repository);
         //CheckRepositoryTimerTask checkRepositoryTimerTask = new CheckRepositoryTimerTask();
         //repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
-
+        applyVariables();
         App.getInstance().setKettleDatabaseRepositoryMeta(RepositoryCodec.getDatabaseRepositoryMeta(dataSource));
+
+
+
         long timeSec = (System.currentTimeMillis() - start) / 1000;
         logger.info("********************************************");
         logger.info("平台启动成功[" + DateTime.now().toString() + "]");
         logger.info("启动总耗时: " + timeSec / 60 + "分 " + timeSec % 60 + "秒 ");
         logger.info("********************************************");
+    }
+
+    private void applyVariables() throws KettleException, IOException {
+        App.space =  Variables.getADefaultVariableSpace();
+        File file = new File("config.csv");
+        if(file.exists()){
+            List<String[]> list = CsvUtils.read("config.csv",true);
+            for(String[] cls : list){
+                if(cls!=null && cls.length>1 ){
+                    String kv = cls[0];
+                    if(!StringUtils.isEmpty(kv) && !kv.startsWith("#") && kv.indexOf("=")>0){
+                        String[] kvs = kv.split("=");
+                        String key = kvs[0];
+                        String value = kvs[1];
+                        if("HisUserName".equals(key)
+                                || "HisUserPwd".equals(key)
+                                || "HisYdUserName".equals(key)
+                                || "HisYdUserPwd".equals(key)
+                                || "HisGatUserName".equals(key)
+                                || "HisGatUserPwd".equals(key)
+                                || "PhisUserName".equals(key)
+                                || "PhisUserPwd".equals(key)){
+
+                            value = Encr.PASSWORD_ENCRYPTED_PREFIX + value;
+                        }
+                        logger.info("********************************************");
+                        logger.info(key +"=="+ value);
+                        logger.info("********************************************");
+                        App.space.setVariable(key,value);
+
+                    }
+                }
+            }
+
+        }
+
+        KettleEnvironment.init();
     }
 
     /**

@@ -40,14 +40,20 @@
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
             <version>8.3.0.0-SNAPSHOT</version>
-            <classifier>auphi</classifier>
+            <scope>system</scope>
+            <type>jar</type>
+            <optional>true</optional>
+            <systemPath>${project.basedir}/lib/kettle-core-8.3.0.0.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
             <version>8.3.0.0-SNAPSHOT</version>
-            <classifier>auphi</classifier>
+            <scope>system</scope>
+            <type>jar</type>
+            <optional>true</optional>
+            <systemPath>${project.basedir}/lib/kettle-engine-8.3.0.0.jar</systemPath>
             <exclusions>
                 <exclusion>
                     <groupId>pentaho-kettle</groupId>
@@ -64,7 +70,10 @@
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
             <version>8.3.0.0-SNAPSHOT</version>
-            <classifier>auphi</classifier>
+            <scope>system</scope>
+            <type>jar</type>
+            <optional>true</optional>
+            <systemPath>${project.basedir}/lib/kettle-dbdialog-8.3.0.0.jar</systemPath>
             <exclusions>
                 <exclusion>
                     <groupId>pentaho-kettle</groupId>
@@ -73,6 +82,34 @@
                 <exclusion>
                     <groupId>pentaho-kettle</groupId>
                     <artifactId>kettle-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>pentaho-kettle</groupId>
+            <artifactId>kettle-ui-swt</artifactId>
+            <version>8.3.0.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <type>jar</type>
+            <optional>true</optional>
+            <systemPath>${project.basedir}/lib/kettle-ui-swt-8.3.0.0.jar</systemPath>
+            <exclusions>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pentaho-kettle</groupId>
+                    <artifactId>kettle-dbdialog</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.actionsoft</groupId>
+                    <artifactId>openapi</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -148,30 +185,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>pentaho-kettle</groupId>
-            <artifactId>kettle-ui-swt</artifactId>
-            <version>8.3.0.0-SNAPSHOT</version>
-            <classifier>auphi</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-engine</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>pentaho-kettle</groupId>
-                    <artifactId>kettle-dbdialog</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.actionsoft</groupId>
-                    <artifactId>openapi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
         <dependency>
             <groupId>com.actionsoft</groupId>

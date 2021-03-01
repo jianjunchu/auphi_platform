@@ -63,11 +63,22 @@ public class UserResponse {
     @ApiModelProperty(value = "组织ID")
     private Long organizerId;
 
+
+
     /**
      * 组织ID
      */
     @ApiModelProperty(value = "组织名称")
     private String organizerName;
+
+    /**
+     * 部门id
+     */
+    private Long unitId;
+
+    private String unitCode;
+
+    private String unitName;
 
     /**
      * 磁盘空间 字节 默认   1073741824字节

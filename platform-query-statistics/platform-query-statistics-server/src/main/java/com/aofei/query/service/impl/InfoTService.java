@@ -26,7 +26,7 @@ public class InfoTService  implements IInfoTService {
         }
 
         if(!StringUtils.isEmpty(request.getAcceptNo())){
-            sql.append(" and a.unit_no like '%").append(request.getAcceptNo()).append("%'");
+            sql.append(" and a.accept_no like '%").append(request.getAcceptNo()).append("%'");
         }
 
         if(!StringUtils.isEmpty(request.getSearch_time())

@@ -9,7 +9,10 @@ import com.aofei.schedule.mapper.JobDetailsMapper;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDetailsRequest;
 import com.aofei.schedule.model.request.MonitorRequest;
-import com.aofei.schedule.model.response.*;
+import com.aofei.schedule.model.response.GeneralScheduleResponse;
+import com.aofei.schedule.model.response.JobDetailsResponse;
+import com.aofei.schedule.model.response.JobPlanResponse;
+import com.aofei.schedule.model.response.MonitorResponse;
 import com.aofei.schedule.service.ICycleScheduleService;
 import com.aofei.schedule.service.IJobDetailsService;
 import com.aofei.schedule.service.IMonitorService;
@@ -59,7 +62,10 @@ public class JobDetailsService extends BaseService<JobDetailsMapper, JobDetails>
                 String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
                 GeneralScheduleResponse response = JSON.parseObject(json,GeneralScheduleResponse.class);
                 jobDetails.setStartTime(response.getStartTime().getTime());
-                jobDetails.setEndTime(response.getEndTime().getTime());
+                if(response.getEndTime()!=null){
+                    jobDetails.setEndTime(response.getEndTime().getTime());
+                }
+
 
             }
         }
@@ -84,45 +90,51 @@ public class JobDetailsService extends BaseService<JobDetailsMapper, JobDetails>
         for(JobDetails jobDetails : list){
 
             JobDetail jobDetail =  cycleScheduleService.findByName(jobDetails.getJobName(),jobDetails.getJobGroup());
-            String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
-            GeneralScheduleRequest generalScheduleRequest = JSON.parseObject(json,GeneralScheduleRequest.class);
 
-            if( generalScheduleRequest.getStartTime().getTime() < DateUtils.endOfDay(new Date()).getTime()
-                    && !"PAUSED".equalsIgnoreCase(jobDetails.getTriggerState())
-                    && !StringUtils.isEmpty(jobDetails.getTriggerState())){
+            if(jobDetail!=null && jobDetail.getJobDataMap()!=null && jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY)!=null){
 
-                String cron = QuartzUtil.getCron(generalScheduleRequest);
-                List<Date> dates = QuartzUtil.getQuartzPlan(cron,generalScheduleRequest.getStartTime());
-                for(Date date : dates){
 
-                    JobPlanResponse response = new JobPlanResponse();
-                    response.setPlanRunTime(date);
-                    response.setPlanRunTimeStr(DateUtils.toYmdHms(date));
-                    response.setQrtzJobName(jobDetails.getJobName());
-                    response.setQrtzJobGroup(jobDetails.getGroupName());
-                    response.setFileType(generalScheduleRequest.getFileType());
-                    if(date.getTime() > now){
-                        response.setStatus("waiting");
-                    }else{
-                        MonitorRequest monitorRequest = new MonitorRequest();
-                        monitorRequest.setQrtzJobGroup(generalScheduleRequest.getJobGroup());
-                        monitorRequest.setQrtzJobName(generalScheduleRequest.getJobName());
-                        monitorRequest.setFireTime(date);
-                        MonitorResponse monitorResponse = monitorService.getPlanMonitor(monitorRequest);
-                        if(monitorResponse!=null){
-                            response.setStartTime(monitorResponse.getStartdate());
-                            response.setEndTime(monitorResponse.getEnddate());
-                            response.setStatus(monitorResponse.getStatus());
-                            response.setErrors(monitorResponse.getErrors());
-                            response.setLogId(monitorResponse.getId());
+                String json = (String) jobDetail.getJobDataMap().get(Const.GENERAL_SCHEDULE_KEY);
+                GeneralScheduleRequest generalScheduleRequest = JSON.parseObject(json,GeneralScheduleRequest.class);
+
+                if( generalScheduleRequest.getStartTime().getTime() < DateUtils.endOfDay(new Date()).getTime()
+                        && !"PAUSED".equalsIgnoreCase(jobDetails.getTriggerState())
+                        && !StringUtils.isEmpty(jobDetails.getTriggerState())){
+
+                    String cron = QuartzUtil.getCron(generalScheduleRequest);
+                    List<Date> dates = QuartzUtil.getQuartzPlan(cron,generalScheduleRequest.getStartTime());
+                    for(Date date : dates){
+
+                        JobPlanResponse response = new JobPlanResponse();
+                        response.setPlanRunTime(date);
+                        response.setPlanRunTimeStr(DateUtils.toYmdHms(date));
+                        response.setQrtzJobName(jobDetails.getJobName());
+                        response.setQrtzJobGroup(jobDetails.getGroupName());
+                        response.setFileType(generalScheduleRequest.getFileType());
+                        if(date.getTime() > now){
+                            response.setStatus("waiting");
                         }else{
-                            response.setStatus("lose");
+                            MonitorRequest monitorRequest = new MonitorRequest();
+                            monitorRequest.setQrtzJobGroup(generalScheduleRequest.getJobGroup());
+                            monitorRequest.setQrtzJobName(generalScheduleRequest.getJobName());
+                            monitorRequest.setFireTime(date);
+                            MonitorResponse monitorResponse = monitorService.getPlanMonitor(monitorRequest);
+                            if(monitorResponse!=null){
+                                response.setStartTime(monitorResponse.getStartdate());
+                                response.setEndTime(monitorResponse.getEnddate());
+                                response.setStatus(monitorResponse.getStatus());
+                                response.setErrors(monitorResponse.getErrors());
+                                response.setLogId(monitorResponse.getId());
+                            }else{
+                                response.setStatus("lose");
+                            }
                         }
-                    }
-                    responses.add(response);
+                        responses.add(response);
 
+                    }
                 }
             }
+
 
 
         }

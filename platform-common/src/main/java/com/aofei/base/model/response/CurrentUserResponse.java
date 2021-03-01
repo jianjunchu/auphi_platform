@@ -33,6 +33,15 @@ public class CurrentUserResponse {
     private Long organizerId;
 
     /**
+     * 部门id
+     */
+    private Long unitId;
+
+    private String unitCode;
+
+    private String unitName;
+
+    /**
      * 磁盘空间 字节 默认   1073741824字节
      */
     private Long diskSpace;

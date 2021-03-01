@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.util.StringUtils;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.ast.ScriptNode;
 import org.mozilla.javascript.tools.ToolErrorReporter;
@@ -34,7 +35,6 @@ import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDummy;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesScript;
 import org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesHelp;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -507,6 +507,9 @@ public class JavaScriptController {
 						}
 						/*if(!StringUtils.hasText(string))
 							string = "&lt;null&gt;";*/
+
+						if(!StringUtils.hasText(string))
+							string = "";
 
 						ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 						row.put(valueMeta.getName(), string);

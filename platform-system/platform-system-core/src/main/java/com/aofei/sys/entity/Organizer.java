@@ -33,6 +33,8 @@ public class Organizer extends DataEntity<Organizer> {
      */
     @TableId(value = "ORGANIZER_ID", type = IdType.ID_WORKER)
     private Long organizerId;
+
+
     /**
      * 组织名称
      */

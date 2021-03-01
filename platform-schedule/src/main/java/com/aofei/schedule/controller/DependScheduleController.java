@@ -13,10 +13,13 @@ import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDependenciesRequest;
 import com.aofei.schedule.model.request.JobDetailsRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
+import com.aofei.schedule.model.response.GroupResponse;
 import com.aofei.schedule.model.response.JobDetailsResponse;
 import com.aofei.schedule.model.response.JobPlanResponse;
 import com.aofei.schedule.service.IDependScheduleService;
+import com.aofei.schedule.service.IGroupService;
 import com.aofei.schedule.service.IJobDetailsService;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.*;
 import org.quartz.SchedulerException;
@@ -40,6 +43,9 @@ import java.util.*;
 public class DependScheduleController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(DependScheduleController.class);
+
+    @Autowired
+    private IGroupService groupService;
 
     @Autowired
     private IDependScheduleService dependScheduleService;
@@ -115,7 +121,8 @@ public class DependScheduleController extends BaseController {
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
 
 
-        if(validate(request)){
+
+        if(validate(request,user)){
             request.setUsername(user.getUsername());
             request.setOrganizerId(user.getOrganizerId());
 
@@ -168,7 +175,7 @@ public class DependScheduleController extends BaseController {
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
 
 
-        if(validate(request)){
+        if(validate(request,user)){
             dependScheduleService.update(request, DependRunner.class);
         }
         return Response.ok(true) ;
@@ -176,7 +183,13 @@ public class DependScheduleController extends BaseController {
     }
 
 
-    private boolean validate(GeneralScheduleRequest request){
+    private boolean validate(GeneralScheduleRequest request,CurrentUserResponse user){
+
+        if(StringUtils.isEmpty(request.getJobGroup())){
+            GroupResponse groupResponse = groupService.getDefaultGroup(user.getOrganizerId());
+            request.setJobGroup(groupResponse.getGroupId());
+        }
+
         Date satrtDate = request.getStartTime();
         Date endDate = request.getEndTime();
 

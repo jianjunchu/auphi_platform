@@ -36,6 +36,7 @@ import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDependenciesRequest;
 import com.aofei.schedule.model.request.ParamRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
+import com.aofei.schedule.model.response.GroupResponse;
 import com.aofei.schedule.model.response.JobDependenciesResponse;
 import com.aofei.schedule.service.IDependScheduleService;
 import com.aofei.schedule.util.QuartzUtil;

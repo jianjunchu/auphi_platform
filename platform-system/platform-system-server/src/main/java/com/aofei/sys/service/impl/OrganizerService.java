@@ -61,6 +61,7 @@ public class OrganizerService extends BaseService<OrganizerMapper, Organizer> im
     public OrganizerResponse update(OrganizerRequest request) {
         Organizer existing = selectById(request.getOrganizerId());
         if (existing != null) {
+            existing.setCode(request.getCode());
             existing.setName(request.getName());
             existing.setEmail(request.getEmail());
             existing.setTelphone(request.getTelphone());

@@ -41,6 +41,21 @@ public class GroupService extends BaseService<GroupMapper, Group> implements IGr
         return BeanCopier.copy(list,GroupResponse.class);
     }
 
+    @Override
+    public GroupResponse getDefaultGroup(Long organizerId) {
+        GroupRequest request = new GroupRequest();
+        request.setOrganizerId(organizerId);
+
+        List<Group> list = baseMapper.findList(request);
+        if(list!=null && list.size()>0){
+            return BeanCopier.copy(list.get(0),GroupResponse.class);
+        }else{
+            request.setGroupName("默认分组");
+            request.setDescription("系统自动创建默认分组");
+            return save(request);
+        }
+    }
+
     @Log(module = "调度分组管理",description = "新建调度分组信息")
     @Override
     public GroupResponse save(GroupRequest request) {

@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.util.StringUtils;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.*;
 import org.pentaho.di.core.database.Database;
@@ -934,6 +935,9 @@ public class TransGraphController {
 					}
 					/*if(!StringUtils.hasText(string))
 						string = "&lt;null&gt;";*/
+
+					if(!StringUtils.hasText(string))
+						string = "";
 
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta( colNr );
 					row.put(valueMeta.getName(), string);

@@ -10,6 +10,7 @@ import com.aofei.sys.entity.Config;
 import com.aofei.sys.service.IConfigService;
 import com.aofei.sys.service.IUserService;
 import com.aofei.utils.CsvUtils;
+import com.aofei.utils.DesCipherUtil;
 import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.swagger.annotations.Api;
@@ -24,8 +25,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,17 +109,67 @@ public class ConfigController extends BaseController {
 
         String sysPath = System.getProperty("user.dir");
         String filePath = sysPath+ File.separator+"config.csv";
-        List<String[]> list = CsvUtils.read(filePath,false);
+        List<String[]> list = CsvUtils.read(filePath,true);
         for(String[] cls : list){
             String keyValue = cls[0];
             String[] kv = keyValue.split("=");
+
             if(kv.length ==2 && jsonObject.containsKey(kv[0])){
                 JSONObject object = jsonObject.getJSONObject(kv[0]);
-                object.put("value",kv[1]);
+                object.put("value",decrypt(kv[0],kv[1]));
             }
         }
 
         return Response.ok(jsonObject) ;
+    }
+
+    /**
+     * 解密 返回客户端
+     * @param value
+     * @return
+     */
+    private String decrypt(String key,String value){
+        if("HisUserName".equals(key)
+                || "HisUserPwd".equals(key)
+                || "HisYdUserName".equals(key)
+                || "HisYdUserPwd".equals(key)
+                || "HisGatUserName".equals(key)
+                || "HisGatUserPwd".equals(key)
+                || "PhisUserName".equals(key)
+                || "PhisUserPwd".equals(key)){
+
+            value = Encr.decryptPassword(value);
+            value = DesCipherUtil.encryptPasswordIfNotUsingVariablesInternal(value);
+        }
+
+
+
+        return value;
+    }
+
+    /**
+     * 客户端密码加密后保存
+     * @param value
+     * @return
+     */
+    private String encrypt(String key,String value){
+
+
+
+        if("HisUserName".equals(key)
+                || "HisUserPwd".equals(key)
+                || "HisYdUserName".equals(key)
+                || "HisYdUserPwd".equals(key)
+                || "HisGatUserName".equals(key)
+                || "HisGatUserPwd".equals(key)
+                || "PhisUserName".equals(key)
+                || "PhisUserPwd".equals(key)){
+            value = DesCipherUtil.decryptPasswordOptionallyEncryptedInternal(value);
+
+            value = Encr.encryptPassword(value);
+        }
+
+        return value;
     }
 
 
@@ -131,27 +180,22 @@ public class ConfigController extends BaseController {
 
         String sysPath = System.getProperty("user.dir");
         String filePath = sysPath+ File.separator+"config.csv";
-        List<String[]> list = CsvUtils.read(filePath,false);
-        Map<String,String[]> maps = new HashMap<>();
+        List<String[]> list = CsvUtils.read(filePath,true);
 
         for(String[] cls : list){
-            maps.put(cls[1],cls);
-        }
+            if(cls.length>1 && !StringUtils.isEmpty(cls[0])){
+                String[] kv = cls[0].split("=");
+                if(kv.length>1){
+                    JSONObject object = jsonObject.getJSONObject(kv[0]);
+                    cls[0] = object.getString("key")+"="+ encrypt(object.getString("key"),object.getString("value"));
+                }
 
-        for(String key :jsonObject.keySet()){
-            JSONObject object = jsonObject.getJSONObject(key);
-            String[] cls = maps.get(key);
-            if(cls==null){
-                cls = new String[4];
             }
-            cls[0] = object.getString("key")+"="+object.getString("value");
-            cls[1] = object.getString("remark");
-            maps.put(key,cls);
         }
 
-        List<String[]> valueList = new ArrayList<String[]>(maps.values());
-        String[] head = {"参数配置","备注"};
-        CsvUtils.write(filePath,head,valueList);
+        CsvUtils.write(filePath,null,list);
+
+
 
 
         return Response.ok(jsonObject) ;

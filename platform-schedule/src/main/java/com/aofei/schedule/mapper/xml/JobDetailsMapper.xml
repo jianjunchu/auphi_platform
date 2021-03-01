@@ -37,9 +37,6 @@
                 AND a.SCHED_NAME = #{schedName}
             </if>
 
-            <if test="schedName != null and schedName!='' ">
-                AND qts.SCHED_NAME = #{schedName}
-            </if>
 
             <if test="organizerId != null ">
                 AND qgp.ORGANIZER_ID = #{organizerId}

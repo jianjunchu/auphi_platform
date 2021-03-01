@@ -59,4 +59,12 @@ public interface IGroupService extends IService<Group> {
      * @return
      */
     List<GroupResponse> getGroups(GroupRequest request);
+
+    /**
+     * 获取默认分组 没有分组则创建一个
+     *
+     * @param organizerId
+     * @return
+     */
+    GroupResponse getDefaultGroup(Long organizerId);
 }

@@ -54,6 +54,11 @@ public class UserRequest<User> extends BaseRequest<User> {
     private Long organizerId;
 
     /**
+     * 部门id
+     */
+    private Long unitId;
+
+    /**
      * 用户状态
      */
     @ApiModelProperty(hidden = true)

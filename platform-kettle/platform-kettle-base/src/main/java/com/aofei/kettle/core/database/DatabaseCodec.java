@@ -1,5 +1,6 @@
 package com.aofei.kettle.core.database;
 
+import com.aofei.kettle.App;
 import com.aofei.kettle.utils.JSONArray;
 import com.aofei.kettle.utils.JSONObject;
 import com.aofei.kettle.utils.StringEscapeHelper;
@@ -17,6 +18,9 @@ import java.util.Properties;
 public class DatabaseCodec {
 
 	public static JSONObject encode(DatabaseMeta databaseMeta) {
+
+		databaseMeta.copyVariablesFrom(App.space);
+
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put("name", databaseMeta.getDisplayName());
@@ -24,9 +28,17 @@ public class DatabaseCodec {
 		jsonObject.put("access", databaseMeta.getAccessType());
 
 		jsonObject.put("hostname", databaseMeta.getHostname());
+		jsonObject.put("hostname_", databaseMeta.environmentSubstitute(databaseMeta.getHostname()));
+
 		jsonObject.put("databaseName", databaseMeta.getDatabaseName());
+		jsonObject.put("databaseName_", databaseMeta.environmentSubstitute(databaseMeta.getDatabaseName()));
+
 		jsonObject.put("username", databaseMeta.getUsername());
+		jsonObject.put("username_", Encr.decryptPasswordOptionallyEncrypted(databaseMeta.environmentSubstitute(databaseMeta.getUsername())));
+
 		jsonObject.put("password", DesCipherUtil.encryptPasswordIfNotUsingVariablesInternal(Encr.decryptPasswordOptionallyEncrypted(databaseMeta.getPassword())));
+		jsonObject.put("password_", Encr.decryptPasswordOptionallyEncrypted(databaseMeta.environmentSubstitute(databaseMeta.getPassword())));
+
 		if(databaseMeta.isStreamingResults())
 			jsonObject.put("streamingResults", databaseMeta.isStreamingResults());
 		jsonObject.put("dataTablespace", databaseMeta.getDataTablespace());
@@ -137,7 +149,7 @@ public class DatabaseCodec {
 
 	public static DatabaseMeta decode(JSONObject jsonObject) throws KettleDatabaseException {
 		DatabaseMeta databaseMeta = new DatabaseMeta();
-
+		databaseMeta.copyVariablesFrom(App.space);
 		databaseMeta.setName(jsonObject.optString("name"));
 		databaseMeta.setDisplayName(databaseMeta.getName());
 		databaseMeta.setDatabaseType(jsonObject.optString("type"));
@@ -148,7 +160,7 @@ public class DatabaseCodec {
 		if(jsonObject.containsKey("databaseName"))
 			databaseMeta.setDBName(jsonObject.optString("databaseName"));
 		if(jsonObject.containsKey("username"))
-			databaseMeta.setUsername(jsonObject.optString("username"));
+			databaseMeta.setUsername(Encr.decryptPasswordOptionallyEncrypted(jsonObject.optString("username")));
 
 		if(jsonObject.containsKey("password")){
 			String passwd = DesCipherUtil.decryptPasswordOptionallyEncryptedInternal(jsonObject.optString("password"));
