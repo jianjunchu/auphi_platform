@@ -5,7 +5,6 @@ import com.aofei.kettle.TransExecutor;
 import com.aofei.schedule.util.RunnerUtil;
 import com.aofei.translog.entity.LogTrans;
 import com.aofei.translog.task.TransLogTimerTask;
-import com.baomidou.mybatisplus.toolkit.IdWorker;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.quartz.JobDetail;
@@ -33,7 +32,6 @@ public class TransRunner extends QuartzJobBean {
 			TransMeta transMeta = RunnerUtil.getTransMeta(jobDetail);
 
 			TransExecutionConfiguration executionConfiguration = RunnerUtil.getTransExecutionConfiguration(transMeta);
-
 			TransExecutor transExecutor = TransExecutor.initExecutor(executionConfiguration, transMeta);
             transExecutor.setStartDate(new Date());
 			Thread tr = new Thread(transExecutor, "TransExecutor_" + transExecutor.getExecutionId());

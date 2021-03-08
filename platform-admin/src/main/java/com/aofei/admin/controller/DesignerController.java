@@ -8,6 +8,7 @@ import com.aofei.base.exception.ApplicationException;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IUserService;
 import io.swagger.annotations.*;
+import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,10 +65,10 @@ public class DesignerController extends BaseController {
 
             JSONObject rep = new JSONObject();
             rep.put("rep_ID",1);
-            rep.put("password", Const.getConfig("jdbc.password"));
+            rep.put("password", KettleTwoWayPasswordEncoder.decryptPassword(Const.getConfig("jdbc.password")));
             rep.put("DBAccess", "Native");
             rep.put("rep_name", "Default");
-            rep.put("user_name", Const.getConfig("jdbc.username"));
+            rep.put("user_name", KettleTwoWayPasswordEncoder.decryptPassword(Const.getConfig("jdbc.username")));
             rep.put("DBHost", Const.getConfig("jdbc.host"));
             rep.put("DBName", Const.getConfig("jdbc.database"));
             rep.put("DBType", Const.getConfig("jdbc.type"));

@@ -6,7 +6,7 @@ import com.aofei.kettle.App;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -80,7 +80,7 @@ public class RunnerUtil {
         executionConfiguration.setRepository( App.getInstance().getRepository() );
         executionConfiguration.setSafeModeEnabled( false );
 
-        executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
+        executionConfiguration.setLogLevel(LogLevel.MINIMAL );
 
         // Fill the parameters, maybe do this in another place?
         Map<String, String> params = executionConfiguration.getParams();

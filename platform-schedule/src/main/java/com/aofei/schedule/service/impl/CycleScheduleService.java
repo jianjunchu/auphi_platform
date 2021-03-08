@@ -112,15 +112,12 @@ public class CycleScheduleService implements ICycleScheduleService {
                 // 告诉周期调度器使用该触发器来安排作业
                 sched.scheduleJob(jobDetail, trigger);
 
-
-
-
-
             }else{
                 throw new ApplicationException(StatusCode.CONFLICT.getCode(), "改调度名称已存在,换一个吧");
             }
 
         } catch (Exception e){
+            e.printStackTrace();
             throw new ApplicationException(StatusCode.DATA_INTEGRITY_VIOLATION_EXCEPTION.getCode(), "保存失败!调度周期没有合法的的触发时间");
         }
 

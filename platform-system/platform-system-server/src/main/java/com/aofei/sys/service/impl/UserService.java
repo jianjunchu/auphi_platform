@@ -63,15 +63,15 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
                     return BeanCopier.copy(existing, UserResponse.class);
                 }else{
                     //账户被禁用
-                    throw new ApplicationException(SystemError.STATUS_DISABLED.getCode(), SystemError.STATUS_DISABLED.getMessage());
+                    throw new ApplicationException(SystemError.STATUS_DISABLED.getCode(), "用户被禁用");
                 }
             } else {
                 //密码错误
-                throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), SystemError.LOGIN_FAILED.getMessage());
+                throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), "密码错误!");
             }
         } else {
             //用户不存在
-            throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), SystemError.LOGIN_FAILED.getMessage());
+            throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), "用户不存在!");
         }
     }
 
@@ -127,6 +127,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
             throw new ApplicationException(StatusCode.CONFLICT.getCode(), StringUtils.getMessage("System.Error.UsernameExist"));
         }
         User user = BeanCopier.copy(request, User.class);
+        user.setUserStatus(User.STATUS_NORMAL);
         user.setPassword(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
         user.preInsert();
         super.insert(user);
@@ -153,6 +154,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
             }
             existing.setDescription(request.getDescription());
             existing.setUserStatus(request.getUserStatus());
+            existing.setIsSystemUser(Const.NO);
             existing.preUpdate();
             super.insertOrUpdate(existing);
             return BeanCopier.copy(existing, UserResponse.class);

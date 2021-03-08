@@ -23,7 +23,7 @@
     </sql>
 
     <sql id="Base_Joins">
-       LEFT JOIN QRTZ_TRIGGERS qts ON qts.TRIGGER_NAME = a.JOB_NAME AND qts.TRIGGER_GROUP = a.JOB_GROUP
+       LEFT JOIN QRTZ_TRIGGERS qts ON qts.TRIGGER_NAME = a.JOB_NAME AND qts.TRIGGER_GROUP = a.JOB_GROUP AND a.SCHED_NAME = qts.SCHED_NAME
        JOIN QRTZ_GROUP qgp ON qgp.ID_GROUP = a.JOB_GROUP and qgp.DEL_FLAG = 0
     </sql>
 

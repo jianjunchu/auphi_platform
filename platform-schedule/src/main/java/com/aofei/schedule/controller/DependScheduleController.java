@@ -120,7 +120,10 @@ public class DependScheduleController extends BaseController {
             @RequestBody GeneralScheduleRequest request,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException, ParseException {
 
-
+        if(StringUtils.isEmpty(request.getJobGroup())){
+            GroupResponse  groupResponse = groupService.getDefaultGroup(user.getOrganizerId());
+            request.setJobGroup(groupResponse.getGroupId());
+        }
 
         if(validate(request,user)){
             request.setUsername(user.getUsername());

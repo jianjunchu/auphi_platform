@@ -102,26 +102,29 @@ public class CycleScheduleController extends BaseController {
     public Response<JSONArray> listNames(
             @ApiIgnore JobDetailsRequest request,
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+
+        if(StringUtils.isEmpty(request.getJobGroup())){
+            GroupResponse  groupResponse = groupService.getDefaultGroup(user.getOrganizerId());
+            request.setJobGroup(groupResponse.getGroupId());
+        }
+
         request.setOrganizerId(user.getOrganizerId());
         request.setSchedName("quartzScheduler");
         List<JobDetailsResponse> list = jobDetailsService.getJobDetails(request);
 
-        Map<String,JSONArray> map = new HashMap<>();
+        JSONArray jsonArray = new JSONArray();
 
         for(JobDetailsResponse response : list){
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("value",response.getJobName());
             jsonObject.put("text",response.getJobName());
-            JSONArray jsonArray = map.get(response.getJobGroup());
-            if(jsonArray==null){
-                jsonArray = new JSONArray();
-            }
+
             jsonArray.add(jsonObject);
-            map.put(response.getJobGroup(),jsonArray);
+
         }
 
-        return Response.ok(map) ;
+        return Response.ok(jsonArray) ;
     }
 
     /**

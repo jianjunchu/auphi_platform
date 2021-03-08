@@ -19,6 +19,8 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.log4j.Log4j;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -39,7 +41,7 @@ import java.util.Map;
 public class ConfigController extends BaseController {
 
 
-
+    private static Logger logger = LoggerFactory.getLogger(ConfigController.class);
     @Autowired
     IConfigService configService;
 
@@ -183,14 +185,17 @@ public class ConfigController extends BaseController {
         List<String[]> list = CsvUtils.read(filePath,true);
 
         for(String[] cls : list){
-            if(cls.length>1 && !StringUtils.isEmpty(cls[0])){
+            if(cls.length>0 && !StringUtils.isEmpty(cls[0])){
+                logger.info(cls[0]);
                 String[] kv = cls[0].split("=");
                 if(kv.length>1){
                     JSONObject object = jsonObject.getJSONObject(kv[0]);
+                    logger.info(object.toJSONString());
                     cls[0] = object.getString("key")+"="+ encrypt(object.getString("key"),object.getString("value"));
                 }
 
             }
+
         }
 
         CsvUtils.write(filePath,null,list);

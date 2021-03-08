@@ -25,7 +25,6 @@ package com.aofei.admin.init;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.aofei.base.common.Const;
 import com.aofei.kettle.App;
 import com.aofei.kettle.core.PropsUI;
 import com.aofei.sys.utils.RepositoryCodec;
@@ -77,14 +76,16 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
     @Override
     public void afterPropertiesSet() throws Exception {
         long start = System.currentTimeMillis();
-        System.setProperty("org.osjava.sj.root",System.getProperty("etl_platform.root")+ File.separator+"simple-jndi");
-        System.setProperty("KETTLE_JNDI_ROOT",System.getProperty("etl_platform.root")+ File.separator+"simple-jndi");
-        System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",System.getProperty("etl_platform.root")+ File.separator+"plugins");
+        String simple_jndi = System.getProperty("etl_platform.root")+ File.separator+"simple-jndi";
+        String plugins = System.getProperty("etl_platform.root")+ File.separator+"plugins";
+        System.setProperty("org.osjava.sj.root", simple_jndi);
+        System.setProperty("KETTLE_JNDI_ROOT", simple_jndi);
+        System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",plugins);
         logger.info("********************************************");
-        logger.info("********北京傲飞商智软件有限公司****************");
-        logger.info("********傲飞数据整合平台***********************");
-        logger.info("********系统开始启动字典装载程序****************");
-        logger.info("********开始加载资源库*************************");
+        logger.info("********北京傲飞商智软件有限公司***************");
+        logger.info("********傲飞数据整合平台**********************");
+        logger.info("********系统开始启动字典装载程序***************");
+        logger.info("********开始加载资源库************************");
         logger.info("********************************************");
         LanguageChoice.getInstance().setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         KettleLogStore.init( 5000000, 720 );
@@ -103,19 +104,25 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
 
 
         long timeSec = (System.currentTimeMillis() - start) / 1000;
-        logger.info("********************************************");
+        logger.info("****************************************************************************************");
         logger.info("平台启动成功[" + DateTime.now().toString() + "]");
         logger.info("启动总耗时: " + timeSec / 60 + "分 " + timeSec % 60 + "秒 ");
-        logger.info("********************************************");
+        logger.info("****************************************************************************************");
+
+        System.setProperty("org.osjava.sj.root", simple_jndi);
+        System.setProperty("KETTLE_JNDI_ROOT", simple_jndi);
+        System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",plugins);
     }
 
     private void applyVariables() throws KettleException, IOException {
         App.space =  Variables.getADefaultVariableSpace();
-        File file = new File("config.csv");
+        String sysPath = System.getProperty("user.dir");
+        String filePath = sysPath+ File.separator+"config.csv";
+        File file = new File(filePath);
         if(file.exists()){
-            List<String[]> list = CsvUtils.read("config.csv",true);
+            List<String[]> list = CsvUtils.read(filePath,true);
             for(String[] cls : list){
-                if(cls!=null && cls.length>1 ){
+                if(cls!=null && cls.length > 0){
                     String kv = cls[0];
                     if(!StringUtils.isEmpty(kv) && !kv.startsWith("#") && kv.indexOf("=")>0){
                         String[] kvs = kv.split("=");
@@ -186,7 +193,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
                 try {
                     repository.disconnect();
                     repository.setConnected(false);
-                    repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+                    repository.connect(com.aofei.base.common.Const.REPOSITORY_USERNAME,com.aofei.base.common.Const.REPOSITORY_PASSWORD);
                     logger.info("==============重新链接资源库=================");
 
                 } catch (KettleException e1) {

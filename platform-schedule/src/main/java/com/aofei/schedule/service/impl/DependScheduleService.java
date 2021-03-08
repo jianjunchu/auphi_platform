@@ -36,9 +36,9 @@ import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.schedule.model.request.JobDependenciesRequest;
 import com.aofei.schedule.model.request.ParamRequest;
 import com.aofei.schedule.model.response.GeneralScheduleResponse;
-import com.aofei.schedule.model.response.GroupResponse;
 import com.aofei.schedule.model.response.JobDependenciesResponse;
 import com.aofei.schedule.service.IDependScheduleService;
+import com.aofei.schedule.service.IGroupService;
 import com.aofei.schedule.util.QuartzUtil;
 import com.aofei.utils.BeanCopier;
 import com.aofei.utils.StringUtils;
@@ -66,6 +66,8 @@ public class DependScheduleService implements IDependScheduleService {
     @Autowired
     private Scheduler dependScheduler;
 
+    @Autowired
+    private IGroupService groupService;
 
     @Autowired
     private JobDependenciesMapper jobDependenciesMapper;
@@ -82,8 +84,6 @@ public class DependScheduleService implements IDependScheduleService {
     public  void create(GeneralScheduleRequest request,  Class<? extends Job> jobExecClass) throws SchedulerException {
         String jobName = request.getJobName();
         String group = request.getJobGroup();
-
-
 
         if(!checkJobExist(jobName,group)){
             // 获取事件调度器
@@ -104,6 +104,12 @@ public class DependScheduleService implements IDependScheduleService {
 
             if(request.getDependencies()!=null && request.getDependencies().size()>0){
                 for(JobDependenciesRequest jobDependenciesRequest : request.getDependencies()){
+                    if(StringUtils.isEmpty(jobDependenciesRequest.getStartJobGroup())){
+                        jobDependenciesRequest.setStartJobGroup(group);
+                    }
+                    if(StringUtils.isEmpty(jobDependenciesRequest.getNextJobGroup())){
+                        jobDependenciesRequest.setNextJobGroup(group);
+                    }
                     JobDependencies dependencies =   BeanCopier.copy(jobDependenciesRequest, JobDependencies.class);
                     dependencies.setJobGroup(trigger.getJobKey().getGroup());
                     dependencies.setJobName(trigger.getJobKey().getName());

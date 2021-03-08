@@ -60,7 +60,7 @@ public class PdataExtractTService implements IPdataExtractTService {
 
 
         StringBuffer sql = new StringBuffer("select ")
-                .append("  BATCH_NO,BATCH_TYPE,UNIT_NO,EXTRACT_FILE,EXTRACT_TOTAL_COUNT,EXTRACT_VALID_COUNT,EXTRACT_INVALID_COUNT,EXTRACT_START,EXTRACT_END,MAX_ACCEPT_NO,INSERT_TIME ")
+                .append("  BATCH_NO, BATCH_TYPE, UNIT_NO, EXTRACT_FILE, EXTRACT_TOTAL_COUNT, EXTRACT_VALID_COUNT, EXTRACT_INVALID_COUNT, EXTRACT_START, EXTRACT_END, MAX_ACCEPT_NO, INSERT_TIME ")
                 .append(" from P_DATA_EXTRACT_T a where 1 = 1" );
 
         if(!StringUtils.isEmpty(request.getUnitNo())){
@@ -71,7 +71,7 @@ public class PdataExtractTService implements IPdataExtractTService {
                 && "insert_date".equalsIgnoreCase(request.getSearch_time())
                 && !StringUtils.isEmpty(request.getSearch_satrt())
                 && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND a.INSERT_DATE between  '").append(request.getSearch_satrt()).append("' AND '").append(request.getSearch_end()).append("'");
+            sql.append(" AND a.INSERT_TIME between  '").append(request.getSearch_satrt()).append("' AND '").append(request.getSearch_end()).append("'");
 
         }
 

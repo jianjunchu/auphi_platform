@@ -114,7 +114,7 @@ public class AccountController extends BaseController {
             //用户名密码验证
             user = userService.auth(username, password);
         }catch (ApplicationException e){
-            throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), SystemError.LOGIN_FAILED.getMessage());
+            throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), "用户名密码错误!");
         }
 
         if(user != null) {

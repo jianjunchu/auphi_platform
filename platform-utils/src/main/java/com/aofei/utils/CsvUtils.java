@@ -31,7 +31,7 @@ public class CsvUtils {
         for(String[] content : contents ){
             csvWriter.writeRecord(content);
         }
-
+        csvWriter.flush();
         csvWriter.close();
     }
 

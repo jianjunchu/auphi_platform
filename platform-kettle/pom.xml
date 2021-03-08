@@ -34,6 +34,13 @@
             <groupId>com.aofei</groupId>
             <artifactId>platform-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>kettle-core</artifactId>
+                    <groupId>pentaho-kettle</groupId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
 
         <dependency>

@@ -201,7 +201,7 @@ public class DataQueryController extends BaseController {
         if(request.getExport() == 1){
             List<Map<String,Object>> dataList = perrorLogService.getList(request);
 
-            String[] headers = {"单位代码","文件名","ACCEPT_NO/GROUP_NO","错误代码","错误描述","操作","入库时间","处理状态","生成时间"};
+            String[] headers = {"单位代码","文件名","受理号/组号","错误代码","错误描述","操作","入库时间","处理状态","生成时间"};
 
             String[][] values = new String[dataList.size()][headers.length];
 
@@ -212,7 +212,6 @@ public class DataQueryController extends BaseController {
                 values[i][3] = dataList.get(i).get("ERROR_CODE").toString();
                 values[i][4] = dataList.get(i).get("ERROR_DESC").toString();
                 values[i][5] = dataList.get(i).get("OPERATION").toString();
-                values[i][6] = dataList.get(i).get("INSERT_DATE").toString();
                 values[i][7] = dataList.get(i).get("DEAL_STATUS").toString();
                 values[i][8] = dataList.get(i).get("INSERT_TIME").toString();
             }
@@ -223,7 +222,7 @@ public class DataQueryController extends BaseController {
             return Response.ok(path) ;
 
         }else{
-            Page<ErrorTResponse> page = perrorLogService.getPage(getPagination(request), request);
+            Page page = perrorLogService.getPage(getPagination(request), request);
 
             return Response.ok(buildDataGrid(page)) ;
         }
