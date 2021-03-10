@@ -23,6 +23,7 @@
             <groupId>com.aofei</groupId>
             <artifactId>platform-kettle-base</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- redis begin -->
@@ -32,7 +33,7 @@
             <version>${jedis.version}</version>
         </dependency>
         <!-- redis end -->
-        
+
         <!-- servlet/jsp/jstl/taglibs for web begin-->
         <dependency>
             <groupId>javax.servlet</groupId>

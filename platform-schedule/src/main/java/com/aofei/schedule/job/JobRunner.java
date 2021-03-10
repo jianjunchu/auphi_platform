@@ -10,7 +10,7 @@ import com.aofei.kettle.JobExecutor;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import org.apache.log4j.Logger;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
@@ -81,7 +81,7 @@ public class JobRunner extends QuartzJobBean {
 			executionConfiguration.setSafeModeEnabled( false );
 			executionConfiguration.setStartCopyName( null );
 			executionConfiguration.setStartCopyNr( 0 );
-			executionConfiguration.setLogLevel(LogLevel.MINIMAL );
+			executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
 
 			// Fill the parameters, maybe do this in another place?
 			Map<String, String> params = executionConfiguration.getParams();
