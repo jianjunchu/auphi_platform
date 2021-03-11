@@ -1,0 +1,5 @@
+com/aofei/depend/mapper/LogJobDependenciesMapper.class
+com/aofei/depend/model/response/LogJobDependenciesResponse.class
+com/aofei/depend/service/ILogJobDependenciesService.class
+com/aofei/depend/entity/LogJobDependencies.class
+com/aofei/depend/model/request/LogJobDependenciesRequest.class

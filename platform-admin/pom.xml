@@ -36,6 +36,13 @@
         <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-webservice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.aofei</groupId>
             <artifactId>platform-common</artifactId>
@@ -158,6 +165,14 @@
                 <exclusion>
                     <artifactId>kettle-engine</artifactId>
                     <groupId>pentaho-kettle</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -89,7 +89,7 @@
     <task:executor id="refreshDataQualityCheckResult" pool-size="10"/>
     <task:annotation-driven executor="refreshDataQualityCheckResult"/>
 
-
+    <import resource="/cxf-servlet.xml" />
     <import resource="/spring-ehcache.xml" />
     <import resource="/spring-mybatis.xml"/>
     <import resource="/spring-schedule.xml"/>

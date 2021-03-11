@@ -19,6 +19,7 @@
     <module>platform-dataservice</module>
     <module>platform-dataquality</module>
     <module>platform-query-statistics</module>
+    <module>platform-webservice</module>
   </modules>
   <packaging>pom</packaging>
   <name>auphi_platform_v3.9.0</name>
