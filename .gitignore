@@ -6,6 +6,7 @@
 *.class
 *.settings
 */target/
+*/test/
 /WebContent/plugins
 platform-generator/
 platform-admin/src/main/resources/config

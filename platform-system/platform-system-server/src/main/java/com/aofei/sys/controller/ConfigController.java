@@ -27,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +65,6 @@ public class ConfigController extends BaseController {
 
                     String key = entry.getKey();
                     String value = entry.getValue()!=null ?  entry.getValue().toString() : "";
-
-
-
                     if("HisUserPwd".equals(entry.getKey()) && !StringUtils.isEmpty(value) && !value.startsWith(KettleTwoWayPasswordEncoder.PASSWORD_ENCRYPTED_PREFIX)){
                         value = Encr.encryptPasswordIfNotUsingVariables(value);
                     }
@@ -155,9 +153,6 @@ public class ConfigController extends BaseController {
      * @return
      */
     private String encrypt(String key,String value){
-
-
-
         if("HisUserName".equals(key)
                 || "HisUserPwd".equals(key)
                 || "HisYdUserName".equals(key)
@@ -167,7 +162,6 @@ public class ConfigController extends BaseController {
                 || "PhisUserName".equals(key)
                 || "PhisUserPwd".equals(key)){
             value = DesCipherUtil.decryptPasswordOptionallyEncryptedInternal(value);
-
             value = Encr.encryptPassword(value);
         }
 
@@ -188,21 +182,50 @@ public class ConfigController extends BaseController {
             if(cls.length>0 && !StringUtils.isEmpty(cls[0])){
                 logger.info(cls[0]);
                 String[] kv = cls[0].split("=");
-                if(kv.length>1){
+                if(kv.length>1 && jsonObject.containsKey(kv[0])){
                     JSONObject object = jsonObject.getJSONObject(kv[0]);
                     logger.info(object.toJSONString());
                     cls[0] = object.getString("key")+"="+ encrypt(object.getString("key"),object.getString("value"));
                 }
-
             }
-
         }
 
         CsvUtils.write(filePath,null,list);
-
-
-
-
         return Response.ok(jsonObject) ;
     }
+
+
+    @ApiOperation(value = "系统Flag配置", notes = "获取csv文件")
+    @RequestMapping(value = "/getFlag", method = RequestMethod.GET)
+    public Response<List<String>> getFlag() throws IOException {
+
+        List<String> res = new ArrayList<>();
+
+
+        String sysPath = System.getProperty("user.dir");
+        String filePath = sysPath+ File.separator+"config.csv";
+        List<String[]> list = CsvUtils.read(filePath,true);
+        for(String[] cls : list){
+            String keyValue = cls[0];
+            if(keyValue!=null && !keyValue.startsWith("#") && keyValue.indexOf("=") > 0){
+                String[] kv = keyValue.split("=");
+                if(kv.length ==2){
+                    if("LoaclFlag".equalsIgnoreCase(kv[0]) && "Y".equalsIgnoreCase(kv[1]) ){
+                        res.add("本地库");
+                    }
+                    if("YDFlag".equalsIgnoreCase(kv[0]) && "Y".equalsIgnoreCase(kv[1]) ){
+                        res.add("异地库");
+                    }
+                    if("GATFlag".equalsIgnoreCase(kv[0]) && "Y".equalsIgnoreCase(kv[1]) ){
+                        res.add("港澳台库");
+                    }
+                }
+            }
+        }
+
+        return Response.ok(res) ;
+    }
+
+
+
 }

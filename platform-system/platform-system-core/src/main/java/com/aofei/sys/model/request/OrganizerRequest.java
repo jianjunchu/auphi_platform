@@ -35,12 +35,24 @@ public class OrganizerRequest extends BaseRequest<OrganizerRequest> {
      */
     private Long parentId;
 
+    private Long provinceId;
+
     private String contact;
     private String email;
     private String telphone;
     private String mobile;
     private String address;
     private String verifyCode;
+
+    /**
+     * 经度
+     */
+    private Double longitude;
+
+    /**
+     * 纬度
+     */
+    private Double latitude;
     /**
      * 0 已注册未验证通过，1已注册并验证通过， 2 注销
      */

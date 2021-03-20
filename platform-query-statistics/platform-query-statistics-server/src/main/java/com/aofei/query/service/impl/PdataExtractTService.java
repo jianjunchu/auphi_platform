@@ -63,8 +63,8 @@ public class PdataExtractTService implements IPdataExtractTService {
                 .append("  BATCH_NO, BATCH_TYPE, UNIT_NO, EXTRACT_FILE, EXTRACT_TOTAL_COUNT, EXTRACT_VALID_COUNT, EXTRACT_INVALID_COUNT, EXTRACT_START, EXTRACT_END, MAX_ACCEPT_NO, INSERT_TIME ")
                 .append(" from P_DATA_EXTRACT_T a where 1 = 1" );
 
-        if(!StringUtils.isEmpty(request.getUnitNo())){
-            sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
+        if(!StringUtils.isEmpty(request.getBatchNo())){
+            sql.append(" and a.BATCH_NO = '").append(request.getBatchNo()).append("'");
         }
 
         if(!StringUtils.isEmpty(request.getSearch_time())

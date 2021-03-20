@@ -10,6 +10,7 @@ import com.aofei.query.model.request.*;
 import com.aofei.query.model.response.DataLoadTResponse;
 import com.aofei.query.model.response.ErrorTResponse;
 import com.aofei.query.service.*;
+import com.aofei.utils.DateUtils;
 import com.aofei.utils.ExcelUtil;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
@@ -26,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -255,20 +257,20 @@ public class DataQueryController extends BaseController {
             String[][] values = new String[dataList.size()][headers.length];
 
             for(int i = 0;i < dataList.size();i++ ){
-                values[i][0] = dataList.get(i).get("BATCH_NO").toString();
-                values[i][1] = dataList.get(i).get("UNIT_NO").toString();
-                values[i][2] = dataList.get(i).get("EXTRACT_FILE").toString();
-                values[i][3] = dataList.get(i).get("EXTRACT_TOTAL_COUNT").toString();
-                values[i][4] = dataList.get(i).get("EXTRACT_VALID_COUNT").toString();
-                values[i][5] = dataList.get(i).get("EXTRACT_INVALID_COUNT").toString();
-                values[i][6] = dataList.get(i).get("EXTRACT_START").toString();
-                values[i][7] = dataList.get(i).get("EXTRACT_END").toString();
-                values[i][8] = dataList.get(i).get("MAX_ACCEPT_NO").toString();
-                values[i][9] = dataList.get(i).get("INSERT_TIME").toString();
+                values[i][0] = dataList.get(i).get("BATCH_NO")+"";
+                values[i][1] = dataList.get(i).get("UNIT_NO")+"";
+                values[i][2] = dataList.get(i).get("EXTRACT_FILE")+"";
+                values[i][3] = dataList.get(i).get("EXTRACT_TOTAL_COUNT")+"";
+                values[i][4] = dataList.get(i).get("EXTRACT_VALID_COUNT")+"";
+                values[i][5] = dataList.get(i).get("EXTRACT_INVALID_COUNT")+"";
+                values[i][6] = dataList.get(i).get("EXTRACT_START")+"";
+                values[i][7] = dataList.get(i).get("EXTRACT_END")+"";
+                values[i][8] = dataList.get(i).get("MAX_ACCEPT_NO")+"";
+                values[i][9] = dataList.get(i).get("INSERT_TIME")+"";
             }
 
             HSSFWorkbook workbook =  ExcelUtil.getHSSFWorkbook(null,null,"数据抽取记录",headers,values,null);
-            String path= ExcelUtil.exportExcel(workbook,"数据抽取记录_"+ System.currentTimeMillis()+".xls");
+            String path= ExcelUtil.exportExcel(workbook,DateUtils.format(new Date(), DateUtils.YYYYMMDDHHMMSS) +".xls");
 
             return Response.ok(path) ;
 
@@ -276,6 +278,24 @@ public class DataQueryController extends BaseController {
             Page page = pdataExtractTService.getPage(getPagination(request), request);
             return Response.ok(buildDataGrid(page)) ;
         }
+    }
+
+
+    /**
+     * 服务端 数据装载情况 地图显示
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "服务端 数据装载情况 地图显示", notes = "服务端 数据装载情况 地图显示")
+    @RequestMapping(value = "/exact/sdata_loading_statistical", method = RequestMethod.GET)
+    public Response<JSONObject> sdata_loading_statistical(
+            @ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
+
+        request.setUnitNo(user.getUnitCode());
+
+        JSONObject dataList = dataLoadTService.get_sdata_loading_statistical(request);
+        return Response.ok(dataList);
 
     }
+
 }

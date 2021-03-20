@@ -1,9 +1,0 @@
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/mapper/LogTransMapper.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/entity/LogTrans.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/task/TransLogTimerTask.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/model/request/LogTransRequest.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/service/ILogTransService.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/service/ILogTransStepService.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/mapper/LogTransStepMapper.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/entity/LogTransStep.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-trans-core/src/main/java/com/aofei/translog/model/response/LogTransResponse.java

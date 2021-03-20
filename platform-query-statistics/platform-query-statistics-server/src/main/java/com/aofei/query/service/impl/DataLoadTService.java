@@ -2,20 +2,30 @@ package com.aofei.query.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aofei.base.exception.ApplicationException;
 import com.aofei.query.model.request.DataLoadTRequest;
 import com.aofei.query.service.IDataLoadTService;
 import com.aofei.query.utils.DatabaseLoader;
+import com.aofei.sys.model.request.OrganizerRequest;
+import com.aofei.sys.model.response.OrganizerResponse;
+import com.aofei.sys.service.IOrganizerService;
 import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.pentaho.di.core.exception.KettleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class DataLoadTService  implements IDataLoadTService {
+
+    @Autowired
+    private IOrganizerService organizerService;
 
     @Override
     public Page getPage(Page page, DataLoadTRequest request) throws KettleException, SQLException {
@@ -129,5 +139,82 @@ public class DataLoadTService  implements IDataLoadTService {
         jsonObject.put("series",series);
 
         return jsonObject;
+    }
+
+    /**
+     * 地图装载日志
+     * @param request
+     * @return
+     */
+    @Override
+    public JSONObject get_sdata_loading_statistical(DataLoadTRequest request) throws KettleException, SQLException {
+
+        String startTime = request.getStartBackupTime()+"000000";
+        String endTime = request.getEndBackupTime()+"235959";
+
+        OrganizerRequest organizerRequest = new OrganizerRequest();
+        organizerRequest.setParentId(1L);
+
+        Map<String,JSONObject> maps = new HashMap<>();
+
+        JSONObject res = new JSONObject();
+
+        JSONObject geoCoordMap = new JSONObject();
+
+        List<OrganizerResponse> organizers =  organizerService.getOrganizers(organizerRequest);
+
+        for(OrganizerResponse response:organizers){
+            JSONObject object = new JSONObject();
+            object.put("name",response.getName());
+            object.put("value",0);
+            maps.put(response.getCode(),object);
+
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.add(response.getLatitude());
+            jsonArray.add(response.getLongitude());
+            geoCoordMap.put(response.getName(),jsonArray);
+
+        }
+
+        String sql = "select unit_no,sum(backup_valid_count) AS backup_valid_count from s_data_load_t WHERE card_type = 'L' AND backup_time > '"+startTime+"' AND backup_time < '"+endTime+"' GROUP BY unit_no";
+        DatabaseLoader loader = null;
+        try {
+            loader = new DatabaseLoader();
+            ResultSet rs =  loader.getDb().openQuery(sql);
+
+            while(rs.next()) {
+               String  unit_no = rs.getString("unit_no");
+               if(maps.containsKey(unit_no)){
+                   JSONObject object =maps.get(unit_no);
+                   object.put("value",rs.getLong("backup_valid_count"));
+               }
+            }
+            rs.close();
+
+            JSONArray data = new JSONArray();
+            JSONArray data1 = new  JSONArray();
+
+            for(JSONObject value : maps.values()){
+                if(value.getLong("value") > 0){
+                    data.add(value);
+                }else{
+                    data1.add(value);
+                }
+            }
+            res.put("data",data);
+            res.put("data1",data1);
+            res.put("geoCoordMap",geoCoordMap);
+            return res;
+        }catch (ApplicationException e){
+            throw  e;
+        }catch (Exception e){
+            throw  e;
+
+        }finally {
+            if(loader!=null){
+                loader.disconnect();
+            }
+        }
+
     }
 }

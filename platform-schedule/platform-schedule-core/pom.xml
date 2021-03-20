@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>etl_platform</artifactId>
+        <groupId>com.aofei</groupId>
+        <version>v3.9.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <name>platform-schedule</name>
+    <artifactId>platform-schedule-core</artifactId>
+    <description>任务调度监控Core</description>
+
+    <properties>
+        <quartz.version>2.2.3</quartz.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-kettle-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-trans-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-trans-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-depend-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-depend-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-job-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-job-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-system-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+
+        <!-- log begin -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aofei</groupId>
+            <artifactId>platform-log-sys-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- log end -->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- maven compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <fork>true</fork>
+                    <meminitial>512m</meminitial>
+                    <maxmem>2048m</maxmem>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+
+</project>

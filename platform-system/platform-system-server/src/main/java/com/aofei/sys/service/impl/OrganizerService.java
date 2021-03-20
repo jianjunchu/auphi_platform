@@ -67,6 +67,7 @@ public class OrganizerService extends BaseService<OrganizerMapper, Organizer> im
             existing.setTelphone(request.getTelphone());
             existing.setAddress(request.getAddress());
             existing.setStatus(request.getStatus());
+            existing.setProvinceId(request.getProvinceId());
 
             super.insertOrUpdate(existing);
 

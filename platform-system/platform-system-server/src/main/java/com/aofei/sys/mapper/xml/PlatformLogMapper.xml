@@ -24,7 +24,7 @@
         <where>
             a.DEL_FLAG = 0
             <if test="username != null and username != ''">
-                AND a.USERNAME = like  '%${username}%'
+                AND a.USERNAME like  '%${username}%'
             </if>
             <if test="module != null and module != ''">
                 AND a.MODULE = #{module}

@@ -1,9 +1,0 @@
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/task/JobLogTimerTask.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/model/request/LogJobRequest.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/service/ILogJobStepService.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/mapper/LogJobMapper.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/service/ILogJobService.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/model/response/LogJobResponse.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/entity/LogJob.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/mapper/LogJobStepMapper.java
-/Users/lilongyun/Workspaces/idea/aofei/auphi_platform/v3.9.0/platform-web/platform-log/platform-log-job-core/src/main/java/com/aofei/joblog/entity/LogJobStep.java

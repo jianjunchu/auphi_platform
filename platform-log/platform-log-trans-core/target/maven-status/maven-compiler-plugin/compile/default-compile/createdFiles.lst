@@ -1,9 +1,0 @@
-com/aofei/translog/mapper/LogTransMapper.class
-com/aofei/translog/model/request/LogTransRequest.class
-com/aofei/translog/task/TransLogTimerTask.class
-com/aofei/translog/mapper/LogTransStepMapper.class
-com/aofei/translog/entity/LogTransStep.class
-com/aofei/translog/entity/LogTrans.class
-com/aofei/translog/model/response/LogTransResponse.class
-com/aofei/translog/service/ILogTransStepService.class
-com/aofei/translog/service/ILogTransService.class

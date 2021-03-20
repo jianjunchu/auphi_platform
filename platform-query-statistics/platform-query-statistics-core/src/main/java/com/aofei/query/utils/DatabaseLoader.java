@@ -126,6 +126,7 @@ public class DatabaseLoader {
                 }
                 list.add(item);
             }
+            rs.close();
             pagination.setTotal(total.intValue());
             pagination.setRecords(list);
             return  pagination;
@@ -133,8 +134,7 @@ public class DatabaseLoader {
         }catch (Exception e){
             throw e;
         }finally {
-            db.disconnect();
-            this.repository.disconnect();
+            disconnect();
         }
 
 
@@ -155,14 +155,14 @@ public class DatabaseLoader {
                 }
                 list.add(item);
             }
-
+            rs.close();
             return  list;
 
         }catch (Exception e){
             throw e;
         }finally {
-            db.disconnect();
-            this.repository.disconnect();
+            disconnect();
+
         }
 
 
@@ -191,5 +191,19 @@ public class DatabaseLoader {
         }
 
         return sqlBuffer.toString();
+    }
+
+    public Database getDb() {
+        return db;
+    }
+
+    public void disconnect(){
+        if(db!=null){
+            db.disconnect();
+
+        }
+        if(repository!=null){
+            repository.disconnect();
+        }
     }
 }

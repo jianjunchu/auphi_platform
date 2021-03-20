@@ -20,4 +20,6 @@ public interface IDataLoadTService  {
     Page getBackupFrequencyPage(Page pagination, DataLoadTRequest request) throws KettleException, SQLException;
 
     JSONObject getBackupRecordChartData(DataLoadTRequest request) throws KettleException, SQLException;
+
+    JSONObject get_sdata_loading_statistical(DataLoadTRequest request) throws KettleException, SQLException;
 }

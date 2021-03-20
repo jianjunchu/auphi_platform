@@ -35,8 +35,7 @@ public class JobLogTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        logger.info("JobLogTimerTask.run");
-
+        logger.debug("JobLogTimerTask.run");
 
         try {
             Date now =   new Date();

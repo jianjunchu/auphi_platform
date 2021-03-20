@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aofei.schedule.mapper.GroupMapper">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.ID_GROUP AS groupId
+        , a.ORGANIZER_ID AS organizerId
+        , a.UNIT_ID AS unitId
+        , b.ORGANIZER_NAME AS unitName
+        , b.ORGANIZER_CODE AS unitCode
+        , a.GROUP_NAME AS groupName
+        , a.DESCRIPTION AS description
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <sql id="Base_Joins">
+       LEFT JOIN SYS_ORGANIZER b ON a.UNIT_ID = b.ORGANIZER_ID
+    </sql>
+
+
+    <select id="findList"  resultType="com.aofei.schedule.entity.Group">
+        select
+        <include refid="Base_Column_List"/>
+        from QRTZ_GROUP a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0
+            <if test="organizerId !=null ">
+                AND  a.ORGANIZER_ID  = #{organizerId}
+            </if>
+            <if test="unitId !=null ">
+                AND  a.UNIT_ID  = #{unitId}
+            </if>
+            <if test="groupName !=null and groupName != ''">
+                AND  a.GROUP_NAME  like '%${groupName}%'
+            </if>
+        </where>
+    </select>
+
+    <update id="updateById">
+        update QRTZ_GROUP a
+        <set>
+              a.GROUP_NAME = #{et.groupName}
+            , a.DESCRIPTION = #{et.description}
+            , a.UPDATE_USER = #{et.updateUser}
+            , a.UPDATE_TIME = #{et.updateTime}
+        </set>
+        where a.ID_GROUP = #{et.groupId}
+    </update>
+
+    <update id="deleteById">
+        update QRTZ_GROUP a set a.DEL_FLAG = 1  where a.ID_GROUP = #{id}
+    </update>
+
+</mapper>

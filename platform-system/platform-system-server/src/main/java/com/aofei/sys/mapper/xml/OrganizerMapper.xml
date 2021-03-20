@@ -10,6 +10,8 @@
         , a.ORGANIZER_NAME AS name
         , a.ORGANIZER_CODE AS code
         , a.PARENT_ID AS parentId
+        , a.PROVINCE_ID AS provinceId
+        , b.NAME AS provinceName
         , a.ORGANIZER_CONTACT AS contact
         , a.ORGANIZER_EMAIL AS email
         , a.ORGANIZER_TELPHONE AS telphone
@@ -17,6 +19,8 @@
         , a.ORGANIZER_ADDRESS AS address
         , a.ORGANIZER_VERIFY_CODE AS verifyCode
         , a.ORGANIZER_STATUS AS status
+        , a.LONGITUDE AS longitude
+        , a.LATITUDE AS latitude
         , a.CREATE_USER AS createUser
         , a.UPDATE_USER AS updateUser
         , a.CREATE_TIME AS createTime
@@ -24,10 +28,15 @@
         , a.DEL_FLAG AS delFlag
     </sql>
 
+    <sql id="Base_Joins">
+        LEFT JOIN SYS_PROVINCE b ON b.ID = a.PROVINCE_ID
+    </sql>
+
     <select id="findList"  resultType="com.aofei.sys.entity.Organizer">
         select
         <include refid="Base_Column_List"/>
         from SYS_ORGANIZER a
+        <include refid="Base_Joins"/>
         <where>
             a.DEL_FLAG = 0
             <if test="parentId != null  ">

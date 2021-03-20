@@ -69,6 +69,10 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
     private static Logger logger = LoggerFactory.getLogger(SystemInitializingBean.class);
 
     private final Timer repositoryTimer = new Timer();
+
+
+
+
     /**
      * 系统初始化
      * @throws Exception
@@ -124,27 +128,32 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
             for(String[] cls : list){
                 if(cls!=null && cls.length > 0){
                     String kv = cls[0];
+                    logger.info("********************************************");
+                    logger.info(kv);
                     if(!StringUtils.isEmpty(kv) && !kv.startsWith("#") && kv.indexOf("=")>0){
                         String[] kvs = kv.split("=");
-                        String key = kvs[0];
-                        String value = kvs[1];
-                        if("HisUserName".equals(key)
-                                || "HisUserPwd".equals(key)
-                                || "HisYdUserName".equals(key)
-                                || "HisYdUserPwd".equals(key)
-                                || "HisGatUserName".equals(key)
-                                || "HisGatUserPwd".equals(key)
-                                || "PhisUserName".equals(key)
-                                || "PhisUserPwd".equals(key)){
+                        if(kvs!=null && kvs.length ==1){
+                            String key = kvs[0];
+                            App.space.setVariable(key,null);
+                        }else if(kvs!=null && kvs.length ==2){
+                            String key = kvs[0];
+                            String value = kvs[1];
+                            if("HisUserName".equals(key)
+                                    || "HisUserPwd".equals(key)
+                                    || "HisYdUserName".equals(key)
+                                    || "HisYdUserPwd".equals(key)
+                                    || "HisGatUserName".equals(key)
+                                    || "HisGatUserPwd".equals(key)
+                                    || "PhisUserName".equals(key)
+                                    || "PhisUserPwd".equals(key)){
 
-                            value = Encr.PASSWORD_ENCRYPTED_PREFIX + value;
+                                value = Encr.PASSWORD_ENCRYPTED_PREFIX + value;
+                            }
+
+                            App.space.setVariable(key,value);
                         }
-                        logger.info("********************************************");
-                        logger.info(key +"=="+ value);
-                        logger.info("********************************************");
-                        App.space.setVariable(key,value);
-
                     }
+                    logger.info("********************************************");
                 }
             }
 

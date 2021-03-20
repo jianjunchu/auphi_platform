@@ -34,7 +34,6 @@ public class Organizer extends DataEntity<Organizer> {
     @TableId(value = "ORGANIZER_ID", type = IdType.ID_WORKER)
     private Long organizerId;
 
-
     /**
      * 组织名称
      */
@@ -53,6 +52,12 @@ public class Organizer extends DataEntity<Organizer> {
     @TableField("PARENT_ID")
     private Long parentId;
 
+    @TableField("PROVINCE_ID")
+    private Long provinceId;
+
+    @TableField(exist = false)
+    private String provinceName;
+
     @TableField("ORGANIZER_CONTACT")
     private String contact;
     @TableField("ORGANIZER_EMAIL")
@@ -70,6 +75,18 @@ public class Organizer extends DataEntity<Organizer> {
      */
     @TableField("ORGANIZER_STATUS")
     private Integer status;
+
+    /**
+     * 经度
+     */
+    @TableField("LONGITUDE")
+    private Double longitude;
+
+    /**
+     * 纬度
+     */
+    @TableField("LATITUDE")
+    private Double latitude;
 
 
     @Override

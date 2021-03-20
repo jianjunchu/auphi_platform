@@ -35,6 +35,16 @@ public class DataLoadTRequest extends PageRequest {
     private String backupTime;
 
     /**
+     * 抽取时间
+     */
+    private String startBackupTime;
+
+    /**
+     * 抽取时间
+     */
+    private String endBackupTime;
+
+    /**
      * 待抽取数量
      * 缺省为0
      */
@@ -86,6 +96,9 @@ public class DataLoadTRequest extends PageRequest {
      * ‘身份证数据’
      */
     private String operation;
+
+
+    private String cardType;
 
 
 

@@ -103,6 +103,9 @@ public class UserController extends BaseController {
         if(user.getOrganizerId()>0){
             request.setOrganizerId(user.getOrganizerId());
         }
+        if(user.getUnitId()>0){
+            request.setUnitId(user.getUnitId());
+        }
         Page<UserResponse> page = userService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -133,6 +136,9 @@ public class UserController extends BaseController {
         }
         if(request.getOrganizerId() == null){
             request.setOrganizerId(user.getOrganizerId());
+        }
+        if(request.getUnitId() == null){
+            request.setUnitId(user.getUnitId());
         }
 
         userService.save(request);
