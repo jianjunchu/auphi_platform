@@ -20,8 +20,10 @@ import com.aofei.sys.exception.SystemError;
 import com.aofei.sys.model.request.EditUserPasswordRequest;
 import com.aofei.sys.model.request.UserRequest;
 import com.aofei.sys.model.response.MenuResponse;
+import com.aofei.sys.model.response.RoleResponse;
 import com.aofei.sys.model.response.UserResponse;
 import com.aofei.sys.service.IMenuService;
+import com.aofei.sys.service.IRoleService;
 import com.aofei.sys.service.IUserRoleService;
 import com.aofei.sys.service.IUserService;
 import com.aofei.utils.MD5Utils;
@@ -54,6 +56,9 @@ public class UserController extends BaseController {
     IUserService userService;
 
     @Autowired
+    IRoleService roleService;
+
+    @Autowired
     IMenuService menuService;
 
     @Autowired
@@ -70,7 +75,21 @@ public class UserController extends BaseController {
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
         UserResponse response = userService.get(user.getUserId());
 
+
+
         if(response!=null){
+
+            List<RoleResponse> roleResponses =  roleService.getRolesByUser(response.getUserId());
+            if(roleResponses.contains(new RoleResponse(1L))
+                    || roleResponses.contains(new RoleResponse(2L))
+                    || roleResponses.contains(new RoleResponse(3L))
+                    || roleResponses.contains(new RoleResponse(4L))){
+                response.setHomePage("/home/sdata_loading_statistical");
+            }else {
+                response.setHomePage("/home/dashboard");
+            }
+
+
             List<MenuResponse>  list = menuService.getMenusByUser(response.getUserId());
             List<String> roles = new ArrayList<>();
 
@@ -80,6 +99,7 @@ public class UserController extends BaseController {
             if(response.getIsSystemUser()!=null && response.getIsSystemUser() ==1){
                 roles.add("admin");
             }
+
             response.setRoles(roles);
             return Response.ok(response);
         }else{

@@ -73,7 +73,7 @@ public class MonitorService extends BaseService<MonitorMapper, Monitor> implemen
         for(Map<String,Object> map : list2){
             runCounts.getDatetimes().add(map.get("DATETIME"));
             runCounts.getErrors().add( map.get("ERROR"));
-            runCounts.getFinishs().add( map.get("FINISH"));
+            runCounts.getFinishs().add( Integer.valueOf(map.get("FINISH").toString()));
         }
         response.setRunCounts(runCounts);
 

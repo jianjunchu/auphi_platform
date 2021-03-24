@@ -107,6 +107,8 @@ public class UserResponse {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    private String homePage;
+
     private List<String> roles;
 
 }

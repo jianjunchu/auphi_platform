@@ -12,6 +12,7 @@ import com.aofei.query.model.response.ErrorTResponse;
 import com.aofei.query.service.*;
 import com.aofei.utils.DateUtils;
 import com.aofei.utils.ExcelUtil;
+import com.aofei.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -128,7 +129,9 @@ public class DataQueryController extends BaseController {
     })
     @RequestMapping(value = "/backupRecord/listPage", method = RequestMethod.GET)
     public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
-        request.setUnitNo(user.getUnitCode());
+        if(!StringUtils.isEmpty(user.getUnitCode())){
+            request.setUnitNo(user.getUnitCode());
+        }
         Page<DataLoadTResponse> page = dataLoadTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -292,6 +295,15 @@ public class DataQueryController extends BaseController {
             @ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
 
         request.setUnitNo(user.getUnitCode());
+
+        if(StringUtils.isEmpty(request.getStartBackupTime())){
+            long l = System.currentTimeMillis() - 3600 * 1000 * 24 * 15;
+            request.setStartBackupTime(DateUtils.format(new Date(l),"yyyyMMdd000000"));
+        }
+        if(StringUtils.isEmpty(request.getEndBackupTime())){
+
+            request.setEndBackupTime(DateUtils.format(new Date(),"yyyyMMdd235959"));
+        }
 
         JSONObject dataList = dataLoadTService.get_sdata_loading_statistical(request);
         return Response.ok(dataList);

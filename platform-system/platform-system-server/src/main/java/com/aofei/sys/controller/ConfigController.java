@@ -114,9 +114,10 @@ public class ConfigController extends BaseController {
             String keyValue = cls[0];
             String[] kv = keyValue.split("=");
 
-            if(kv.length ==2 && jsonObject.containsKey(kv[0])){
+            if(kv.length > 0 && jsonObject.containsKey(kv[0])){
                 JSONObject object = jsonObject.getJSONObject(kv[0]);
-                object.put("value",decrypt(kv[0],kv[1]));
+                String val = kv.length ==2 ? kv[1] : null;
+                object.put("value",decrypt(kv[0],val));
             }
         }
 
@@ -182,7 +183,7 @@ public class ConfigController extends BaseController {
             if(cls.length>0 && !StringUtils.isEmpty(cls[0])){
                 logger.info(cls[0]);
                 String[] kv = cls[0].split("=");
-                if(kv.length>1 && jsonObject.containsKey(kv[0])){
+                if(kv.length>0 && jsonObject.containsKey(kv[0])){
                     JSONObject object = jsonObject.getJSONObject(kv[0]);
                     logger.info(object.toJSONString());
                     cls[0] = object.getString("key")+"="+ encrypt(object.getString("key"),object.getString("value"));

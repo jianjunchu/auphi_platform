@@ -55,6 +55,10 @@
                 AND  a.QRTZ_JOB_NAME  like '%${qrtzJobName}%'
             </if>
 
+			<if test="status != null and status!='' ">
+				AND  a.STATUS  = #{status}
+			</if>
+
 			<if test="searchtime == 'start' ">
 				AND  (a.STARTDATE between #{startTime} and #{endTime})
 			</if>
@@ -227,7 +231,7 @@
 			SELECT DATE_FORMAT(job.STARTDATE,'%Y-%m-%d') datetime , sum(job.ERRORS) AS  count ,QRTZ_JOB_GROUP from  LOG_JOB job  GROUP BY DATE_FORMAT(job.STARTDATE,'%Y-%m-%d')  , QRTZ_JOB_GROUP) b2
 			JOIN  QRTZ_GROUP gp on gp.DEL_FLAG =0 and gp.ID_GROUP = b2.QRTZ_JOB_GROUP WHERE gp.ORGANIZER_ID = #{organizerId}
 
-      ) c on a.click_date = c.datetime ;
+      ) c on a.click_date = c.datetime  order by a.click_date;
     </select>
 
 

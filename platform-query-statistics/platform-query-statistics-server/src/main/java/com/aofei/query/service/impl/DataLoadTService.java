@@ -149,8 +149,8 @@ public class DataLoadTService  implements IDataLoadTService {
     @Override
     public JSONObject get_sdata_loading_statistical(DataLoadTRequest request) throws KettleException, SQLException {
 
-        String startTime = request.getStartBackupTime()+"000000";
-        String endTime = request.getEndBackupTime()+"235959";
+        String startTime =  request.getStartBackupTime();
+        String endTime = request.getEndBackupTime();
 
         OrganizerRequest organizerRequest = new OrganizerRequest();
         organizerRequest.setParentId(1L);
@@ -166,27 +166,29 @@ public class DataLoadTService  implements IDataLoadTService {
         for(OrganizerResponse response:organizers){
             JSONObject object = new JSONObject();
             object.put("name",response.getName());
-            object.put("value",0);
+            object.put("code",response.getCode());
+            Object[] jsonArray = new Object[3];
+            jsonArray[0] = response.getLongitude();
+            jsonArray[1] = response.getLatitude();
+            jsonArray[2] = 0;
+            object.put("value",jsonArray);
             maps.put(response.getCode(),object);
-
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.add(response.getLatitude());
-            jsonArray.add(response.getLongitude());
-            geoCoordMap.put(response.getName(),jsonArray);
 
         }
 
-        String sql = "select unit_no,sum(backup_valid_count) AS backup_valid_count from s_data_load_t WHERE card_type = 'L' AND backup_time > '"+startTime+"' AND backup_time < '"+endTime+"' GROUP BY unit_no";
+        String sql = "select unit_no,sum(backup_valid_count) AS backup_valid_count from s_data_load_t WHERE card_type = '"+request.getCardType()+"' AND backup_time > '"+startTime+"' AND backup_time < '"+endTime+"' GROUP BY unit_no";
         DatabaseLoader loader = null;
         try {
             loader = new DatabaseLoader();
+            loader.getDb().connect();
             ResultSet rs =  loader.getDb().openQuery(sql);
 
             while(rs.next()) {
                String  unit_no = rs.getString("unit_no");
                if(maps.containsKey(unit_no)){
                    JSONObject object =maps.get(unit_no);
-                   object.put("value",rs.getLong("backup_valid_count"));
+                   Object[] jsonArray = (Object[]) object.get("value");
+                   jsonArray[2] = rs.getLong("backup_valid_count");
                }
             }
             rs.close();
@@ -195,7 +197,8 @@ public class DataLoadTService  implements IDataLoadTService {
             JSONArray data1 = new  JSONArray();
 
             for(JSONObject value : maps.values()){
-                if(value.getLong("value") > 0){
+                Object[] jsonArray = (Object[]) value.get("value");
+                if(Long.valueOf(jsonArray[2].toString()) > 0){
                     data.add(value);
                 }else{
                     data1.add(value);

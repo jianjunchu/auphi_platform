@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @auther 傲飞数据整合平台
@@ -50,4 +51,24 @@ public class RoleResponse {
      */
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoleResponse that = (RoleResponse) o;
+        return Objects.equals(roleId, that.roleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId);
+    }
+
+    public RoleResponse(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public RoleResponse() {
+    }
 }

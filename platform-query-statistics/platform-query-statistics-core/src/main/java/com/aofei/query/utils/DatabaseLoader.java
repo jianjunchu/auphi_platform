@@ -77,16 +77,16 @@ public class DatabaseLoader {
 
         if(db.getDatabaseMeta().getDatabaseInterface() instanceof MySQLDatabaseMeta){
 
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total;");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof OracleDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total;");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total;");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) as total;");
 
         }
         countSQl = sqlBuffer.toString();
