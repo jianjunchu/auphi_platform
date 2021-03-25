@@ -18,7 +18,6 @@
     <module>platform-mdm</module>
     <module>platform-dataservice</module>
     <module>platform-dataquality</module>
-    <module>platform-query-statistics</module>
     <module>platform-webservice</module>
   </modules>
   <packaging>pom</packaging>
