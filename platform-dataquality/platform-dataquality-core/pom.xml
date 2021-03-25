@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>platform-dataquality</artifactId>
-        <groupId>com.aofei</groupId>
+        <groupId>org.firzjb</groupId>
         <version>v3.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,29 +14,29 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-kettle-base</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-log-sys-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-auth</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-utils</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.sys.mapper.ConfigMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.sys.entity.Config">
+        <id column="CONFIG_ID" property="configId" />
+        <result column="GROUP_CODE" property="groupCode" />
+        <result column="NAME" property="name" />
+        <result column="VALUE" property="value" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          CONFIG_ID AS configId
+        , GROUP_CODE AS groupCode
+        , NAME AS name
+        , VALUE AS value
+        , CREATE_USER AS createUser
+        , UPDATE_USER AS updateUser
+        , CREATE_TIME AS createTime
+        , UPDATE_TIME AS updateTime
+        , DEL_FLAG AS delFlag
+    </sql>
+
+</mapper>

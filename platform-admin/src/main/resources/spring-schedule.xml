@@ -6,7 +6,7 @@
                         http://www.springframework.org/schema/beans/spring-beans-4.3.xsd ">
 
 
-    <bean id="customJobFactory" class="com.aofei.schedule.job.CustomJobFactory"></bean>
+    <bean id="customJobFactory" class="org.firzjb.schedule.job.CustomJobFactory"></bean>
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" >
         <property name="dataSource" ref ="dataSource" />

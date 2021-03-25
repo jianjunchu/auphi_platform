@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>etl_platform</artifactId>
-        <groupId>com.aofei</groupId>
+        <groupId>org.firzjb</groupId>
         <version>v3.9.0</version>
     </parent>
 
@@ -20,13 +20,13 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-webservice</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-common</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -43,7 +43,7 @@
 
         <!--系统管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-system-core</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -55,7 +55,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-system-server</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -67,70 +67,70 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-auth</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--数据质量管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-mdm</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--调度-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-schedule-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--日志-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-log-sys-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--数据源管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-datasource-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-datasource-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--集群管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platfrom-cluster</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--数据质量管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-dataquality-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-dataquality-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!--数据质量管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-query-statistics-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-query-statistics-server</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -138,13 +138,13 @@
 
         <!--数据接口管理-->
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-dataservice</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-kettle-engine</artifactId>
             <version>${project.version}</version>
             <exclusions>

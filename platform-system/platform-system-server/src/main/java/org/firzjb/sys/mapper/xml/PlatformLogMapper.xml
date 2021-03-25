@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.sys.mapper.PlatformLogMapper">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.PLATFORM_LOG_ID AS platformLogId
+        , a.USERNAME AS username
+        , a.MODULE   AS module
+        , a.OPERATION AS operation
+        , a.METHOD AS method
+        , a.PARAMS AS params
+        , a.IP AS ip
+        , a.CREATE_DATE AS createDate
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+
+    <select id="findList"  resultType="org.firzjb.sys.entity.PlatformLog">
+        select
+        <include refid="Base_Column_List"/>
+        from SYS_PLATFORM_LOG a
+        <where>
+            a.DEL_FLAG = 0
+            <if test="username != null and username != ''">
+                AND a.USERNAME like  '%${username}%'
+            </if>
+            <if test="module != null and module != ''">
+                AND a.MODULE = #{module}
+            </if>
+            <if test="operation != null and operation != ''">
+                AND a.OPERATION = #{operation}
+            </if>
+            <if test="startCreateTime !=null ">
+                AND  DATE_FORMAT(a.CREATE_DATE,'%Y%m%d%H%i%s') <![CDATA[ >= ]]> DATE_FORMAT(#{startCreateTime},'%Y%m%d%H%i%s')
+            </if>
+            <if test="endCreateTime !=null ">
+                AND   DATE_FORMAT(a.CREATE_DATE,'%Y%m%d%H%i%s') <![CDATA[ <= ]]> DATE_FORMAT(#{endCreateTime},'%Y%m%d%H%i%s')
+            </if>
+
+            <if test="type != null and type == 'login-log'">
+                AND a.OPERATION = '用户登录'
+            </if>
+
+            <if test="type != null and type == 'schedule-log'">
+                AND a.MODULE = '调度管理'
+            </if>
+
+            <if test="type != null and type == 'menu-log'">
+                AND a.MODULE <![CDATA[ <> ]]> '调度管理' AND a.OPERATION <![CDATA[ <> ]]> '用户登录'
+            </if>
+
+        </where>
+    </select>
+
+
+
+</mapper>

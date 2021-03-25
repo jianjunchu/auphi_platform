@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.aofei</groupId>
+  <groupId>org.firzjb</groupId>
   <artifactId>etl_platform</artifactId>
   <version>v3.9.0</version>
   <modules>
@@ -143,21 +143,11 @@
     </repository>
 
 
-
     <repository>
       <id>pentaho-public</id>
       <name>Pentaho Public</name>
       <url>http://nexus.pentaho.org/content/groups/omni/</url>
     </repository>
-
-
-
-    <repository>
-      <id>auphi</id>
-      <url>http://123.206.52.213:8081/repository/maven-public/</url>
-    </repository>
-
-
 
   </repositories>
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.query.mapper.InfoTMapper">
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.unit_no AS unitNo
+        , a.accept_no AS acceptNo
+        , a.id_no AS idNo
+        , a.name AS name
+        , a.backup_file AS backupFile
+        , a.create_time AS createTime
+        , a.update_time AS updateTime
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.query.entity.InfoT">
+        select
+        <include refid="Base_Column_List"/>
+        from s_info_t a
+        <where>
+            <if test="acceptNo !=null and acceptNo != ''">
+                AND  a.accept_no  like '%${acceptNo}%'
+            </if>
+            <if test="unitNo !=null and unitNo != ''">
+                AND  a.unit_no   = #{unitNo}
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'create_time' and search_satrt !=null and search_satrt!='' and search_end !=null and search_end!=''">
+                AND  str_to_date(a.create_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="search_time !=null and search_time != '' and search_time == 'update_time' and search_satrt !=null and search_satrt!='' and search_end !=null and search_end!=''">
+                AND  str_to_date(a.update_time,'%Y%m%d%H%i%s')  between str_to_date(#{search_satrt},'%Y-%m-%d %H:%i:%s') and str_to_date(#{search_end},' %Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+    </select>
+
+</mapper>

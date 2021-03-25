@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.dataquality.mapper.CompareSqlFieldMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.dataquality.entity.CompareSqlField">
+        <id column="COMPARE_SQL_FIELD_ID" property="compareSqlFieldId" />
+        <result column="COMPARE_SQL_ID" property="compareSqlId" />
+        <result column="FIELD_NAME" property="fieldName" />
+        <result column="FIELD_TYPE" property="fieldType" />
+        <result column="REF_FIELD_NAME" property="refFieldName" />
+        <result column="FIELD_DESC" property="fieldDesc" />
+        <result column="FIELD_COMPARE_TYPE" property="fieldCompareType" />
+        <result column="MIN_RATIO" property="minRatio" />
+        <result column="MAX_RATIO" property="maxRatio" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.COMPARE_SQL_FIELD_ID AS compareSqlFieldId
+        , a.COMPARE_SQL_ID AS compareSqlId
+        , a.FIELD_NAME AS fieldName
+        , a.FIELD_TYPE AS fieldType
+        , a.REF_FIELD_NAME AS refFieldName
+        , a.FIELD_DESC AS fieldDesc
+        , a.FIELD_COMPARE_TYPE AS fieldCompareType
+        , a.MIN_RATIO AS minRatio
+        , a.MAX_RATIO AS maxRatio
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.dataquality.entity.CompareSqlField">
+        select
+        <include refid="Base_Column_List"/>
+        from DATA_QUALITY_COMPARE_SQL_FIELD a
+        <where>
+            a.DEL_FLAG = 0
+            <if test="compareSqlId !=null ">
+                AND  a.COMPARE_SQL_ID  = #{compareSqlId}
+            </if>
+        </where>
+    </select>
+
+
+    <update id="deleteByCompareSqlId">
+        DELETE FROM DATA_QUALITY_COMPARE_SQL_FIELD  WHERE  COMPARE_SQL_ID = #{compareSqlId}
+    </update>
+
+</mapper>

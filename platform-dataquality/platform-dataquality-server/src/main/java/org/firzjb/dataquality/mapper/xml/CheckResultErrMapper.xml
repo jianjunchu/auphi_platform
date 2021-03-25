@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.dataquality.mapper.CheckResultErrMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.dataquality.entity.CheckResultErr">
+        <id column="CHECK_RESULT_ERR_ID" property="checkResultErrId" />
+        <result column="ORGANIZER_ID" property="organizerId" />
+        <result column="CHECK_RESULT_ID" property="checkResultId" />
+        <result column="ERROR_VALUE" property="errorValue" />
+        <result column="ERROR_DESC" property="errorDesc" />
+        <result column="ERROR_SUGGESTION" property="errorSuggestion" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.CHECK_RESULT_ERR_ID AS checkResultErrId
+        , a.ORGANIZER_ID AS organizerId
+        , a.CHECK_RESULT_ID AS checkResultId
+        , a.ERROR_VALUE AS errorValue
+        , a.ERROR_DESC AS errorDesc
+        , a.ERROR_SUGGESTION AS errorSuggestion
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+    <sql id="Base_Joins">
+        JOIN DATA_QUALITY_CHECK_RESULT b ON b.CHECK_RESULT_ID = a.CHECK_RESULT_ID AND b.DEL_FLAG = 0
+    </sql>
+
+
+    <select id="findList"  resultType="org.firzjb.dataquality.entity.CheckResultErr">
+        select
+        <include refid="Base_Column_List"/>
+        from DATA_QUALITY_CHECK_RESULT_ERR a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0 AND
+            b.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where b.RULE_ID = d.RULE_ID )
+            <if test="ruleId !=null ">
+                AND  b.RULE_ID  = #{ruleId}
+            </if>
+            <if test="organizerId !=null ">
+                AND  a.ORGANIZER_ID  = #{organizerId}
+            </if>
+
+            <if test="checkResultId !=null ">
+                AND  a.CHECK_RESULT_ID  = #{checkResultId}
+            </if>
+
+
+        </where>
+    </select>
+
+</mapper>

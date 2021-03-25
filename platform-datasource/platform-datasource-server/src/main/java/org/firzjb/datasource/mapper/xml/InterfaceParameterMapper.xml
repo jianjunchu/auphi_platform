@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.datasource.mapper.InterfaceParameterMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.datasource.entity.InterfaceParameter">
+        <id column="INTERFACE_PARAMETER_ID" property="interfaceParameterId" />
+        <result column="ORGANIZER_ID" property="organizerId" />
+        <result column="INTERFACE_ID" property="interfaceId" />
+        <result column="PARAMETER_NAME" property="parameterName" />
+        <result column="PARAMETER_TYPE" property="parameterType" />
+        <result column="PARAMETER_DESC" property="parameterDesc" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.INTERFACE_PARAMETER_ID AS interfaceParameterId
+        , a.ORGANIZER_ID AS organizerId
+        , a.INTERFACE_ID AS interfaceId
+        , a.PARAMETER_NAME AS parameterName
+        , a.PARAMETER_TYPE AS parameterType
+        , a.PARAMETER_DESC AS parameterDesc
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.datasource.entity.InterfaceParameter">
+        select
+        <include refid="Base_Column_List"/>
+        from DATASOURCE_INTERFACE_PARAMETER a
+
+        <where>
+            <if test="organizerId != null ">
+                AND a.ORGANIZER_ID = #{organizerId}
+            </if>
+            <if test="interfaceId != null ">
+                AND a.INTERFACE_ID  = #{interfaceId}
+            </if>
+
+        </where>
+    </select>
+</mapper>

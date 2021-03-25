@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.dataquality.mapper.CompareSqlMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.dataquality.entity.CompareSql">
+        <id column="COMPARE_SQL_ID" property="compareSqlId" />
+
+        <result column="REPOSITORY_NAME" property="repositoryName" />
+        <result column="DATABASE_ID" property="databaseId" />
+        <result column="REF_DATABASE_ID" property="refDatabaseId" />
+        <result column="RULE_GROUP_ID" property="ruleGroupId" />
+        <result column="COMPARE_NAME" property="compareName" />
+        <result column="COMPARE_DESC" property="compareDesc" />
+        <result column="COMPARE_TYPE" property="compareType" />
+        <result column="SQL" property="sql" />
+        <result column="REF_SQL" property="refSql" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <sql id="Base_Joins">
+       JOIN R_DATABASE b ON a.DATABASE_ID = b.ID_DATABASE
+       JOIN R_DATABASE d ON a.REF_DATABASE_ID = d.ID_DATABASE
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.COMPARE_SQL_ID AS compareSqlId
+        , a.ORGANIZER_ID AS organizerId
+        , a.REPOSITORY_NAME AS repositoryName
+        , a.DATABASE_ID AS databaseId
+        , b.DATABASE_NAME AS databaseName
+        , a.REF_DATABASE_ID AS refDatabaseId
+        , d.DATABASE_NAME AS refDatabaseName
+        , a.RULE_GROUP_ID AS ruleGroupId
+        , a.COMPARE_NAME AS compareName
+        , a.COMPARE_DESC AS compareDesc
+        , a.COMPARE_TYPE AS compareType
+        , a.`SQL` AS `sql`
+        , a.REF_SQL AS refSql
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.dataquality.entity.CompareSql">
+        select
+        <include refid="Base_Column_List"/>
+        from DATA_QUALITY_COMPARE_SQL a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0
+            <if test="organizerId !=null ">
+                AND  a.ORGANIZER_ID  = #{organizerId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

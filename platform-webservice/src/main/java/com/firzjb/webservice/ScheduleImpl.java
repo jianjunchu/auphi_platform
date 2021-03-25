@@ -1,8 +1,8 @@
 package com.firzjb.webservice;
 
-import com.aofei.schedule.model.response.JobDetailsResponse;
-import com.aofei.schedule.service.ICycleScheduleService;
-import com.aofei.schedule.service.IJobDetailsService;
+import org.firzjb.schedule.model.response.JobDetailsResponse;
+import org.firzjb.schedule.service.ICycleScheduleService;
+import org.firzjb.schedule.service.IJobDetailsService;
 import com.firzjb.webservice.controller.Schedule;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;

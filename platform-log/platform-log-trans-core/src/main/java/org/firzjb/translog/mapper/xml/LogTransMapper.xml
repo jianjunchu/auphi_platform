@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.translog.mapper.LogTransMapper">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.LOG_TRANS_ID AS logTransId
+        , a.TRANS_CONFIG_ID AS transConfigId
+        , a.CHANNEL_ID AS channelId
+        , a.TRANSNAME AS transname
+        , a.STATUS AS status
+        , a.LINES_READ AS linesRead
+        , a.LINES_WRITTEN AS linesWritten
+        , a.LINES_UPDATED AS linesUpdated
+        , a.LINES_INPUT AS linesInput
+        , a.LINES_OUTPUT AS linesOutput
+        , a.LINES_REJECTED AS linesRejected
+        , a.ERRORS AS errors
+        , a.STARTDATE AS startdate
+        , a.ENDDATE AS enddate
+        , a.LOGDATE AS logdate
+        , a.DEPDATE AS depdate
+        , a.REPLAYDATE AS replaydate
+        , a.LOG_FIELD AS logField
+        , a.EXECUTING_SERVER AS executingServer
+        , a.EXECUTING_USER AS executingUser
+        , a.EXCUTOR_TYPE AS excutorType
+        , a.LOGINFO AS loginfo
+        , a.TRANS_CN_NAME AS transCnName
+        , a.QRTZ_JOB_NAME AS qrtzJobName
+        , a.QRTZ_JOB_GROUP AS qrtzJobGroup
+    </sql>
+
+
+    <update id="updateById">
+        update LOG_TRANS
+        <set>
+              TRANS_CONFIG_ID = #{et.transConfigId}
+            , CHANNEL_ID = #{et.channelId}
+            , TRANSNAME = #{et.transname}
+            , STATUS = #{et.status}
+            , LINES_READ = #{et.linesRead}
+            , LINES_WRITTEN = #{et.linesWritten}
+            , LINES_UPDATED = #{et.linesUpdated}
+            , LINES_INPUT = #{et.linesInput}
+            , LINES_OUTPUT = #{et.linesOutput}
+            , LINES_REJECTED = #{et.linesRejected}
+            , ERRORS = #{et.errors}
+            , STARTDATE = #{et.startdate}
+            , ENDDATE = #{et.enddate}
+            , LOGDATE = #{et.logdate}
+            , DEPDATE = #{et.depdate}
+            , REPLAYDATE = #{et.replaydate}
+            , LOG_FIELD = #{et.logField}
+            , EXECUTING_SERVER = #{et.executingServer}
+            , EXECUTING_USER = #{et.executingUser}
+            , EXCUTOR_TYPE = #{et.excutorType}
+            , LOGINFO = #{et.loginfo}
+            , TRANS_CN_NAME = #{et.transCnName}
+            , QRTZ_JOB_NAME = #{et.qrtzJobName}
+            , QRTZ_JOB_GROUP = #{et.qrtzJobGroup}
+
+        </set>
+        where LOG_TRANS_ID = #{et.logTransId}
+    </update>
+
+    <insert id="insert">
+        insert into LOG_TRANS (
+              LOG_TRANS_ID
+            , TRANS_CONFIG_ID
+            , CHANNEL_ID
+            , TRANSNAME
+            , STATUS
+            , LINES_READ
+            , LINES_WRITTEN
+            , LINES_UPDATED
+            , LINES_INPUT
+            , LINES_OUTPUT
+            , LINES_REJECTED
+            , ERRORS
+            , STARTDATE
+            , ENDDATE
+            , LOGDATE
+            , DEPDATE
+            , REPLAYDATE
+            , LOG_FIELD
+            , EXECUTING_SERVER
+            , EXECUTING_USER
+            , EXCUTOR_TYPE
+            , LOGINFO
+            , TRANS_CN_NAME
+            , QRTZ_JOB_NAME
+            , QRTZ_JOB_GROUP
+            , FIRE_TIME
+        )values(
+              #{logTransId}
+            , #{transConfigId}
+            , #{channelId}
+            , #{transname}
+            , #{status}
+            , #{linesRead}
+            , #{linesWritten}
+            , #{linesUpdated}
+            , #{linesInput}
+            , #{linesOutput}
+            , #{linesRejected}
+            , #{errors}
+            , #{startdate}
+            , #{enddate}
+            , #{logdate}
+            , #{depdate}
+            , #{replaydate}
+            , #{logField}
+            , #{executingServer}
+            , #{executingUser}
+            , #{excutorType}
+            , #{loginfo}
+            , #{transCnName}
+            , #{qrtzJobName}
+            , #{qrtzJobGroup}
+            , #{fireTime}
+        )
+    </insert>
+
+
+
+</mapper>

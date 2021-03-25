@@ -16,7 +16,7 @@
 
     <!-- 设置扫描使用注解的类所在的包 -->
     <!-- 设置扫描使用注解的类所在的包 -->
-    <context:component-scan base-package="com.aofei.**.controller, com.aofei.**.router,com.aofei.kettle.**"/>
+    <context:component-scan base-package="org.firzjb.**.controller, org.firzjb.**.router,org.firzjb.kettle.**"/>
     <!-- 对静态资源文件的访问， 将无法mapping到Controller的path交给default servlet handler处理 -->
 
     <!-- 配置默认的访问页面 -->
@@ -59,7 +59,7 @@
     </mvc:interceptors>
 
     <!--解决fastJson 转换long型，精度丢失的问题-->
-    <bean id="fastJsonConfigExt" class="com.aofei.admin.config.FastJsonConfigExt"/>
+    <bean id="fastJsonConfigExt" class="org.firzjb.admin.config.FastJsonConfigExt"/>
     <!-- 自定义JSON转换器 -->
     <mvc:annotation-driven>
         <mvc:message-converters>
@@ -83,9 +83,9 @@
         <mvc:argument-resolvers>
             <!--配置注入登录用户的解析器-->
             <bean id="currentUserMethodArgumentResolver"
-                  class="com.aofei.authorization.resolvers.CurrentUserMethodArgumentResolver">
+                  class="org.firzjb.authorization.resolvers.CurrentUserMethodArgumentResolver">
                 <!--需要解析的用户类-->
-                <property name="userModelClass" value="com.aofei.base.model.response.CurrentUserResponse"/>
+                <property name="userModelClass" value="org.firzjb.base.model.response.CurrentUserResponse"/>
                 <!--查询用户的bean-->
                 <property name="userModelRepository" ref="userRepository"/>
             </bean>
@@ -94,7 +94,7 @@
 
 
     <!-- 自定义异常处理 -->
-    <bean id="handlerExceptionResolver" class="com.aofei.base.exception.AnnotationHandlerMethodExceptionResolver">
+    <bean id="handlerExceptionResolver" class="org.firzjb.base.exception.AnnotationHandlerMethodExceptionResolver">
         <property name="defaultErrorView" value="/error/500"/>
         <property name="messageConverters">
             <list>
@@ -116,14 +116,14 @@
     <!--授权认证配置 begin-->
 
     <!--通过Key获得对应用户的bean-->
-    <bean id="userRepository" class="com.aofei.admin.authorization.resolver.UserRepository"/>
+    <bean id="userRepository" class="org.firzjb.admin.authorization.resolver.UserRepository"/>
     <!-- <mvc:annotation-driven>
          <mvc:argument-resolvers>
              &lt;!&ndash;配置注入登录用户的解析器&ndash;&gt;
              <bean id="currentUserMethodArgumentResolver"
-                   class="com.aofei.authorization.resolvers.CurrentUserMethodArgumentResolver">
+                   class="org.firzjb.authorization.resolvers.CurrentUserMethodArgumentResolver">
                  &lt;!&ndash;需要解析的用户类&ndash;&gt;
-                 <property name="userModelClass" value="com.aofei.system.model.response.UserResponse"/>
+                 <property name="userModelClass" value="org.firzjb.system.model.response.UserResponse"/>
                  &lt;!&ndash;查询用户的bean&ndash;&gt;
                  <property name="userModelRepository" ref="userRepository"/>
              </bean>
@@ -135,7 +135,7 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <!--身份验证的拦截器-->
-            <bean id="authorizationInterceptor" class="com.aofei.authorization.interceptor.AuthorizationInterceptor">
+            <bean id="authorizationInterceptor" class="org.firzjb.authorization.interceptor.AuthorizationInterceptor">
                 <!--验证信息存储的Http头-->
                 <property name="httpHeaderName" value="Authorization"/>
                 <!--验证信息通用前缀，例如Bearer-->
@@ -151,7 +151,7 @@
     </mvc:interceptors>
 
     <!--管理验证信息的bean-->
-    <bean id="tokenValidator" class="com.aofei.admin.authorization.jwt.JwtTokenValidator"></bean>
+    <bean id="tokenValidator" class="org.firzjb.admin.authorization.jwt.JwtTokenValidator"></bean>
 
     <!--Redis配置-->
     <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
@@ -181,7 +181,7 @@
     </bean>-->
 
     <!--管理验证信息的bean-->
-    <bean id="tokenManager" class="com.aofei.authorization.manager.impl.RedisTokenManager">
+    <bean id="tokenManager" class="org.firzjb.authorization.manager.impl.RedisTokenManager">
         <!--Redis客户端连接池配置-->
         <!--<property name="jedisPool" ref="jedisPool"/>-->
         <!--Token失效时间-->

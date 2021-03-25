@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.dataquality.mapper.CheckResultMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.firzjb.dataquality.entity.CheckResult">
+        <id column="CHECK_RESULT_ID" property="checkResultId" />
+        <result column="ORGANIZER_ID" property="organizerId" />
+        <result column="TOTAL_CHECKED_NUM" property="totalCheckedNum" />
+        <result column="PASSED_NUM" property="passedNum" />
+        <result column="NOT_PASSED_NUM" property="notPassedNum" />
+        <result column="CHECK_START_TIME" property="checkStartTime" />
+        <result column="CHECK_END_TIME" property="checkEndTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEL_FLAG" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.CHECK_RESULT_ID AS checkResultId
+        , a.ORGANIZER_ID AS organizerId
+        , a.TOTAL_CHECKED_NUM AS totalCheckedNum
+        , a.PASSED_NUM AS passedNum
+        , a.NOT_PASSED_NUM AS notPassedNum
+        , a.CHECK_START_TIME AS checkStartTime
+        , a.CHECK_END_TIME AS checkEndTime
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.dataquality.entity.CheckResult">
+        select
+        <include refid="Base_Column_List"/>
+        from DATA_QUALITY_CHECK_RESULT a
+        <where>
+            a.DEL_FLAG = 0
+            <if test="organizerId !=null ">
+                AND  a.ORGANIZER_ID  = #{organizerId}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="findRuleGroupResultList" resultType="org.firzjb.dataquality.entity.CheckResult">
+        select
+	          GROUP_ID AS ruleGroupId
+            , GROUP_NAME AS ruleGroupName
+            , IFNULL(SUM(TOTAL_CHECKED_NUM), 0) AS totalCheckedNum
+            , IFNULL(SUM(NOT_PASSED_NUM), 0) AS notPassedNum
+        from (
+                SELECT
+                    a.RULE_ID,
+                    c.GROUP_ID ,
+                    c.GROUP_NAME,
+                    TOTAL_CHECKED_NUM,
+                    NOT_PASSED_NUM,
+                    a.CREATE_TIME,
+                    c.ORGANIZER_ID
+		        from DATA_QUALITY_CHECK_RESULT as a
+                JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+                RIGHT JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+                WHERE a.CREATE_TIME is null OR a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+            ) AS e
+        WHERE ORGANIZER_ID  = #{organizerId}  GROUP BY GROUP_ID , GROUP_NAME
+    </select>
+
+    <select id="countCompliance" resultType="java.lang.Integer">
+        select IFNULL(SUM(PASSED_NUM), 0) AS compliance from DATA_QUALITY_CHECK_RESULT as a
+                    JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+                    JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+                where b.RULE_GROUP_ID = #{ruleGroupId} and  a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+    </select>
+
+    <select id="countBreakRule1" resultType="java.lang.Integer">
+        SELECT  IFNULL(SUM(NOT_PASSED_NUM), 0) AS NOT_PASSED_NUM FROM (
+            SELECT COUNT(1) co , IFNULL(SUM(NOT_PASSED_NUM), 0) AS NOT_PASSED_NUM   from (
+	            SELECT d.DATABASE_ID, d.SCHEMA_NAME, d.TABLE_NAME, d.FIELD_NAME , NOT_PASSED_NUM  from DATA_QUALITY_CHECK_RESULT as a
+                    JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+                    JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+										JOIN DATA_QUALITY_RULE d on a.RULE_ID = d.RULE_ID
+                WHERE b.RULE_GROUP_ID = #{ruleGroupId} and  a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+        ) AS x GROUP BY DATABASE_ID ,SCHEMA_NAME ,TABLE_NAME ,FIELD_NAME ) y WHERE co = 1
+    </select>
+
+    <select id="countBreakRule2" resultType="java.lang.Integer">
+        SELECT  IFNULL(SUM(NOT_PASSED_NUM), 0) AS NOT_PASSED_NUM  FROM (
+            SELECT COUNT(1) co , IFNULL(SUM(NOT_PASSED_NUM), 0) AS NOT_PASSED_NUM   from (
+	            SELECT d.DATABASE_ID, d.SCHEMA_NAME, d.TABLE_NAME, d.FIELD_NAME , NOT_PASSED_NUM  from DATA_QUALITY_CHECK_RESULT as a
+                    JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+                    JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+										JOIN DATA_QUALITY_RULE d on a.RULE_ID = d.RULE_ID
+                WHERE b.RULE_GROUP_ID = #{ruleGroupId} and  a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+        ) AS x GROUP BY DATABASE_ID ,SCHEMA_NAME ,TABLE_NAME ,FIELD_NAME ) y WHERE co > 1
+    </select>
+
+    <select id="findCheckResults" resultType="org.firzjb.dataquality.entity.CheckResult">
+        SELECT
+              a.RULE_ID AS ruleId
+            , b.DESCRIPTION AS description
+            , b.RULE_GROUP_ID AS ruleGroupId
+            , c.GROUP_NAME AS ruleGroupName
+            , PASSED_NUM AS passedNum
+            , NOT_PASSED_NUM AS notPassedNum
+            , a.CREATE_TIME  AS createTime
+            , a.ORGANIZER_ID AS organizerId
+        from DATA_QUALITY_CHECK_RESULT as a
+        JOIN DATA_QUALITY_RULE b on a.RULE_ID = b.RULE_ID
+        JOIN DATA_QUALITY_RULE_GROUP c ON b.RULE_GROUP_ID = c.GROUP_ID
+        WHERE b.RULE_GROUP_ID = #{ruleGroupId} AND a.CREATE_TIME = (select max(d.CREATE_TIME) from DATA_QUALITY_CHECK_RESULT as d where a.RULE_ID = d.RULE_ID )
+
+    </select>
+
+</mapper>

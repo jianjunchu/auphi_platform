@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>etl_platform</artifactId>
-        <groupId>com.aofei</groupId>
+        <groupId>org.firzjb</groupId>
         <version>v3.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -18,7 +18,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.aofei</groupId>
+            <groupId>org.firzjb</groupId>
             <artifactId>platform-schedule-core</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -11,7 +11,7 @@
        http://www.springframework.org/schema/aop/spring-aop-4.3.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <!-- 使用Annotation自动注册Bean，解决事物失效问题：在主容器中不扫描@RestController注解，在SpringMvc中只扫描@RestController注解。  -->
-    <context:component-scan base-package="com.aofei" scoped-proxy="interfaces">
+    <context:component-scan base-package="org.firzjb" scoped-proxy="interfaces">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
@@ -54,14 +54,14 @@
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
     <!-- 扫描切面包路径 -->
-    <bean id="logAspect" class="com.aofei.log.aop.LogAspect">
+    <bean id="logAspect" class="org.firzjb.log.aop.LogAspect">
         <property name="logPoint">
-            <bean class="com.aofei.sys.service.impl.PlatformLogService" />
+            <bean class="org.firzjb.sys.service.impl.PlatformLogService" />
         </property>
     </bean>
     <aop:config>
         <aop:aspect ref="logAspect">
-            <aop:pointcut id="logPointCut" expression="@annotation(com.aofei.log.annotation.Log)" />
+            <aop:pointcut id="logPointCut" expression="@annotation(org.firzjb.log.annotation.Log)" />
             <aop:around pointcut-ref="logPointCut" method="save" />
         </aop:aspect>
     </aop:config>

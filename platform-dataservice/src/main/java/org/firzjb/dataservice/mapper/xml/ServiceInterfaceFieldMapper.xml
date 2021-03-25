@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firzjb.dataservice.mapper.ServiceInterfaceFieldMapper">
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+          a.FIELD_ID AS fieldId
+        , a.SERVICE_ID AS serviceId
+        , a.FIELD_NAME AS fieldName
+        , a.FIELD_TYPE AS fieldType
+        , a.JSON_PATH AS jsonPath
+        , a.CREATE_USER AS createUser
+        , a.UPDATE_USER AS updateUser
+        , a.CREATE_TIME AS createTime
+        , a.UPDATE_TIME AS updateTime
+        , a.DEL_FLAG AS delFlag
+    </sql>
+
+    <sql id="Base_Joins">
+
+    </sql>
+
+    <select id="findList"  resultType="org.firzjb.dataservice.entity.ServiceInterfaceField">
+        select
+        <include refid="Base_Column_List"/>
+        from DATASERVICE_INTERFACE_FIELD a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0
+            <if test="serviceId != null ">
+                AND a.SERVICE_ID = #{serviceId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByServiceId" resultType="org.firzjb.dataservice.entity.ServiceInterfaceField">
+
+        select
+        <include refid="Base_Column_List"/>
+        from DATASERVICE_INTERFACE_FIELD a
+        <include refid="Base_Joins"/>
+        <where>
+            a.DEL_FLAG = 0 AND a.SERVICE_ID = #{serviceId}
+        </where>
+    </select>
+
+    <update id="deleteByServiceId">
+        update DATASERVICE_INTERFACE_FIELD a set a.DEL_FLAG = 1  where a.SERVICE_ID = #{serviceId}
+    </update>
+</mapper>
