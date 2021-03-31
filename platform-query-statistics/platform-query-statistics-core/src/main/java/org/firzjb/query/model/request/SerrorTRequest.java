@@ -15,6 +15,11 @@ public class SerrorTRequest extends PageRequest {
     private String acceptNo;
 
     /**
+     * 批次号
+     */
+    private String batchNo;
+
+    /**
      * 上传单位代码
      */
     private String unitNo;

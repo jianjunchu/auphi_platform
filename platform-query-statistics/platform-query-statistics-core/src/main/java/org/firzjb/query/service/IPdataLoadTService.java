@@ -7,7 +7,10 @@ import org.pentaho.di.core.exception.KettleException;
 
 import java.sql.SQLException;
 
-public interface IDataLoadTService  {
+/**
+ * 数据装载日志表
+ */
+public interface IPdataLoadTService {
 
     /**
      * 获取 分页 列表

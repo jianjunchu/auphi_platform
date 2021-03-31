@@ -1,7 +1,7 @@
 package org.firzjb.query.service.impl;
 
 import org.firzjb.query.model.request.SerrorTRequest;
-import org.firzjb.query.service.ISerrorTService;
+import org.firzjb.query.service.IPerrorLoadTService;
 import org.firzjb.query.utils.DatabaseLoader;
 import org.firzjb.utils.StringUtils;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -16,7 +16,7 @@ import java.util.Map;
  * 服务器错误数据查询
  */
 @Service
-public class SerrorTService implements ISerrorTService {
+public class PerrorLoadTService implements IPerrorLoadTService {
 
     /**
      * 分页查询
@@ -30,8 +30,6 @@ public class SerrorTService implements ISerrorTService {
     public Page getPage(Page page, SerrorTRequest request) throws KettleException, SQLException {
 
         DatabaseLoader loader = new DatabaseLoader();
-
-
         return loader.getPage(page,getSQl(request,loader));
 
 
@@ -48,7 +46,6 @@ public class SerrorTService implements ISerrorTService {
     public List<Map<String, Object>> getList(SerrorTRequest request) throws KettleException, SQLException {
         DatabaseLoader loader = new DatabaseLoader();
 
-
         return loader.getList(getSQl(request,loader));
     }
 
@@ -60,33 +57,31 @@ public class SerrorTService implements ISerrorTService {
      */
     private String getSQl(SerrorTRequest request, DatabaseLoader loader){
 
-
-
-
         StringBuffer sql = new StringBuffer("select ")
-                .append("   a.accept_no AS acceptNo, a.unit_no AS unitNo, a.backup_file AS backupFile, a.error_code AS errorCode, a.error_desc AS errorDesc, a.curr_operation AS currOperation, a.deal_flag AS dealFlag, a.create_time AS createTime, a.update_time AS updateTime ")
-                .append(" from s_error_t a where 1 = 1" );
-
-        if(!StringUtils.isEmpty(request.getUnitNo())){
-            sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
-        }
+                .append(" BATCH_NO,UNIT_NO,ACCEPT_NO,ERROR_CODE,ERROR_DESC,INSERT_TIME ")
+                .append(" from P_ERROR_LOAD_T a where 1 = 1");
 
         if(!StringUtils.isEmpty(request.getAcceptNo())){
-            sql.append(" and a.accept_no = '").append(request.getAcceptNo()).append("'");
+
+            sql.append(" and a.ACCEPT_NO like '%").append(request.getAcceptNo()).append("%'");
         }
 
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "backup_time".equalsIgnoreCase(request.getSearch_time())
-                && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.backup_time",request));
+        if(!StringUtils.isEmpty(request.getBatchNo())){
 
+            sql.append(" and a.BATCH_NO like '%").append(request.getBatchNo()).append("%'");
         }
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "load_time".equalsIgnoreCase(request.getSearch_time())
+
+        if(!StringUtils.isEmpty(request.getUnitNo())){
+            // sql.append(" and a.UNIT_NO = '").append(request.getUnitNo()).append("'");
+
+            sql.append(" and a.UNIT_NO like '%").append(request.getUnitNo()).append("%'");
+        }
+
+        if (!StringUtils.isEmpty(request.getSearch_time())
+                && "INSERT_TIME".equalsIgnoreCase(request.getSearch_time())
                 && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.load_time",request));
+                && !StringUtils.isEmpty(request.getSearch_end())) {
+            sql.append(" AND a.INSERT_TIME between  '").append(request.getSearch_satrt()).append("' AND '").append(request.getSearch_end()).append("'");
 
         }
 

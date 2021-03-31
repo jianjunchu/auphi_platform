@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.firzjb.base.exception.ApplicationException;
 import org.firzjb.query.model.request.DataLoadTRequest;
-import org.firzjb.query.service.IDataLoadTService;
+import org.firzjb.query.service.IPdataLoadTService;
+
 import org.firzjb.query.utils.DatabaseLoader;
 import org.firzjb.sys.model.request.OrganizerRequest;
 import org.firzjb.sys.model.response.OrganizerResponse;
@@ -17,12 +18,13 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class DataLoadTService  implements IDataLoadTService {
+public class PdataLoadTService implements IPdataLoadTService {
 
     @Autowired
     private IOrganizerService organizerService;
@@ -34,27 +36,29 @@ public class DataLoadTService  implements IDataLoadTService {
         DatabaseLoader loader = new DatabaseLoader();
 
         StringBuffer sql = new StringBuffer("select ")
-        .append(" a.batch_no AS batchNo, a.unit_no AS unitNo, a.backup_start AS backupStart, a.backup_end AS backupEnd, a.backup_time AS backupTime, a.backup_count AS backupCount, a.backup_valid_count AS backupValidCount, a.backup_invalid_count AS backupInvalidCount, a.load_time AS loadTime, a.load_count AS loadCount, a.load_valid_count AS loadValidCount, a.load_invalid_count AS loadInvalidCount, a.business AS business, a.operation AS operation ")
-        .append(" from s_data_load_t a where 1 = 1" );
+        .append(" BATCH_NO,BATCH_TYPE,UNIT_NO,EXTRACT_FILE,FILE_SIZE,QD_NAME,EXTRACT_VALID_COUNT,LOAD_STATUS,EXTRACT_START,EXTRACT_END,MAX_ACCEPT_NO,EXTRACT_TIME,LOAD_TOTAL_COUNT,LOAD_VALID_COUNT,LOAD_INVALID_COUNT,DB_TYPE,IS_SUCCESS,INSERT_TIME ")
+        .append(" from P_DATA_LOAD_T a where 1 = 1" );
         if(!StringUtils.isEmpty(request.getBatchNo())){
-            sql.append(" and a.batch_no like '%").append(request.getBatchNo()).append("%'");
+            sql.append(" and a.BATCH_NO like '%").append(request.getBatchNo()).append("%'");
         }
         if(!StringUtils.isEmpty(request.getUnitNo())){
-            sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
+           // sql.append(" and a.UNIT_NO = '").append(request.getUnitNo()).append("'");
+
+            sql.append(" and a.UNIT_NO like '%").append(request.getUnitNo()).append("%'");
         }
 
         if(!StringUtils.isEmpty(request.getSearch_time())
-                && "backup_time".equalsIgnoreCase(request.getSearch_time())
+                && "EXTRACT_TIME".equalsIgnoreCase(request.getSearch_time())
                 && !StringUtils.isEmpty(request.getSearch_satrt())
                 && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.backup_time",request));
+            sql.append(" AND ").append(loader.getDateBetween("a.EXTRACT_TIME",request));
 
         }
         if(!StringUtils.isEmpty(request.getSearch_time())
-                && "load_time".equalsIgnoreCase(request.getSearch_time())
+                && "INSERT_TIME".equalsIgnoreCase(request.getSearch_time())
                 && !StringUtils.isEmpty(request.getSearch_satrt())
                 && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.load_time",request));
+            sql.append(" AND ").append(loader.getDateBetween("a.INSERT_TIME",request));
 
         }
         return loader.getPage(page,sql.toString());
@@ -68,8 +72,8 @@ public class DataLoadTService  implements IDataLoadTService {
         DatabaseLoader loader = new DatabaseLoader();
 
         StringBuffer sql = new StringBuffer("select ")
-                .append("   a.unit_no AS unitNo, SUM(a.backup_count) AS backupCount, SUM(a.backup_valid_count) AS backupValidCount, SUM(a.backup_invalid_count) AS backupInvalidCount, SUM(a.load_count) AS loadCount, SUM(a.load_valid_count) AS loadValidCount, SUM(a.load_invalid_count) AS loadInvalidCount ")
-                .append(" from s_data_load_t a where 1 = 1" );
+                .append("    ")
+                .append(" from P_DATA_LOAD_T a where 1 = 1" );
 
         if(!StringUtils.isEmpty(request.getUnitNo())){
             sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
@@ -97,52 +101,60 @@ public class DataLoadTService  implements IDataLoadTService {
     @Override
     public JSONObject getBackupRecordChartData(DataLoadTRequest request) throws KettleException, SQLException {
 
-        JSONArray axis = new JSONArray();
-        JSONArray series = new JSONArray();
-        JSONObject jsonObject = new JSONObject();
+        String startTime =  request.getStartBackupTime();
+        String endTime = request.getEndBackupTime();
 
-        DatabaseLoader loader = new DatabaseLoader();
+        OrganizerRequest organizerRequest = new OrganizerRequest();
+        organizerRequest.setParentId(1L);
 
-        StringBuffer sql = new StringBuffer("select ")
-                .append("    a.unit_no AS unitNo, count(1) AS backupCount ")
-                .append(" from s_data_load_t a where 1 = 1" );
+        Map<String,Object> maps = new HashMap<>();
 
-        if(!StringUtils.isEmpty(request.getUnitNo())){
-            sql.append(" and a.unit_no = '").append(request.getUnitNo()).append("'");
-        }
+        JSONObject res = new JSONObject();
 
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "backup_time".equalsIgnoreCase(request.getSearch_time())
-                && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.backup_time",request));
+        List<String> geoCoordMap = new ArrayList<>();
 
-        }
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "load_time".equalsIgnoreCase(request.getSearch_time())
-                && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.load_time",request));
+        List<OrganizerResponse> organizers =  organizerService.getOrganizers(organizerRequest);
+
+        for(OrganizerResponse response:organizers){
+            geoCoordMap.add(response.getName());
+            maps.put(response.getCode(),0);
 
         }
 
-        sql.append("  group by a.unit_no,a.load_time");
+        String sql = "select UNIT_NO,sum(1) AS LOAD_VALID_COUNT from P_DATA_LOAD_T WHERE DB_TYPE = '"+request.getCardType()+"' AND INSERT_TIME > '"+startTime+"' AND INSERT_TIME < '"+endTime+"' GROUP BY UNIT_NO";
+        DatabaseLoader loader = null;
+        try {
+            loader = new DatabaseLoader();
+            loader.getDb().connect();
+            ResultSet rs =  loader.getDb().openQuery(sql);
 
-        List<Map<String,Object>> list = loader.getList(sql.toString());
+            while(rs.next()) {
+                String  unit_no = rs.getString("UNIT_NO");
+                if(maps.containsKey(unit_no)){
+                    maps.put(unit_no,rs.getLong("LOAD_VALID_COUNT"));
+                }
+            }
+            rs.close();
 
 
-        for(Map<String,Object> dataLoadT : list){
-            axis.add(dataLoadT.get("unitNo"));
-            series.add(dataLoadT.get("backupCount"));
+            res.put("series",maps.values());
+            res.put("axis",geoCoordMap);
+            return res;
+        }catch (ApplicationException e){
+            throw  e;
+        }catch (Exception e){
+            throw  e;
+
+        }finally {
+            if(loader!=null){
+                loader.disconnect();
+            }
         }
-        jsonObject.put("axis",axis);
-        jsonObject.put("series",series);
 
-        return jsonObject;
     }
 
     /**
-     * 地图装载日志
+     * 服务端地图装载日志
      * @param request
      * @return
      */
@@ -165,7 +177,7 @@ public class DataLoadTService  implements IDataLoadTService {
 
         for(OrganizerResponse response:organizers){
             JSONObject object = new JSONObject();
-            object.put("name",response.getName());
+            object.put("name",response.getShortName());
             object.put("code",response.getCode());
             Object[] jsonArray = new Object[3];
             jsonArray[0] = response.getLongitude();
@@ -176,7 +188,7 @@ public class DataLoadTService  implements IDataLoadTService {
 
         }
 
-        String sql = "select unit_no,sum(backup_valid_count) AS backup_valid_count from s_data_load_t WHERE card_type = '"+request.getCardType()+"' AND backup_time > '"+startTime+"' AND backup_time < '"+endTime+"' GROUP BY unit_no";
+        String sql = "select UNIT_NO,sum(LOAD_VALID_COUNT) AS LOAD_VALID_COUNT from P_DATA_LOAD_T WHERE DB_TYPE = '"+request.getCardType()+"' AND INSERT_TIME > '"+startTime+"' AND INSERT_TIME < '"+endTime+"' GROUP BY unit_no";
         DatabaseLoader loader = null;
         try {
             loader = new DatabaseLoader();
@@ -184,11 +196,11 @@ public class DataLoadTService  implements IDataLoadTService {
             ResultSet rs =  loader.getDb().openQuery(sql);
 
             while(rs.next()) {
-               String  unit_no = rs.getString("unit_no");
+               String  unit_no = rs.getString("UNIT_NO");
                if(maps.containsKey(unit_no)){
                    JSONObject object =maps.get(unit_no);
                    Object[] jsonArray = (Object[]) object.get("value");
-                   jsonArray[2] = rs.getLong("backup_valid_count");
+                   jsonArray[2] = rs.getLong("LOAD_VALID_COUNT");
                }
             }
             rs.close();

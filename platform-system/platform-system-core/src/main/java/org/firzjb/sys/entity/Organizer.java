@@ -41,6 +41,12 @@ public class Organizer extends DataEntity<Organizer> {
     private String name;
 
     /**
+     * 简称
+     */
+    @TableField("ORGANIZER_SHORT_NAME")
+    private String shortName;
+
+    /**
      * 编码
      */
     @TableField("ORGANIZER_CODE")

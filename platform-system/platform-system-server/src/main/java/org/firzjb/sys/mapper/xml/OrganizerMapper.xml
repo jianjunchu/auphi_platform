@@ -8,6 +8,7 @@
     <sql id="Base_Column_List">
           a.ORGANIZER_ID AS organizerId
         , a.ORGANIZER_NAME AS name
+        , a.ORGANIZER_SHORT_NAME AS shortName
         , a.ORGANIZER_CODE AS code
         , a.PARENT_ID AS parentId
         , a.PROVINCE_ID AS provinceId

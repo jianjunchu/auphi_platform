@@ -41,10 +41,10 @@ public class DataQueryController extends BaseController {
     private IBatchRevTService batchRevTService;
 
     @Autowired
-    private IDataLoadTService dataLoadTService;
+    private IPdataLoadTService pdataLoadTService;
 
     @Autowired
-    private ISerrorTService serrorTService;
+    private IPerrorLoadTService perrorLoadTService;
 
     @Autowired
     private IPerrorLogService perrorLogService;
@@ -91,26 +91,29 @@ public class DataQueryController extends BaseController {
     @RequestMapping(value = "/backupFrequency/listPage", method = RequestMethod.GET)
     public Response<DataGrid<DataLoadTResponse>> backupFrequencyPage(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
 
-        request.setUnitNo(user.getUnitCode());
-        Page<DataLoadTResponse> page = dataLoadTService.getBackupFrequencyPage(getPagination(request), request);
+        Page<DataLoadTResponse> page = pdataLoadTService.getBackupFrequencyPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
 
     /**
-     * 备份频率统计(分页查询)
+     * 服务端 数据上传频率(图表)
      * @param request
      * @return
      */
-    @ApiOperation(value = "备份频率统计(分页查询)", notes = "备份频率统计(分页查询)")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
-            @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
-
-    })
+    @ApiOperation(value = "服务端 数据上传频率(图表)", notes = "服务端 数据上传频率(图表)")
     @RequestMapping(value = "/backupFrequency/chartData", method = RequestMethod.GET)
     public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
-        request.setUnitNo(user.getUnitCode());
-        JSONObject jsonObject  = dataLoadTService.getBackupRecordChartData(request);
+
+        if(StringUtils.isEmpty(request.getStartBackupTime())){
+            long l = System.currentTimeMillis() - 3600 * 1000 * 24 * 15;
+            request.setStartBackupTime(DateUtils.format(new Date(l),"yyyyMMdd000000"));
+        }
+        if(StringUtils.isEmpty(request.getEndBackupTime())){
+
+            request.setEndBackupTime(DateUtils.format(new Date(),"yyyyMMdd235959"));
+        }
+
+        JSONObject jsonObject  = pdataLoadTService.getBackupRecordChartData(request);
         return Response.ok(jsonObject) ;
     }
 
@@ -132,7 +135,7 @@ public class DataQueryController extends BaseController {
         if(!StringUtils.isEmpty(user.getUnitCode())){
             request.setUnitNo(user.getUnitCode());
         }
-        Page<DataLoadTResponse> page = dataLoadTService.getPage(getPagination(request), request);
+        Page<DataLoadTResponse> page = pdataLoadTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
 
@@ -152,26 +155,21 @@ public class DataQueryController extends BaseController {
             HttpServletResponse response,
             @ApiIgnore SerrorTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
 
-
-        request.setUnitNo(user.getUnitCode());
-
         if(request.getExport() == 1){
-            List<Map<String,Object>> dataList = serrorTService.getList(request);
+            List<Map<String,Object>> dataList = perrorLoadTService.getList(request);
 
-            String[] headers = {"受理号","上传单位代码","所属备份文件名","错误代码","错误描述","操作","处理状态","创建时间","更新时间"};
+            String[] headers = {"批次号","UNIT_NO","受理号","错误代码","错误描述","时间"};
 
             String[][] values = new String[dataList.size()][headers.length];
 
             for(int i = 0;i < dataList.size();i++ ){
-                values[i][0] = dataList.get(i).get("acceptNo").toString();
+                values[i][0] = dataList.get(i).get("BATCH_NO").toString();
                 values[i][1] = dataList.get(i).get("unitNo").toString();
-                values[i][2] = dataList.get(i).get("backupFile").toString();
-                values[i][3] = dataList.get(i).get("errorCode").toString();
-                values[i][4] = dataList.get(i).get("errorDesc").toString();
-                values[i][5] = dataList.get(i).get("currOperation").toString();
-                values[i][6] = dataList.get(i).get("dealFlag").toString();
-                values[i][7] = dataList.get(i).get("createTime").toString();
-                values[i][8] = dataList.get(i).get("updateTime").toString();
+                values[i][2] = dataList.get(i).get("ACCEPT_NO").toString();
+                values[i][3] = dataList.get(i).get("ERROR_CODE").toString();
+                values[i][4] = dataList.get(i).get("ERROR_DESC").toString();
+                values[i][5] = dataList.get(i).get("INSERT_TIME").toString();
+
             }
 
             HSSFWorkbook workbook =  ExcelUtil.getHSSFWorkbook(null,null,"错误数据",headers,values,null);
@@ -180,17 +178,17 @@ public class DataQueryController extends BaseController {
             return Response.ok(path) ;
 
         }else{
-            Page<ErrorTResponse> page = serrorTService.getPage(getPagination(request), request);
+            Page<ErrorTResponse> page = perrorLoadTService.getPage(getPagination(request), request);
             return Response.ok(buildDataGrid(page)) ;
         }
     }
 
     /**
-     * 服务端错误数据查询(分页查询)
+     * 制证端错误数据查询(分页查询)
      * @param request
      * @return
      */
-    @ApiOperation(value = "服务端错误数据查询(分页查询)", notes = "服务端错误数据查询(分页查询)")
+    @ApiOperation(value = "制证端错误数据查询(分页查询)", notes = "制证端错误数据查询(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -305,7 +303,7 @@ public class DataQueryController extends BaseController {
             request.setEndBackupTime(DateUtils.format(new Date(),"yyyyMMdd235959"));
         }
 
-        JSONObject dataList = dataLoadTService.get_sdata_loading_statistical(request);
+        JSONObject dataList = pdataLoadTService.get_sdata_loading_statistical(request);
         return Response.ok(dataList);
 
     }

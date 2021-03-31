@@ -21,6 +21,8 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseLoader {
+
+    private static Logger logger = LoggerFactory.getLogger(DatabaseLoader.class);
 
     public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("SourceUtils", LoggingObjectType.DATABASE, null );
 
@@ -77,16 +81,16 @@ public class DatabaseLoader {
 
         if(db.getDatabaseMeta().getDatabaseInterface() instanceof MySQLDatabaseMeta){
 
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total;");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof OracleDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total;");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total;");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total");
 
         } else if(db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta){
-            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total;");
+            sqlBuffer.append("SELECT COUNT(1) FROM ( ").append(sql).append(" ) total");
 
         }
         countSQl = sqlBuffer.toString();
@@ -107,6 +111,7 @@ public class DatabaseLoader {
 
     public Page getPage(Page pagination,String sql) throws KettleValueException, KettleDatabaseException, SQLException {
         try {
+            logger.debug(sql);
             this.sql = sql;
             initCountSQl();
             initPageSQl(pagination);

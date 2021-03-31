@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * 服务端错误数据查询
  */
-public interface ISerrorTService {
+public interface IPerrorLoadTService {
 
     /**
      * 获取 分页 列表

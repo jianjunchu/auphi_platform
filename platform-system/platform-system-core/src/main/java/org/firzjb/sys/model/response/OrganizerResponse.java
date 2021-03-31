@@ -29,6 +29,11 @@ public class OrganizerResponse  {
     private String name;
 
     /**
+     * 组织简称
+     */
+    private String shortName;
+
+    /**
      * 编码
      */
     private String code;

@@ -15,12 +15,16 @@ import java.util.Map;
 public interface IPerrorLogService {
 
     /**
+     * 制证端错误数据查询
      * 获取 分页 列表
      * @param page
      * @param request
      * @return
      */
+
     Page getPage(Page page, PerrorTRequest request) throws KettleException, SQLException;
 
     List<Map<String, Object>> getList(PerrorTRequest request) throws KettleException, SQLException;
+
+
 }
