@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 /**
@@ -104,5 +105,17 @@ public class IPUtils {
             }
         }
         return ip;
+    }
+
+    public  static URI getURI(String url) {
+        URI effectiveURI = URI.create(url);
+
+
+        return effectiveURI;
+    }
+
+    public static void main(String[] args) {
+        URI uri = getURI("http://192.168.113.131:8083/generateRandom");
+        System.out.println(uri.toString());
     }
 }

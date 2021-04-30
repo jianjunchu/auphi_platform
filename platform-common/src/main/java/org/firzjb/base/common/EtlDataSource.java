@@ -1,4 +1,4 @@
-package org.firzjb.admin.config;
+package org.firzjb.base.common;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;

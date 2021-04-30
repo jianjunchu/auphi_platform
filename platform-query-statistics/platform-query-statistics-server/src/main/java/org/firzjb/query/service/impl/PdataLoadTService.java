@@ -33,34 +33,25 @@ public class PdataLoadTService implements IPdataLoadTService {
     public Page getPage(Page page, DataLoadTRequest request) throws KettleException, SQLException {
 
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
-        StringBuffer sql = new StringBuffer("select ")
-        .append(" BATCH_NO,BATCH_TYPE,UNIT_NO,EXTRACT_FILE,FILE_SIZE,QD_NAME,EXTRACT_VALID_COUNT,LOAD_STATUS,EXTRACT_START,EXTRACT_END,MAX_ACCEPT_NO,EXTRACT_TIME,LOAD_TOTAL_COUNT,LOAD_VALID_COUNT,LOAD_INVALID_COUNT,DB_TYPE,IS_SUCCESS,INSERT_TIME ")
-        .append(" from P_DATA_LOAD_T a where 1 = 1" );
-        if(!StringUtils.isEmpty(request.getBatchNo())){
-            sql.append(" and a.BATCH_NO like '%").append(request.getBatchNo()).append("%'");
+        StringBuffer sql = new StringBuffer("SELECT ")
+        .append(" a.UNIT_NO AS UNIT_NO , b.UNIT_NAME AS UNIT_NAME ,BATCH_NO,EXTRACT_TIME,EXTRACT_START,EXTRACT_END,DB_TYPE,INSERT_TIME, SUM(EXTRACT_VALID_COUNT) EXTRACT_NUM,SUM(LOAD_VALID_COUNT) LOAD_NUM,SUM(LOAD_INVALID_COUNT) LOAD_INVALID_NUM ")
+        .append(" FROM P_DATA_LOAD_T  a LEFT JOIN P_UNIT_T B ON a.UNIT_NO = b.UNIT_NO WHERE EXTRACT_FILE LIKE '%his_card_t%' " );
+
+        if( !StringUtils.isEmpty(request.getSearch_satrt())
+                && !StringUtils.isEmpty(request.getSearch_end())){
+            sql.append(" AND a.EXTRACT_TIME >= '").append(request.getSearch_satrt()).append("'").append(" AND a.EXTRACT_TIME <= '").append(request.getSearch_end()).append("'");
+
         }
+
         if(!StringUtils.isEmpty(request.getUnitNo())){
-           // sql.append(" and a.UNIT_NO = '").append(request.getUnitNo()).append("'");
-
-            sql.append(" and a.UNIT_NO like '%").append(request.getUnitNo()).append("%'");
+            sql.append(" and b.UNIT_NAME LIKE '%").append(request.getUnitNo()).append("%'");
         }
 
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "EXTRACT_TIME".equalsIgnoreCase(request.getSearch_time())
-                && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.EXTRACT_TIME",request));
+        sql.append( " GROUP BY a.UNIT_NO,BATCH_NO,EXTRACT_TIME,EXTRACT_START,EXTRACT_END,DB_TYPE,INSERT_TIME,b.UNIT_NAME ");
+        sql.append( " ORDER BY a.UNIT_NO,INSERT_TIME DESC ");
 
-        }
-        if(!StringUtils.isEmpty(request.getSearch_time())
-                && "INSERT_TIME".equalsIgnoreCase(request.getSearch_time())
-                && !StringUtils.isEmpty(request.getSearch_satrt())
-                && !StringUtils.isEmpty(request.getSearch_end())){
-            sql.append(" AND ").append(loader.getDateBetween("a.INSERT_TIME",request));
-
-        }
         return loader.getPage(page,sql.toString());
 
 
@@ -69,7 +60,7 @@ public class PdataLoadTService implements IPdataLoadTService {
     @Override
     public Page getBackupFrequencyPage(Page page, DataLoadTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         StringBuffer sql = new StringBuffer("select ")
                 .append("    ")
@@ -107,38 +98,45 @@ public class PdataLoadTService implements IPdataLoadTService {
         OrganizerRequest organizerRequest = new OrganizerRequest();
         organizerRequest.setParentId(1L);
 
-        Map<String,Object> maps = new HashMap<>();
+        Map<String,JSONObject> maps = new HashMap<>();
 
         JSONObject res = new JSONObject();
 
-        List<String> geoCoordMap = new ArrayList<>();
 
         List<OrganizerResponse> organizers =  organizerService.getOrganizers(organizerRequest);
 
         for(OrganizerResponse response:organizers){
-            geoCoordMap.add(response.getName());
-            maps.put(response.getCode(),0);
-
+            JSONObject item = new JSONObject();
+            item.put("name",response.getName());
+            item.put("value",0);
+            maps.put(response.getCode(),item);
         }
 
-        String sql = "select UNIT_NO,sum(1) AS LOAD_VALID_COUNT from P_DATA_LOAD_T WHERE DB_TYPE = '"+request.getCardType()+"' AND INSERT_TIME > '"+startTime+"' AND INSERT_TIME < '"+endTime+"' GROUP BY UNIT_NO";
+        String sql = "select UNIT_NO,sum(1) AS LOAD_VALID_COUNT from P_DATA_LOAD_T WHERE  INSERT_TIME > '"+startTime+"' AND INSERT_TIME < '"+endTime+"' GROUP BY UNIT_NO";
         DatabaseLoader loader = null;
         try {
-            loader = new DatabaseLoader();
+            loader = new DatabaseLoader(request.getSystype());
             loader.getDb().connect();
             ResultSet rs =  loader.getDb().openQuery(sql);
 
             while(rs.next()) {
                 String  unit_no = rs.getString("UNIT_NO");
                 if(maps.containsKey(unit_no)){
-                    maps.put(unit_no,rs.getLong("LOAD_VALID_COUNT"));
+                    JSONObject item = maps.get(unit_no);
+                    item.put("value",rs.getLong("LOAD_VALID_COUNT"));
                 }
             }
             rs.close();
 
+            List<String> series = new ArrayList<>();
+            List<String> axis = new ArrayList<>();
+            for(JSONObject item:maps.values()){
+                series.add(item.getString("value"));
+                axis.add(item.getString("name"));
+            }
 
-            res.put("series",maps.values());
-            res.put("axis",geoCoordMap);
+            res.put("series",series);
+            res.put("axis",axis);
             return res;
         }catch (ApplicationException e){
             throw  e;
@@ -191,7 +189,7 @@ public class PdataLoadTService implements IPdataLoadTService {
         String sql = "select UNIT_NO,sum(LOAD_VALID_COUNT) AS LOAD_VALID_COUNT from P_DATA_LOAD_T WHERE DB_TYPE = '"+request.getCardType()+"' AND INSERT_TIME > '"+startTime+"' AND INSERT_TIME < '"+endTime+"' GROUP BY unit_no";
         DatabaseLoader loader = null;
         try {
-            loader = new DatabaseLoader();
+            loader = new DatabaseLoader(request.getSystype());
             loader.getDb().connect();
             ResultSet rs =  loader.getDb().openQuery(sql);
 

@@ -81,12 +81,13 @@ public class App {
 
 		try {
 
-			databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+			databaseRepository.connect(Const.getRepositoryUsername(),Const.getRepositoryPassword());
 
 			if(connects.size() > 50){
 				Repository first = connects.get(0);
-				if(first!=null)
+				if(first!=null && first.isConnected() ){
 					first.disconnect();
+				}
 				connects.remove(0);
 			}
 			connects.add(databaseRepository);
@@ -168,7 +169,7 @@ public class App {
 	public Repository getRepository(String repositoryName) throws KettleException {
 		KettleDatabaseRepository repository = (KettleDatabaseRepository) repositories.get(repositoryName);
 		if(repository!=null && !repository.isConnected()){
-			repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+			repository.connect(Const.getRepositoryUsername(),Const.getRepositoryPassword());
 		}
 
 		return repository;

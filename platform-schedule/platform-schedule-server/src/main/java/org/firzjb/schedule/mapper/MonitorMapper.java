@@ -1,6 +1,7 @@
 package org.firzjb.schedule.mapper;
 
 
+import org.apache.ibatis.annotations.Param;
 import org.firzjb.base.annotation.MyBatisMapper;
 import org.firzjb.base.mapper.BaseMapper;
 import org.firzjb.schedule.entity.Monitor;
@@ -19,34 +20,34 @@ public interface MonitorMapper extends BaseMapper<Monitor> {
      * @param organizerId
      * @return
      */
-    List<Map<String, Object>> getTimeConsumingTop5(Page page, Long organizerId);
+    List<Map<String, Object>> getTimeConsumingTop5(Page page, @Param("organizerId")Long organizerId);
 
     /**
      * 最近七天的错误数和完成数
      * @param organizerId
      * @return
      */
-    List<Map<String, Object>> get7DayErrorsAndFinishs(Long organizerId);
+    List<Map<String, Object>> get7DayErrorsAndFinishs(@Param("organizerId")Long organizerId);
 
     /**
      * 正在运行的作业数量
      * @param organizerId
      * @return
      */
-    int countRuning(Long organizerId);
+    int countRuning(@Param("organizerId")long organizerId);
 
     /**
      * 运行完成作业
      * @param organizerId
      * @return
      */
-    int countFinish(Long organizerId);
+    int countFinish(@Param("organizerId")long organizerId);
     /**
      * 错误总数
      * @param organizerId
      * @return
      */
-    int countError(Long organizerId);
+    int countError(@Param("organizerId")long organizerId);
 
     /**
      * 查询是否有计划时间日志
@@ -55,5 +56,18 @@ public interface MonitorMapper extends BaseMapper<Monitor> {
      */
     List<Monitor> findPlanMonitor(MonitorRequest request);
 
+    /**
+     * 总作业数量
+     * @param organizerId
+     * @return
+     */
+    int countAll(@Param("organizerId")long organizerId);
 
+    /**
+     * 获取正在执行调度数量
+     * @param jobName
+     * @param jobGroup
+     * @return
+     */
+    int countScheduleRuning(@Param("jobName")String jobName, @Param("jobGroup")String jobGroup);
 }

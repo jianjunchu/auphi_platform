@@ -50,7 +50,7 @@ import java.util.Map;
 
 /**
  * Job作业接口api
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @RestController
@@ -214,12 +214,12 @@ public class JobGraphController {
 			}
 
 			repository.save( jobMeta, versionComment, null);
-			repository.disconnect();
 			JsonUtils.success("作业保存成功！");
 
 		}catch (Exception e){
 			throw e;
 		}finally {
+
 			repository.disconnect();
 		}
 

@@ -14,7 +14,7 @@
 
 
     <!-- ali druid 数据库连接池 -->
-    <bean id="dataSource" class="org.firzjb.admin.config.EtlDataSource" destroy-method="close">
+    <bean id="dataSource" class="org.firzjb.base.common.EtlDataSource" destroy-method="close">
         <!-- 数据库基本信息配置 -->
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>

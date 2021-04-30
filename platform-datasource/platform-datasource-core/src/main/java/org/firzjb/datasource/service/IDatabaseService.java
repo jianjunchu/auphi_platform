@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 本地数据库管理
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-21 21:49
  */
 

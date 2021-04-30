@@ -102,5 +102,11 @@ public interface IUserService extends IService<User> {
      */
     Integer register(PhoneRegisterRequest request) throws KettleException;
 
-
+    /**
+     * 设计器登录
+     * @param user_name
+     * @param password
+     * @return
+     */
+    UserResponse authDesigner(String user_name, String password);
 }

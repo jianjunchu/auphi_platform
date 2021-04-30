@@ -26,4 +26,6 @@ public interface ILogJobService extends IService<LogJob> {
      * @return
      */
     List<LogJobResponse> getLogJobs(LogJobRequest request);
+
+    int updateStatusToStop();
 }

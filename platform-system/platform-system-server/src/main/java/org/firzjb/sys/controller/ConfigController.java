@@ -6,11 +6,13 @@ import org.firzjb.base.annotation.CurrentUser;
 import org.firzjb.base.controller.BaseController;
 import org.firzjb.base.model.response.CurrentUserResponse;
 import org.firzjb.base.model.response.Response;
+import org.firzjb.kettle.App;
 import org.firzjb.sys.entity.Config;
 import org.firzjb.sys.service.IConfigService;
 import org.firzjb.sys.service.IUserService;
 import org.firzjb.utils.CsvUtils;
 import org.firzjb.utils.DesCipherUtil;
+import org.firzjb.utils.IPUtils;
 import org.firzjb.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.swagger.annotations.Api;
@@ -27,12 +29,15 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-12 20:07
  */
 @Log4j
@@ -121,6 +126,28 @@ public class ConfigController extends BaseController {
             }
         }
 
+        String properties = System.getProperty("etl_platform.root")+ File.separator+"WEB-INF"+File.separator+"conf"+File.separator+"config.properties";
+        File file = new File(properties);
+        List<String[]> list2 = new ArrayList<>();
+        if(file.exists()){
+            list2 = CsvUtils.read(properties,true);
+        }
+
+        for(String[] cls : list2){
+            String keyValue = cls[0];
+            String[] kv = keyValue.split("=");
+
+            if(kv.length > 1 && ("urlGenerateRandom".equals(kv[0]) )){
+                String val = kv[1];
+                URI uri =  IPUtils.getURI(val);
+                JSONObject ip = jsonObject.getJSONObject("SIGNATURE_IP");
+                ip.put("value",uri.getHost());
+                JSONObject port = jsonObject.getJSONObject("SIGNATURE_PORT");
+                port.put("value",uri.getPort());
+
+            }
+        }
+
         return Response.ok(jsonObject) ;
     }
 
@@ -142,7 +169,6 @@ public class ConfigController extends BaseController {
             value = Encr.decryptPassword(value);
             value = DesCipherUtil.encryptPasswordIfNotUsingVariablesInternal(value);
         }
-
 
 
         return value;
@@ -175,9 +201,16 @@ public class ConfigController extends BaseController {
     public Response<JSONObject> updateCsvAll(
             @RequestBody JSONObject jsonObject) throws IOException {
 
-        String sysPath = System.getProperty("user.dir");
-        String filePath = sysPath+ File.separator+"config.csv";
-        List<String[]> list = CsvUtils.read(filePath,true);
+        String csv = System.getProperty("user.dir")+ File.separator+"config.csv";
+        List<String[]> list = CsvUtils.read(csv,true);
+
+        String properties = System.getProperty("etl_platform.root")+ File.separator+"WEB-INF"+File.separator+"conf"+File.separator+"config.properties";
+        File file = new File(properties);
+        List<String[]> list2 = null;
+        if(file.exists()){
+            list2 = CsvUtils.read(properties,true);
+        }
+
 
         for(String[] cls : list){
             if(cls.length>0 && !StringUtils.isEmpty(cls[0])){
@@ -186,12 +219,47 @@ public class ConfigController extends BaseController {
                 if(kv.length>0 && jsonObject.containsKey(kv[0])){
                     JSONObject object = jsonObject.getJSONObject(kv[0]);
                     logger.info(object.toJSONString());
-                    cls[0] = object.getString("key")+"="+ encrypt(object.getString("key"),object.getString("value"));
+                    String key = object.getString("key");
+                    String value = encrypt(object.getString("key"),object.getString("value"));
+                    cls[0] = key+"="+value;
+
+                    if("HisUserName".equals(key)
+                            || "HisUserPwd".equals(key)
+                            || "HisYdUserName".equals(key)
+                            || "HisYdUserPwd".equals(key)
+                            || "HisGatUserName".equals(key)
+                            || "HisGatUserPwd".equals(key)
+                            || "PhisUserName".equals(key)
+                            || "PhisUserPwd".equals(key)){
+
+                        value = Encr.PASSWORD_ENCRYPTED_PREFIX + value;
+                    }
+                    App.space.setVariable(key,value);
+
+                }
+            }
+        }
+        for(String[] cls : list2){
+            if(cls.length>0 && !StringUtils.isEmpty(cls[0])){
+                logger.info(cls[0]);
+                String[] kv = cls[0].split("=");
+                if(kv.length>0 && ("urlGenerateRandom".equals(kv[0]) ||  "urlencodeSignedAndEnvelope".equals(kv[0]))){
+                    String key = kv[0];
+                    JSONObject ip = jsonObject.getJSONObject("SIGNATURE_IP");
+                    JSONObject port = jsonObject.getJSONObject("SIGNATURE_PORT");
+                    String val = kv[1];
+                    URI uri =  IPUtils.getURI(val);
+                    cls[0] = key+"=http://"+ip.getString("value")+":"+port.getString("value")+uri.getPath();
                 }
             }
         }
 
-        CsvUtils.write(filePath,null,list);
+
+        CsvUtils.write(csv,null,list);
+        if(list2!=null && list2.size()>0){
+            CsvUtils.write(properties,null,list2);
+        }
+
         return Response.ok(jsonObject) ;
     }
 
@@ -227,6 +295,29 @@ public class ConfigController extends BaseController {
         return Response.ok(res) ;
     }
 
+    @ApiOperation(value = "签名验签服务器配置是否连通", notes = "签名验签服务器配置是否连通")
+    @RequestMapping(value = "/telnet", method = RequestMethod.POST)
+    public Response<Boolean> telnet(@RequestBody JSONObject jsonObject){
+        JSONObject ipJSON = jsonObject.getJSONObject("SIGNATURE_IP");
+        JSONObject portJSON = jsonObject.getJSONObject("SIGNATURE_PORT");
+        String ip = ipJSON.getString("value");
+        Integer port = portJSON.getInteger("value");
 
+        Socket connect = new Socket();
+        try {
+            connect.connect(new InetSocketAddress(ip, port),5000);//建立连接
+            boolean res = connect.isConnected();//通过现有方法查看连通状态
+            return Response.ok(res);
+        } catch (IOException e) {
+
+           return Response.ok(false);
+        }finally{
+            try {
+                connect.close();
+            } catch (IOException e) {
+                System.out.println("false");
+            }
+        }
+    }
 
 }

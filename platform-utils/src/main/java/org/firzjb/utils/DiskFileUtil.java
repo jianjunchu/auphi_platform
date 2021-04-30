@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 
 /**
  * 文件操作类型
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-01-04 10:53
  */
 public class DiskFileUtil {

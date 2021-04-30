@@ -53,7 +53,7 @@ public class DesignerController extends BaseController {
         UserResponse user = null;
         try {
             //用户名密码验证
-            user = userService.auth(user_name, password);
+            user = userService.authDesigner(user_name, password);
             object.put("priviledges",-1);
             object.put("user_id",user.getUserId());
             object.put("user_name",user.getNickName());
@@ -73,6 +73,8 @@ public class DesignerController extends BaseController {
             rep.put("DBName", Const.getConfig("jdbc.database"));
             rep.put("DBType", Const.getConfig("jdbc.type"));
             rep.put("version", "V3.0");
+            rep.put("rep_username", Const.getRepositoryUsername());
+            rep.put("rep_password", Const.getRepositoryPassword());
 
             rep.put("DBPort", Const.getConfig("jdbc.port"));
 

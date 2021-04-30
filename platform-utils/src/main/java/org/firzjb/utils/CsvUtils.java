@@ -5,6 +5,7 @@ import com.csvreader.CsvWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class CsvUtils {
         // 创建CSV写对象
         CsvWriter csvWriter = new CsvWriter(filePath,',', Charset.forName("UTF-8"));
         //CsvWriter csvWriter = new CsvWriter(filePath);
+        csvWriter.setTextQualifier(' ');
         if(headers!=null){
             csvWriter.writeRecord(headers);
         }
@@ -69,13 +71,7 @@ public class CsvUtils {
         return list;
     }
 
-    public static void main(String[] args) throws IOException {
-        String filePath = "test.csv";
-        String[] headers = {"编号","姓名","年龄"};
-        String[] content = {"12365","张山","34"};
-        read(filePath,false);
 
-    }
 
     // 判断文件是否存在
     public static void judeFileExists(String filePath) {
@@ -92,5 +88,20 @@ public class CsvUtils {
             }
         }
 
+    }
+
+    public  static URI getURI(String url) {
+        URI effectiveURI = URI.create(url);
+
+
+        return effectiveURI;
+    }
+
+    public static void main(String[] args) {
+        URI uri = getURI("http://192.168.113.131:8083/generateRandom");
+
+        System.out.println(uri.getHost());
+        System.out.println(uri.getPort());
+        System.out.println(uri.getPath());
     }
 }

@@ -4,7 +4,7 @@ import org.firzjb.priviledge.i18n.Messages;
 import org.junit.jupiter.api.Test;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-30 19:21
  */
 public class TestPriviledgeType {

@@ -59,6 +59,7 @@ public class JobExecutor implements Runnable {
 	@Override
 	public void run() {
 		try {
+			startDate = new Date();
 			for (String varName : executionConfiguration.getVariables().keySet()) {
 				String varValue = executionConfiguration.getVariables().get(varName);
 				jobMeta.setVariable(varName, varValue);

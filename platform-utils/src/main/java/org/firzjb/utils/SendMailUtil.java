@@ -20,7 +20,7 @@ import java.util.Properties;
 
 /**
  * 发送邮件
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-11-16 13:02
  */
 @Component
@@ -59,7 +59,7 @@ public class SendMailUtil {
 
         String nick="";
         try {
-            nick=javax.mail.internet.MimeUtility.encodeText("傲飞数据整合平台");
+            nick=javax.mail.internet.MimeUtility.encodeText("制证数据实时汇聚系统");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

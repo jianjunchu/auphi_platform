@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * A step that blocks throughput until the input ends, then it will either output the last row or the complete input.
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Component("BlockingStep")

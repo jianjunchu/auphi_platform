@@ -123,6 +123,30 @@ public class User extends DataEntity<User> {
     @TableField("LAST_LOGIN_IP")
     private String lastLoginIp;
 
+    /**
+     * 备用字段1
+     */
+    @TableField("C_FIELD1")
+    private String field1;
+
+    /**
+     * 备用字段2
+     */
+    @TableField("C_FIELD2")
+    private String field2;
+
+    /**
+     * 备用字段3
+     */
+    @TableField("C_FIELD3")
+    private String field3;
+
+    /**
+     * 备用字段4
+     */
+    @TableField("C_FIELD4")
+    private String field4;
+
 
     @Override
     protected Serializable pkVal() {

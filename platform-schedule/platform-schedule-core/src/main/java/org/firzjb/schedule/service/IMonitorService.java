@@ -32,4 +32,7 @@ public interface IMonitorService extends IService<Monitor> {
      */
     MonitorResponse getPlanMonitor(MonitorRequest request);
 
+
+    boolean isRun(String jobName, String jobGroup);
+
 }

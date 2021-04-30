@@ -10,7 +10,7 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-13 14:54
  */
 @Setter

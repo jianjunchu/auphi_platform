@@ -44,7 +44,7 @@ import java.util.List;
 
 /**
  *  配置类 SwaggerConfig
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Configuration
@@ -72,8 +72,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         @SuppressWarnings("deprecation")
         ApiInfo info = new ApiInfo(
-                "傲飞数据整合平台接口文档",
-                "傲飞数据整合平台接口文档",
+                "制证数据实时汇聚系统接口文档",
+                "制证数据实时汇聚系统接口文档",
                 "3.9",
                 "urn:tos",
                 "Auphi Data Management Platform",

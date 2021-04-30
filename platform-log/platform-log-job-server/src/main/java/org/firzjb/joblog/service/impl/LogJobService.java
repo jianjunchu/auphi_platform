@@ -25,4 +25,9 @@ public class LogJobService extends BaseService<LogJobMapper, LogJob> implements 
     public List<LogJobResponse> getLogJobs(LogJobRequest request) {
         return null;
     }
+
+    @Override
+    public int updateStatusToStop() {
+        return baseMapper.updateStatusToStop();
+    }
 }

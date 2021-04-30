@@ -16,7 +16,7 @@ public class UploadUnitDBInfoService  implements IUploadUnitDBInfoService {
     @Override
     public Page getPage(Page page, UploadUnitDBInfoRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         StringBuffer sql = new StringBuffer("select ")
                 .append("  a.unit_no AS unitNo, a.db_type AS dbType, a.sid AS sid, a.db_host AS dbHost, a.db_user AS dbUser, a.db_pwd AS dbPwd, a.db_port AS dbPort, a.is_backup AS isBackup, a.create_time AS createTime, a.update_time AS updateTime ")

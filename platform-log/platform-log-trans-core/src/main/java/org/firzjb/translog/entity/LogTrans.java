@@ -28,7 +28,7 @@ public class LogTrans extends Model<LogTrans> {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "LOG_TRANS_ID", type = IdType.ID_WORKER)
+    @TableId(value = "LOG_TRANS_ID", type = IdType.INPUT)
     private Long logTransId;
     /**
      * 对应转换表 R_TRANSFORMATION 中的ID_TRANSFORMATION 字段

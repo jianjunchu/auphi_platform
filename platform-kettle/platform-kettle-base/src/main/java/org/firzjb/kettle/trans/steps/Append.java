@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Read all rows from a hop until the end, and then read the rows from another hop.
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Component("Append")

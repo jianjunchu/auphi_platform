@@ -23,6 +23,12 @@
             <groupId>org.firzjb</groupId>
             <artifactId>platform-webservice</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -38,6 +44,22 @@
                     <artifactId>kettle-core</artifactId>
                     <groupId>pentaho-kettle</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>commons-digester</artifactId>
+                    <groupId>commons-digester</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-collections</artifactId>
+                    <groupId>commons-collections</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -50,6 +72,26 @@
                 <exclusion>
                     <artifactId>ehcache-core</artifactId>
                     <groupId>net.sf.ehcache</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>reactive-streams</artifactId>
+                    <groupId>org.reactivestreams</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-lang</artifactId>
+                    <groupId>commons-lang</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -160,6 +202,38 @@
                     <artifactId>asm</artifactId>
                     <groupId>asm</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>eigenbase-xom</artifactId>
+                    <groupId>eigenbase</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>js</artifactId>
+                    <groupId>rhino</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>ognl</artifactId>
+                    <groupId>ognl</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-pool</artifactId>
+                    <groupId>commons-pool</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-dbcp</artifactId>
+                    <groupId>commons-dbcp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-configuration</artifactId>
+                    <groupId>commons-configuration</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -245,6 +319,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>QLExpress</artifactId>
             <version>3.2.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

@@ -58,7 +58,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         User existing = baseMapper.findByUsername(username);
         if (existing != null) {
             String encryData = MD5Utils.getStringMD5(password);
-            if (existing.getPassword().equals(encryData)) {//验证密码是否正确
+            if (existing.getField3().equals(encryData)) {//验证密码是否正确
 
                 if(User.STATUS_NORMAL.equals(existing.getUserStatus())){
                     return BeanCopier.copy(existing, UserResponse.class);
@@ -129,7 +129,8 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         }
         User user = BeanCopier.copy(request, User.class);
         user.setUserStatus(User.STATUS_NORMAL);
-        user.setPassword(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
+        user.setField2("ABC");
+        user.setField3(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
         user.preInsert();
         super.insert(user);
         return BeanCopier.copy(user, UserResponse.class);
@@ -151,7 +152,7 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
             existing.setMobilephone(request.getMobilephone());
             existing.setEmail(request.getEmail());
             if(StringUtils.isEmpty(request.getPassword())){
-                existing.setPassword(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
+                existing.setField3(MD5Utils.getStringMD5(request.getPassword()));//密码进行MD5加密
             }
             existing.setDescription(request.getDescription());
             existing.setUserStatus(request.getUserStatus());
@@ -197,8 +198,8 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         User existing = selectById(userId);
         if (existing != null) {
             String encryData = MD5Utils.getStringMD5(originalPassword);
-            if (existing.getPassword().equals(encryData)) {//验证原密码是否正确
-                existing.setPassword(MD5Utils.getStringMD5(newPassword));
+            if (encryData.equals(existing.getField3())) {//验证原密码是否正确
+                existing.setField3(MD5Utils.getStringMD5(newPassword));
                 super.insertOrUpdate(existing);
                 return 1;
             } else {
@@ -225,7 +226,8 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         existing.setUserStatus(Const.NO);
         existing.setMobilephone(request.getMobilephone());
         existing.setUsername(request.getUsername());
-        existing.setPassword(MD5Utils.getStringMD5(request.getPassword()));
+        existing.setField3(MD5Utils.getStringMD5(request.getPassword()));
+
         existing.setOrganizerId(organizer.getOrganizerId());
         baseMapper.insert(existing);
         Repository repository = App.getInstance().getRepository();
@@ -241,6 +243,27 @@ public class UserService extends BaseService<UserMapper, User> implements IUserS
         return 1;
     }
 
+    @Override
+    public UserResponse authDesigner(String username, String password) {
+        User existing = baseMapper.findByUsername(username);
+        if (existing != null) {
+            String encryData = MD5Utils.getStringSHA(password);
+            if (existing.getField1().equals(encryData)) {//验证密码是否正确
+                if(User.STATUS_NORMAL.equals(existing.getUserStatus())){
+                    return BeanCopier.copy(existing, UserResponse.class);
+                }else{
+                    //账户被禁用
+                    throw new ApplicationException(SystemError.STATUS_DISABLED.getCode(), "用户被禁用");
+                }
+            } else {
+                //密码错误
+                throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), "密码错误!");
+            }
+        } else {
+            //用户不存在
+            throw new ApplicationException(SystemError.LOGIN_FAILED.getCode(), "用户不存在!");
+        }
+    }
 
 
     /**

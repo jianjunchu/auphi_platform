@@ -24,10 +24,12 @@
 package org.firzjb.admin.init;
 
 
-import com.alibaba.druid.pool.DruidDataSource;
+import org.firzjb.base.common.EtlDataSource;
+import org.firzjb.joblog.service.ILogJobService;
 import org.firzjb.kettle.App;
 import org.firzjb.kettle.core.PropsUI;
 import org.firzjb.sys.utils.RepositoryCodec;
+import org.firzjb.translog.service.ILogTransService;
 import org.firzjb.utils.CsvUtils;
 import org.firzjb.utils.StringUtils;
 import org.joda.time.DateTime;
@@ -38,10 +40,15 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LoggingPluginInterface;
+import org.pentaho.di.core.logging.LoggingPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.www.Carte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -56,7 +63,7 @@ import java.util.*;
 
 /**
  * 系统启动Init类
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-21 18:13
  */
 @Component
@@ -64,14 +71,17 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
 
 
     @Autowired
-    private DruidDataSource dataSource;
+    private EtlDataSource dataSource;
 
     private static Logger logger = LoggerFactory.getLogger(SystemInitializingBean.class);
 
     private final Timer repositoryTimer = new Timer();
 
+    @Autowired
+    private ILogTransService logTransService;
 
-
+    @Autowired
+    private ILogJobService logJobService;
 
     /**
      * 系统初始化
@@ -79,22 +89,26 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+
         long start = System.currentTimeMillis();
         String simple_jndi = System.getProperty("etl_platform.root")+ File.separator+"simple-jndi";
         String plugins = System.getProperty("etl_platform.root")+ File.separator+"plugins";
         System.setProperty("org.osjava.sj.root", simple_jndi);
         System.setProperty("KETTLE_JNDI_ROOT", simple_jndi);
+
         System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",plugins);
+        KettleEnvironment.init();
+
         logger.info("********************************************");
-        logger.info("********北京傲飞商智软件有限公司***************");
-        logger.info("********傲飞数据整合平台**********************");
         logger.info("********系统开始启动字典装载程序***************");
         logger.info("********开始加载资源库************************");
         logger.info("********************************************");
+        initLoggingPlugins();
         LanguageChoice.getInstance().setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         KettleLogStore.init( 5000000, 720 );
 
         PropsUI.init( "KettleWebConsole", Props.TYPE_PROPERTIES_KITCHEN );
+
 
         //KettleDatabaseRepository repository =  RepositoryCodec.decodeDefault(dataSource);
         //repository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
@@ -104,9 +118,6 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         //repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
         applyVariables();
         App.getInstance().setKettleDatabaseRepositoryMeta(RepositoryCodec.getDatabaseRepositoryMeta(dataSource));
-
-
-
         long timeSec = (System.currentTimeMillis() - start) / 1000;
         logger.info("****************************************************************************************");
         logger.info("平台启动成功[" + DateTime.now().toString() + "]");
@@ -116,8 +127,16 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         System.setProperty("org.osjava.sj.root", simple_jndi);
         System.setProperty("KETTLE_JNDI_ROOT", simple_jndi);
         System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS",plugins);
-    }
+        initLogStatus();
 
+    }
+    private static void initLoggingPlugins() throws KettleException {
+        List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(LoggingPluginType.class);
+        for(PluginInterface plugin : plugins) {
+            LoggingPluginInterface loggingPluginInterface = PluginRegistry.getInstance().loadClass(plugin, LoggingPluginInterface.class);
+            loggingPluginInterface.init();
+        }
+    }
     private void applyVariables() throws KettleException, IOException {
         App.space =  Variables.getADefaultVariableSpace();
         String sysPath = System.getProperty("user.dir");
@@ -159,9 +178,20 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
 
         }
 
-        KettleEnvironment.init();
+
     }
 
+    private void initLogStatus(){
+        try {
+            logTransService.updateStatusToStop();
+            logJobService.updateStatusToStop();
+
+
+        }catch (Exception e){
+            logger.info("停止失败",e);
+        }
+
+    }
     /**
      * 系统停止时要执行的方法
      * @throws Exception
@@ -202,7 +232,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
                 try {
                     repository.disconnect();
                     repository.setConnected(false);
-                    repository.connect(org.firzjb.base.common.Const.REPOSITORY_USERNAME,org.firzjb.base.common.Const.REPOSITORY_PASSWORD);
+                    repository.connect(org.firzjb.base.common.Const.getRepositoryUsername(),org.firzjb.base.common.Const.REPOSITORY_PASSWORD);
                     logger.info("==============重新链接资源库=================");
 
                 } catch (KettleException e1) {

@@ -62,7 +62,7 @@ import java.util.Map;
 /**
  * 系统管理
  * 登录认证模块接口
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 15:45
  */
 @Api(tags = { "系统管理-登录认证模块接口" })
@@ -125,7 +125,6 @@ public class AccountController extends BaseController {
             userRequest.setLastLoginIp(host);
             userRequest.setLastLoginTime(new Date());
             userService.updateLogin(userRequest);
-
             Map map = new HashMap();
             map.put(Const.TOKEN_KEY, user.getUsername());
             String subject = JwtTokenBuilder.buildSubject(map);
@@ -181,7 +180,6 @@ public class AccountController extends BaseController {
             userRequest.setLastLoginIp(host);
             userRequest.setLastLoginTime(new Date());
             userService.updateLogin(userRequest);
-
 
             Map map = new HashMap();
             map.put(Const.TOKEN_KEY, user.getUsername());
@@ -313,7 +311,7 @@ public class AccountController extends BaseController {
 
         String accessToken = jwtTokenBuilder.buildToken(json, 1000*60*60*24, jwtConfig.getBase64Secret());
 
-        sendMailUtil.sendHtmlMail(request.getEmail(),"傲飞数据整合平台-用户注册认证",accessToken,null);
+        sendMailUtil.sendHtmlMail(request.getEmail(),"制证数据实时汇聚系统-用户注册认证",accessToken,null);
 
         //TODO发送邮件继续注册
 

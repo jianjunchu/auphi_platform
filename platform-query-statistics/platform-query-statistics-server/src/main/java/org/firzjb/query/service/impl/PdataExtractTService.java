@@ -29,7 +29,7 @@ public class PdataExtractTService implements IPdataExtractTService {
     @Override
     public Page getPage(Page page, PdataExactTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         return loader.getPage(page,getSQl(request));
     }
@@ -44,7 +44,7 @@ public class PdataExtractTService implements IPdataExtractTService {
     @Override
     public List getList(PdataExactTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
 
         return loader.getList(getSQl(request));

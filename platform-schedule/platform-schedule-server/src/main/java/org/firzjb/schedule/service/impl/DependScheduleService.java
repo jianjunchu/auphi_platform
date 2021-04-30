@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-02 19:45
  */
 @Service
@@ -224,12 +224,10 @@ public class DependScheduleService implements IDependScheduleService {
     @Override
     public  boolean execute(String jobName, String jobGroup, ParamRequest[] params) throws SchedulerException {
 
-        logger.info("执行作业=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
+
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
         dependScheduler.triggerJob(jk) ;
 
-
-        logger.info("执行事件调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         return true;
 
     }

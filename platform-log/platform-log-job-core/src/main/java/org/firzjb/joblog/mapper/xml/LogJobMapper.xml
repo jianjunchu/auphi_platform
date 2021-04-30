@@ -123,4 +123,8 @@
         )
     </insert>
 
+    <update id="updateStatusToStop">
+        update LOG_JOB set STATUS = 'stop' where STATUS = 'start';
+    </update>
+
 </mapper>

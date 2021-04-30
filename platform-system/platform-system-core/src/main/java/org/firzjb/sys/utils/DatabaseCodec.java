@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-21 13:56
  */
 public class DatabaseCodec extends org.firzjb.kettle.core.database.DatabaseCodec {

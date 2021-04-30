@@ -1,7 +1,7 @@
 package org.firzjb.sys.controller;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-13 13:38
  */
 
@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-12 20:07
  */
 @Log4j
@@ -73,6 +73,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/my", method = RequestMethod.GET)
     public Response<UserResponse> my(
             @ApiIgnore @CurrentUser CurrentUserResponse user)  {
+
         UserResponse response = userService.get(user.getUserId());
 
 
@@ -80,24 +81,27 @@ public class UserController extends BaseController {
         if(response!=null){
 
             List<RoleResponse> roleResponses =  roleService.getRolesByUser(response.getUserId());
-            if(roleResponses.contains(new RoleResponse(1L))
-                    || roleResponses.contains(new RoleResponse(2L))
-                    || roleResponses.contains(new RoleResponse(3L))
-                    || roleResponses.contains(new RoleResponse(4L))){
-                response.setHomePage("/home/sdata_loading_statistical");
-            }else {
-                response.setHomePage("/home/dashboard");
-            }
 
+
+
+            response.setHomePage("/home");
 
             List<MenuResponse>  list = menuService.getMenusByUser(response.getUserId());
+
             List<String> roles = new ArrayList<>();
 
             for(MenuResponse menuResponse : list){
                 roles.add(menuResponse.getPerms());
+                if("dashboard".equalsIgnoreCase(menuResponse.getUrl())){
+                    response.setHomePage("/home/dashboard");
+                }
+                if("sdata_loading_statistical".equalsIgnoreCase(menuResponse.getUrl())){
+                    response.setHomePage("/home/sdata_loading_statistical");
+                }
             }
             if(response.getIsSystemUser()!=null && response.getIsSystemUser() ==1){
                 roles.add("admin");
+                response.setHomePage("/home/sdata_loading_statistical");
             }
 
             response.setRoles(roles);
@@ -126,6 +130,7 @@ public class UserController extends BaseController {
         if(user.getUnitId()>0){
             request.setUnitId(user.getUnitId());
         }
+        request.setField2("ABC");
         Page<UserResponse> page = userService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -202,7 +207,7 @@ public class UserController extends BaseController {
 
         User existing = userService.selectById(request.getUserId());
         if(existing!=null){
-            existing.setPassword(MD5Utils.getStringMD5(request.getNewPassword()));//密码进行MD5加密
+            existing.setField3(MD5Utils.getStringMD5(request.getNewPassword()));//密码进行MD5加密
             existing.preUpdate();
             userService.updateById(existing);
         }else{

@@ -23,4 +23,6 @@ public interface ILogTransService extends IService<LogTrans> {
      * @return
      */
     List<LogTransResponse> getLogJobs(LogTransRequest request);
+
+    int  updateStatusToStop();
 }

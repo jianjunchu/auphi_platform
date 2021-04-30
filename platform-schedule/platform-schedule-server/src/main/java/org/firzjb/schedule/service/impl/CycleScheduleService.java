@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-02 19:45
  */
 @Service
@@ -177,11 +177,14 @@ public class CycleScheduleService implements ICycleScheduleService {
     @Override
     public  boolean execute(String jobName, String jobGroup, ParamRequest[] params) throws SchedulerException {
 
-        logger.info("执行作业=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
         JobKey jk = JobKey.jobKey(jobName,jobGroup);
-        quartzScheduler.triggerJob(jk) ;
-        logger.info("执行周期调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
-        return true;
+        try {
+            quartzScheduler.triggerJob(jk) ;
+            logger.info("执行周期调度=> [作业名称：" + jobName + " 作业组：" + jobGroup + "] ");
+            return true;
+        }catch (Exception e){
+            throw new ApplicationException(e.getMessage());
+        }
 
     }
 
@@ -289,6 +292,19 @@ public class CycleScheduleService implements ICycleScheduleService {
     public JobDetail getScheduleByName(String jobName) {
 
         return null;
+    }
+
+    @Override
+    public boolean isRun(String jobName, String jobGroup) throws SchedulerException {
+        List<JobExecutionContext> jobContexts = quartzScheduler.getCurrentlyExecutingJobs();
+        for(JobExecutionContext context : jobContexts) {
+            //请求停止的job服务存在的场合。
+            JobKey jobKey = context.getJobDetail().getKey();
+            if (jobName.equals(jobKey.getName()) && jobGroup.equals(jobKey.getGroup())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

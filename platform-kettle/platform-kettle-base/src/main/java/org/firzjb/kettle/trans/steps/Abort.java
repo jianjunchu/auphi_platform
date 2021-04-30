@@ -23,7 +23,7 @@ import java.util.List;
  *
  * Step that will abort after having seen 'x' number of rows on its input.
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Component("Abort")

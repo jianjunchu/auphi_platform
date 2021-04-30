@@ -60,7 +60,7 @@ import java.util.*;
 
 /**
  * 数据源管理接口API
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Log4j

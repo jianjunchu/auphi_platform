@@ -2,7 +2,7 @@ package org.firzjb.kettle.bean;
 
 /**
  * 数据库连接响应 Node对象
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 public class DatabaseNode extends Ext3Node {

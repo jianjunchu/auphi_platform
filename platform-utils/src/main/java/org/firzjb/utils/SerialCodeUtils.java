@@ -3,7 +3,7 @@ package org.firzjb.utils;
 import java.util.Random;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-08-06 15:05
  */
 public class SerialCodeUtils {

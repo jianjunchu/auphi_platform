@@ -37,7 +37,7 @@ import java.text.ParseException;
  *
  * ${DESCRIPTION}
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-02 19:44
  */
 public interface ICycleScheduleService {
@@ -102,4 +102,6 @@ public interface ICycleScheduleService {
 
 
     JobDetail getScheduleByName(String jobName);
+
+    boolean isRun(String jobName, String jobGroup) throws SchedulerException;
 }

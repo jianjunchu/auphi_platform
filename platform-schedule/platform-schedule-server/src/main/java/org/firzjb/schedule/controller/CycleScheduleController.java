@@ -13,6 +13,7 @@ import org.firzjb.base.model.response.CurrentUserResponse;
 import org.firzjb.base.model.response.Response;
 import org.firzjb.base.model.vo.DataGrid;
 import org.firzjb.schedule.entity.JobDependencies;
+import org.firzjb.schedule.exception.ScheduleError;
 import org.firzjb.schedule.job.JobRunner;
 import org.firzjb.schedule.job.TransRunner;
 import org.firzjb.schedule.model.request.GeneralScheduleRequest;
@@ -21,10 +22,7 @@ import org.firzjb.schedule.model.response.GeneralScheduleResponse;
 import org.firzjb.schedule.model.response.GroupResponse;
 import org.firzjb.schedule.model.response.JobDetailsResponse;
 import org.firzjb.schedule.model.response.JobPlanResponse;
-import org.firzjb.schedule.service.ICycleScheduleService;
-import org.firzjb.schedule.service.IGroupService;
-import org.firzjb.schedule.service.IJobDependenciesService;
-import org.firzjb.schedule.service.IJobDetailsService;
+import org.firzjb.schedule.service.*;
 import org.firzjb.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -42,7 +40,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-22 15:39
  */
 @Api(tags = { "调度管理-周期调度" })
@@ -58,6 +56,9 @@ public class CycleScheduleController extends BaseController {
 
     @Autowired
     private ICycleScheduleService cycleScheduleService;
+
+    @Autowired
+    private IMonitorService monitorService;
 
     @Autowired
     private IJobDependenciesService jobDependenciesService;
@@ -316,13 +317,24 @@ public class CycleScheduleController extends BaseController {
     }
 
     @ApiOperation(value = "手动执行调度", notes = "手动执行调度")
-    @RequestMapping(value = "/execute/{jobName}/group/{jobGroup}", method = RequestMethod.GET)
+    @RequestMapping(value = "/execute/{jobName}/group/{jobGroup}/repeat/{repeat}", method = RequestMethod.GET)
     public Response<Integer> execute(
             @ApiParam(value = "调度名称", required = true)@PathVariable String jobName,
             @ApiParam(value = "调度分组ID", required = true)@PathVariable String jobGroup,
+            @ApiParam(value = "如果已经在运行是的继续1:是", required = false)@PathVariable Integer repeat,
             @ApiIgnore @CurrentUser CurrentUserResponse user) throws SchedulerException {
 
-        return Response.ok(cycleScheduleService.execute(jobName,jobGroup,null)) ;
+        if(repeat ==1){
+            return Response.ok(cycleScheduleService.execute(jobName,jobGroup,null)) ;
+        }else{
+            boolean isRun  = cycleScheduleService.isRun(jobName,jobGroup);
+            if(isRun){
+                throw new ApplicationException(ScheduleError.IS_RUN.getCode(),ScheduleError.IS_RUN.getMessage());
+            }else{
+                return Response.ok(cycleScheduleService.execute(jobName,jobGroup,null)) ;
+            }
+        }
+
     }
 
 

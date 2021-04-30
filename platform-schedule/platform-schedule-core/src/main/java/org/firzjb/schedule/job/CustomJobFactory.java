@@ -6,7 +6,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-02 19:46
  */
 public class CustomJobFactory extends SpringBeanJobFactory {

@@ -21,6 +21,10 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="C_UNIT_ID" property="unitId" />
         <result column="DEL_FLAG" property="delFlag" />
+        <result column="C_FIELD1" property="field1" />
+        <result column="C_FIELD2" property="field2" />
+        <result column="C_FIELD3" property="field3" />
+        <result column="C_FIELD4" property="field4" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -47,6 +51,10 @@
         , a.C_UNIT_ID AS unitId
         , c.ORGANIZER_CODE AS unitCode
         , c.ORGANIZER_NAME AS unitName
+        , a.C_FIELD1 AS field1
+        , a.C_FIELD2 AS field2
+        , a.C_FIELD3 AS field3
+        , a.C_FIELD4 AS field4
     </sql>
     <sql id="Base_Joins">
         LEFT JOIN SYS_ORGANIZER b ON b.ORGANIZER_ID = a.C_ORGANIZER_ID
@@ -69,6 +77,9 @@
             </if>
             <if test="unitId !=null and unitId>0">
                 AND  a.C_UNIT_ID  = #{unitId}
+            </if>
+            <if test="field2 !=null  and field2!='' ">
+                AND  a.C_FIELD2  = #{field2}
             </if>
         </where>
     </select>

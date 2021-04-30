@@ -5,7 +5,6 @@ import org.firzjb.base.common.Const;
 import org.firzjb.kettle.App;
 import org.firzjb.sys.model.response.RepositoryDatabaseResponse;
 import org.firzjb.sys.model.response.RepositoryResponse;
-import org.firzjb.sys.model.response.RepositoryResponse;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,6 +48,7 @@ public class RepositoryCodec extends org.firzjb.kettle.repository.RepositoryCode
 		nativeMeta.setAttributes( attrs );
 
 		DatabaseMeta databaseMeta = new DatabaseMeta();
+		databaseMeta.setDatabaseType(Const.getConfig("jdbc.type"));
 		databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_NATIVE);
 		databaseMeta.setDatabaseInterface(nativeMeta);
 		databaseMeta.setUsername(dataSource.getUsername());
@@ -77,7 +77,7 @@ public class RepositoryCodec extends org.firzjb.kettle.repository.RepositoryCode
 		databaseRepository.init(getDatabaseRepositoryMeta(dataSource));
 
 		databaseRepository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
-		databaseRepository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
+		databaseRepository.connect(Const.getRepositoryUsername(),Const.getRepositoryPassword());
 		App.getInstance().setCurrentRepository(userId,databaseRepository);
 		return databaseRepository;
 

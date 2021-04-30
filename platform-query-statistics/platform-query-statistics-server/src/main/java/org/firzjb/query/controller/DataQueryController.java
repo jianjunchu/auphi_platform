@@ -104,6 +104,11 @@ public class DataQueryController extends BaseController {
     @RequestMapping(value = "/backupFrequency/chartData", method = RequestMethod.GET)
     public Response<JSONObject> backupFrequencyChartData(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
 
+        if(user.getUnitId()>0){
+            request.setUnitNo(user.getUnitCode());
+        }
+
+
         if(StringUtils.isEmpty(request.getStartBackupTime())){
             long l = System.currentTimeMillis() - 3600 * 1000 * 24 * 15;
             request.setStartBackupTime(DateUtils.format(new Date(l),"yyyyMMdd000000"));
@@ -120,11 +125,11 @@ public class DataQueryController extends BaseController {
 
 
     /**
-     * 备份记录查询(分页查询)
+     * 服务端 数据装载记录(分页查询)
      * @param request
      * @return
      */
-    @ApiOperation(value = "备份记录查询(分页查询)", notes = "备份记录查询(分页查询)")
+    @ApiOperation(value = "服务端 数据装载记录(分页查询)", notes = "备份记录查询(分页查询)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页码(默认1)", paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "rows", value = "每页数量(默认10)", paramType = "query", dataType = "Integer"),
@@ -132,9 +137,10 @@ public class DataQueryController extends BaseController {
     })
     @RequestMapping(value = "/backupRecord/listPage", method = RequestMethod.GET)
     public Response<DataGrid<DataLoadTResponse>> backupRecordPage(@ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws KettleException, SQLException {
-        if(!StringUtils.isEmpty(user.getUnitCode())){
+        if(user.getUnitId()>0){
             request.setUnitNo(user.getUnitCode());
         }
+
         Page<DataLoadTResponse> page = pdataLoadTService.getPage(getPagination(request), request);
         return Response.ok(buildDataGrid(page)) ;
     }
@@ -154,6 +160,10 @@ public class DataQueryController extends BaseController {
     public Response<Object> s_error(
             HttpServletResponse response,
             @ApiIgnore SerrorTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
+
+        if(user.getUnitId()>0){
+            request.setUnitNo(user.getUnitCode());
+        }
 
         if(request.getExport() == 1){
             List<Map<String,Object>> dataList = perrorLoadTService.getList(request);
@@ -292,7 +302,10 @@ public class DataQueryController extends BaseController {
     public Response<JSONObject> sdata_loading_statistical(
             @ApiIgnore DataLoadTRequest request,@ApiIgnore @CurrentUser CurrentUserResponse user) throws Exception {
 
-        request.setUnitNo(user.getUnitCode());
+        if(user.getUnitId()>0){
+            request.setUnitNo(user.getUnitCode());
+        }
+
 
         if(StringUtils.isEmpty(request.getStartBackupTime())){
             long l = System.currentTimeMillis() - 3600 * 1000 * 24 * 15;

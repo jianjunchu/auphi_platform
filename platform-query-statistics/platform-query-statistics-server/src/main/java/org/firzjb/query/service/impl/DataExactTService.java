@@ -17,7 +17,7 @@ public class DataExactTService   implements IDataExactTService {
     @Override
     public Page getPage(Page page, DataExactTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         StringBuffer sql = new StringBuffer("select   a.batch_no AS batchNo, a.unit_no AS unitNo, a.backup_start  AS  backupStart, a.backup_end  AS  backupEnd, a.backup_time  AS backupTime, a.backup_count AS backupCount, a.backup_valid_count AS backupValidCount, a.backup_invalid_count AS backupInvalidCount, a.business  AS business, a.operation  AS operation from l_data_exact_t a where 1 = 1" );//where a.batch_no like '%"+request.getBatchNo()+"%'";
         if(!StringUtils.isEmpty(request.getBatchNo())){

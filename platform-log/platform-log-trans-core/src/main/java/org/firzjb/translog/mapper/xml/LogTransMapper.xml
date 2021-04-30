@@ -66,6 +66,10 @@
         where LOG_TRANS_ID = #{et.logTransId}
     </update>
 
+    <update id="updateStatusToStop">
+        update LOG_TRANS set STATUS = 'stop' where STATUS = 'start';
+    </update>
+
     <insert id="insert">
         insert into LOG_TRANS (
               LOG_TRANS_ID

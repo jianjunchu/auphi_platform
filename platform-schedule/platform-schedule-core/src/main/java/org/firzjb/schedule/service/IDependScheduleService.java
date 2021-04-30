@@ -42,7 +42,7 @@ import java.util.Map;
  *
  * ${DESCRIPTION}
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-02 19:44
  */
 public interface IDependScheduleService {

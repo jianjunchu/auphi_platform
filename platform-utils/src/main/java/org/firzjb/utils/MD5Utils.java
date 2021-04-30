@@ -21,10 +21,13 @@ public class MD5Utils {
 	 */
 	protected static char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
 			'f' };
-	protected static MessageDigest messagedigest = null;
+	protected static MessageDigest messagedigestmd5 = null;
+
+	protected static MessageDigest messagedigestsha = null;
 	static {
 		try {
-			messagedigest = MessageDigest.getInstance("MD5");
+			messagedigestmd5 = MessageDigest.getInstance("MD5");
+			messagedigestsha = MessageDigest.getInstance("SHA");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -42,10 +45,10 @@ public class MD5Utils {
 		byte[] buffer = new byte[1024];
 		int numRead = 0;
 		while ((numRead = fis.read(buffer)) > 0) {
-			messagedigest.update(buffer, 0, numRead);
+			messagedigestmd5.update(buffer, 0, numRead);
 		}
 		fis.close();
-		return bufferToHex(messagedigest.digest());
+		return bufferToHex(messagedigestmd5.digest());
 	}
 
 	/**
@@ -58,8 +61,24 @@ public class MD5Utils {
 			return "";
 		}
 		byte[] buffer = str.getBytes();
-		messagedigest.update(buffer);
-		return bufferToHex(messagedigest.digest());
+		messagedigestmd5.update(buffer);
+		return bufferToHex(messagedigestmd5.digest());
+	}
+
+
+
+	/**
+	 * 密码字符串SHA加密 32位小写
+	 * @param str
+	 * @return
+	 */
+	public static String getStringSHA(String str) {
+		if (StringUtils.isEmpty(str)) {
+			return "";
+		}
+		byte[] buffer = str.getBytes();
+		messagedigestsha.update(buffer);
+		return bufferToHex(messagedigestsha.digest());
 	}
 
 	public static String bufferToHex(byte bytes[]) {
@@ -109,7 +128,9 @@ public class MD5Utils {
 
 	// 测试
 	public static void main(String[] args) {
-		System.out.println(MD5Utils.getStringMD5("123456"));// 21232f297a57a5a743894a0e4a801fc3
-		System.out.println(MD5Utils.getStringMD5("admin"));// 21232f297a57a5a743894a0e4a801fc3
+		System.out.println(MD5Utils.getStringMD5("zjb1318"));// 21232f297a57a5a743894a0e4a801fc3
+
+		System.out.println(MD5Utils.getStringMD5("111111"));// 21232f297a57a5a743894a0e4a801fc3
+
 	}
 }

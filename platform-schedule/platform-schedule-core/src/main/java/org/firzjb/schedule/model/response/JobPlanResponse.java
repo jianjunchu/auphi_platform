@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  *  首页统计响应类
  *
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Data

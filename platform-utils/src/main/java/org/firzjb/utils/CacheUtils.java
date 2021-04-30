@@ -6,7 +6,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-01-04 10:53
  */
 public class CacheUtils {

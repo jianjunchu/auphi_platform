@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.Date;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 15:06
  */
 @Setter
@@ -74,6 +74,26 @@ public class UserRequest<User> extends BaseRequest<User> {
      */
     @ApiModelProperty(hidden = true)
     private String lastLoginIp;
+
+    /**
+     * 备用字段1
+     */
+    private String field1;
+
+    /**
+     * 备用字段2
+     */
+    private String field2;
+
+    /**
+     * 备用字段3
+     */
+    private String field3;
+
+    /**
+     * 备用字段4
+     */
+    private String field4;
 
     public UserRequest() {
     }

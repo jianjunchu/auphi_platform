@@ -46,9 +46,7 @@ public class JobLogTimerTask extends TimerTask {
                     first = false;
                     logJobSteps = new ArrayList<>();
                     logJob.setJobConfigId(Long.valueOf(jobExecutor.getJobMeta().getObjectId().getId()));
-                    logJob.setLogJobId(IdWorker.getId());
-                    logJob.insert();
-
+                    logJob.updateById();
 
                 }else{
 

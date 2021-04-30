@@ -24,7 +24,7 @@ import java.util.TimerTask;
 
 /**
  * 文件上传下载接口api，用于资源库导入和导出
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @RestController

@@ -17,4 +17,5 @@ import org.firzjb.translog.entity.LogTrans;
 public interface LogTransMapper extends BaseMapper<LogTrans> {
 
 
+    int updateStatusToStop();
 }

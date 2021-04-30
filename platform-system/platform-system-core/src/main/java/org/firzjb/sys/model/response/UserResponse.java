@@ -1,5 +1,6 @@
 package org.firzjb.sys.model.response;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-13 15:28
  */
 @Getter
@@ -106,6 +107,26 @@ public class UserResponse {
      */
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
+
+    /**
+     * 备用字段1
+     */
+    private String field1;
+
+    /**
+     * 备用字段2
+     */
+    private String field2;
+
+    /**
+     * 备用字段3
+     */
+    private String field3;
+
+    /**
+     * 备用字段4
+     */
+    private String field4;
 
     private String homePage;
 

@@ -3,6 +3,7 @@ package org.firzjb.base.common;
 import org.firzjb.utils.PropertiesLoader;
 import org.firzjb.utils.StringUtils;
 import com.google.common.collect.Maps;
+import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
 
 import java.io.File;
 import java.util.Map;
@@ -51,6 +52,19 @@ public class Const {
      * @see ${fns:getConfig('adminPath')}
      */
     public static String getConfig(String key) {
+        String value = map.get(key);
+        if (value == null){
+            value = loader.getProperty(key);
+            map.put(key, value != null ? value : StringUtils.EMPTY);
+        }
+        return value;
+    }
+
+    /**
+     * 获取系统类型
+     */
+    public static String getSysType() {
+        String key = "sys.type.mode";
         String value = map.get(key);
         if (value == null){
             value = loader.getProperty(key);
@@ -132,6 +146,15 @@ public class Const {
     }
 
 
+    public static String getRepositoryUsername() {
+        String username = getConfig("default.repository.username");
+        return KettleTwoWayPasswordEncoder.decryptPassword(username);
+    }
+
+    public static String getRepositoryPassword() {
+        String password = getConfig("default.repository.password");
+        return KettleTwoWayPasswordEncoder.decryptPassword(password);
+    }
 
 
 }

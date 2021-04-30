@@ -29,7 +29,7 @@ public class PerrorLoadTService implements IPerrorLoadTService {
     @Override
     public Page getPage(Page page, SerrorTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
         return loader.getPage(page,getSQl(request,loader));
 
 
@@ -44,7 +44,7 @@ public class PerrorLoadTService implements IPerrorLoadTService {
      */
     @Override
     public List<Map<String, Object>> getList(SerrorTRequest request) throws KettleException, SQLException {
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         return loader.getList(getSQl(request,loader));
     }

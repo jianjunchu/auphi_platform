@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-12 20:07
  */
 @Log4j

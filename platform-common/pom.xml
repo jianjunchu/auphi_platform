@@ -108,10 +108,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
+        <!-- <dependency>
+             <groupId>org.slf4j</groupId>
+             <artifactId>slf4j-log4j12</artifactId>
+         </dependency>-->
         <!-- log end -->
 
         <!--ehcache begin-->
@@ -171,19 +171,26 @@
 
     <build>
         <plugins>
-            <!-- maven compiler -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <timestampFormat>yyyyMMddHHmm</timestampFormat>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <inherited>false</inherited>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <fork>true</fork>
-                    <meminitial>512m</meminitial>
-                    <maxmem>2048m</maxmem>
-                </configuration>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
             </plugin>
         </plugins>
         <resources>
@@ -202,6 +209,7 @@
                 </includes>
             </resource>
         </resources>
+        <finalName>${artifactId}-${project.version}-${timestamp}</finalName>
     </build>
 
 

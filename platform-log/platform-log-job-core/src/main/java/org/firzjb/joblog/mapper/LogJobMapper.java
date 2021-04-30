@@ -16,4 +16,5 @@ import org.firzjb.joblog.entity.LogJob;
 @MyBatisMapper
 public interface LogJobMapper extends BaseMapper<LogJob> {
 
+    int updateStatusToStop();
 }

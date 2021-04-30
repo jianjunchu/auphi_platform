@@ -30,7 +30,7 @@ public class PerrorLogService implements IPerrorLogService {
     @Override
     public Page getPage(Page page, PerrorTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
 
         return loader.getPage(page, getSQl(request));
@@ -48,7 +48,7 @@ public class PerrorLogService implements IPerrorLogService {
      */
     @Override
     public List<Map<String, Object>> getList(PerrorTRequest request) throws KettleException, SQLException {
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         return loader.getList(getSQl(request));
     }

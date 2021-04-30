@@ -7,7 +7,7 @@ import org.firzjb.base.model.request.PageRequest;
 import java.util.List;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-14 20:21
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.mapper.BaseMapper<T>{

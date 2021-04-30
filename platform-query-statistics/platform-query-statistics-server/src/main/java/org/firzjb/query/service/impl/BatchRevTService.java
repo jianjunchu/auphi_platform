@@ -14,7 +14,7 @@ import java.sql.SQLException;
 /**
  * 一所数据查询
  * 数据接收记录表Service
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Service
@@ -30,7 +30,7 @@ public class BatchRevTService  implements IBatchRevTService {
     @Override
     public Page getPage(Page<BatchRevT> page, BatchRevTRequest request) throws KettleException, SQLException {
 
-        DatabaseLoader  loader = new DatabaseLoader();
+        DatabaseLoader  loader = new DatabaseLoader(request.getSystype());
 
         StringBuffer sql = new StringBuffer("select a.batch_no AS batchNo , a.file_count AS fileCount , a.rev_time AS revTime from s_batch_rev_t a where 1 = 1" );//where a.batch_no like '%"+request.getBatchNo()+"%'";
         if(!StringUtils.isEmpty(request.getBatchNo())){

@@ -32,7 +32,7 @@ import java.net.URL;
 /**
  *
  * 步骤ICON 管理
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 public class StepImageManager {

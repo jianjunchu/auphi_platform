@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Constant 步骤 转码解码类
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-15 20:07
  */
 @Component("Constant")

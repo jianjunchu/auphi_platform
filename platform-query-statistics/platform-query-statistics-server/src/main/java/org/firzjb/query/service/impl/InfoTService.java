@@ -15,7 +15,7 @@ public class InfoTService  implements IInfoTService {
 
     @Override
     public Page getPage(Page page, InfoTRequest request) throws KettleException, SQLException {
-        DatabaseLoader loader = new DatabaseLoader();
+        DatabaseLoader loader = new DatabaseLoader(request.getSystype());
 
         StringBuffer sql = new StringBuffer("select ")
                 .append("    a.unit_no AS unitNo, a.accept_no AS acceptNo, a.id_no AS idNo, a.name AS name, a.backup_file AS backupFile, a.create_time AS createTime, a.update_time AS updateTime ")

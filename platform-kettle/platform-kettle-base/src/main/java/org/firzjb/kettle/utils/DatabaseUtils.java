@@ -9,7 +9,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 
 /**
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-10-19 15:37
  */
 public class DatabaseUtils {

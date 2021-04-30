@@ -25,4 +25,9 @@ public class LogTransService extends BaseService<LogTransMapper, LogTrans> imple
     public List<LogTransResponse> getLogJobs(LogTransRequest request) {
         return null;
     }
+
+    @Override
+    public int updateStatusToStop() {
+        return baseMapper.updateStatusToStop();
+    }
 }

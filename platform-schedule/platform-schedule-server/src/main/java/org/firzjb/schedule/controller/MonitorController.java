@@ -12,6 +12,8 @@ import org.firzjb.joblog.entity.LogJob;
 import org.firzjb.joblog.service.ILogJobService;
 import org.firzjb.kettle.JobExecutor;
 import org.firzjb.kettle.TransExecutor;
+import org.firzjb.kettle.utils.JsonUtils;
+import org.firzjb.kettle.utils.StringEscapeHelper;
 import org.firzjb.schedule.model.request.MonitorRequest;
 import org.firzjb.schedule.model.response.MonitorResponse;
 import org.firzjb.schedule.service.IMonitorService;
@@ -37,9 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -140,41 +140,36 @@ public class MonitorController extends BaseController {
      */
     @ApiOperation(value = "", notes = "调度执行日志日志")
     @RequestMapping(value = "/download/{id}/type/{type}", method = RequestMethod.GET)
-    public void downloadLog(@PathVariable Long id, @PathVariable String type, HttpServletResponse response)  {
-        String content = "";
+    public void downloadLog(@PathVariable Long id, @PathVariable String type, HttpServletResponse response) throws IOException {
+
+        String path = "../logs/kettle/"+id+".log";
+        File file = new File(path);
+        JsonUtils.download(file);
+
+    }
+
+    /**
+     * 调度执行日志日志
+     * @param id
+     * @param type
+     * @return
+     */
+    @ApiOperation(value = "", notes = "调度执行日志日志")
+    @RequestMapping(value = "/del/{id}/type/{type}", method = RequestMethod.GET)
+    public Response<Boolean> del(@PathVariable Long id, @PathVariable String type, HttpServletResponse response) throws IOException {
+
+
+
         if("JOB".equalsIgnoreCase(type)){
-            LogJob logJob = logJobService.selectById(id);
-            content = logJob.getJobLog();
+
+            logJobService.delete(new EntityWrapper<LogJob>().eq("LOG_JOB_ID",id));
 
         }else if("TRANSFORMATION".equalsIgnoreCase(type)){
-            LogTrans logTrans = logTransService.selectById(id);
-            content = logTrans.getLoginfo();
+            logTransStepService.delete(new EntityWrapper<LogTransStep>().eq("LOG_TRANS_ID",id));
+            logTransService.delete(new EntityWrapper<LogTrans>().eq("LOG_TRANS_ID",id));
         }
 
-        String fileName = "日志_" + DateUtils.format(new Date(),DateUtils.YYYYMMDDHHMMSS) +".log";
-
-        response.setContentType("text/plain");
-
-        try {
-            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        ServletOutputStream outputStream = null;
-        BufferedOutputStream buffer = null;
-
-        try {
-            outputStream = response.getOutputStream();
-            buffer = new BufferedOutputStream(outputStream);
-            buffer.write(content.getBytes("UTF-8"));
-            buffer.flush();
-            buffer.close();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        return Response.ok(true);
     }
 
 

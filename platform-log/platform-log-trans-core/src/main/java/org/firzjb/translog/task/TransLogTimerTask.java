@@ -41,11 +41,11 @@ public class TransLogTimerTask extends TimerTask {
                     first = false;
                     logTransSteps = new ArrayList<>();
                     logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
-                    logTrans.setLogTransId(IdWorker.getId());
-                    logTrans.insert();
+
+                    logTrans.updateById();
 
                 }else{
-                    logTrans.setTransConfigId(Long.valueOf(transExecutor.getTransMeta().getObjectId().getId()));
+
                     logTrans.setLoginfo(transExecutor.getExecutionLog());
                     logTrans.updateById();
                     JSONArray jsonArray = transExecutor.getStepMeasure();

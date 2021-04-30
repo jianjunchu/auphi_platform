@@ -14,6 +14,12 @@ public class PageRequest<T> {
      * 当前页码
      */
     @ApiModelProperty(hidden = true)
+    private String systype;
+
+    /**
+     * 当前页码
+     */
+    @ApiModelProperty(hidden = true)
     private Integer page = 1;
     /**
      * 每页数量
@@ -124,6 +130,13 @@ public class PageRequest<T> {
     }
 
 
+    public String getSystype() {
+        return systype;
+    }
+
+    public void setSystype(String systype) {
+        this.systype = systype;
+    }
 
     /**
      * 设置排序字段

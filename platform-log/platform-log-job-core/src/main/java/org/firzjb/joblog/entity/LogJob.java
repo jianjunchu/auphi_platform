@@ -28,7 +28,7 @@ public class LogJob extends Model<LogJob> {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "LOG_JOB_ID", type = IdType.ID_WORKER)
+    @TableId(value = "LOG_JOB_ID", type = IdType.INPUT)
     private Long logJobId;
     /**
      * 对应r_job表中的ID_JOB主键
@@ -61,8 +61,10 @@ public class LogJob extends Model<LogJob> {
     private Long linesRejected;
     @TableField("ERRORS")
     private Long errors;
+
     @TableField("STARTDATE")
     private Date startdate;
+
     @TableField("ENDDATE")
     private Date enddate;
     @TableField("LOGDATE")

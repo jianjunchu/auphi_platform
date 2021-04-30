@@ -1,6 +1,7 @@
 package org.firzjb.query.utils;
 
 
+import org.firzjb.base.common.Const;
 import org.firzjb.base.exception.ApplicationException;
 import org.firzjb.base.model.request.PageRequest;
 import org.firzjb.kettle.App;
@@ -11,8 +12,12 @@ import com.baomidou.mybatisplus.plugins.pagination.dialects.MySqlDialect;
 import com.baomidou.mybatisplus.plugins.pagination.dialects.OracleDialect;
 import com.baomidou.mybatisplus.plugins.pagination.dialects.SQLServer2005Dialect;
 import com.baomidou.mybatisplus.plugins.pagination.dialects.SQLServerDialect;
+import org.firzjb.utils.CsvUtils;
+import org.firzjb.utils.StringUtils;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.*;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -24,6 +29,8 @@ import org.pentaho.di.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -39,19 +46,62 @@ public class DatabaseLoader {
     public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("SourceUtils", LoggingObjectType.DATABASE, null );
 
     private static String db_name = "db_query_statistics";
-
     private  Database db;
     private String sql;
-    private Repository repository;
     private String countSQl = "";
     private String pageSQl = "";
+    private Repository repository = null;
+
+
+    public DatabaseLoader(String type) {
+
+        try {
+
+            String sysType = Const.getSysType();
+            if("S".equalsIgnoreCase(sysType)){
+                this.repository = App.getInstance().getRepository();
+                initDatabase();
+                if(db == null){
+                    throw new ApplicationException("请创建名称为:db_query_statistics 的查询数据库连接");
+                }
+
+            }else if("Z".equalsIgnoreCase(sysType)){
+                String PhisHostName =  App.space.getVariable("PhisHostName");
+                String PhisDatabaseName =  App.space.getVariable("PhisDatabaseName");
+                String PhisDBPort =  App.space.getVariable("PhisDBPort");
+                String PhisUserName =  App.space.getVariable("PhisUserName");
+                String PhisUserPwd =  App.space.getVariable("PhisUserPwd");
+
+                DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_NATIVE);
+                databaseMeta.setDBName(PhisDatabaseName);
+                databaseMeta.setDatabaseType("MYSQL");
+                databaseMeta.setHostname(PhisHostName);
+                databaseMeta.setUsername(Encr.decryptPasswordOptionallyEncrypted(PhisUserName));
+                databaseMeta.setPassword(Encr.decryptPasswordOptionallyEncrypted(PhisUserPwd));
+                databaseMeta.setDBPort(PhisDBPort);
+                db = new Database(loggingObject, databaseMeta);
+            }else{
+                throw new ApplicationException("后台错误,请在application.properties添加sys.type.mode配置");
+            }
 
 
 
-    public DatabaseLoader() throws KettleException {
-        this.repository = App.getInstance().getRepository();
-        initDatabase();
-        if(db == null){
+        }catch (Exception e){
+            throw new ApplicationException(e.getMessage());
+        }
+
+
+    }
+
+    public  void initDatabase() throws ApplicationException {
+        try {
+            ObjectId id_database = repository.getDatabaseID(db_name);
+            DatabaseMeta databaseMeta = repository.loadDatabaseMeta(id_database, null);
+            ArrayList<Map> list = new ArrayList<>();
+            db = new Database( loggingObject, databaseMeta );
+
+        }catch (Exception e){
             throw new ApplicationException("请创建名称为:db_query_statistics 的查询数据库连接");
         }
     }
@@ -96,17 +146,7 @@ public class DatabaseLoader {
         countSQl = sqlBuffer.toString();
     }
 
-    public  void initDatabase() throws ApplicationException {
-        try {
-            ObjectId id_database = repository.getDatabaseID(db_name);
-            DatabaseMeta databaseMeta = repository.loadDatabaseMeta(id_database, null);
-            ArrayList<Map> list = new ArrayList<>();
-            db = new Database( loggingObject, databaseMeta );
 
-        }catch (Exception e){
-            throw new ApplicationException("请创建名称为:db_query_statistics 的查询数据库连接");
-        }
-    }
 
 
     public Page getPage(Page pagination,String sql) throws KettleValueException, KettleDatabaseException, SQLException {
@@ -205,10 +245,10 @@ public class DatabaseLoader {
     public void disconnect(){
         if(db!=null){
             db.disconnect();
-
         }
         if(repository!=null){
             repository.disconnect();
         }
+
     }
 }

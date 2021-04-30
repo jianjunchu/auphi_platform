@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * 普通调度
- * @auther 傲飞数据整合平台
+ * @auther 制证数据实时汇聚系统
  * @create 2018-09-28 13:24
  */
 @Data
