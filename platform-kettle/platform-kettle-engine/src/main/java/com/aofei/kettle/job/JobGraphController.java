@@ -213,7 +213,6 @@ public class JobGraphController {
 			}
 
 			repository.save( jobMeta, versionComment, null);
-			repository.disconnect();
 			JsonUtils.success("作业保存成功！");
 
 		}catch (Exception e){

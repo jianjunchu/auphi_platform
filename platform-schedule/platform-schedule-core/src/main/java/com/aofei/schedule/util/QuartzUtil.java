@@ -27,10 +27,7 @@ import com.aofei.base.exception.ApplicationException;
 import com.aofei.schedule.model.request.GeneralScheduleRequest;
 import com.aofei.utils.DateUtils;
 import com.aofei.utils.StringUtils;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerUtils;
+import org.quartz.*;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +79,9 @@ public class QuartzUtil {
     public static final  String xx = "*";
     public static final  String xg = "/";
 
+    public QuartzUtil() {
+    }
+
     public static Trigger getTrigger(GeneralScheduleRequest request, String group){
 
 
@@ -98,9 +98,15 @@ public class QuartzUtil {
                 .endAt(endDate)
                 .withSchedule(CronScheduleBuilder.cronSchedule(cron.toString()))
                 .build();
+
+
+
+
         return trigger;
 
     }
+
+
 
     public static String getCron(GeneralScheduleRequest request) {
         Calendar ca = Calendar.getInstance();
@@ -123,8 +129,6 @@ public class QuartzUtil {
                             .append(ca.get(Calendar.MONTH)+1).append(kg)
                             .append(wh).append(kg)
                             .append(ca.get(Calendar.YEAR));
-
-                }else{
 
                 }
 
@@ -264,6 +268,238 @@ public class QuartzUtil {
         }
 
         return cronString.toString();
+    }
+
+
+
+
+    public static Trigger getTrigger1(GeneralScheduleRequest request,String group) {
+
+        Date satrtDate = request.getStartTime();
+        Date endDate = request.getEndTime();
+        String name = request.getJobName();
+
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(request.getStartTime());
+
+        Trigger trigger = null;
+
+        StringBuffer cronString = new StringBuffer();
+        switch (request.getCycle()) {
+            //执行一次
+            case MODE_ONCE:
+                long repeatInterval = ca.getTime().getTime() - new Date().getTime();
+                if(repeatInterval>0){
+                    /**
+                     * 只执行一次的Cron表达式 如: 2020年3月11日13点27分15秒,?指的是不考虑星期几
+                     * 15 27 13 11 3 ? 2020
+                     */
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append(ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(ca.get(Calendar.DATE)).append(kg)
+                            .append(ca.get(Calendar.MONTH)+1).append(kg)
+                            .append(wh).append(kg)
+                            .append(ca.get(Calendar.YEAR));
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+                }
+
+                break;
+            case MODE_SECOND:
+                //周期秒 每?几秒执行一次
+                //每隔5秒执行一次：*/5 * * * * ?
+
+                Integer intervalInSeconds = Integer.parseInt(request.getCycleNum());
+
+                trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, group)
+                        .startAt(satrtDate)
+                        .endAt(endDate)
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(intervalInSeconds).withRepeatCount(-1)).build();
+
+                break;
+            case MODE_MINUTE:
+
+                //周期分钟 每?几分钟执行一次
+                intervalInSeconds = Integer.parseInt(request.getCycleNum());
+
+                trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, group)
+                        .startAt(satrtDate)
+                        .endAt(endDate)
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalInSeconds).withRepeatCount(-1)).build();
+
+                break;
+            case MODE_HOUR:
+
+                //周期小时 每?几小时执行一次
+                //周期分钟 每?几分钟执行一次
+                intervalInSeconds = Integer.parseInt(request.getCycleNum());
+
+                trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, group)
+                        .startAt(satrtDate)
+                        .endAt(endDate)
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(intervalInSeconds).withRepeatCount(-1)).build();
+
+
+                break;
+            case MODE_DAY:
+
+
+                if(1 == request.getDayType()){
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append(xx);
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+                }else if(2 == request.getDayType()){
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append("MON-FRI");
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+                }else{
+                    throw new ApplicationException();
+                }
+
+                break;
+            case MODE_WEEK:
+
+                cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                        .append(ca.get(Calendar.MINUTE)).append(kg)
+                        .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                        .append(wh).append(kg)
+                        .append(xx).append(kg)
+                        .append(request.getCycleNum());
+
+                trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, group)
+                        .startAt(satrtDate)
+                        .endAt(endDate)
+                        .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                        .build();
+
+                break;
+            case MODE_MONTH:
+                if(1 == request.getMonthType()){
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(request.getCycleNum()).append(kg)
+                            .append(xx).append(kg)
+                            .append(wh);
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+
+
+                }else if(2 == request.getMonthType()){
+                    String weeknum = StringUtils.defaultString(request.getWeekNum()) ;
+                    String daynum = StringUtils.defaultString(request.getDayNum());
+
+                    if(!"L".equals(weeknum)){
+                        weeknum = "#" + weeknum;
+                    }
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(xx).append(kg)
+                            .append(daynum).append(weeknum);
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+                }
+
+
+                break;
+            case MODE_YEAR:
+
+                if(1 == request.getYearType()){//month and day
+                    String[] monthAndDay = request.getCycleNum().split("-");
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(monthAndDay[1]).append(kg)
+                            .append(monthAndDay[0]).append(kg)
+                            .append(wh);
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+
+                }else if(2 == request.getYearType()){//month week and day
+                    String monthnum = StringUtils.defaultString(request.getMonthNum()) ;
+                    String weeknum = StringUtils.defaultString(request.getWeekNum()) ;
+                    String daynum = StringUtils.defaultString(request.getDayNum());
+
+                    if(!"L".equals(weeknum)){
+                        weeknum = "#" + weeknum;
+                    }
+
+                    cronString.append(ca.get(Calendar.SECOND)).append(kg)
+                            .append(ca.get(Calendar.MINUTE)).append(kg)
+                            .append( ca.get(Calendar.HOUR_OF_DAY)).append(kg)
+                            .append(wh).append(kg)
+                            .append(monthnum).append(kg).append(daynum).append(weeknum);
+
+                    trigger = TriggerBuilder.newTrigger()
+                            .withIdentity(name, group)
+                            .startAt(satrtDate)
+                            .endAt(endDate)
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cronString.toString()))
+                            .build();
+
+                }
+
+                break;
+        }
+
+        return trigger;
     }
 
     /**

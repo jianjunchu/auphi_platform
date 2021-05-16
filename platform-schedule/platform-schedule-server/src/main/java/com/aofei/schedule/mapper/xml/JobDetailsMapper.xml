@@ -41,9 +41,9 @@
                 AND qgp.ORGANIZER_ID = #{organizerId}
             </if>
 
-            <if test="unitId != null and unitId > 0 ">
+            <!--<if test="unitId != null and unitId > 0 ">
                 AND qgp.UNIT_ID = #{unitId}
-            </if>
+            </if>-->
 
             <if test="jobGroup != null and jobGroup!='' ">
                 AND  a.JOB_GROUP = #{jobGroup}

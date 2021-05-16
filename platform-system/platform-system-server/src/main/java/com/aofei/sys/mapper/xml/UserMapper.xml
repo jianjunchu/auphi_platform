@@ -67,9 +67,9 @@
             <if test="organizerId !=null and organizerId>0">
                 AND  a.C_ORGANIZER_ID  = #{organizerId}
             </if>
-            <if test="unitId !=null and unitId>0">
+            <!--<if test="unitId !=null and unitId>0">
                 AND  a.C_UNIT_ID  = #{unitId}
-            </if>
+            </if>-->
         </where>
     </select>
 

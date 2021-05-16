@@ -91,21 +91,14 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
         logger.info("********系统开始启动字典装载程序***************");
         logger.info("********开始加载资源库************************");
         logger.info("********************************************");
+        KettleEnvironment.init();
+
         LanguageChoice.getInstance().setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
         KettleLogStore.init( 5000000, 720 );
 
         PropsUI.init( "KettleWebConsole", Props.TYPE_PROPERTIES_KITCHEN );
 
-        //KettleDatabaseRepository repository =  RepositoryCodec.decodeDefault(dataSource);
-        //repository.getDatabase().getDatabaseMeta().setSupportsBooleanDataType(true);
-        //repository.connect(Const.REPOSITORY_USERNAME,Const.REPOSITORY_PASSWORD);
-        //App.getInstance().setRepository(repository);
-        //CheckRepositoryTimerTask checkRepositoryTimerTask = new CheckRepositoryTimerTask();
-        //repositoryTimer.schedule(checkRepositoryTimerTask,0,1000*60*1);
-        applyVariables();
         App.getInstance().setKettleDatabaseRepositoryMeta(RepositoryCodec.getDatabaseRepositoryMeta(dataSource));
-
-
 
         long timeSec = (System.currentTimeMillis() - start) / 1000;
         logger.info("****************************************************************************************");
@@ -159,7 +152,7 @@ public class SystemInitializingBean implements InitializingBean, DisposableBean 
 
         }
 
-        KettleEnvironment.init();
+
     }
 
     /**

@@ -35,9 +35,9 @@
             <if test="organizerId !=null ">
                 AND  a.ORGANIZER_ID  = #{organizerId}
             </if>
-            <if test="unitId !=null ">
+            <!--<if test="unitId !=null ">
                 AND  a.UNIT_ID  = #{unitId}
-            </if>
+            </if>-->
             <if test="groupName !=null and groupName != ''">
                 AND  a.GROUP_NAME  like '%${groupName}%'
             </if>
