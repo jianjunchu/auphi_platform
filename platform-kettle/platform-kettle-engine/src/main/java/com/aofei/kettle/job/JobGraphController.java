@@ -267,15 +267,15 @@ public class JobGraphController {
 			jei.setName(entry_name);
 
 			if (jei.isSpecial()) {
-				if (JobMeta.STRING_SPECIAL_START.equals(name)) {
+				if (JobMeta.STRING_SPECIAL_START.equalsIgnoreCase(name)) {
 					// Check if start is already on the canvas...
 					if (jobMeta.findStart() != null) {
 						return;
 					}
 					((JobEntrySpecial) jei).setStart(true);
-					jei.setName(JobMeta.STRING_SPECIAL_START);
+					jei.setName(name);
 				}
-				if (JobMeta.STRING_SPECIAL_DUMMY.equals(name)) {
+				if (JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase(name)) {
 					((JobEntrySpecial) jei).setDummy(true);
 					// jei.setName(JobMeta.STRING_SPECIAL_DUMMY); // Don't
 					// overwrite the name
